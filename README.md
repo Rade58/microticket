@@ -16,7 +16,7 @@ User, Ticket, Order, Charge
 
 auth, tickets, orders, expiration, payments
 
-# EVENTS
+# EVENTS (VIDEO 05-05)
 
 UserCreated, UserUpdated
 
@@ -25,3 +25,15 @@ OrderCreated, OrderCancelled, OrderExpired
 TicketCreated TickedUpdated
 
 ChargeCreated
+
+# EVENT BUS SERVICE
+
+NATS Streaming Server
+
+# CLIENT SIDE APP
+
+Next.JS
+
+# DATABASES (MUTLIPLE)
+
+ALL ARE MongoDB
