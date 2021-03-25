@@ -37,3 +37,5 @@ Next.JS
 # DATABASES (MUTLIPLE)
 
 ALL ARE MongoDB
+
+USING Redis FOR expirationn MICROSERVICE
