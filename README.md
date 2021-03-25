@@ -23,3 +23,17 @@ DEPENDANCIES SO FAR (IN THE FUTURE IT IS GOING TO BE MANY MANY MORE): `yarn add 
 - `cd auth`
 
 - `npx tsc --init`
+
+# "start" SCRIPT
+
+- `cd auth`
+
+- `code package.json`
+
+```json
+"start": "ts-node-dev src/index.ts"
+```
+
+TRYING OUT
+
+- `yarn start`
