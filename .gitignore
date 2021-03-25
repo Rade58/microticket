@@ -23,6 +23,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # SERVICES AND EVENT BUS
+auth/node_modules
+
 
 # minicube
 ^minicube
