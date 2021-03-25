@@ -12,3 +12,6 @@ USERS SELLING TICKETS TO OTHER USERS
 
 User, Ticket, Order, Charge
 
+# SERVICE TYPES
+
+auth, tickets, orders, expiration, payments
