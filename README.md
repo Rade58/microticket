@@ -12,6 +12,16 @@ USERS SELLING TICKETS TO OTHER USERS
 
 User, Ticket, Order, Charge
 
-# SERVICE TYPES
+# SERVICE TYPES (VIDEO 05-04)
 
 auth, tickets, orders, expiration, payments
+
+# EVENTS
+
+UserCreated, UserUpdated
+
+OrderCreated, OrderCancelled, OrderExpired
+
+TicketCreated TickedUpdated
+
+ChargeCreated
