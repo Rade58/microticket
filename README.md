@@ -1,6 +1,9 @@
 # `auth` MICROSERVICE SETUP
 
-ROUTES:
+***
+***
+
+ROUTES TO BE CREATED IN NEXT BRANCHES:
 
 `/api/users/signup` (POST); body: `{email: string; password: string}` (CREATING ACCOUNT)
 
@@ -9,6 +12,9 @@ ROUTES:
 `/api/users/signout` (POST); body: `{}` (SIGNING OUT)
 
 `/api/users/currentuser` (GET); body: `none` (RETURNS A SINGLE USER DOCUMENT)
+
+***
+***
 
 # FOLDER `auth` (CODE WILL BE IN `src` FOLDER)
 
