@@ -144,3 +144,27 @@ auth-srv     ClusterIP   10.107.38.208   <none>        3000/TCP   4m14s
 kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP    8m5s
 
 ```
+
+## MOZEMO MALO DA TESTIRAMO, TAK OSTO CEMO ZADATI DRUGI TEKST U ONOM CALLBACK-U KOJI SE IZVRSI KADA SERVER START-UJE SA LISTENINGOM, I DA VIDIMO DA LI CE SKAFFOLD REBUILD-OVATI DOCKER IMAGE I UBACITI GA U POD, KAKO BI TAJ NOVI IMAGE STUPIO NA SNAGU
+
+- `code auth/src/index.ts`
+
+```ts
+import express from "express";
+import { json } from "body-parser";
+
+const app = express();
+
+app.use(json());
+
+const PORT = 3000;
+
+app.listen(PORT, () => {
+  // UMESTO OVOGA
+  // console.log(`listening on port ${PORT}`);
+  // OVO
+  console.log(`listening on  http://localhost:${PORT} INSIDE auth POD`);
+});
+```
+
+I ZAISTA JE SKAFFOLD OBAVIO UPDATING VEOMA BRZO
