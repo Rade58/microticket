@@ -76,4 +76,10 @@ spec:
 
 ```
 
+# WRITING SKAFFOLD CONFIGURATION
 
+- `touch skaffold.yaml`
+
+```yaml
+
+```
