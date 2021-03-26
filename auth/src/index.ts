@@ -5,11 +5,14 @@ const app = express();
 
 app.use(json());
 
-const PORT = 3000;
+// EVO OVO JE RUTE KOJI TREBA DA RETURN-UJE SINGLE USER OBJECT
+app.get("/api/users/currentuser", (req, res) => {
+  // SAMO ZA SADA STMAPAM DUMMY RESPONSE
 
+  res.send("Hello there, my name is Stavros.");
+});
+
+const PORT = 3000;
 app.listen(PORT, () => {
-  // UMESTO OVOGA
-  // console.log(`listening on port ${PORT}`);
-  // OVO
   console.log(`listening on  http://localhost:${PORT} INSIDE auth POD`);
 });
