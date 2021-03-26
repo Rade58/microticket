@@ -39,6 +39,8 @@ node_modules
 
 - `touch infra/k8s/tick-auth-depl.yaml`
 
+NISAM SPECIFICIRAO TYPE OF SERVICE (ZATO STO JE PO DEFAULTU TO CLUSTER IP SERVICE)
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
