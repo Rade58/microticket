@@ -43,7 +43,7 @@ node_modules
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tick-auth-depl
+  name: auth-depl
 spec:
   replicas: 1
   selector:
@@ -61,7 +61,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: tick-auth-srv
+  name: auth-srv
 spec:
   selector:
     app: auth
