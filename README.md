@@ -79,6 +79,7 @@ metadata:
   name: ingress-srv
   annotations:
     kubernetes.io/ingress.class: nginx
+    # OVO SLUZI ZA ENABLING REGEX PATH-OVA, KOJE ZA SADA JOS NEMEM U OVOM PROJEKTU
     nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   rules:
