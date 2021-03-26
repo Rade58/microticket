@@ -168,3 +168,19 @@ app.listen(PORT, () => {
 ```
 
 I ZAISTA JE SKAFFOLD OBAVIO UPDATING VEOMA BRZO
+
+## NOTE ABOUT ts-node-dev
+
+Hi!
+
+If you did not see your server restart after changing the index.ts file, do the following:
+
+Open the package.json file in the ‘auth’ directory
+
+Find the ‘start’ script
+
+Update the start script to the following:
+
+`ts-node-dev --poll src/index.ts`
+
+**MEDJUTIM MENI OVO NIJE TREBALO, JER JE SVE FUNKCIONISALO**
