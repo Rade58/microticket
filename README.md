@@ -41,7 +41,28 @@ TAJ IP MAPUJES DOO TOG URL (STO SAM JA VEC URADIO, U SLUCAJU PREDHODNOG PROJEKTA
 
 NARAVNO TAJ URL SPECIFICIRAS KAO HOST U INGRESS CONTROLLER-U (STO SAM VEC JEDNOM RADIO ZA INGRESS KONFIGURACIJU IZ DRUGOG PROJEKTA)
 
-# MEDJUTIM PROBLEM JE TO STO INGRESS KADA SE JEDNOM PODESI ON OSTAJE TU
+JA CU SADA IZMISLITI NEKI NOVI BOGGUS DOMAIN NAME
+
+- `code /etc/hosts`
+
+```zsh
+# Host addresses
+127.0.0.1  localhost
+127.0.1.1  eidolon-80r0
+::1        localhost ip6-localhost ip6-loopback
+ff02::1    ip6-allnodes
+ff02::2    ip6-allrouters
+
+# for my kubernetes firts project
+# tricking nginx to believe that minikube ip
+# is myblog.com
+
+192.168.49.2 myblog.com
+# OVO SAM DODAO SADA
+192.168.49.2 microticket.com
+```
+
+# MEDJUTIM PROBLEM JE TO STO INGRESS KADA SE JEDNOM PODESI ON OSTAJE TU ;ODNONO KADA GA JEDNOM INSTALIRAS, ON RUNN-UJE ,A JA SAM GA INSTALIRAO ZA POTREBE PROSLOG PROJEKTA
 
 EVO TI I DOKAZ
 
@@ -84,8 +105,8 @@ metadata:
 spec:
   rules:
       # REKAO SAM TI DA SAM OVAJ HOST PODESIO NA MOM RACUNARU
-      # ODNONO VARAM GA  
-    - host: "myblog.com"
+      # ODNONO CHEAT-UJEM KAKO SAM TO OBJASNIO U PREDHODNOM PROJEKTU
+    - host: "microticket.com"
       http:
         paths:
           - path: /api/users/currentuser
