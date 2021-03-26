@@ -66,7 +66,7 @@ ff02::2    ip6-allrouters
 
 EVO TI I DOKAZ
 
-- `kubectl describe ingress`
+- `kubectl describe ingress` ILI KUCAJ `kubectl get ingress`
 
 ```zsh
 Name:             ingress-srv
@@ -105,7 +105,8 @@ metadata:
 spec:
   rules:
       # REKAO SAM TI DA SAM OVAJ HOST PODESIO NA MOM RACUNARU
-      # ODNONO CHEAT-UJEM KAKO SAM TO OBJASNIO U PREDHODNOM PROJEKTU
+      # ODNONO CHEAT-UJEM KAKO SAM TO OBJASNIO U PREDHODNOM 
+      # PROJEKTU ISADA SAM ZADAO OVAJ
     - host: "microticket.com"
       http:
         paths:
@@ -117,4 +118,32 @@ spec:
                 port:
                   number: 3000
 
+```
+
+TI NE TREBAS SADA DA KORISTIS MANUELNO `kubectl apply`
+
+# SADA MOZES DA TESTIRAS SVOJ API ENDPOINT, ALI DESICE SE PROBLEM SIGURNO I TO ZBOG MINICUBE-A
+
+RANIJE SAM EXECUTE-OVAO KOMANDU `minikube delete`, JER BEZ TOGA NIJE RADIO SKAFFOLD KAKO TREBA
+
+TO JE MEDJUTIM DISABLE-OVALO I ingress ADDON ZA MINIKUBE, ZATO MOJ POKUSAJ DA POSALJEM REQUEST BIO JE NEUSPESAN
+
+ALI KADA SAM ENABLE0OVAO ingress
+
+- `minikube addons enable ingress`
+
+MOGAO SAM DA SALJEM REQUEST
+
+- `http GET microticket.com/api/users/currentuser`
+
+```zsh
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Length: 32
+Content-Type: text/html; charset=utf-8
+Date: Fri, 26 Mar 2021 18:28:07 GMT
+ETag: W/"20-Snf9C1Kawnpxc1TswxEK6VQitMc"
+X-Powered-By: Express
+
+Hello there, my name is Stavros.
 ```
