@@ -104,4 +104,43 @@ build:
 
 # EXECUTE SKAFFOLD TO SEE IS IT WORKING
 
+***
+***
 
+MISLIM DA PRE SVEGA MORAS IMATI minikube STARTOVAN `minikube start`; UATVARI IMAO SAM ERRORE SVE DOK NISAM URADIO OVO, PRE RUNNING-A SKAFFOLD-A
+
+- `minikube delete`
+- `minikube start`
+
+***
+***
+
+- `skaffold dev`
+
+NA KRAJU DOK SE SVE IZVRSI I DOK SE EXECUTE-UJE STARTUP COMMAND, VIDECES DA JE TVOJ auth MICROSERVICE LIVIN I NLAZI SE U CONTAINERU, INSISE RELATED POD, KOJI JE INSIDE RELATED DEPLOYMENNT
+
+- `k get pods`
+
+```zsh
+NAME                         READY   STATUS    RESTARTS   AGE
+auth-depl-6d5dd787d7-tzwmr   1/1     Running   0          3m40s
+```
+
+- `k ged deployments`
+
+```zsh
+NAME        READY   UP-TO-DATE   AVAILABLE   AGE
+auth-depl   1/1     1            1           3m58s
+
+```
+
+A LIVING LE I TVOJ CLUSTER IP SERVICE ZA auth
+
+- `k ged services`
+
+```zsh
+NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+auth-srv     ClusterIP   10.107.38.208   <none>        3000/TCP   4m14s
+kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP    8m5s
+
+```
