@@ -81,5 +81,27 @@ spec:
 - `touch skaffold.yaml`
 
 ```yaml
+apiVersion: skaffold/v2beta13
+kind: Config
+deploy:
+  kubectl:
+    manifests:
+      - ./infra/k8s/*
+build:
+  local:
+    push: false
+  artifacts:
+    - image: radebajic/tick-auth
+      context: auth
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.{ts,js}'
+            dest: .
 
 ```
+
+# EXECUTE SKAFFOLD TO SEE IS IT WORKING
+
+
