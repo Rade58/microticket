@@ -73,5 +73,24 @@ AKO TI SE DESIL ODA SI NEKAKO UNISTIO TAJ CONTROLLER, OPET GA [INSTALIRAJ ODAVDE
 - `touch infra/k8s/ingress-srv.yaml`
 
 ```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-srv
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  rules:
+    - host: "myblog.com"
+      http:
+        paths:
+          - path: /api/users/currentuser
+            pathType: Exact
+            backend:
+              service:
+                name: auth-srv
+                port:
+                  number: 3000
 
 ```

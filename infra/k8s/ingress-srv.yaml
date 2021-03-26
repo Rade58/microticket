@@ -10,10 +10,10 @@ spec:
     - host: "myblog.com"
       http:
         paths:
-          - path: /create
+          - path: /api/users/currentuser
             pathType: Exact
             backend:
               service:
-                name: posts-srv
+                name: auth-srv
                 port:
-                  number: 4000
+                  number: 3000
