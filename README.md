@@ -28,7 +28,6 @@ export CLOUDSDK_PYTHON=python3
 
 - `$CLOUDSDK_PYTHON --version`
 
-
 - `vi ~/.zshrc`
 
 ```zsh
