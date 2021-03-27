@@ -1,89 +1,17 @@
-# UPDATING SKAFFOLD CONFIG
+# SETTING UP LOAD BALANCER AND THE REST
 
-MORAM RECI SKAFFOLD-U DA BUILD-UJE IMAGE-OVE, UZ POMOC ONOG `Google Cloud Build`-A KOJI SE NALAZI NA GOOGLE CLOUD-U
+MORAM PODESITI ingress-nginx NA MOM CLUSTER-U NA GOOGLE CLOUD-U
 
-DAKLE RANIJE SAM TI VEC REKAO A CU KORISTI GOOGLE CLOUD ZA BUILDING MOJIH IMAGE-OVA (I TO CE BITI FAST POGOTOVO ONDA KADA BUDEM INSTALIRAO LARGE DEPENDANCIES)
+OVO BI TREBALO DA BUDE EASY, A GLEDACU U DOKUMENTACIJU ingress-nginx
 
-# ENABLING GOOGLE CLOUD BUILD
+U DEPLOYMENT SEKCIJI IMA OBJASNJENJE ZA GOOGLE CLOUD
 
-U DASBOARD-U (UNDER HAMBURGER MENU) GOOGLE CLOUD-A, UNDER Tools PRONADJI `Cloud Build` I KLIKNI NA TO
+<https://kubernetes.github.io/ingress-nginx/deploy/#gce-gke>
 
-KLINI ONDA NA `Enable`, I TO CE POTRAJATI MINUT DVA
+TO TI JE UNDER `GCE-GKE`
 
-# SADA CU DA REDEFINISEM SKAFFOLD CONFIG
+NEMOJ NISTA DA EXECUTE-UJES TA TI JE U OKVIRU INFO-A ILI DANGER ZONE-A, TI EXECUTE-UJES ONU `kubectl apply -f <URL>`
 
-- `code skaffold.yaml`
+NIJE BITNO GDE OVO EXECUTE-UJES U TERMINALU (TO TI GOVORIM JER SI OVO LOKALNO EXECUTE-OVAO U infra/k8s FOLDERU)
 
-RECI CU MU DA ZELI MDA KORISTIM GOOGLE CLOUD BUILD
-
-```yaml
-apiVersion: skaffold/v2beta13
-kind: Config
-deploy:
-  kubectl:
-    manifests:
-      - ./infra/k8s/*
-build:
-  # UKLONIO local JER NE RADIM VISE LOCAL BUILD
-  # local:
-  #   push: false
-  # DODAO OVO
-  googleCloudBuild:
-    projectId: microticket
-  artifacts:
-      # REDEFINISAO IMAGE NAME
-    - image: us.gcr.io/microticket/auth
-      context: auth
-      docker:
-        dockerfile: Dockerfile
-      sync:
-        manual:
-          - src: 'src/**/*.{ts,js}'
-            dest: .
-
-```
-
-VIDIS KAKO JE ID microticket, A I NAME PROJECTA MI JE microticket (OVO NE MORA DA BUDE UVEK ZATO DOBRO PREGLEDAJ KOJI JE ID TVOG PROJECT-A)
-
-ISTO TAKO UPDATE-OVAO SAM I NAME DOCKER IMAGE-A, JR ZA TO JE ODGOVORAN GOOGLE CLOUD BUILD KOJI CE ASSIGN-OVATI STRUCTURED NAME KADA BUDE BUILD-OVAO IMAGE
-
-ZATO SAM JA ASSIGN-OVAO IMAGE NAME U FORMATU, KOJ IVIDISA SA `us.gcr.io/<id project-a>` + `context`(folder name)
-
-# IMAGE JE BIO REFERENCED U DEPL FILE-U, TAKO DA TO MORAM DA RREDEFINISEM
-
-- `code infra/k8s/auth-depl.yaml`
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: auth-depl
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: auth
-  template:
-    metadata:
-      labels:
-        app: auth
-    spec:
-      containers:
-        - name: auth
-          # EVO OVO SAM PROMENIO
-          image: us.gcr.io/microticket/auth
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: auth-srv
-spec:
-  selector:
-    app: auth
-  type: ClusterIP
-  ports:
-    - name: auth
-      protocol: TCP
-      port: 3000
-      targetPort: 3000
-```
+- `kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.44.0/deploy/static/provider/cloud/deploy.yaml`
