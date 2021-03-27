@@ -13,3 +13,52 @@ JA SAM ODABRAO NE I ZATO SAM ZAUSTAVIO DOCKER NA MOM RACUNARU I DISABLE-OVAO NJE
 - `sudo systemctl disable docker.socket`
 - `sudo systemctl disable docker.service`
 
+AKO ZELIS DA GA STARTUJES NEKAD U BUDUSCNOSTI KORISTI `start` A DA PODESIS DA STARTUJE ON BOOT, RUNN-UJE `enable` (TO AKO BUDES IKADA DOCKER PONOVO ZELEO DA KORISTIS NA TVOM RACUNARU)
+
+# SADA CU DA INSTALIRAM kubectl NA MOM MACHINE-U ALI KROZ KORISCENJE GOOGLE CLOUD KOMANDE
+
+***
+
+OVA INSTLACIJA kubectl-A NIJE RADILA SA INSTALACIJOM GOOGLE CLOUD-A (INSTALIRANOG SA apt-get) ZATO SAM U PROSLOM BRANCH-U MORAO DA REINSTALIRAM GOOGLE CLOUD SDK
+
+***
+
+- `gcloud components list` (OVDE CES VIDETI DA kubectl-A NEMA)
+
+INSTLAIRAM
+
+- `gcloud components install kubectl`
+
+MEDJUTIM NE SVIDJA MI SE OVAJ WARNING U POSTINSTALL MESSAGE-U, KOJI CU IGNORISATI ZA SADA
+
+```zsh
+Update done!
+
+WARNING:   There are other instances of Google Cloud Platform tools on your system PATH.
+  Please remove the following to avoid confusion or accidental invocation:
+
+  /usr/local/bin/kubectl
+```
+
+DAKLE OVO MOZE BITI PROBLEM JER SADA IMAM DUPLU instlaciju KUBECTL-a
+
+- `gcloud components list`
+
+# SADA CU DA KUBECTL POVEZEM SA CLUSTEROM NA GOOGLE CLOUD-U
+
+- `gcloud container clusters get-credentials <cluster-id>`
+
+MOZES PRONACI U KUBERNETES DASHBOARD-U GOOGLE CLOUD-A, UPRAVO ONAJ ID TVOG CLUSTER-A, A KOD MENE JE TO `microticket-dev`
+
+MISLI MDA OVO FUNKCIONISE SADA JER EVO GLEDAJ OVO
+
+- `kubectl get services`
+
+```zsh
+AME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.68.0.1    <none>        443/TCP   4h29m
+```
+
+## KOMANDU `gcloud container clusters get-credentials <cluster-id>` CES UVEK RUNN-OVATI AKO BUDES ZELEO DA PROMENIS CONTEXT ZA kubectl
+
+ODNOSNO KADA BUDES ZELEO DA TVOJ `kubectl` MANGE-UJE DIFFERENT CLUSTER 
