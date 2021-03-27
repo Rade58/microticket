@@ -33,3 +33,16 @@ export CLOUDSDK_PYTHON=python3
 ```zsh
 alias CLOUDSDK_PYTHON=python3
 ```
+
+**DOWNLOAD-UJ FILE [ODAVDE](https://cloud.google.com/sdk/docs/install#linux) (U PITANJU JE ZIPPD FILE)**
+
+EXTRACTUJ U HOME DIRECTORY
+
+# SADA CU OPET POKUSATI DA SE PRIJAVIM I DA ONU INITIALIZATION
+
+
+
+
+
+
+
