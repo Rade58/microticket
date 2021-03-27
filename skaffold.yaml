@@ -5,8 +5,6 @@ deploy:
     manifests:
       - ./infra/k8s/*
 build:
-  local:
-    push: false
   googleCloudBuild:
     projectId: microticket
   artifacts:

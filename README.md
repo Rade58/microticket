@@ -24,13 +24,14 @@ deploy:
     manifests:
       - ./infra/k8s/*
 build:
-  local:
-    push: false
+  # UKLONIO local JER NE RADIM VISE LOCAL BUILD
+  # local:
+  #   push: false
   # DODAO OVO
   googleCloudBuild:
     projectId: microticket
   artifacts:
-      # DODAO OVO
+      # REDEFINISAO IMAGE NAME
     - image: us.gcr.io/microticket/auth
       context: auth
       docker:
@@ -47,3 +48,42 @@ VIDIS KAKO JE ID microticket, A I NAME PROJECTA MI JE microticket (OVO NE MORA D
 ISTO TAKO UPDATE-OVAO SAM I NAME DOCKER IMAGE-A, JR ZA TO JE ODGOVORAN GOOGLE CLOUD BUILD KOJI CE ASSIGN-OVATI STRUCTURED NAME KADA BUDE BUILD-OVAO IMAGE
 
 ZATO SAM JA ASSIGN-OVAO IMAGE NAME U FORMATU, KOJ IVIDISA SA `us.gcr.io/<id project-a>` + `context`(folder name)
+
+# IMAGE JE BIO REFERENCED U DEPL FILE-U, TAKO DA TO MORAM DA RREDEFINISEM
+
+- `code infra/k8s/auth-depl.yaml`
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+        - name: auth
+          # EVO OVO SAM PROMENIO
+          image: us.gcr.io/microticket/auth
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-srv
+spec:
+  selector:
+    app: auth
+  type: ClusterIP
+  ports:
+    - name: auth
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+```

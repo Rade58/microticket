@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
         - name: auth
-          image: radebajic/tick-auth
+          # EVO OVO SAM PROMENIO
+          image: us.gcr.io/microticket/auth
 ---
 apiVersion: v1
 kind: Service
