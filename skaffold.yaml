@@ -7,8 +7,10 @@ deploy:
 build:
   local:
     push: false
+  googleCloudBuild:
+    projectId: microticket
   artifacts:
-    - image: radebajic/tick-auth
+    - image: us.gcr.io/microticket/auth
       context: auth
       docker:
         dockerfile: Dockerfile
