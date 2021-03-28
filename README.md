@@ -189,4 +189,70 @@ ALI NO MATTER WHAT YOU ARE CAPTURING THOSE ERROS INSIDE ERROR HANDLING MIDDLEWAR
 
 NARAVNO MAKE SURE DA SI UPALIO SKAFFOLD (`skaffold dev`)
 
+SALJEM INVALIDNI MAIL
+
+- `http -f http://microticket.com/api/users/signup email=bronson password=Kameleonz`
+
+EVO STA SI DOBIO
+
+```zsh
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+Content-Length: 34
+Content-Type: application/json; charset=utf-8
+Date: Sun, 28 Mar 2021 21:16:21 GMT
+ETag: W/"22-c40+vNnNNb1EeyjChXmbl7vKG3M"
+X-Powered-By: Express
+
+{
+    "message": "Something went wrong"
+}
+```
+
+DAKLE ERROR HANDLER MIDDLEWARE JE END-OVAO REQUEST SALJUCI TIJSON KOJ ISI STRUKTURISAO TAKO DA IMA message PROPERTI
+
+TO SI I HTEO I URADIO
+
+A SADA CU DAPOSALJEM NOVI REQUEST KOJI IMA OK EMAIL PASSWORD, ALI SECAS SE DA JE DATTABASE DOWN
+
+- `http -f http://microticket.com/api/users/signup email="bronson@mail.com" password="kameleonzia"`
+
+POSLAT JE ISTI ERROR MESSAGE
+
+```zsh
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+Content-Length: 34
+Content-Type: application/json; charset=utf-8
+Date: Sun, 28 Mar 2021 21:19:24 GMT
+ETag: W/"22-c40+vNnNNb1EeyjChXmbl7vKG3M"
+X-Powered-By: Express
+
+{
+    "message": "Something went wrong"
+}
+```
+
+**JEDINO ZATO STO SAM U ERROR HANDLER MIDDLEWARE-U STMAPAO ,`err` ARGUMENT TREBALO BI DA U SKAFFOLD TERMINALU VIDIM TAJ OUTPUT**
+
+```zsh
+# EVO VIDIS TU JE PRVI LOG, STAMPAO SAM GENERIC STUFF (Something went wrong)
+# ALI SAM DALJE STMAPAO ERROR I TO JE `Invalid email or password`
+[auth] Something went wrong Error: Invalid email or password
+[auth]     at /app/src/routes/signup.ts:20:13
+[auth]     at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+[auth]     at next (/app/node_modules/express/lib/router/route.js:137:13)
+[auth]     at middleware (/app/node_modules/express-validator/src/middlewares/check.js:16:13)
+[auth] Creating a new user...
+# A OVDE VIDIS DA JE Error connectiong to database
+[auth] Something went wrong Error: Error connecting to datbase
+[auth]     at /app/src/routes/signup.ts:25:11
+[auth]     at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+[auth]     at next (/app/node_modules/express/lib/router/route.js:137:13)
+[auth]     at middleware (/app/node_modules/express-validator/src/middlewares/check.js:16:13)
+[auth]     at processTicksAndRejections (internal/process/task_queues.js:93:5)
+
+
+```
+
 
