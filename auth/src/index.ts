@@ -1,17 +1,21 @@
 import express from "express";
 import { json } from "body-parser";
 
-// IMPORTUJEMO ROUTERA
 import { currentUserRouter } from "./routes/current-user";
-//
+// IMPORTUJEMO
+import { signInRouter } from "./routes/signin";
+import { signOutRouter } from "./routes/signout";
+import { signUpRouter } from "./routes/signup";
 
 const app = express();
 
 app.use(json());
 
-// ASSOCIATE-UJEMO ROUTER-A
 app.use(currentUserRouter);
-//
+// ASSOCIATE-UJEMO OSTALE ROUTER-E
+app.use(signInRouter);
+app.use(signOutRouter);
+app.use(signUpRouter);
 
 const PORT = 3000;
 app.listen(PORT, () => {
