@@ -7,31 +7,40 @@ SAMO STO SADA PAIS KOJI METHOD KORISTIS (ZA SVE OSTALE ROUTE-OVE KORISTI SE `POS
 - `code auth/src/routes/signin.ts`
 
 ```ts
+import { Router } from "express";
+
+const router = Router();
+
+router.post("/api/users/signin", (req, res) => {});
+
+export { router as signInRouter };
 
 ```
-- `code auth/src/routes/signin.ts`
+
+- `code auth/src/routes/signout.ts`
 
 ```ts
+import { Router } from "express";
 
+const router = Router();
+
+router.post("/api/users/signup", (req, res) => {});
+
+export { router as signUpRouter };
 ```
-- `code auth/src/routes/signin.ts`
+
+- `code auth/src/routes/signup.ts`
 
 ```ts
+import { Router } from "express";
+
+const router = Router();
+
+router.post("/api/users/signup", (req, res) => {});
+
+export { router as signUpRouter };
 
 ```
-- `code auth/src/routes/signin.ts`
-
-```ts
-
-```
-- `code auth/src/routes/signin.ts`
-
-```ts
-
-```
-
-
-
 
 
 
