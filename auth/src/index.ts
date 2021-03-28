@@ -1,16 +1,17 @@
 import express from "express";
 import { json } from "body-parser";
 
+// IMPORTUJEMO ROUTERA
+import { currentUserRouter } from "./routes/current-user";
+//
+
 const app = express();
 
 app.use(json());
 
-// EVO OVO JE RUTE KOJI TREBA DA RETURN-UJE SINGLE USER OBJECT
-app.get("/api/users/currentuser", (req, res) => {
-  // SAMO ZA SADA STMAPAM DUMMY RESPONSE
-
-  res.send("Hello there, my name is Stavros.");
-});
+// ASSOCIATE-UJEMO ROUTER-A
+app.use(currentUserRouter);
+//
 
 const PORT = 3000;
 app.listen(PORT, () => {
