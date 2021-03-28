@@ -25,6 +25,12 @@ ALI NEMA VEZE RADIM KAO I AUTOR WORKSHOOPA, ZATO INSTALIRAM OVAJ PAKET LOKLNO
 
 - `yarn add expreess-validator`
 
+NARAVNO SKAFFOLD WATCH-UJE OVO (AKO GA NISI UPALIO MOZES SADA)
+
+- `cd ..`
+
+- `skaffold dev`
+
 ***
 ***
 
