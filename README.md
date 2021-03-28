@@ -74,3 +74,14 @@ KORISTI EXPRESS-OV ERROR HANDLING MECHANISM (POZIVAJ next FUNKCIJU U ERROR HANDL
 
 <https://expressjs.com/en/guide/error-handling.html#error-handling>
 
+PISACU FUNKCIJE KOJE IZGLEDAJU SIMMILAR KAO OVAJ MIDDLEWARE
+
+```js
+function clientErrorHandler (err, req, res, next) {
+  if (req.xhr) {
+    res.status(500).send({ error: 'Something failed!' })
+  } else {
+    next(err)
+  }
+}
+```
