@@ -57,12 +57,105 @@ EXECUTE-UJEM SLEDECE, IN ROOT PROJECT DIRECTORY
 
 **MEDJUTIM DOSLO JE DO PROBLEMA**
 
-**MISLIM DA SU NEKI PROBLEMI NASTALI JER SAM POGRESIO VERZIJE API U CONFIGURATION FILE-OVIMA** (infra/k8s/ingress-srv.yaml) (PROMENIO SAM I service: SEKCIJU)
+IMAO SAM DAKLE NEKOLIKO GRESAKA, OD KOJIH SU NEKE IZAZVANE, JER SAM KORISTIO POGRESNU VERZIJU API U YAML CONFIG FILE-OVIMA
 
-**SKAFFOLD SAM DOWNGRADE-OVAO apiVersion   12**
+DOK JE DRUGA GRESKA NASTALA ZBOG AUTH-A
 
-**A DRUGI PROBLEMI SU NASTALI ZA AUTHENTICATION** (MORALO JE OVO `gcloud auth application-default login`)
+# DA RESIM PRVO AUTH ERROR ZA `gcloud`
 
-**DODAVANJE SKAFFOLD SA gcloud components install JE MOZDA BILO SUVISNO (MISLIIM DA SADA IMAS DUPLE VERZIJE ZA skaffold I ZA kubectl)**
+POTREBNO JE LOG-OVATI SE NA SLEDECI NACIN DA BI SE, FILL-OVALI DEFAULT CREDENTIALS
 
-UGLAVNOM PRORADILO JE A TI SUTRA OBJASNI GORNJE STVARI
+- `gcloud auth application-default login`
+
+DAKLE SKAFFOLD JE CREDENTIALS IZVLACIO IZ NEKOG DEFAULT FILE-A, A ONO PRIJAVLJIVANJE NA AGOOGLE CLOUD TO NIJE OMOGUCILO (`gcloud auth login`)
+
+OVO NOVO PRIJAVLJIVANJE JE KORISTILO [GOOGLE AUTH LIBRARY](https://www.npmjs.com/package/google-auth-library)
+
+# DA RESIM PROBLEM, KOJI SE TICAO UPOTREBE POGRESNOG `apiVersion`-A U YAML CONFIG FILE-OVIMA
+
+- `code infra/k8s/ingress-srv.yaml`
+
+OVDE SAM KORISTIO POGRESAN API; NIJE FUNKCIONISALO SA `networking.k8s.io/v1` VEC JE TREBALO DA REFERENCE-UJEM `networking.k8s.io/v1beta1` (DAKLE SA BETA NASTAVKOM)
+
+```yaml
+# EVO OVO MENJAM
+# apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-srv
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  rules:
+    - host: microticket.com
+      http:
+        paths:
+          - path: /api/users/?(.*)
+            pathType: Exact
+            backend:
+            # I ZATO MORAM MENJATI I SINTAKSU KOJA JE OVDE
+              # service:
+              #   name: auth-srv
+              #   port:
+              #     number: 3000
+            # MORAM OVAKO PISATI
+              serviceName: auth-srv
+              servicePort: 3000  
+```
+
+MOZDA JE OVO GORE BILO PROBLEMATICNO ZBOG VERZIJE KUBERNETES CLUSTERA, JER SECAM SE DA JE U REGIONU KOJI SAM IZABRAO BILE DOSTUPNE VERZIJE CLUSTERA, KOJE SU BILE LOWER OD ONE VERZIJE KOJU KORISTI minikube KADA SAM GA KORISTIO NA MOM RACUNARU; A MOZDA OVO I NEMA VEZE SA CLUSTEROM, SVE U SVEMU MORAO SAM DA DOWNGRADE-UJEM
+
+**SLEDECI ERROR SE ODNOSIO NA TO DA KORISTIM API VERZIJU ZA SKAFFOLD KOJA NIJE PREPOZNATA**
+
+ZATO SAM ODLUCIO I TO DA DOWNGRADE-UJEM, NA PRVU VERZIJU, KOJA JE ISPOD TRENUTNE
+
+- `code skaffold.yaml`
+
+```yaml
+# UMESTO OVO
+# apiVersion: skaffold/v2beta13
+# OVO
+apiVersion: skaffold/v2beta12
+kind: Config
+deploy:
+  kubectl:
+    manifests:
+      - ./infra/k8s/*
+build:
+  googleCloudBuild:
+    projectId: microticket
+  artifacts:
+    - image: us.gcr.io/microticket/auth
+      context: auth
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.{ts,js}'
+            dest: .
+
+```
+
+***
+***
+
+URADIO SAM OVO ALI MISLIM DA JE BILO SUVISNO, INSTALIRAO SAM SKAFFOLD KORISCENJEM `gcloud components install`
+
+SADA IMAM DUPLE VERZIJE skaffold-A, JEDNU NA MOM RACUNARU, A DRUGU KAO DEO GOOGLE CLOUD SDK-A NA MOM RACUNARU
+
+**ISTI JE SLUCAJ I SA `kubectl`**
+
+ZATO SADA MISLIM DA JA NISAM TREBAO INSTALIRATI NI skaffold ALI NI kubectl PREKO `gcloud components install`
+
+ZA SADA NEMAM S OVIM PROBLEMA, ALI NE ZNAM DA LI CU IH IMATI U BUDUCNOSTI
+
+SVE U SVEMU TREBALO BI DA SE UKLONE POMENUTE STVARI; ONE INSTALIRANE RANIJE, ILI OVE INSTALIRANE SADA SA POMENUTOM KOMANDOM
+
+***
+***
+
+# SADA SAM POKRENUO `skaffold dev` I SVE JE FUNKCIONISALO
+
+- `skaffold dev`
