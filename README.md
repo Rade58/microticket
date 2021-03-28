@@ -201,4 +201,27 @@ X-Powered-By: Express
 
 ZAISTA JE BILA USPESNA VALIDACIJA, JER EMAIL JE ZAISTA U NEVALIDNOM FORMATU
 
+SADA CU UNETI VALIDAN email, ALI CU password OSTAVITI EMPTY
 
+- `http http://microticket.com/api/users/signup email=adamfried@gmail.com password=""`
+
+OPET JE VALIDACIJA HANDLOVANA PERFECTLY
+
+```zsh
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+Content-Length: 81
+Content-Type: application/json; charset=utf-8
+Date: Sun, 28 Mar 2021 18:24:21 GMT
+ETag: W/"51-PWTxV/LbFOkifLsQcShM1Lef938"
+X-Powered-By: Express
+
+[
+    {
+        "location": "body",
+        "msg": "Pssword must be valid",
+        "param": "password",
+        "value": ""
+    }
+]
+```
