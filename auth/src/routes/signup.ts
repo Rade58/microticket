@@ -1,5 +1,4 @@
 import { Router, Request, Response } from "express";
-// UVOZIM  I validationResult
 import { body, validationResult } from "express-validator";
 
 const router = Router();
@@ -15,31 +14,19 @@ router.post(
       .withMessage("Pssword must be valid"),
   ],
   (req: Request, res: Response) => {
-    // GORE SI DEFINISAO VALIDATION STEP,
-    // NA REQUEST-U BI TA VALIDACIJA TREBALA DA APPEND-UJE
-    // INFO O TOME DA LI JE VALIDACIJA USPESNA ILI NE
-    // A SA FUNKCIJOM validationResult, KOJU HARANIM SA
-    // REQUESTOM JA USTVARI KORISTIM TAJ VALIDATION INFORMTIO
-
-    // OVO JE OBJEKAT , KOJI MIGHT HAVE ERORS OR NOT
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      // AKO NA OVOM OBJEKTU IMA EROR-A
-      // SALJEM ARRAY TIH ERROR-A
-      // SLACE SE SVI MOGUCI ERRORS AKO SU SE DESILI
-      // ZA ONE POGRESNO UNETE FIELD-OVE
-      // TO JE USTVARI ERROR IF JSON DATA
-      return res.status(400).send(errors.array());
+      throw new Error("Invalid email or password");
     }
 
-    // GORE SU ERRORS HANDLED, A OVDE SE ONDA MOZE CREIRATI
-    // USER, POSTO KAKO VIDIS OVO JE signup HANDLER
-
-    console.log("Creating a new user");
-
-    // TEMPORARY ZA SADA CU POSTATI email I password NAZAD
-    // DAKLE SAMO DA BI TESTIRAO OVAJ HANDLER
+    console.log("Creating a new user...");
+    // EVO RECIMO DA TI JE OVDE ZAKAZAO DATABASE
+    throw new Error("Error connecting to datbase");
+    // NARAVNO NECCES TI THROW-OVATI ERROR KAO SADA VEC
+    // CE SAMI PROCESS TO RADITI ,ALI LET'S ASUME
+    // THT YOUR DATABASE IS DOWN
+    //
 
     const { email, password } = req.body;
 
