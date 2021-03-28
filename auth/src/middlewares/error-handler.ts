@@ -15,4 +15,14 @@ export const errorHandler = (
   // JER KAKO SM VEC REKAO NE ZELIM DA MOJA BUDUCA REACT APLIKACIJA
   // BUDE U MUCI A FIGURE-UJE OUT HOW TO HANDLE-UJE 30 RAZLICITIH
   // KINDS OF ERRORS
+
+  // ZA SADA CU SAMO CONSOLE LOG-OVATI ERROR
+
+  console.log("Something went wrong", err);
+
+  res.status(400).send({
+    message: "Something went wrong",
+  });
+
+  // A U BUDUCNOSTI CU JA PREDUZETI ONE KORAKE KOJE SAM ZAPISAO
 };
