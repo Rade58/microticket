@@ -8,7 +8,7 @@ KLASE KOJE PRAVIM IMACE IMENA `RequestValidationError` I `DatabaseConnectionErro
 
 - `touch auth/src/errors/{request-validation-error,database-connection-error}.ts`
 
-JA CU IZGLEDA KORISTITI ValidationError INSTANCU, KOJA DOLAZI IZ `express-validator` PAKETA,
+JA CU IZGLEDA KORISTITI ValidationError TYPE, KOJA DOLAZI IZ `express-validator`, KAKO BI TYPE-OVAO ARGUMENTE KONSTRUKTORA
 
 - `code auth/src/errors/request-validation-error.ts`
 
