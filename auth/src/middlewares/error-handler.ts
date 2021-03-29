@@ -6,23 +6,12 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  // NAS POSAO OVDE JESTE DA POGLEDAMO Error KOJI SE OCCUR-OVAO
-  // ONDA MORAMO DA FORMATIRAMO INFORMATION INSIDE
-  // I DA RESPOND-UJEMO ONOME KO JE MAKE-OVAO REQUEST, KORISCENJEM
-  // res OBJEKTA
-  // NUMBER ONE GOAL INSIDE THIS ERROR HANDLER JESTE DA UVEK SEND-UJEMO BACK
-  // VEOMA CONSISTENT STRUCTURED MESSAGE
-  // JER KAKO SM VEC REKAO NE ZELIM DA MOJA BUDUCA REACT APLIKACIJA
-  // BUDE U MUCI A FIGURE-UJE OUT HOW TO HANDLE-UJE 30 RAZLICITIH
-  // KINDS OF ERRORS
-
-  // ZA SADA CU SAMO CONSOLE LOG-OVATI ERROR
-
   console.log("Something went wrong", err);
 
   res.status(400).send({
-    message: "Something went wrong",
+    // UMESTO OVOGA
+    // message: "Something went wrong",
+    // SALJEM OVO
+    message: err.message,
   });
-
-  // A U BUDUCNOSTI CU JA PREDUZETI ONE KORAKE KOJE SAM ZAPISAO
 };

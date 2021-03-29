@@ -265,3 +265,67 @@ DAKLE JA SADA IZ ERROR HANDLER MIDDLEWARE-A SEND-UJEM ERROR MASSAGE, KOJI JE PRE
 
 TREBALO BI DA URADIM BOLJI POSAO, UZIMAJUCI U OBZIR DA MI JE DOSTUPAN `err` PARMAETAR, ODNONO ERROR MESSAGE THROWN FROM THE HANDLER, ODNOSNO FROM THE MICROSERVICE ROUTE HANDLER
 
+`err` ODNOSNO Error INSTANCA IMAS SVOJ `message` PROPERTI NNA SEBI; I ZTO JE BOLJE DA TO SALJEM DO CLIENT-A
+
+- `code auth/src/middlewares/error-handler.ts`
+
+```ts
+import { Request, Response, NextFunction } from "express";
+
+export const errorHandler = (
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  console.log("Something went wrong", err);
+
+  res.status(400).send({
+    // UMESTO OVOGA
+    // message: "Something went wrong",
+    // SALJEM OVO
+    message: err.message,
+  });
+};
+
+```
+
+TO CE USER-U DATI VISE INFO O TOME STA JE WENT-OVALO WRONG
+
+## TESTIRACU I OVO GORE, TAKO STO CU PRVO POSLATI REQUEST SA INVALID email-OM; PA ZATIM I REQUEST, U KOJEM CE NAS ZAMISLJENI DATBASE FAIL-OVATI
+
+- `http POST http://microticket.com/api/users/signup email=someone password=Alien8`
+
+SADA SI SEND-OVAO POTPUNO DRUGI MESSAGE
+
+```zsh
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+Content-Length: 39
+Content-Type: application/json; charset=utf-8
+Date: Mon, 29 Mar 2021 12:57:10 GMT
+ETag: W/"27-Mm37A2ls1bgL0/D8e3MSpDLbow8"
+X-Powered-By: Express
+
+{
+    "message": "Invalid email or password"
+}
+```
+
+- `http POST http://microticket.com/api/users/signup email=someone@mail.com password=Alien8`
+
+I OVDE IMAS DRUGI MESSAGE
+
+```zsh
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+Content-Length: 41
+Content-Type: application/json; charset=utf-8
+Date: Mon, 29 Mar 2021 12:58:47 GMT
+ETag: W/"29-KI9TekVi0Fin/qEGBhJCJyJOKXA"
+X-Powered-By: Express
+
+{
+    "message": "Error connecting to datbase"
+}
+```
