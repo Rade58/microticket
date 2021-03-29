@@ -17,16 +17,24 @@ router.post(
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      throw new Error("Invalid email or password");
+      // EVO UMESTO DA THROW-UJE SAMO ERROR
+      // throw new Error("Invalid email or password");
+      // U JAVASCRIPT LAND-U BI JA MOGO DA URADIM OVAKO NESTO
+
+      // PRAVIM ERROR
+      const error = new Error("Invalid email or password");
+      // SADA DODAJEM NOVI PROPERTI NA TAJ ERROR
+      // I ZADAJEM DA VALUE BUDE ONAJ ARRAY OF WELL STRUCTURED
+      // JER  TAKAV DATASET PRUZA KORISCENJE express-validator
+      error.reasons = errors.array();
+
+      // I SADA THROW-UJEM DO EROOR HANDLING MIDDLEWARE-A
+      throw error;
     }
 
     console.log("Creating a new user...");
-    // EVO RECIMO DA TI JE OVDE ZAKAZAO DATABASE
+
     throw new Error("Error connecting to datbase");
-    // NARAVNO NECCES TI THROW-OVATI ERROR KAO SADA VEC
-    // CE SAMI PROCESS TO RADITI ,ALI LET'S ASUME
-    // THT YOUR DATABASE IS DOWN
-    //
 
     const { email, password } = req.body;
 
