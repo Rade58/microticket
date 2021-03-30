@@ -116,5 +116,47 @@ export { router as signUpRouter };
 - `code auth/src/middlewares/error-handler.ts`
 
 ```ts
+import { Request, Response, NextFunction } from "express";
+// UVOZIM ERROR KLASE
+import { DatabseConnectionError } from "../errors/database-connection-error";
+import { RequestValidationError } from "../errors/request-validation-error";
+//
+
+export const errorHandler = (
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  // SADA RADIM TYPE CHECKS
+  if (err instanceof RequestValidationError) {
+    console.log("handling this error as request validation error");
+    // ZA SADA NISTA NE STAVLJAM OVDE
+    return res.status(400).send({});
+  }
+
+  if (err instanceof DatabseConnectionError) {
+    console.log("handling this error as datbase connection eror");
+
+    // ZA SADA NISTA NE STAVLJAM OVDE
+    return res.status(400).send({});
+  }
+
+  res.status(400).send({
+    message: err.message,
+  });
+};
 
 ```
+
+TI OVO SADA MOZES I DA TESTIRAS, ODNOSNO MOZES DA POKTRENES SKAFFOLD AKO VEC TO NISI URADIO, I ONDA MOZES DA SALJES REQUESTS I VIDIS STA CE SE STAMPATI U KONZOLI SKAFFOLD-A
+
+SALJES JEDAN OK REQUEST (KAKO BI SE DESIO EROOR VEZAN ZA DATBASE), I DRUGI REQUEST VEZAN ZA POGRESNU VALIDACIJU (POGRESAN FORMAT ILI ODSUSTVO ZA email ILI password DIELD-OVA)
+
+- `http POST http://microticket.com/api/users/signup email=someone@mail.com password=Alien8`
+
+U TERMINALU SKAFFOLDA VIDIM DA SE STMAPALO: *"handling this error as datbase connection eror"*
+
+- `http POST http://microticket.com/api/users/signup email=someone password=Alien8`
+
+U TERMINALU SKAFFOLDA VIDIM DA SE STMAPALO: *"handling this error as request validation error"*
