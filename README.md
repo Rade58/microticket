@@ -218,8 +218,14 @@ export const errorHandler = (
     // --------------------------
   }
 
+  // I OVAJ OVDE DEO MORA DA SADRZI OBJEKAT U IATOM FORMATU
+
   res.status(400).send({
-    message: err.message,
+    errors: [
+      {
+        message: "Something went wrong!",
+      },
+    ],
   });
 };
 
