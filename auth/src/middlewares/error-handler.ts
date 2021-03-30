@@ -23,6 +23,7 @@ export const errorHandler = (
     }); */
 
     // OVO
+    console.log("error validation");
     return res.status(err.statusCode).send(err.serializeError());
   }
 
@@ -32,6 +33,7 @@ export const errorHandler = (
       errors: [{ message: err.reason }],
     }); */
     // OVO
+    console.log("error datbase");
     return res.status(err.statusCode).send(err.serializeError());
   }
 

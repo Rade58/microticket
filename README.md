@@ -74,7 +74,7 @@ export class RequestValidationError extends Error {
       return { message: msg, field: param };
     });
 
-    return formattedErrors;
+    return { errors: formattedErrors };
   }
 }
 
