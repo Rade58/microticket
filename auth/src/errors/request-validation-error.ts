@@ -1,7 +1,7 @@
 import { ValidationError } from "express-validator";
 
 export class RequestValidationError extends Error {
-  private errors: ValidationError[];
+  public errors: ValidationError[];
 
   constructor(errors: ValidationError[]) {
     super();
@@ -12,8 +12,10 @@ export class RequestValidationError extends Error {
 
     // ZADAO JE DA PROTOTIP OVE KLASE KOJU BUILD-UJEM UPRAVO Error
     // NE ZNAM ZASTO JE OVO MORALO, ALI ON KAZE DA JE TO
-    // SAMO ZATO STO SE extend-uje built in class
+    // SAMO ZATO STO SE extend-uje BUILT IN CLASS
     Object.setPrototypeOf(this, RequestValidationError.prototype);
     // NIJE MI JASNO OVO GORE JER JA VIDIM CIRCULAR REFERENCE
+    // MEDJUTIM AUTOR WORKSHOPA JE REKAO DA JE TO SAM OZATO STO
+    // EXTEND-UJEM BUILT IN CLASS
   }
 }
