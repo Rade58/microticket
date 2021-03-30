@@ -21,23 +21,12 @@ router.post(
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      // UMESTO SVEGA OVOGA
-      /* const error = new Error("Invalid email or password");
-      error.reasons = errors.array();
-      throw error; */
-
-      // RADIM OVO
       throw new RequestValidationError(errors.array());
-      //
     }
 
     console.log("Creating a new user...");
 
-    // UMESTO OVOGA
-    // throw new Error("Error connecting to datbase");
-    // RADIM OVO
     throw new DatabseConnectionError();
-    //
 
     const { email, password } = req.body;
 
