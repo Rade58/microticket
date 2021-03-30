@@ -160,3 +160,6 @@ U TERMINALU SKAFFOLDA VIDIM DA SE STMAPALO: *"handling this error as datbase con
 - `http POST http://microticket.com/api/users/signup email=someone password=Alien8`
 
 U TERMINALU SKAFFOLDA VIDIM DA SE STMAPALO: *"handling this error as request validation error"*
+
+**OSTAJE TI SADA DA DEFINISES TO DA TI RESPONSE POSLAT CLINET-U BUDE CONSISTENT, DA TO BUDE UVEK OBJEKAT SA NIKIM CONSISTENT PROPERTIJIMA**
+
