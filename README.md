@@ -52,3 +52,14 @@ export class DatabseConnectionError extends Error {
 }
 
 ```
+
+## SADA CU DA THROW-UJEM INSTANCE GORNJIH ERROR KLASA INSIDE OUR EXPPRESS HADLER
+
+- `code auth/src/routes/signup.ts`
+
+```ts
+
+```
+
+
+

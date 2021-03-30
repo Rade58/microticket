@@ -1,5 +1,9 @@
 import { Router, Request, Response } from "express";
 import { body, validationResult } from "express-validator";
+// UVOZIM POMENUTE KLASE
+import { DatabseConnectionError } from "../errors/database-connection-error";
+import { RequestValidationError } from "../errors/request-validation-error";
+//
 
 const router = Router();
 
@@ -17,24 +21,23 @@ router.post(
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      // EVO UMESTO DA THROW-UJE SAMO ERROR
-      // throw new Error("Invalid email or password");
-      // U JAVASCRIPT LAND-U BI JA MOGO DA URADIM OVAKO NESTO
-
-      // PRAVIM ERROR
-      const error = new Error("Invalid email or password");
-      // SADA DODAJEM NOVI PROPERTI NA TAJ ERROR
-      // I ZADAJEM DA VALUE BUDE ONAJ ARRAY OF WELL STRUCTURED
-      // JER  TAKAV DATASET PRUZA KORISCENJE express-validator
+      // UMESTO SVEGA OVOGA
+      /* const error = new Error("Invalid email or password");
       error.reasons = errors.array();
+      throw error; */
 
-      // I SADA THROW-UJEM DO EROOR HANDLING MIDDLEWARE-A
-      throw error;
+      // RADIM OVO
+      throw new RequestValidationError(errors.array());
+      //
     }
 
     console.log("Creating a new user...");
 
-    throw new Error("Error connecting to datbase");
+    // UMESTO OVOGA
+    // throw new Error("Error connecting to datbase");
+    // RADIM OVO
+    throw new DatabseConnectionError();
+    //
 
     const { email, password } = req.body;
 
