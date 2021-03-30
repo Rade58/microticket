@@ -35,3 +35,20 @@ export class RequestValidationError extends Error {
   }
 }
 ```
+
+SADA CU DA KREIRAM I DRUGU ERROR KLASU
+
+- `code auth/src/errors/database-connection-error.ts`
+
+```ts
+export class DatabseConnectionError extends Error {
+  public error = "Error connecting to the datbase";
+
+  constructor() {
+    super();
+
+    Object.setPrototypeOf(this, DatabseConnectionError.prototype);
+  }
+}
+
+```
