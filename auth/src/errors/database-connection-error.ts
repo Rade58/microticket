@@ -1,5 +1,5 @@
 export class DatabseConnectionError extends Error {
-  public reason = "Error connecting to the datbase";
+  public reason = "Error connecting to the database";
 
   constructor() {
     super();

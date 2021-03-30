@@ -151,7 +151,7 @@ export const errorHandler = (
 
 TI OVO SADA MOZES I DA TESTIRAS, ODNOSNO MOZES DA POKTRENES SKAFFOLD AKO VEC TO NISI URADIO, I ONDA MOZES DA SALJES REQUESTS I VIDIS STA CE SE STAMPATI U KONZOLI SKAFFOLD-A
 
-SALJES JEDAN OK REQUEST (KAKO BI SE DESIO EROOR VEZAN ZA DATBASE), I DRUGI REQUEST VEZAN ZA POGRESNU VALIDACIJU (POGRESAN FORMAT ILI ODSUSTVO ZA email ILI password DIELD-OVA)
+SALJES JEDAN OK REQUEST (KAKO BI SE DESIO EROOR VEZAN ZA datbase), I DRUGI REQUEST VEZAN ZA POGRESNU VALIDACIJU (POGRESAN FORMAT ILI ODSUSTVO ZA email ILI password DIELD-OVA)
 
 - `http POST http://microticket.com/api/users/signup email=someone@mail.com password=Alien8`
 
@@ -211,7 +211,7 @@ export const errorHandler = (
   if (err instanceof DatabseConnectionError) {
     // DODAO OVO
     // KORISTIM 500 JER JE REC O ERRR-U, KOJI UKAZUJE DA
-    // NESTO NIJE U RADU SA NASIM SERVEROM (ODNSNO SA DATBASE-OM)
+    // NESTO NIJE U RADU SA NASIM SERVEROM (ODNSNO SA datbase-OM)
     res.status(500).send({
       errors: [{ message: err.reason }],
     });
@@ -225,4 +225,49 @@ export const errorHandler = (
 
 ```
 
-AKO IMAS DILEMU KOJ ISTATUS CODE DA STVIS, GOOGLUJ IH I VIDI KOJI TI NAJVISE ODGOVARA (ZA FAILED DATBASE MOZE I 503)
+AKO IMAS DILEMU KOJ ISTATUS CODE DA STVIS, GOOGLUJ IH I VIDI KOJI TI NAJVISE ODGOVARA (ZA FAILED datbase MOZE I 503)
+
+## SADA CU MALO DA TESTIRAM SA HTTPIE
+
+- `http POST http://microticket.com/api/users/signup email=stavros@mail.com password=CoolAddam2`
+
+```zsh
+HTTP/1.1 500 Internal Server Error
+Connection: keep-alive
+Content-Length: 58
+Content-Type: application/json; charset=utf-8
+Date: Tue, 30 Mar 2021 18:08:44 GMT
+ETag: W/"3a-cFvapz+P4dguu9GkcH0cHDw3AnY"
+X-Powered-By: Express
+
+{
+    "errors": [
+        {
+            "message": "Error connecting to the database"
+        }
+    ]
+}
+
+
+```
+
+- `http POST http://microticket.com/api/users/signup email=nick.dev password=CoolAddam2`
+
+```zsh
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+Content-Length: 63
+Content-Type: application/json; charset=utf-8
+Date: Tue, 30 Mar 2021 18:09:43 GMT
+ETag: W/"3f-Ea3sCFIemsWJbk0K4sNIgJ/rqdA"
+X-Powered-By: Express
+
+{
+    "errors": [
+        {
+            "field": "email",
+            "message": "Email must be valid!"
+        }
+    ]
+}
+```
