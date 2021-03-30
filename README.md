@@ -42,7 +42,7 @@ SADA CU DA KREIRAM I DRUGU ERROR KLASU
 
 ```ts
 export class DatabseConnectionError extends Error {
-  public error = "Error connecting to the datbase";
+  public reason = "Error connecting to the datbase";
 
   constructor() {
     super();
@@ -213,7 +213,7 @@ export const errorHandler = (
     // KORISTIM 500 JER JE REC O ERRR-U, KOJI UKAZUJE DA
     // NESTO NIJE U RADU SA NASIM SERVEROM (ODNSNO SA DATBASE-OM)
     res.status(500).send({
-      errors: [{ message: err.message }],
+      errors: [{ message: err.reason }],
     });
     // --------------------------
   }
