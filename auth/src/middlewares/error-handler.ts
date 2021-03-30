@@ -10,16 +10,27 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  // SADA RADIM TYPE CHECKS
   if (err instanceof RequestValidationError) {
-    console.log("handling this error as request validation error");
-    return res.status(400).send({});
+    // DODAO OVO
+    const formattedErrors = err.errors.map(({ msg, param }) => {
+      return {
+        message: msg,
+        field: param,
+      };
+    });
+
+    return res.status(400).send({
+      errors: formattedErrors,
+    });
+    //  ---------------------------
   }
 
   if (err instanceof DatabseConnectionError) {
-    console.log("handling this error as datbase connection eror");
-
-    return res.status(400).send({});
+    // DODAO OVO
+    res.status(400).send({
+      errors: [{ message: err.message }],
+    });
+    // --------------------------
   }
 
   res.status(400).send({
