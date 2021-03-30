@@ -175,3 +175,11 @@ interface {
   }[]
 }
 ```
+
+SADA CEMO DA FORMIRAMO RESPONSE-OVE
+
+- `code auth/src/middlewares/error-handler.ts`
+
+```ts
+
+```
