@@ -9,7 +9,9 @@ export const errorHandler = (
   next: NextFunction
 ) => {
   if (err instanceof RequestValidationError) {
-    const formattedErrors = err.errors.map(({ msg, param }) => {
+    // UMESTO SVEGA OVOGA
+
+    /* const formattedErrors = err.errors.map(({ msg, param }) => {
       return {
         message: msg,
         field: param,
@@ -18,14 +20,19 @@ export const errorHandler = (
 
     return res.status(400).send({
       errors: formattedErrors,
-    });
+    }); */
+
+    // OVO
+    return res.status(err.statusCode).send(err.serializeError());
   }
 
   if (err instanceof DatabseConnectionError) {
-    // DODAO OVO
-    res.status(500).send({
+    // UMESTO OVOGA
+    /* res.status(500).send({
       errors: [{ message: err.reason }],
-    });
+    }); */
+    // OVO
+    return res.status(err.statusCode).send(err.serializeError());
   }
 
   res.status(400).send({
