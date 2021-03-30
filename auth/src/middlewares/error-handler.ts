@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { DatabseConnectionError } from "../errors/database-connection-error";
-import { RequestValidationError } from "../errors/request-validation-error";
+/* import { DatabseConnectionError } from "../errors/database-connection-error";
+import { RequestValidationError } from "../errors/request-validation-error"; */
+// OVA DVA GORNJA ERROR-A MI NISU NI POTREBNA ZA TO SAM IH COMMENT-OVAO OUT
+// A OVO SAM UVEZAO
+import { CustomError } from "../errors/custom-error";
 
 export const errorHandler = (
   err: Error,
@@ -8,34 +11,21 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  if (err instanceof RequestValidationError) {
-    // UMESTO SVEGA OVOGA
+  // UMESTO DVE USLOVNE IZJAVE
 
-    /* const formattedErrors = err.errors.map(({ msg, param }) => {
-      return {
-        message: msg,
-        field: param,
-      };
-    });
-
-    return res.status(400).send({
-      errors: formattedErrors,
-    }); */
-
-    // OVO
-    console.log("error validation");
-    return res.status(err.statusCode).send(err.serializeError());
+  /* if (err instanceof RequestValidationError) {
+    return res.status(err.statusCode).send(err.serializeErrors());
   }
 
   if (err instanceof DatabseConnectionError) {
-    // UMESTO OVOGA
-    /* res.status(500).send({
-      errors: [{ message: err.reason }],
-    }); */
-    // OVO
-    console.log("error datbase");
-    return res.status(err.statusCode).send(err.serializeError());
+    return res.status(err.statusCode).send(err.serializeErrors());
+  } */
+
+  // IMAM SAMO JEDNU
+  if (err instanceof CustomError) {
+    res.status(err.statusCode).send(err.serializeErrors());
   }
+  //
 
   res.status(400).send({
     errors: [
