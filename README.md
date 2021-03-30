@@ -210,7 +210,9 @@ export const errorHandler = (
 
   if (err instanceof DatabseConnectionError) {
     // DODAO OVO
-    res.status(400).send({
+    // KORISTIM 500 JER JE REC O ERRR-U, KOJI UKAZUJE DA
+    // NESTO NIJE U RADU SA NASIM SERVEROM (ODNSNO SA DATBASE-OM)
+    res.status(500).send({
       errors: [{ message: err.message }],
     });
     // --------------------------
@@ -222,3 +224,5 @@ export const errorHandler = (
 };
 
 ```
+
+AKO IMAS DILEMU KOJ ISTATUS CODE DA STVIS, GOOGLUJ IH I VIDI KOJI TI NAJVISE ODGOVARA (ZA FAILED DATBASE MOZE I 503)

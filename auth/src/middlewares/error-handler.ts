@@ -27,7 +27,7 @@ export const errorHandler = (
 
   if (err instanceof DatabseConnectionError) {
     // DODAO OVO
-    res.status(400).send({
+    res.status(500).send({
       errors: [{ message: err.message }],
     });
     // --------------------------
