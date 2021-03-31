@@ -144,3 +144,46 @@ export const errorHandler = (
 ```
 
 DAKLE OVAKAV PRINCIP ME SPASAVA OD POSTOJANJA MNOSTA IF STATMENTS-A KOJE BIH MORAO DA PRAVIM KAKO BI SEND-OVAO RESPONSE ZA SVAKI TIP ERROR-A PO NA OSOB
+
+## DA TESTIRAM
+
+- `http POST http://microticket.com/api/users/signup email="stavros@mail.com" password="SomethingSea2"`
+
+```zsh
+HTTP/1.1 500 Internal Server Error
+Connection: keep-alive
+Content-Length: 59
+Content-Type: application/json; charset=utf-8
+Date: Wed, 31 Mar 2021 16:40:20 GMT
+ETag: W/"3b-yr3OuAnPQ7xOD/diGb4RbVds4Ug"
+X-Powered-By: Express
+
+{
+    "errors": [
+        {
+            "message": "Error connecting to the database"
+        }
+    ]
+}
+```
+
+- `http POST http://microticket.com/api/users/signup email="stavros.com" password="SomethingSea2"`
+
+```zsh
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+Content-Length: 63
+Content-Type: application/json; charset=utf-8
+Date: Wed, 31 Mar 2021 16:40:30 GMT
+ETag: W/"3f-Ea3sCFIemsWJbk0K4sNIgJ/rqdA"
+X-Powered-By: Express
+
+{
+    "errors": [
+        {
+            "field": "email",
+            "message": "Email must be valid!"
+        }
+    ]
+}
+```
