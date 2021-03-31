@@ -41,10 +41,31 @@ app.listen(PORT, () => {
 });
 ```
 
-PREDPOSTAVLJAM DA CE SE OVDE DESITI PROMISE BASED ERROR; **USTVARI NECE SE DOGODITI ERROR VEC WARNING**
+PREDPOSTAVLJAM DA CE SE OVDE DESITI PROMISE BASED ERROR
 
-TO JE ONAJ WARNING `UnhandledPromiseRejection`
+TO JE ONAJ ERROR `UnhandledPromiseRejectionWarning`
 
 **EVO AKO NISI PKRENUO skaffold, POKRENI GA `skaffold dev`**
 
 I POKUSAJ DA POSALJES REQUEST KA POMENUTOM ENDPOINT-U
+
+- `http http://microticket.com/api/users/randomthing`
+
+OVAJ REQUEST CE HANGOVATI (I NA KRAJU CE BITI `http: error: Request timed out (30s).`)
+
+**ALI ONO STO CES VIDETI U SKAFFOLD-OVOM TERMINALU (AKO SI ZABORAVIO TAMO CE BITI I LOGS IS POD-A U KOJEM RUNN-UJE TVOJ NODEJS APP, A U OVOM SLUCAJU TO CE BITI LOGS, ENDPOINT-A KOJEG SAM MALOCAS HITT-OVAO)**
+
+```zsh
+[auth] (node:25) UnhandledPromiseRejectionWarning: Error: Route Not Found!
+[auth]     at NotFoundError.CustomError (/app/src/errors/custom-error.ts:5:5)
+[auth]     at new NotFoundError (/app/src/errors/not-found-error.ts:7:5)
+[auth]     at /app/src/index.ts:22:9
+[auth]     at step (/app/src/index.ts:33:23)
+[auth]     at Object.next (/app/src/index.ts:14:53)
+[auth]     at /app/src/index.ts:8:71
+[auth]     at new Promise (<anonymous>)
+[auth]     at __awaiter (/app/src/index.ts:4:12)
+[auth]     at /app/src/index.ts:21:29
+[auth]     at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+
+```
