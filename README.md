@@ -136,3 +136,78 @@ X-Powered-By: Express
     ]
 }
 ```
+
+# MEDJUTIM AUTOR WORKSHOPA MRZI DA KORISTI `next` I ZATO ZELI DA MI POKAZE WORKOROUND, DO KOJEG CU DOCI KADA INSTALIRAM I UPOTREBIM JEDAM MODUL
+
+- `cd auth`
+
+- `yarn add express-async-errors`
+
+**MEDJUTIM OVO JE ZA MENE POTPUNO NEINTUITIVNO, ALI HAJDE DA GA ISPROBAM**
+
+- `code auth/src/index.ts`
+
+```ts
+import express from "express";
+// EVO UVOZIM PAKET NA OVAKAV NACIN
+import "express-async-errors";
+// 
+import { json } from "body-parser";
+
+import { currentUserRouter } from "./routes/current-user";
+import { signInRouter } from "./routes/signin";
+import { signOutRouter } from "./routes/signout";
+import { signUpRouter } from "./routes/signup";
+import { errorHandler } from "./middlewares/error-handler";
+import { NotFoundError } from "./errors/not-found-error";
+
+const app = express();
+
+app.use(json());
+
+app.use(currentUserRouter);
+app.use(signInRouter);
+app.use(signOutRouter);
+app.use(signUpRouter);
+
+
+app.all("*", async (req, res, next) => {
+  // I SAM OZBOG KORISCENJA GORNJEG PAKETA
+  // JA SMEM THROW-OVATI
+  throw new NotFoundError();
+});
+
+// ODNOSNO ERROR CE BITI IPAK PASSED DO ERROR HAADLING 
+// MIDDLEWARE-A
+app.use(errorHandler);
+
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`listening on  http://localhost:${PORT} INSIDE auth POD`);
+});
+
+```
+
+STO MOGU SADA I TESTIRATI
+
+- `http http://microticket.com/api/users/randomthing`
+
+```zsh
+HTTP/1.1 404 Not Found
+Connection: keep-alive
+Content-Length: 37
+Content-Type: application/json; charset=utf-8
+Date: Wed, 31 Mar 2021 20:11:58 GMT
+ETag: W/"25-lSK/pgFV55boVBJ/uMYaXuY72jg"
+X-Powered-By: Express
+
+{
+    "errors": [
+        {
+            "message": "Not Found!"
+        }
+    ]
+}
+```
+
+KAO STO VIDIS FUNKCIONISE
