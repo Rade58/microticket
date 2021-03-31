@@ -73,6 +73,27 @@ app.listen(PORT, () => {
 
 ```
 
+## TESTIRACU OVO TAKO STO CU POSLATI REQUEEST, KA NEKOM RANDOM ROUTE-U, KOJI NIJE JADAN OD ONIH WELL DEFINED ONES
 
+**SAMO VODI RACUNA DA CE JEDINO ENDPOINT BITI HITTED, AKO POCINJE SA `/api/users/...`** (ZATO STO SI U NGINX ,ODNOSNO U INGRESS KONFIGURACIJI, SO FR AM OTO PODESIO)
 
+- `http http://microticket.com/api/users/whatever`
+
+```zsh
+HTTP/1.1 404 Not Found
+Connection: keep-alive
+Content-Length: 37
+Content-Type: application/json; charset=utf-8
+Date: Wed, 31 Mar 2021 17:52:54 GMT
+ETag: W/"25-lSK/pgFV55boVBJ/uMYaXuY72jg"
+X-Powered-By: Express
+
+{
+    "errors": [
+        {
+            "message": "Not Found!"
+        }
+    ]
+}
+```
 

@@ -24,6 +24,7 @@ app.use(signUpRouter);
 // GORNJIM ROUTERIMA
 app.all("*", (req, res) => {
   // SADA CU SAM OTHROW-OVATI MON NOVI CUSTOM ERROR
+  console.log("not founded");
   throw new NotFoundError();
 });
 //
