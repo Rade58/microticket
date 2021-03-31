@@ -1,9 +1,10 @@
 import { Router, Request, Response } from "express";
+// EVO UVEZAO SAM PAKET
+import "express-async-errors";
+//
 import { body, validationResult } from "express-validator";
-// UVOZIM POMENUTE KLASE
 import { DatabseConnectionError } from "../errors/database-connection-error";
 import { RequestValidationError } from "../errors/request-validation-error";
-//
 
 const router = Router();
 
@@ -17,10 +18,14 @@ router.post(
       .isLength({ max: 20, min: 4 })
       .withMessage("Pssword must be valid"),
   ],
-  (req: Request, res: Response) => {
+  // I OVO MOZE BITI async
+  async (req: Request, res: Response) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
+      // I SMEM DA THROW-UJEM ERRORS, I ZNAM DA CE ONE
+      // ZAVRSITI INSIDE ERROR HANDLING MIDDLEWARE, BAS
+      // KAO DA SAM IH PASS-OVAO KROZ next
       throw new RequestValidationError(errors.array());
     }
 

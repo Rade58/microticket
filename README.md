@@ -215,3 +215,94 @@ KAO STO VIDIS FUNKCIONISE
 ## DAKLE SADA TI MOZES DA IDES I U DRUGE HANDLERE I KOSRISTIS async/await; I SMECES DA THROW-UJES
 
 SAMO MAKE SURE TO IMPORT, POMENUTI PAKET (`express-async-errors`), ODMAH POSLLE express UVOZA
+
+- `code auth/src/routes/signup.ts`
+
+```ts
+import { Router, Request, Response } from "express";
+// EVO UVEZAO SAM PAKET
+import "express-async-errors";
+//
+import { body, validationResult } from "express-validator";
+import { DatabseConnectionError } from "../errors/database-connection-error";
+import { RequestValidationError } from "../errors/request-validation-error";
+
+const router = Router();
+
+router.post(
+  "/api/users/signup",
+  [
+    body("email").isEmail().withMessage("Email must be valid!"),
+
+    body("password")
+      .trim()
+      .isLength({ max: 20, min: 4 })
+      .withMessage("Pssword must be valid"),
+  ],
+  // I OVO MOZE BITI async
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      // I SMEM DA THROW-UJEM ERRORS, I ZNAM DA CE ONE
+      // ZAVRSITI INSIDE ERROR HANDLING MIDDLEWARE, BAS
+      // KAO DA SAM IH PASS-OVAO KROZ next
+      throw new RequestValidationError(errors.array());
+    }
+
+    console.log("Creating a new user...");
+
+    throw new DatabseConnectionError();
+
+    const { email, password } = req.body;
+
+    res.send({ email, password });
+  }
+);
+
+export { router as signUpRouter };
+
+```
+
+**DA TESTIRAM I OVO**
+
+- `http POST http://microticket.com/api/users/signup email="stavros@mail.com" password="SomeCool1"`
+
+```zsh
+HTTP/1.1 500 Internal Server Error
+Connection: keep-alive
+Content-Length: 59
+Content-Type: application/json; charset=utf-8
+Date: Wed, 31 Mar 2021 20:40:39 GMT
+ETag: W/"3b-yr3OuAnPQ7xOD/diGb4RbVds4Ug"
+X-Powered-By: Express
+
+{
+    "errors": [
+        {
+            "message": "Error connecting to the database"
+        }
+    ]
+}
+```
+
+- ` http POST http://microticket.com/api/users/signup email="stavros" password="SomeCool1"`
+
+```zsh
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+Content-Length: 63
+Content-Type: application/json; charset=utf-8
+Date: Wed, 31 Mar 2021 20:40:49 GMT
+ETag: W/"3f-Ea3sCFIemsWJbk0K4sNIgJ/rqdA"
+X-Powered-By: Express
+
+{
+    "errors": [
+        {
+            "field": "email",
+            "message": "Email must be valid!"
+        }
+    ]
+}
+```
