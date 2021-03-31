@@ -8,7 +8,7 @@ build:
   googleCloudBuild:
     projectId: microticket
   artifacts:
-    - image: us.gcr.io/microticket/auth
+    - image: eu.gcr.io/microticket/auth
       context: auth
       docker:
         dockerfile: Dockerfile

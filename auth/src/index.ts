@@ -17,11 +17,15 @@ app.use(signInRouter);
 app.use(signOutRouter);
 app.use(signUpRouter);
 
-// EVO OVO JE SADA ASYNC FUNKCIJA
-app.all("*", async (req, res) => {
-  throw new NotFoundError();
+// OVO JE I DALJE async ALI SADA KORISTIM I next
+app.all("*", async (req, res, next) => {
+  // DAKLE OVDE MI NECEMO THROW-OVATI ERROR
+  // throw new NotFoundError();
+  // UMESTO TOGA CEMO DA POSALJEMO ERROR SA next
+  next(new NotFoundError());
 });
 
+// GORNJE ERROR CE DAKLE SADA BITI PASSED INTO ERROR HANDLINF MIDDLEWARE
 app.use(errorHandler);
 
 const PORT = 3000;

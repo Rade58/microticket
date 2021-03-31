@@ -73,3 +73,66 @@ OVAJ REQUEST CE HANGOVATI (I NA KRAJU CE BITI `http: error: Request timed out (3
 # DAKLE, STO SE TICE EXPRESS-A, JASNO TI JE DA THROWN ERROR U ASYNC REQUEST HANDLERU, NECE SIGURNO BITI PASSED INTO SOME MIDDLEWARE, I U MOM SLUCAJU NIJE STIGAO DO MOG ERROR HANDLING MIDDLEWARE-A
 
 TO JE ZATO STO ASYNC FUNKCIJA RETURN-UJE `Promise`
+
+# MEDJUTIM AKO ZELIS DA TAJ ERROR STIGNE GDE ZELIS, MORAS G EKSPLICITNO POSLATI, KORISCENJEM `next` FUNKCIJE
+
+- `code auth/src/index.ts`
+
+```ts
+import express from "express";
+import { json } from "body-parser";
+
+import { currentUserRouter } from "./routes/current-user";
+import { signInRouter } from "./routes/signin";
+import { signOutRouter } from "./routes/signout";
+import { signUpRouter } from "./routes/signup";
+import { errorHandler } from "./middlewares/error-handler";
+import { NotFoundError } from "./errors/not-found-error";
+
+const app = express();
+
+app.use(json());
+
+app.use(currentUserRouter);
+app.use(signInRouter);
+app.use(signOutRouter);
+app.use(signUpRouter);
+
+// OVO JE I DALJE async ALI SADA KORISTIM I next
+app.all("*", async (req, res, next) => {
+  // DAKLE OVDE MI NECEMO THROW-OVATI ERROR
+  // throw new NotFoundError();
+  // UMESTO TOGA CEMO DA POSALJEMO ERROR SA next
+  next(new NotFoundError());
+});
+
+// GORNJE ERROR CE DAKLE SADA BITI PASSED INTO ERROR HANDLINF MIDDLEWARE
+app.use(errorHandler);
+
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`listening on  http://localhost:${PORT} INSIDE auth POD`);
+});
+```
+
+**MOZES SADA OVO DA TESTIRAS**
+
+- `http http://microticket.com/api/users/randomthing`
+
+```zsh
+HTTP/1.1 404 Not Found
+Connection: keep-alive
+Content-Length: 37
+Content-Type: application/json; charset=utf-8
+Date: Wed, 31 Mar 2021 20:11:58 GMT
+ETag: W/"25-lSK/pgFV55boVBJ/uMYaXuY72jg"
+X-Powered-By: Express
+
+{
+    "errors": [
+        {
+            "message": "Not Found!"
+        }
+    ]
+}
+```
