@@ -14,5 +14,5 @@ build:
         dockerfile: Dockerfile
       sync:
         manual:
-          - src: './auth/src/**/*.{ts,js}'
+          - src: 'auth/src/**/*.{ts,js}'
             dest: .
