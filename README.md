@@ -40,3 +40,11 @@ app.listen(PORT, () => {
   console.log(`listening on  http://localhost:${PORT} INSIDE auth POD`);
 });
 ```
+
+PREDPOSTAVLJAM DA CE SE OVDE DESITI PROMISE BASED ERROR; **USTVARI NECE SE DOGODITI ERROR VEC WARNING**
+
+TO JE ONAJ WARNING `UnhandledPromiseRejection`
+
+**EVO AKO NISI PKRENUO skaffold, POKRENI GA `skaffold dev`**
+
+I POKUSAJ DA POSALJES REQUEST KA POMENUTOM ENDPOINT-U
