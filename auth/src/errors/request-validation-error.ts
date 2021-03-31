@@ -8,7 +8,7 @@ export class RequestValidationError extends CustomError {
   public statusCode = 400;
 
   constructor(errors: ValidationError[]) {
-    super("Error connecting to DB");
+    super("Invalid request params");
     this.errors = errors;
     Object.setPrototypeOf(this, RequestValidationError.prototype);
   }

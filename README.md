@@ -59,7 +59,7 @@ export class RequestValidationError extends CustomError {
   public statusCode = 400;
 
   constructor(errors: ValidationError[]) {
-    super("Error connecting to DB");
+    super("Invalid request params");
     this.errors = errors;
     Object.setPrototypeOf(this, RequestValidationError.prototype);
   }
@@ -84,7 +84,7 @@ export class DatabseConnectionError extends CustomError {
   public statusCode = 500;
 
   constructor() {
-    super("Invalid request params");
+    super("Error connecting to the database!");
 
     Object.setPrototypeOf(this, DatabseConnectionError.prototype);
   }

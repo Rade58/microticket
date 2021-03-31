@@ -5,7 +5,7 @@ export class DatabseConnectionError extends CustomError {
   public statusCode = 500;
 
   constructor() {
-    super("Invalid request params");
+    super("Error connecting to the database!");
 
     Object.setPrototypeOf(this, DatabseConnectionError.prototype);
   }
