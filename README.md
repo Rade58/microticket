@@ -73,3 +73,22 @@ spec:
 ```
 
 GORE SAM ZA CLUSTER IP ZADO IME `db` (TO JE IME KOJE CE BITI INSIDE LOGS (VIDECU TO U TERMINALIU skaffold-A), ZATO MI TO NIJE SUPER IMPORTAND, NISAM NAERNO STAVIO DUZE IME)
+
+## DA BI APPLY-OVAO NOVI CONFIG FILE TO KUBERNETES, JA CU SAMO RESTART-OVATI skaffold
+
+PUSTICU NJEGA DA ON APPLY-UJE POMENTU FILE, UMESTO DA RADIM MANELNO SA `kubectl apply -f`
+
+- `skaffold dev`
+
+KADA PUSTIS SKAFFOLD DA ODRADI SVE, MOCI CES DA PROVERIS DA LI TI IMAS LIVING POD ZA MONGDB-JEM INSIDE
+
+- `kubectl get pods`
+
+```zsh
+NAME                               READY   STATUS    RESTARTS   AGE
+auth-depl-678789c695-pl8tz         1/1     Running   0          2m36s
+auth-mongo-depl-5db9cdd9b9-ckc4b   1/1     Running   0          2m36s
+
+```
+
+KAO STO VIDIS TU JE auth-mongo-depl-5db9cdd9b9-ckc4b POD
