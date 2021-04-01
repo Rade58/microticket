@@ -36,6 +36,39 @@ DAKLE JA SAM SPECIFICIRAO `mongo`, KAO IMAGE I TO CE BITI DOVOLJNO DA SE PREUZME
 SA ISTE STRANICE MOZES PROCITITI LKAKO SE KORISTI, POMENUTI IMAGE
 
 ```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-mongo-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-mongo
+  template:
+    metadata:
+      labels:
+        app: auth-mongo
+    spec:
+      containers:
+      - name: auth-mongo
+        image: mongo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-mongo-srv
+spec:
+  selector:
+    app: auth-mongo
+  type: ClusterIP
+  ports:
+    - name: db
+      protocol: TCP
+      # OVO JE DEFAULT PORT ZA MONGO, NECU NISTA MODIFIKOVATI
+      # DA BI SERVE-OVAO SA DRUGOG PORT-A
+      port: 27017
+      targetPort: 27017
 
 ```
 
