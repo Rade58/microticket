@@ -1,9 +1,7 @@
 import express from "express";
 import "express-async-errors";
 import { json } from "body-parser";
-// UVOZIM MONGOOSE
 import mongoose from "mongoose";
-//
 
 import { currentUserRouter } from "./routes/current-user";
 import { signInRouter } from "./routes/signin";
@@ -27,15 +25,7 @@ app.all("*", async (req, res, next) => {
 
 app.use(errorHandler);
 
-// BUILD-OVACU OVU FUNKCIJU
 const start = async () => {
-  // KORISTIM NAME, OBTAINED FROM CLUSTER IP SERVIZE, ZA POD
-  // U KOJEM RUNN-UJE MONGOV CONTAINER
-  // ALI NE ZABORAVI I PORT ZA DATABASE
-
-  // ZATIM ZADAJ I NAME ZA DATABASE, NA KOJ IZELIS DA SE KONEKTUJES
-  // (STAVI auth ,TO JE NAJVISE APPROPRIATE)
-
   try {
     await mongoose.connect("mongodb://auth-mongo-srv:27017/auth", {
       useNewUrlParser: true,
@@ -55,13 +45,4 @@ const start = async () => {
   });
 };
 
-// OVO OVDE VISE NECE BITI, JER SE ZA TRAFFIC LISTEN-UJE
-// TEK AKO IMAS DB CONNECTION
-/* const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`listening on  http://localhost:${PORT} INSIDE auth POD`);
-});
- */
-
-// POKRECEM START
 start();
