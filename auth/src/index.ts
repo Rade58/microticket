@@ -35,14 +35,31 @@ const start = async () => {
 
   // ZATIM ZADAJ I NAME ZA DATABASE, NA KOJ IZELIS DA SE KONEKTUJES
   // (STAVI auth ,TO JE NAJVISE APPROPRIATE)
-  await mongoose.connect("mongodb://auth-mongo-srv:27017/auth", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
+
+  try {
+    await mongoose.connect("mongodb://auth-mongo-srv:27017/auth", {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+    });
+  } catch (err) {
+    console.log("Failed to connect to DB");
+    console.log(err);
+  }
+
+  const PORT = 3000;
+  app.listen(PORT, () => {
+    console.log(`listening on  http://localhost:${PORT} INSIDE auth POD`);
   });
 };
 
-const PORT = 3000;
+// OVO OVDE VISE NECE BITI, JER SE ZA TRAFFIC LISTEN-UJE
+// TEK AKO IMAS DB CONNECTION
+/* const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`listening on  http://localhost:${PORT} INSIDE auth POD`);
 });
+ */
+
+// POKRECEM START
+start();
