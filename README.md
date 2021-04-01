@@ -94,3 +94,11 @@ auth-mongo-depl-5db9cdd9b9-ckc4b   1/1     Running   0          2m36s
 KAO STO VIDIS TU JE auth-mongo-depl-5db9cdd9b9-ckc4b POD
 
 MI RUNN-UJEMO KOPIJU MONGODB-KA U CONTAINERU, U POMENUTOM PODU
+
+ISTO TAKO TU BI TREBLO DA BUDE I CLUSTER IP SERVICE ZA MOJ MONGODB
+
+- `kubectl get services`
+
+ISTO TAKO MOZES POGLEDATI I DEPLOYMENTS
+
+- `k get deployments`
