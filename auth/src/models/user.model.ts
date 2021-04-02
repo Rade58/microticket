@@ -1,4 +1,4 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model, Document, Model } from "mongoose";
 
 const userSchema = new Schema({
   email: {
@@ -11,16 +11,34 @@ const userSchema = new Schema({
   },
 });
 
+// UGLAVNOM CU GA ISKORISTITI DA KADA PRISTUPIM
+// REZULTATU QUERY-JA ILI MUTATION-U DA IMAM LISTED FIELD-OVE
+// SA REZULTATA
 interface UserFieldsI extends Document {
   email: string;
   password: string;
 }
 
-const User = model<UserFieldsI>("User", userSchema);
+// OMOGUCICE MI DA MOGU DA TYPE-UJEM
+// STATICKE METODE NA MODELU
+interface UserModelI extends Model<UserFieldsI> {
+  buildUser(this: UserModelI, fields: UserFieldsI): Promise<UserFieldsI>;
+}
 
-const a = async () => {
-  const b = await User.create({});
+// PROBLEM CE BITI JEDINO STO MORAM TYPE-OVATI this
+// OCEKUJEM DA JE this USTVARI INSTANCA MODELA
+// ZATO SAM ODMAH NA POCETKU METODE TYPE-OVAO this KEYWORD
+// ISTO TAKO BITNO MI JE DA UPRAVO ZBOG this, OVO NE BUDE
+// ARROW FUNKCIJA
+userSchema.statics.buildUser = async function (fields) {
+  const User = this as UserModelI;
+
+  const newUser = await User.create(fields);
+
+  return { email: newUser.email, password: newUser.password };
 };
 
-// OVAJ DOKUMENT CE BITI NAS USER MODEL SA NASIM METODAMA
+// SADA NA MODELU MOZES ODMAH UZETII ONU STATICKU METODU
+const User = model<UserFieldsI, UserModelI>("User", userSchema);
+
 export { User };
