@@ -41,10 +41,10 @@ router.post(
 
     const newUser = await User.create({ email, password });
 
-    // EVO OVDE, NOVI USER BI TREBALO DA IMA HASHED PASSWORD
-    // POSLACU GA SA RESPONSE-OM
-
-    res.status(201).send({ email: newUser.email, password: newUser.password });
+    res
+      .status(201)
+      // password is hashed
+      .send({ email: newUser.email /* , password: newUser.password */ });
   }
 );
 
