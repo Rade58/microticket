@@ -1,1 +1,23 @@
 # CREATING User MODEL
+
+***
+
+MISLIM DA JE NAJBOLJE KORISTITI `@typegoose/typegoose` STO SE TICE KORISCENJA TYPESCRIPT-A SA MONGOOSE-OM
+
+**[@typegoose/typegoose](https://github.com/typegoose/typegoose)**
+
+**MOZDA CU GA NAUCITI U BUDUCNOSTI, MEDJUTIM SADA ZELIM DA KORISTIM PRINCIP KOJI ZELI DA ME NAUCI AUTOR WORKSHOP-A**
+
+**MEDJUTIM NECU SE DRZATI STRIKTNO TOGA, JER JA ZELIM DA UPOTREBIM I ONO STO SAM JA DO SADA ZANAO A TICE SE MONGOOSE-A**
+
+***
+
+- `mkdir auth/src/models`
+
+- `touch auth/src/models/user.model.ts`
+
+```ts
+
+```
+
+
