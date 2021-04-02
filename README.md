@@ -104,3 +104,27 @@ router.post(
 export { router as signUpRouter };
 
 ```
+
+# MOZES DA TESTIRAS TAKO STO CES POSLATI REQUEST SA EMAIL-OM KOJI JE ALREADYY IN USE
+
+- `http POST http://microticket.com/api/users/signup email="stavros@mail.com" password="CoolStuff6"`
+
+```zsh
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+Content-Length: 48
+Content-Type: application/json; charset=utf-8
+Date: Fri, 02 Apr 2021 14:19:57 GMT
+ETag: W/"30-ttxB76vrBxqFmHwwPqi4wbWMXcA"
+X-Powered-By: Express
+
+{
+    "errors": [
+        {
+            "message": "Email already in use!"
+        }
+    ]
+}
+```
+
+I TO JE BIO OCEKIVANI RESPONSE
