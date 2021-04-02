@@ -68,4 +68,22 @@ O HASHING-U PASSWORD-A CU KASNIJE RAZMISLJATI
 
 **SADA MI JE CILJ SAM ODA TESTIRM DA LI CE KREIRANJE, NOVOG USER-A BITI USPESNO**
 
+POKRENI SKAFFOLD AKO VEC NISI `skaffold dev`
 
+- `http POST http://microticket.com/api/users/signup email="stavros@mail.com" password="CoolStuff6"`
+
+I USPESNO SAM KREIRAO NEW USER-A
+
+```zsh
+HTTP/1.1 201 Created
+Connection: keep-alive
+Content-Length: 28
+Content-Type: application/json; charset=utf-8
+Date: Fri, 02 Apr 2021 13:04:30 GMT
+ETag: W/"1c-p85clZ7E5qxouXCrUov+Rmp3ge4"
+X-Powered-By: Express
+
+{
+    "email": "stavros@mail.com"
+}
+```
