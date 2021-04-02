@@ -105,7 +105,7 @@ export { router as signUpRouter };
 
 ```
 
-# MOZES DA TESTIRAS TAKO STO CES POSLATI REQUEST SA EMAIL-OM KOJI JE ALREADYY IN USE
+# MOZES DA TESTIRAS TAKO STO CES POSLATI REQUEST SA EMAIL-OM KOJI JE ALREADY IN USE; ALREADY IN DATBASE
 
 - `http POST http://microticket.com/api/users/signup email="stavros@mail.com" password="CoolStuff6"`
 
