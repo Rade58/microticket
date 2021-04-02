@@ -1,111 +1,44 @@
-# USER CREATION
+# PROPPER ERROR HANDLING
 
-- `code auth/src/routes/signup.ts`
+DAKLE, AKO USER VEC POSTOJI, JA BI TREBAO DA THROW-UJEM ERROR
+
+TAKAV FLOW SANM NAPRAVIO U MOM HANDLERU DA USTVARI THROW-UJEM ERRORS A NE KORISTIM next (AKO SE SECAS, ZBOG KORISCENJA `express-async-errors`)
+
+SADA ZELIM DA NAPRAVIM TAJ CUSTOM ERROR KOJI CE USER-U DATI INFO DA JE IKORISTIO POGRESAN MAIL ZA SIGNUP
+
+ALI OVO CE BITI POPRILICNO GENERIC ERROR, U KOJEM CU JA MOCI DA PASS-UJEM STRING O TOME STA NIJE U REDU, ZANCI DA JE NECU SAMO MORATI REUSE-OVATI SAMO KADA JE EMAIL ALREADY IN USE, VEC I ZA DRUGE MOGUCE GRESKE
+
+USTVARI TO CE BITI ERROR KOJI CU THROW-OVTI ALL THE TIM, KADA JE U PITANJU ERROR, ZA KOJI NEMA POTREBE DA BUDE VISE OD NEKOG GENERAL USE CASE-A
+
+## KREIRACU `BadRequestError` ERROR KLASU
+
+- `touch auth/src/errors/bad-request-error.ts`
 
 ```ts
-import { Router, Request, Response } from "express";
-import "express-async-errors";
-import { body, validationResult } from "express-validator";
-import { DatabseConnectionError } from "../errors/database-connection-error";
-import { RequestValidationError } from "../errors/request-validation-error";
+// UVOZIM ABSTRACT CLASS CustomError KOJU SAM RANIJE DAVNO NAPRAVIO
+import { CustomError } from "./custom-error";
 
-// UVOZIM User MODEL
-import { User } from "../models/user.model";
-//
+export class BadRequestError extends CustomError {
+  statusCode = 400;
+  public message: string;
 
-const router = Router();
+  constructor(message: string) {
+    super(message);
 
-router.post(
-  "/api/users/signup",
-  [
-    body("email").isEmail().withMessage("Email must be valid!"),
+    this.message = message;
 
-    body("password")
-      .trim()
-      .isLength({ max: 20, min: 4 })
-      .withMessage("Pssword must be valid"),
-  ],
-  // I OVO MOZE BITI async
-  async (req: Request, res: Response) => {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      throw new RequestValidationError(errors.array());
-    }
-
-    const { email, password } = req.body;
-    // OVDE PRVO REACH-UJE INTO DTBASE DA VIDIM DA LI,
-    // ALREADY POSTOJI U DATBASE-U
-    const possibleUser = await User.findOne({ email })
-      .select("-password") // NE TREBA MI password (MINUS PASSWORD)
-      .exec();
-
-    // AKO OVO GORE NIJE null MORAM POSLATI ERROR
-    if (possibleUser && possibleUser.email) {
-      // TREBAO BI NAPRAVITI CUSTOM ERORO KOJI BI THROW-OVAO
-      // UPRAVO OVDE, AL IZA SADA SALJEM SAMO EMPTY RESPONSE
-
-      console.log("Email already in use!");
-
-      return res.status(400).send({});
-    }
-
-    // OVDE ZANM DA JE possibleUser USTVARI null I MOZEMO DA
-    //  KREIRAMO NOVOG USER-A
-    const newUser = await User.create({ email, password });
-
-    // ZA SADA CU SAMO PROSLEDITI emaiil NOVOG USER-A
-    res.status(201).send({ email: newUser.email });
+    Object.setPrototypeOf(this, BadRequestError.prototype);
   }
-);
 
-export { router as signUpRouter };
-
-```
-
-
-O HASHING-U PASSWORD-A CU KASNIJE RAZMISLJATI
-
-**SADA MI JE CILJ SAM ODA TESTIRM DA LI CE KREIRANJE, NOVOG USER-A BITI USPESNO**
-
-POKRENI SKAFFOLD AKO VEC NISI `skaffold dev`
-
-- `http POST http://microticket.com/api/users/signup email="stavros@mail.com" password="CoolStuff6"`
-
-I USPESNO SAM KREIRAO NEW USER-A
-
-```zsh
-HTTP/1.1 201 Created
-Connection: keep-alive
-Content-Length: 28
-Content-Type: application/json; charset=utf-8
-Date: Fri, 02 Apr 2021 13:04:30 GMT
-ETag: W/"1c-p85clZ7E5qxouXCrUov+Rmp3ge4"
-X-Powered-By: Express
-
-{
-    "email": "stavros@mail.com"
+  serializeErrors() {
+    return {
+      errors: [
+        {
+          message: this.message,
+        },
+      ],
+    };
+  }
 }
-```
 
-MOZES DA POKUSAS DA KRIRAS ISTOG USERA, PA DA VIDIS U SKAFFOLD TERMINALU DA L ICE TVOJ MICROSERVICE LOG-OVATI DA USER VEC POSTOJI
-
-- `http POST http://microticket.com/api/users/signup email="stavros@mail.com" password="CoolStuff6"`
-
-```zsh
-HTTP/1.1 400 Bad Request
-Connection: keep-alive
-Content-Length: 2
-Content-Type: application/json; charset=utf-8
-Date: Fri, 02 Apr 2021 13:42:19 GMT
-ETag: W/"2-vyGp6PvFo4RvsFtPoIWeCReyIC8"
-X-Powered-By: Express
-
-{}
-```
-
-A OVO PISE U TERMINALU SKAFFOLD-A
-
-```zsh
-[auth] Email already in use!
 ```
