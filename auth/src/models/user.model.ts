@@ -54,6 +54,8 @@ userSchema.pre("save", async function (next) {
   const hashedPassword = await Password.toHash(password);
 
   doc.set("password", hashedPassword);
+
+  next();
 });
 
 const User = model<UserDocumentI, UserModelI>("User", userSchema);
