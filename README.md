@@ -87,3 +87,25 @@ X-Powered-By: Express
     "email": "stavros@mail.com"
 }
 ```
+
+MOZES DA POKUSAS DA KRIRAS ISTOG USERA, PA DA VIDIS U SKAFFOLD TERMINALU DA L ICE TVOJ MICROSERVICE LOG-OVATI DA USER VEC POSTOJI
+
+- `http POST http://microticket.com/api/users/signup email="stavros@mail.com" password="CoolStuff6"`
+
+```zsh
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+Content-Length: 2
+Content-Type: application/json; charset=utf-8
+Date: Fri, 02 Apr 2021 13:42:19 GMT
+ETag: W/"2-vyGp6PvFo4RvsFtPoIWeCReyIC8"
+X-Powered-By: Express
+
+{}
+```
+
+A OVO PISE U TERMINALU SKAFFOLD-A
+
+```zsh
+[auth] Email already in use!
+```
