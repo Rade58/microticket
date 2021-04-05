@@ -47,3 +47,29 @@ ALI TI IONAKO NECES STORE-OVATI PROTECTED INFO U JSON WEB TOKENU, NECES NA PRIME
 **ALI AKO TI JE VAZNO TI GA MOZES ENCRYPT-OVATI, ALI SI ONDA U RIZIKU, KADA PRAVIS MICROSERVICE, KOJI KORISTI DIFFERENT LANGUAGE, JER CES TADA IMATI PROBLEM DA DECRYPT-UJES COOKIE**
 
 JA GA NECU ENCRYPTOVATI, SAMO DA ZNAS
+
+# ADDING A SESSION SUPPORT
+
+SADA CU DAKLE INSTALIRATI POMENUTI `cookie-session` PAKET
+
+>> Simple cookie-based session middleware.
+
+>> A user session can be stored in two main ways with cookies: on the server or on the client. This module stores the session data on the client within a cookie, while a module like express-session stores only a session identifier on the client within a cookie and stores the session data on the server, typically in a database.
+
+**KAO STO VIDIS OVAJ PAKET TE DAKLE OSLOBDJA TOGA DA MORAS IMATI BACKING DATBASE**
+
+- `cd auth`
+
+- `yarn add cookie-session`
+
+- `yarn add @types/cookie-session --dev`
+
+# POMENUTI PAAKET SE KORISTI KAO MIDDLEWARE
+
+- `code auth/src/index.ts`
+
+```ts
+
+```
+
+
