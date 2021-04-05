@@ -44,7 +44,9 @@ router.post(
 
     const newUser = await User.create({ email, password });
 
-    // OVDE BI TREBALI DA KREIRAMO JSONWEB TOKEN
+    // OVDE BI TREBALI DA GENERISEMO JSON WEB TOKEN
+
+    // I STORE-UJEMO GA ON request.session OBJEC
 
     res
       .status(201)
