@@ -230,7 +230,7 @@ I DOBIO SAM OVE DECODE STVARI
 HMACSHA256(
   base64UrlEncode(header) + "." +
   base64UrlEncode(payload),
-  "TVOJ SECRET"
+  "tvoj secret key"
 
 )
 
