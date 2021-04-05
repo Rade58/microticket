@@ -46,7 +46,27 @@ router.post(
 
     // OVDE BI TREBALI DA GENERISEMO JSON WEB TOKEN
 
-    // I STORE-UJEMO GA ON request.session OBJEC
+    const userJwt = sign(
+      // PRVO DODAJES PAYLOAD
+      { email: newUser.email, id: newUser._id },
+      // SECRET (KASNIJE CU GOVORITI O TOME KAKO DA SECURE-UJES
+      // OVAJ KEY U KUBERNETES ENVIROMENT-U)
+      "my secret key"
+    );
+    // DAKLE OVO JE GORE SYNC FUNKCIJA
+    // DA SI PROVIDE-OVAO CALLBACK BILA BI ASYNC FUNKCIJA
+    // TAKO DA MOZES BITI SIGURAN DA JE OVDE JWT KREIRAN I
+    // DA SE MOZE KORISTITI
+
+    // STORE-UJEMO GA ON request.session OBJEC
+
+    req.session = {
+      jwt: userJwt,
+    };
+    // ZASTO GORE DEFINISEM CO OBJEKAT? PA DA TYPESCRIPT NE BI YELL-OVAO NA MENE
+    //  JER DA SAM KORISTIO `.jwt =`  ONDA JER NEMEN TYPE DEFINITIONS
+    // TYPESCRIPT BI YELL-OVAO NA MENE JER NE ZELI DA SUME-UJES DA VEC POSTOJI
+    // OBJEKAT KAO VREDNOST req.session
 
     res
       .status(201)
