@@ -49,3 +49,38 @@ ZATO MOZDA MOZES SAMO DA OZNACIS KLJUCEVE U NEKOM .txt FILE-U; ALI I DA STORE-UJ
 # JA CU SADA DA POKRENEM KOMANDU ZA KRIRANJE SECRET OBJECT-A, A DEFINISACU DAKLE I JEDAN SECRET
 
 - `kubectl create secret generic jwt-secret --from-literal=jwt=stavros`
+
+```zsh
+secret/jwt-secret created
+```
+
+PROVERAVAM DA LI JE NAPRAVLJEN SECRETS OBJEKAT
+
+- `kubectl get secrets`
+
+```zsh
+NAME                  TYPE                                  DATA   AGE
+default-token-f4zjf   kubernetes.io/service-account-token   3      9d
+jwt-secret            Opaque                                1      15s
+```
+
+KAO STO VIDIS KREIRAO SAM SECRETS OBJEKAT
+
+DA PROBAM DA VIDIM STA KAKAV CU OUTPUT IMATI KADA GA DESCRIBE-UJEM
+
+- `kubectl describe secret jwt-secret`
+
+```zsh
+Name:         jwt-secret
+Namespace:    default
+Labels:       <none>
+Annotations:  <none>
+
+Type:  Opaque
+
+Data
+====
+jwt:  7 bytes
+```
+
+KAO STO VIDIS UNDER Data JE PRIKAZAN KEY `jwt` KOJEG SAM ZADAO, I NAPISANO JE DA IMA 7 bytes
