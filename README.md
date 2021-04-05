@@ -133,5 +133,48 @@ DA IMAS VISE VARIABLI TI BIH PODESAVA DA ASSIGN-UJE SET ENVIROMNT VARIABLIS (ALI
 - `code infra/k8s/auth-depl.yaml`
 
 ```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+        - name: auth
+          image: eu.gcr.io/microticket/auth
+          # DAKLE OVO JE ARRAY STO ZNACI DA MOZES PODESAVATI VISE ENV VARIABLI
+          env:
+            # name DEFINISE KAKO ZELIS DA SE APEAR-UJE VARIJABLA U CONTAINERU
+            # (DAKLE POD KOJIM IMENIOM ZELIS DA SE APEAR-UJE, TO PODESAVAS KAO name)
+            # IZABRACU ISTO IME KOJE IMA KEY U SECRET OBJECT-U IAKO NISAM MORAO
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  # REFERENCA SECRET OBJECT-A
+                  name: jwt-secret
+                  # IME KEY-A FROM THAT OBJECT
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-srv
+spec:
+  selector:
+    app: auth
+  type: ClusterIP
+  ports:
+    - name: auth
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
 
 ```
