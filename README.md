@@ -25,3 +25,11 @@ TO CE BITI OBJEKAT, KOJI CE KREITARATI POMENUTI cookie-session MIDDLEWARE
 **SVAKI INFO KOJI SE STORE-UJE NA `req.session` BICE automatski SERIALIZED BY cookie-session, I STORED INSIDE THE COOKIE**
 
 **A JA CU STORE-OVATI JWT ON `req.session`**
+
+# A JWT CU GENERISATI KORISCENJEM PAKETA `jsonwebtoken`
+
+- `cd auth`
+
+- `yarn add jsonwebtoken`
+
+- `yarn add @types/jsonwebtoken --dev`
