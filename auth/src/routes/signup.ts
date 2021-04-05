@@ -1,7 +1,10 @@
 import { Router, Request, Response } from "express";
 import "express-async-errors";
 import { body, validationResult } from "express-validator";
-import { DatabseConnectionError } from "../errors/database-connection-error";
+// UVOZIM OVO
+import { sign } from "jsonwebtoken";
+//
+
 import { RequestValidationError } from "../errors/request-validation-error";
 import { BadRequestError } from "../errors/bad-request-error";
 
@@ -40,6 +43,8 @@ router.post(
     }
 
     const newUser = await User.create({ email, password });
+
+    // OVDE BI TREBALI DA KREIRAMO JSONWEB TOKEN
 
     res
       .status(201)

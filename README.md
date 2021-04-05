@@ -33,3 +33,11 @@ TO CE BITI OBJEKAT, KOJI CE KREITARATI POMENUTI cookie-session MIDDLEWARE
 - `yarn add jsonwebtoken`
 
 - `yarn add @types/jsonwebtoken --dev`
+
+# SADA CU DA KORISTIM POMENUTI PAKET U MOM `/signup` HANDLERU
+
+- `code auth/src/routes/signup.ts`
+
+```ts
+
+```
