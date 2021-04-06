@@ -22,8 +22,11 @@ router.post(
     // KORISTIM body FUNKCIJU KOJU POZIVAM KAO MIDDLEWARE
     body("email").isEmail().withMessage("Email must be valid!"),
     body("password")
-      .trim()
-      .isLength({ max: 20, min: 4 })
+      .trim() // sanitization
+      // NE MORAM DA STAVLJAM VLIDATION ZA REQUREMENT PASSWORD-A U POGLEDU
+      // MINIMALNOG I MAKSIMALNOG BROJA KARAKTERA, JER OGUCI SU ERRORI, KADA BI MENJAO
+      // TAJ ISTI REQUREMENT PRI SIGNUP-U (DESI SE DA ZBOG TOGA USERS AZVRSE LOCKED OUT OF THEIR ACCOUNTS)
+      .notEmpty() // SAMO JE BITNO DA MORAJU SUPPLY-OVATI KARAKTERE ZA PASSWORD
       .withMessage("Password must be valid!"),
   ],
   async (req: Request, res: Response) => {
