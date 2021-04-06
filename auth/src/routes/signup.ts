@@ -18,7 +18,7 @@ router.post(
     body("password")
       .trim()
       .isLength({ max: 20, min: 4 })
-      .withMessage("Pssword must be valid"),
+      .withMessage("Password must be valid"),
   ],
 
   async (req: Request, res: Response) => {
