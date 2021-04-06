@@ -1,9 +1,7 @@
 import { Router, Request, Response } from "express";
 import "express-async-errors";
 import { body, validationResult } from "express-validator";
-// UVOZIM OVO
 import { sign } from "jsonwebtoken";
-//
 
 import { RequestValidationError } from "../errors/request-validation-error";
 import { BadRequestError } from "../errors/bad-request-error";
@@ -36,42 +34,40 @@ router.post(
       .select("-password")
       .exec();
 
-    console.log({ possibleUser });
-
     if (possibleUser && possibleUser.email) {
       throw new BadRequestError("Email already in use!");
     }
 
     const newUser = await User.create({ email, password });
 
-    // OVDE BI TREBALI DA GENERISEMO JSON WEB TOKEN
+    // POSTOJI MOGUCNOST DA SI ZABORAVIO DA ZADAS POMENUTI
+    // SECRET, ZATO UMECEM OVDE USLOVNU IZJAVU
+    if (!process.env.JWT_KEY) {
+      // MEDJUTIM OVO JE LOSE
+      throw new Error("JWT_KEY env variable undefined");
+      // LOSE JE ZATO STO SU ENVIROMENT VARIJABLE TVOJA ODGOVORNOST
+      // A TI OVDE THROW-UJES ERRORS INSIDE A HANDLER
+      // TI SI TREBAO PROVERITI SVE ENV VARIABLES PRE POKRETANJA EXPRESS SERVERA
+      // DAKLE TAMO SU TREBALE DA BUDU USLOVNE IZJAVE
+      // JA OVDE RADIM OVO SAM ODA BIH NEUTRALISAO TYPESCRIPT
+      // ERROR
+    }
 
     const userJwt = sign(
-      // PRVO DODAJES PAYLOAD
       { email: newUser.email, id: newUser._id },
-      // SECRET (KASNIJE CU GOVORITI O TOME KAKO DA SECURE-UJES
-      // OVAJ KEY U KUBERNETES ENVIROMENT-U)
-      "my secret key"
+      // EVO REFERENCIRAO SAM ENVIROMENT VARIABLU
+      // CIJA JE VREDNOST MOJ SECRET SIGNING KEY
+      process.env.JWT_KEY
     );
-    // DAKLE OVO JE GORE SYNC FUNKCIJA
-    // DA SI PROVIDE-OVAO CALLBACK BILA BI ASYNC FUNKCIJA
-    // TAKO DA MOZES BITI SIGURAN DA JE OVDE JWT KREIRAN I
-    // DA SE MOZE KORISTITI
-
-    // STORE-UJEMO GA ON request.session OBJEC
 
     req.session = {
       jwt: userJwt,
     };
-    // ZASTO GORE DEFINISEM CO OBJEKAT? PA DA TYPESCRIPT NE BI YELL-OVAO NA MENE
-    //  JER DA SAM KORISTIO `.jwt =`  ONDA JER NEMEN TYPE DEFINITIONS
-    // TYPESCRIPT BI YELL-OVAO NA MENE JER NE ZELI DA SUME-UJES DA VEC POSTOJI
-    // OBJEKAT KAO VREDNOST req.session
 
     res
       .status(201)
-      // password is hashed
-      .send({ email: newUser.email /* , password: newUser.password */ });
+
+      .send({ email: newUser.email });
   }
 );
 

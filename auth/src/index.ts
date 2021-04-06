@@ -52,7 +52,6 @@ const start = async () => {
   const PORT = 3000;
   app.listen(PORT, () => {
     console.log(`listening on  http://localhost:${PORT} INSIDE auth POD`);
-    console.log(process.env.JWT_KEY);
   });
 };
 
