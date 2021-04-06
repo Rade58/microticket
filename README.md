@@ -190,3 +190,5 @@ SALJEMO JSON
 VIDEO SAM DA JE USER KREIRAM, A DOBIO SAM I COOKIE, STO ZNACI DA JE JWT ISSUED
 
 ONO STO JOS MOZES DA URADIS JE DA VERIFIKUJES DA LI JE JWT OK, ALI ZA TO SI TREBAO DA ZAPAMTIS SECRET KEY, PA DA ONDA KORISTIS ONAJ TOOL, [KOJEG SAM TI PREDSTAVIO OVDE](https://github.com/Rade58/microticket/tree/2_4_GENERATING_JWT#medjutim-secas-se-da-si-ti-sa-json-web-token-zakacio-kao-jwt-properti-na-objektu-reqsession-tako-da-vrednost-cokie-a-odnosno-set-cookie-header-a-jeste-objekat-jwt-tvoj-json-web-token-ali-je-ecoded-kao-base64)
+
+JA SAM SADA COMPLET-OVAO, NAS INITIAL AUTHENTICATION SETUP
