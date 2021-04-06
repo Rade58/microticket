@@ -302,3 +302,4 @@ export { router as signUpRouter };
 
 ## MIDDLEWARE KOJ ISAM DEFINISAO, PRETTY MUCH CU KORISTI ACROSS ALL OF MY MICROSERVICES
 
+GOVORIM O `auth/src/middlewares/validate-request.ts`
