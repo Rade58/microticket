@@ -165,3 +165,28 @@ const start = async () => {
 start();
 
 ```
+
+## MOZES DA IZVRSIS TESTIRANJE
+
+OPET BI U INSOMIA-I NPRAVIO REQUEST, KOJI JE POMALO ZAGULJEN, A [REKAO SAM TI OVDE](https://github.com/Rade58/microticket/tree/2_4_GENERATING_JWT#sada-cu-da-napravim-quick-test-tako-sto-cu-kreitrati-novog-usera-ali-ovo-nece-proci-glatko-a-videces-i-zasto) ZASTO JE TAKO (ALI NIJE PRETERANO PROBLEMATICAN, JER MORAS DA SALJAS KORISTECI https PROTOKOL, I JER SAMO MORAS PODESITI JEDNU OPCIJU U INSOMNI-I)
+
+DAKLE PRAVIMO OVAKAV REQUEST U INSOMNIA-I
+
+- `https://microticket.com/api/users/signup`
+
+METHOD JE:
+
+- `POST`
+
+SALJEMO JSON
+
+```json
+{
+	"email": "santino@live.com",
+	"password": "Jewells62"
+}
+```
+
+VIDEO SAM DA JE USER KREIRAM, A DOBIO SAM I COOKIE, STO ZNACI DA JE JWT ISSUED
+
+ONO STO JOS MOZES DA URADIS JE DA VERIFIKUJES DA LI JE JWT OK, ALI ZA TO SI TREBAO DA ZAPAMTIS SECRET KEY, PA DA ONDA KORISTIS ONAJ TOOL, [KOJEG SAM TI PREDSTAVIO OVDE](https://github.com/Rade58/microticket/tree/2_4_GENERATING_JWT#medjutim-secas-se-da-si-ti-sa-json-web-token-zakacio-kao-jwt-properti-na-objektu-reqsession-tako-da-vrednost-cokie-a-odnosno-set-cookie-header-a-jeste-objekat-jwt-tvoj-json-web-token-ali-je-ecoded-kao-base64)
