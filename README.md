@@ -42,7 +42,7 @@ router.post(
       // UMESTO OVOGA
       // throw new Error("user email doesn't exist");
       // OVO
-      throw new BadRequestError("User with tht emaile, doesn't exist!");
+      throw new BadRequestError("User with this email, doesn't exist!");
     }
 
     const passwordIsMatching = await Password.compare(user.password, password);
@@ -66,4 +66,39 @@ router.post(
 
 export { router as signInRouter };
 
+```
+
+TESTIRAJ OVO
+
+AKO POSALJES REQUEST, I SPECIFICIRAS NEPOSTOJECI EMAIL, TREBALO BI DA DOBIJES RESPONSE SA ERROREUS STATUSOM ,ALI JOS VAZNIJA DATA OJ IDOBIJES TREBA DA BUDE U FFORMATU: `{errors: []}`
+
+SADA CU U INSOMNII TO DA TESTIRAM
+
+DAKLE REQUEST PRAVIMO PREMA:
+
+`https://microticket.com/api/users/signin`
+
+METHOD JE:
+
+`POST`
+
+SALJEM JSON SA EMAILOM KOJI NE POSTOJI NI U JEDNOM USER DOKUMENTU U DATBASE-U
+
+```json
+{
+	"email": "arron_gordon@live.com",
+	"password": "TomIsCool66"
+}
+```
+
+EVO KAKV CES JSON DOBITI U RESPONSE-U
+
+```json
+{
+  "errors": [
+    {
+      "message": "User with this email, doesn't exist!"
+    }
+  ]
+}
 ```

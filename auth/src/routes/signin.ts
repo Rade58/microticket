@@ -37,7 +37,7 @@ router.post(
       // UMESTO OVOGA
       // throw new Error("user email doesn't exist");
       // OVO
-      throw new BadRequestError("User with tht emaile, doesn't exist!");
+      throw new BadRequestError("User with this email, doesn't exist!");
     }
 
     const passwordIsMatching = await Password.compare(user.password, password);
