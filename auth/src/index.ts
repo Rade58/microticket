@@ -36,6 +36,15 @@ app.all("*", async (req, res, next) => {
 app.use(errorHandler);
 
 const start = async () => {
+  // POSTOJI MOGUCNOST DA SI ZABORAVIO DA ZADAS POMENUTI
+  // SECRET, ZATO UMECEM OVDE USLOVNU IZJAVU
+  if (!process.env.JWT_KEY) {
+    throw new Error("JWT_KEY env variable undefined");
+  }
+
+  // UMETNUO SAM JE GORE, JER NE ZELIM NI DA SE KONEKTUJEM TO THE
+  // DATABASE, AKO MI JE NEKA ENV VARIABLE UNDEFINED
+
   try {
     await mongoose.connect("mongodb://auth-mongo-srv:27017/auth", {
       useNewUrlParser: true,

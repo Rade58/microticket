@@ -40,24 +40,11 @@ router.post(
 
     const newUser = await User.create({ email, password });
 
-    // POSTOJI MOGUCNOST DA SI ZABORAVIO DA ZADAS POMENUTI
-    // SECRET, ZATO UMECEM OVDE USLOVNU IZJAVU
-    if (!process.env.JWT_KEY) {
-      // MEDJUTIM OVO JE LOSE
-      throw new Error("JWT_KEY env variable undefined");
-      // LOSE JE ZATO STO SU ENVIROMENT VARIJABLE TVOJA ODGOVORNOST
-      // A TI OVDE THROW-UJES ERRORS INSIDE A HANDLER
-      // TI SI TREBAO PROVERITI SVE ENV VARIABLES PRE POKRETANJA EXPRESS SERVERA
-      // DAKLE TAMO SU TREBALE DA BUDU USLOVNE IZJAVE
-      // JA OVDE RADIM OVO SAM ODA BIH NEUTRALISAO TYPESCRIPT
-      // ERROR
-    }
-
     const userJwt = sign(
       { email: newUser.email, id: newUser._id },
       // EVO REFERENCIRAO SAM ENVIROMENT VARIABLU
       // CIJA JE VREDNOST MOJ SECRET SIGNING KEY
-      process.env.JWT_KEY
+      process.env.JWT_KEY as string
     );
 
     req.session = {
