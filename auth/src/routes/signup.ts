@@ -42,8 +42,6 @@ router.post(
 
     const userJwt = sign(
       { email: newUser.email, id: newUser._id },
-      // EVO REFERENCIRAO SAM ENVIROMENT VARIABLU
-      // CIJA JE VREDNOST MOJ SECRET SIGNING KEY
       process.env.JWT_KEY as string
     );
 
@@ -53,8 +51,10 @@ router.post(
 
     res
       .status(201)
-
-      .send({ email: newUser.email });
+      // UMESTO OVOG CHERRY PICKINGA KOJI SAM RAADIO RANIJE
+      // .send({ email: newUser.email });
+      // SALJEM CEO DOKUMENT OBTAINED IZ DATABASE-A
+      .send(newUser);
   }
 );
 
