@@ -303,3 +303,111 @@ export { router as signUpRouter };
 ## MIDDLEWARE KOJ ISAM DEFINISAO, PRETTY MUCH CU KORISTI ACROSS ALL OF MY MICROSERVICES
 
 GOVORIM O `auth/src/middlewares/validate-request.ts`
+
+## SADA CU OTVORITI INSOMNIA-U, I MALO TESTIRATI OVU VALIDATION LOGIKU, ALI SAMIM TIM CU TESTIRATI I OSTALE STVARI, ODNOSNO NAJVISE ME ZANIMA TESTIRANJE /signin HANDLER-A
+
+***
+
+digresija:
+
+NE ZABORAVI DA U INSOMNIA-I MORAS DA UNCHECK-UJES `Validate Certificates` (I PRI PRAVLJEENJU REQUEST-OVA KORISTIS https PROTOCOL)
+
+***
+
+OTVORICEMO INSOMNIA-U I POKUSACEMO DA NAPRAVIMO NOVOG USER-A ALI CEMO ZADATI DA SIFRA IMA PREMALO KARAKTERA (MANJE OD 4)
+
+DAKLE REQUEST PRAVIMO PREMA:
+
+`https://microticket.com/api/users/signup`
+
+METHOD JE:
+
+`POST`
+
+SALJEMO JSON (SA PASSWORD-OM, KOJI IMA MNJE OD 4 KARAKTERA):
+
+```json
+{
+	"email": "tomsegura@live.com",
+	"password": "mot"
+}
+```
+
+DOBIO SAM OVAKAV JSON U RESPONSE-U
+
+```json
+{
+  "errors": [
+    {
+      "message": "Password must be valid",
+      "field": "password"
+    }
+  ]
+}
+```
+
+O JE BILO OCEKIVANO
+
+**HAJDE SADA DA NAPRAVIMO JEDAN VALIDAN USER OBJEKAT S VALIDNIM EMAIL-OM I PASSWORDOM**
+
+DAKLE REQUEST PRAVIMO PREMA:
+
+`https://microticket.com/api/users/signup`
+
+METHOD JE:
+
+`POST`
+
+SALJEMO JSON:
+
+```json
+{
+	"email": "tomsegura@live.com",
+	"password": "ChristinaP"
+}
+```
+
+U RESPONSE-U IMAMO IMAMO NASEG NOVOKREIRANOG USER-A
+
+```json
+{
+  "email": "tomsegura@live.com",
+  "id": "606ccb575d85df0019608fba"
+}
+```
+
+TAKODJE SOM DOBILI I `Cookie` HEADER CIJA VREDNOST JE ENCODENT INTO BASE64, OVAKAV OBJEKAT: `{jwt: <json web token>}`
+
+**SADA CEMO DA SALJEMO POST REQUEST PREMA /signin ROUTE-U, STO ZNACI DA CE MI TREBATI I GORNJI EMAIL I PASSWORD**
+
+DAKLE PRAVIMO NOVI REQUEST U INSOMIA-I
+
+DAKLE REQUEST PRAVIMO PREMA /signin:
+
+`https://microticket.com/api/users/signin`
+
+METHOD JE:
+
+`POST`
+
+SALJEMO JSON U KOJEM JE EMAIL I PASSWORD, POSTOJECEG USER-A:
+
+```json
+{
+	"email": "tomsegura@live.com",
+	"password": "ChristinaP"
+}
+```
+
+**I DOBIO SAM RESPONSE, SA OCEKIVANOM DATA-OM**
+
+TO JE SLEDECI JSON
+
+```json
+{
+  "email": "tomsegura@live.com",
+  "id": "606ccb575d85df0019608fba"
+}
+```
+
+TAKODJE SOM DOBILI I `Cookie` HEADER CIJA VREDNOST JE ENCODENT INTO BASE64, OVAKAV OBJEKAT: `{jwt: <json web token>}`
