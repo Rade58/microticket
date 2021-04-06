@@ -27,9 +27,10 @@ router.post(
       // MINIMALNOG I MAKSIMALNOG BROJA KARAKTERA, JER OGUCI SU ERRORI, KADA BI MENJAO
       // TAJ ISTI REQUREMENT PRI SIGNUP-U (DESI SE DA ZBOG TOGA USERS AZVRSE LOCKED OUT OF THEIR ACCOUNTS)
       .notEmpty() // SAMO JE BITNO DA MORAJU SUPPLY-OVATI KARAKTERE ZA PASSWORD
-      .withMessage("Password must be valid!"),
+      .withMessage("You must supply password!"),
   ],
   async (req: Request, res: Response) => {
+    // OVO JE DEO VALIDDATION-A (NASTAVAK ONOOGA STO JE URADJENO VALIDATION MIDDLEWARE-OM)
     const errors = validationResult(req);
     // AKO POSTOJE ERRORI KOJI SU VALIDATION ERRORS, SALJES ERROR KOJI SAM DAVNO NAPRAVIO
     if (!errors.isEmpty()) throw new RequestValidationError(errors.array());
