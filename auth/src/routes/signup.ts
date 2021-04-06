@@ -1,12 +1,16 @@
 import { Router, Request, Response } from "express";
 import "express-async-errors";
-import { body, validationResult } from "express-validator";
+// VISAK
+import { body /*validationResult*/ } from "express-validator";
 import { sign } from "jsonwebtoken";
-
-import { RequestValidationError } from "../errors/request-validation-error";
+// VISAK
+// import { RequestValidationError } from "../errors/request-validation-error";
 import { BadRequestError } from "../errors/bad-request-error";
 
 import { User } from "../models/user.model";
+
+// UZIMAM MIDDLEWARE
+import { validateRequest } from "../middlewares/validate-request";
 
 const router = Router();
 
@@ -20,14 +24,20 @@ router.post(
       .isLength({ max: 20, min: 4 })
       .withMessage("Password must be valid"),
   ],
+  // DODAJEM MIDDLEWARE
+  validateRequest,
+  //
 
   async (req: Request, res: Response) => {
-    const errors = validationResult(req);
+    // OVO UKLANJAM
+    /* const errors = validationResult(req);
+
 
     if (!errors.isEmpty()) {
       throw new RequestValidationError(errors.array());
     }
 
+    */
     const { email, password } = req.body;
 
     const possibleUser = await User.findOne({ email })
@@ -49,12 +59,7 @@ router.post(
       jwt: userJwt,
     };
 
-    res
-      .status(201)
-      // UMESTO OVOG CHERRY PICKINGA KOJI SAM RAADIO RANIJE
-      // .send({ email: newUser.email });
-      // SALJEM CEO DOKUMENT OBTAINED IZ DATABASE-A
-      .send(newUser);
+    res.status(201).send(newUser);
   }
 );
 

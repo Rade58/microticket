@@ -1,55 +1,53 @@
 import { Router, Request, Response } from "express";
-// UVOZIM MONGOOSE MODEL
+// RANIJE SAM ZABORAVIO DA UVEZEM OVO
+import "express-async-errors"; // (AKO SI ZABORAVIO OVAJ PAKET TI SLUZI DA
+// DA NE MORAS DA KORISTIS next
+// A BI PREKINUO IZVRSAVANJE HANDLERA NA TOM MESTU
+// VEC DA MOES DA THROW-UJES ERROR UMESTO TOGA
+// A KAO STO MOZES VIDETI JA DOSTA THROW-UJEM U HANDLER-U)
 import { User } from "../models/user.model";
-// JSON WEB TOKEN
 import { sign } from "jsonwebtoken";
-// UVOZIM METODU KOJA TREBA DA DEHASH-UJE PASSWORD
-
-// OPET CEMO VALIDIRATI PASSWORD SA PAKETOM express-validator
-import { body, validationResult } from "express-validator";
-
-// VALIDATION ERROR
-import { RequestValidationError } from "../errors/request-validation-error";
-
+// OVO COMMENT-UJEM OUT JER GA KORISTIM U MIDDLEWARE-U
+import { body /*validationResult*/ } from "express-validator";
+// I OVO MI NE TREBA JER GA SAMO KORISTIM U MIDDLEWARE-U
+// import { RequestValidationError } from "../errors/request-validation-error";
 import { Password } from "../utils/password";
-//
+// UVOZIM MOJ MIDDLEWARE
+import { validateRequest } from "../middlewares/validate-request";
 
 const router = Router();
 
 router.post(
   "/api/users/signin",
   [
-    // KORISTIM body FUNKCIJU KOJU POZIVAM KAO MIDDLEWARE
     body("email").isEmail().withMessage("Email must be valid!"),
-    body("password")
-      .trim() // sanitization
-      // NE MORAM DA STAVLJAM VLIDATION ZA REQUREMENT PASSWORD-A U POGLEDU
-      // MINIMALNOG I MAKSIMALNOG BROJA KARAKTERA, JER OGUCI SU ERRORI, KADA BI MENJAO
-      // TAJ ISTI REQUREMENT PRI SIGNUP-U (DESI SE DA ZBOG TOGA USERS AZVRSE LOCKED OUT OF THEIR ACCOUNTS)
-      .notEmpty() // SAMO JE BITNO DA MORAJU SUPPLY-OVATI KARAKTERE ZA PASSWORD
-      .withMessage("You must supply password!"),
+    body("password").trim().notEmpty().withMessage("You must supply password!"),
   ],
+  // DODAJEMM MIDDLEWARE
+  // DA MOZDA TI JE CUDNO ALI TO RADIS
+  // NAKON OVOG ARRAY-A (MOZDA SI POMISLIO DA MIDDLEWARE-OVI MORAJU U ARRAY
+  // ALI NIJE TAKO , TI SVE STO LAY-UJES PRE HANDLERA JETE MIDDLEWARE)
+  validateRequest,
+  //
   async (req: Request, res: Response) => {
-    // OVO JE DEO VALIDDATION-A (NASTAVAK ONOOGA STO JE URADJENO VALIDATION MIDDLEWARE-OM)
-    const errors = validationResult(req);
-    // AKO POSTOJE ERRORI KOJI SU VALIDATION ERRORS, SALJES ERROR KOJI SAM DAVNO NAPRAVIO
+    //  I OVO VISE NIJE POTREBNO JER SAM GA ZAMENIO MIDDLEWARE-OM
+    /* const errors = validationResult(req);
+
     if (!errors.isEmpty()) throw new RequestValidationError(errors.array());
+    */
 
     const { email, password } = req.body;
 
     const user = await User.findOne({ email }).exec();
 
-    // AKO NEMA USER-A THROW-UJEM ERROR
     if (!user) throw new Error("user email doesn't exist");
 
     const passwordIsMatching = await Password.compare(user.password, password);
 
-    // AKO SE PASSWORDI NE MATCH-UJU THROW-UJEM ERROR
     if (!passwordIsMatching) throw new Error("Wrong password");
 
     const jwt = sign({ email, id: user._id }, process.env.JWT_KEY as string);
 
-    // SETTUJEM TOKEN (BICE INTERCEPTED AND SERIAIED BY cookie-session)
     req.session = {
       jwt,
     };

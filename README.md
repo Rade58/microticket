@@ -1,98 +1,53 @@
-# signin FLOW
+# REQUEST VALIDATION MIDDLEWARE
 
-DAAKLE JA SAM ZAVRSIO SA signup LOGIKOM, A SADA CU DA SE POZABAVIM SA SIGNIN
+JA U MOM CODE-U KORISTIM MIDDLEWARE-OVE, KOJE POSTAVLJAM IN FRONT OF /signin I /signup
 
-ZA SADA JE TAJ ROUTER SAMO BAREBONES KOJI NISTA NE SALJE NAZAD
+U PITANJU SU MIDDLEWARE-OVI KOJI SU DEO PAKETA `express-vlidation`, I CILJ IM JE DA NA REQUEST OBJEKAT NEKEKO ZAKCE INFO O TOME DA LI POSTOJI ERROR-A U POGLEDU VALIDACIJE FIELD-OVA
+
+NJIMA SE MALO RAZLIKUJE UPOTREBA OD SLUCAJA DO SLUCAJA; NA PRIMER ZA SIGNUP, POTREBNO JE DA IMAM DEFINISAN MAXIMALNI I MINIMALNI BROJ KARAKTERA ZA password FIELD; A ZA SIGNIN MI TO NIJE POTREBNO NEGO MI JE POTREBNO SAMO DA password NE BUDE PRAZAN (OVO JE ZBOG EDGE CASE GDE TI VEC MOZDA IMAS USERS INSIDE DATABASE COLLLECTION, KOJI SU MOZDA KREIRANI KADA NIJE POSTOJAO REUREMENT ZA MAXIMAALNI I MINIMALNI BROJ KARAKTERA ZA PASSWORD)
+
+ZATO OVAKO KORISTIM TE MIDDLEWARE-OVE U OVOA DVA FILE-A
 
 - `cat auth/src/routes/signin.ts`
 
 ```ts
-import { Router } from "express";
-
-const router = Router();
-
-router.post("/api/users/signin", (req, res) => {});
-
-export { router as signInRouter };
-```
-
-# OVO CE BITI SIGNIN FLOW, KOJI CU DEFINISATI
-
-1. SA CLIENTA (Nextjs APP) SE SALJE REQUEST PREMA `/api/users/signin`
-
-ONO STO S SALJE U REQUESTU JE `{emai, password}`
-
-A HANDLER TREBA DA
-
-- PROVERI DA LI USER SA TAKVIM EMAIL-OM POSTOJI
-
-- AKO USER NE POSTOJE, TREBA RESPOND-OVATI SA ERROR-OM
-
-- AKO POSTOJI, TREBA SE COMPARE-OVATI SUPPLIED PASSWORD S STORED PASSWORDOM (UTILITY METODE ODNOSNO KLASU SAM VEC PODESIO U `auth/src/utils/password.ts`)
-
-- AKO JE PASWORD THE SAME, SVE JE U REDU
-
-- USER JE ONDA CONSIDERED TO BE LOGGED IN I SALJE MU SE GENERATED JWT
-
-2. SA RESPONSE-OM TREBA SLATI SA HEADEROM `Set-Cookie` CIJA VREDNOST TREBA DA BUDE OBJEKAT `{jwt: <GENERATED JSON WEB TOKEN>}` (**STO NARAVNO RADIM, UZ KORISCENJE PAKETA `cookie-session`, JIJU SAM LOGIKU VEC DEFINISAO INSIDE `auth/src/index.ts`**)
-
-# DEFINISEM `/signup` HANDLER
-
-- `code auth/src/routes/signin.ts`
-
-```ts
 import { Router, Request, Response } from "express";
-// UVOZIM MONGOOSE MODEL
 import { User } from "../models/user.model";
-// JSON WEB TOKEN
 import { sign } from "jsonwebtoken";
-// UVOZIM METODU KOJA TREBA DA DEHASH-UJE PASSWORD
-
-// OPET CEMO VALIDIRATI PASSWORD SA PAKETOM express-validator
 import { body, validationResult } from "express-validator";
-
-// VALIDATION ERROR
 import { RequestValidationError } from "../errors/request-validation-error";
-
 import { Password } from "../utils/password";
-//
 
 const router = Router();
 
 router.post(
   "/api/users/signin",
   [
-    // KORISTIM body FUNKCIJU KOJU POZIVAM KAO MIDDLEWARE
+    // GOVORIM O OVIM MIDDLEWARE-OVIM
     body("email").isEmail().withMessage("Email must be valid!"),
-    body("password")
-      .trim() // sanitization
-      // NE MORAM DA STAVLJAM VLIDATION ZA REQUREMENT PASSWORD-A U POGLEDU
-      // MINIMALNOG I MAKSIMALNOG BROJA KARAKTERA, JER OGUCI SU ERRORI, KADA BI MENJAO
-      // TAJ ISTI REQUREMENT PRI SIGNUP-U (DESI SE DA ZBOG TOGA USERS AZVRSE LOCKED OUT OF THEIR ACCOUNTS)
-      .notEmpty() // SAMO JE BITNO DA MORAJU SUPPLY-OVATI KARAKTERE ZA PASSWORD
-      .withMessage("You must supply password!"),
+    body("password").trim().notEmpty().withMessage("You must supply password!"),
+    //
   ],
   async (req: Request, res: Response) => {
-    // OVO JE DEO VALIDDATION-A (NASTAVAK ONOOGA STO JE URADJENO VALIDATION MIDDLEWARE-OM)
+    
+    // ALI OBRATI PANJU DA JE OVO ISTI DEO KOJI JA IMAM 
+    // I MOM DRUGOM HANDLER=U
     const errors = validationResult(req);
-    // AKO POSTOJE ERRORI KOJI SU VALIDATION ERRORS, SALJES ERROR KOJI SAM DAVNO NAPRAVIO
     if (!errors.isEmpty()) throw new RequestValidationError(errors.array());
+    // 
 
     const { email, password } = req.body;
 
     const user = await User.findOne({ email }).exec();
 
-    // AKO NEMA USER-A THROW-UJEM ERROR
     if (!user) throw new Error("user email doesn't exist");
 
     const passwordIsMatching = await Password.compare(user.password, password);
 
-    // AKO SE PASSWORDI NE MATCH-UJU THROW-UJEM ERROR
     if (!passwordIsMatching) throw new Error("Wrong password");
 
     const jwt = sign({ email, id: user._id }, process.env.JWT_KEY as string);
 
-    // SETTUJEM TOKEN (BICE INTERCEPTED AND SERIAIED BY cookie-session)
     req.session = {
       jwt,
     };
@@ -105,7 +60,242 @@ export { router as signInRouter };
 
 ```
 
-MOGAO BIH SADA OVO DA TESTIRAM, ALI VIDIM NEKE STVAI KOJE SU PODESNE ZA RESUSING OD HANDLERA DO HANDLER-A, ZATO JE BOLJLE DA NAPRAVIM CUSTOM MIDDLEWARE
+- `cat auth/src/routes/signup.ts`
 
-TO CU URADITI U SLEDECEM BRANCH-U
+```ts
+import { Router, Request, Response } from "express";
+import "express-async-errors";
+import { body, validationResult } from "express-validator";
+import { sign } from "jsonwebtoken";
 
+import { RequestValidationError } from "../errors/request-validation-error";
+import { BadRequestError } from "../errors/bad-request-error";
+
+import { User } from "../models/user.model";
+
+const router = Router();
+
+router.post(
+  "/api/users/signup",
+  [
+    // I GOVORIM O OVIM MIDDLEWARE-OVIMA
+    body("email").isEmail().withMessage("Email must be valid!"),
+
+    body("password")
+      .trim()
+      .isLength({ max: 20, min: 4 })
+      .withMessage("Password must be valid"),
+    //
+  ],
+
+  async (req: Request, res: Response) => {
+    
+    // A VIDIS OVO JE POTPUNO ISTO KAO TO IMAS IU PREDHODNOM HANDLERU
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      throw new RequestValidationError(errors.array());
+    }
+    // 
+
+    const { email, password } = req.body;
+
+    const possibleUser = await User.findOne({ email })
+      .select("-password")
+      .exec();
+
+    if (possibleUser && possibleUser.email) {
+      throw new BadRequestError("Email already in use!");
+    }
+
+    const newUser = await User.create({ email, password });
+
+    const userJwt = sign(
+      { email: newUser.email, id: newUser._id },
+      process.env.JWT_KEY as string
+    );
+
+    req.session = {
+      jwt: userJwt,
+    };
+
+    res.status(201).send(newUser);
+  }
+);
+
+export { router as signUpRouter };
+
+```
+
+# KAO STO VIDIS GORE, POKAZAO SAM TI DEO CODE-A KOJI JE POTPUNO ISTI U OBA HANDLER-A, A TICE SE UZIMANJA REQUEST-A, I PRONALAZENJA DA LI SU PREDHODNI VALIDATION MIDDLEWARE-OVE INSERT-OVALI VALIDATION ERROR MESSAGES NA REQUEST; A POSTO SE TAJ DEO CODE-A REUSE-UJE DOBRO BI BIL ODA NAPRAVIMO MIDDLEWARE
+
+- `touch auth/src/middlewares/validate-request.ts`
+
+```ts
+import { Request, Response, NextFunction } from "express";
+import { validationResult } from "express-validator";
+import "express-async-errors";
+import { RequestValidationError } from "../errors/request-validation-error";
+
+export const validateRequest = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    // ZAPAMTI DA THROWING ERROR-A, SAMO FUNKCIONISE
+    // ZATO STO IMAM PAKET `express-async-errors`
+    throw new RequestValidationError(errors.array());
+
+    // I NARAVNO OVAJ ERROR ONDA HANDLE-UJE RERROR HANDLING 
+    // MIDDLEWARE, KOJEG SAM ODAVNO DEFINISAO I WIRE-OVAO UP
+  }
+
+  // AKO NEMA ERROR-A NASTAVLJA SE SE IZVRSAVANJEM HANDLER-A
+  // ILI SLEDECEG MIDDLEWARE-A
+  next();
+};
+
+```
+
+## SADA JE POTREBNO DA SE REFAKTORISU MOJI HANDLERI, TAK ODA KORISTE OVAJ MIDDLEWARE
+
+PRVO OVAJ
+
+- `code auth/src/routes/signin.ts`
+
+```ts
+import { Router, Request, Response } from "express";
+// RANIJE SAM ZABORAVIO DA UVEZEM OVO
+import "express-async-errors"; // (AKO SI ZABORAVIO OVAJ PAKET TI SLUZI DA
+// DA NE MORAS DA KORISTIS next
+// A BI PREKINUO IZVRSAVANJE HANDLERA NA TOM MESTU
+// VEC DA MOES DA THROW-UJES ERROR UMESTO TOGA
+// A KAO STO MOZES VIDETI JA DOSTA THROW-UJEM U HANDLER-U)
+import { User } from "../models/user.model";
+import { sign } from "jsonwebtoken";
+// OVO COMMENT-UJEM OUT JER GA KORISTIM U MIDDLEWARE-U
+import { body /*validationResult*/ } from "express-validator";
+// I OVO MI NE TREBA JER GA SAMO KORISTIM U MIDDLEWARE-U
+// import { RequestValidationError } from "../errors/request-validation-error";
+import { Password } from "../utils/password";
+// UVOZIM MOJ MIDDLEWARE
+import { validateRequest } from "../middlewares/validate-request";
+
+const router = Router();
+
+router.post(
+  "/api/users/signin",
+  [
+    body("email").isEmail().withMessage("Email must be valid!"),
+    body("password").trim().notEmpty().withMessage("You must supply password!"),
+  ],
+  // DODAJEMM MIDDLEWARE
+  // DA MOZDA TI JE CUDNO ALI TO RADIS
+  // NAKON OVOG ARRAY-A (MOZDA SI POMISLIO DA MIDDLEWARE-OVI MORAJU U ARRAY
+  // ALI NIJE TAKO , TI SVE STO LAY-UJES PRE HANDLERA JETE MIDDLEWARE)
+  validateRequest,
+  //
+  async (req: Request, res: Response) => {
+    //  I OVO VISE NIJE POTREBNO JER SAM GA ZAMENIO MIDDLEWARE-OM
+    /* const errors = validationResult(req);
+
+    if (!errors.isEmpty()) throw new RequestValidationError(errors.array());
+    */
+
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email }).exec();
+
+    if (!user) throw new Error("user email doesn't exist");
+
+    const passwordIsMatching = await Password.compare(user.password, password);
+
+    if (!passwordIsMatching) throw new Error("Wrong password");
+
+    const jwt = sign({ email, id: user._id }, process.env.JWT_KEY as string);
+
+    req.session = {
+      jwt,
+    };
+
+    return res.status(200).send(user);
+  }
+);
+
+export { router as signInRouter };
+```
+
+**ISTO RADIM I ZA SIGNUP HANDLER**
+
+- `code auth/src/routes/signup.ts`
+
+```ts
+import { Router, Request, Response } from "express";
+import "express-async-errors";
+// VISAK
+import { body /*validationResult*/ } from "express-validator";
+import { sign } from "jsonwebtoken";
+// VISAK
+// import { RequestValidationError } from "../errors/request-validation-error";
+import { BadRequestError } from "../errors/bad-request-error";
+
+import { User } from "../models/user.model";
+
+// UZIMAM MIDDLEWARE
+import { validateRequest } from "../middlewares/validate-request";
+
+const router = Router();
+
+router.post(
+  "/api/users/signup",
+  [
+    body("email").isEmail().withMessage("Email must be valid!"),
+
+    body("password")
+      .trim()
+      .isLength({ max: 20, min: 4 })
+      .withMessage("Password must be valid"),
+  ],
+  // DODAJEM MIDDLEWARE
+  validateRequest,
+  //
+
+  async (req: Request, res: Response) => {
+    // OVO UKLANJAM
+    /* const errors = validationResult(req);
+
+
+    if (!errors.isEmpty()) {
+      throw new RequestValidationError(errors.array());
+    }
+
+    */
+    const { email, password } = req.body;
+
+    const possibleUser = await User.findOne({ email })
+      .select("-password")
+      .exec();
+
+    if (possibleUser && possibleUser.email) {
+      throw new BadRequestError("Email already in use!");
+    }
+
+    const newUser = await User.create({ email, password });
+
+    const userJwt = sign(
+      { email: newUser.email, id: newUser._id },
+      process.env.JWT_KEY as string
+    );
+
+    req.session = {
+      jwt: userJwt,
+    };
+
+    res.status(201).send(newUser);
+  }
+);
+
+export { router as signUpRouter };
+```
