@@ -227,7 +227,7 @@ export { router as signUpRouter };
 DAKLE REQUEST PRAVIMO PREMA:
 
 - `https://microticket.com/api/users/signup`
-- 
+
 METHOD JE:
 
 `POST`
@@ -240,6 +240,21 @@ SALJEMO JSON
 	"password": "TomIsCool66"
 }
 ```
+
+**EXECUTE-OVAO SAM REQUEST**
+
+I EVO KAKV SAM JSON U RESPONSE-U DOBIO IN RETURN
+
+```json
+{
+  "email": "klayla@live.com",
+  "id": "606c90ddcc465e001838a9ee"
+}
+```
+
+TU NIJE NI _id, NI __v, A TU NEMA password-A, A POSTOJI id; SVE BAS KAKO SAM ZADAO
+
+IZGLEDA DA SAM USPESNO ZADAO toJSON, JER GA JE UNDER THE HOOD PRI SLANJU RESPONSE-A `JSON.stringify` JE ODRADILA POSAO I U JSON SE NASLO ONO STO SAM TACNO ZELEO
 
 
 
