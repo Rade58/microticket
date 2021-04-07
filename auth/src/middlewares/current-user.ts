@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import { verify } from "jsonwebtoken";
-import { BadRequestError } from "../errors/bad-request-error";
 
 // DEFINISACU INTERFACE ZA PAYLOAD
 interface UserPayloadI {
@@ -25,9 +24,6 @@ declare global {
 // E PA NE MENJA SAMO  AUGMENT-UJES
 
 export const currentUser = (
-  // MORACEMO AUGMENT-OVATI REQUEST TYPE DEFFINITION
-  // KAKO BI NA NJEMU DEFINISAO TYPE ZA req.currentUser
-  // MISLIM DA JE TO MOGUCE KORISCENJEM GENERICS-A
   req: Request,
   res: Response,
   next: NextFunction
