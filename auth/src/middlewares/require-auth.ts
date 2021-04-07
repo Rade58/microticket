@@ -15,6 +15,5 @@ export const requireAuth = (
     // THROW-UJEM ERROR
     throw new NotAuthorizedError();
   }
-
   next();
 };
