@@ -56,3 +56,44 @@ export class NotAuthorizedError extends CustomError {
 
 # SADA MOZES DA REFAKTORISES require-auth MIDDLEWARE, KAKO BI THROW-OVAO `NotAuthorizeError` UMESTO DIREKTNOG LSLANJA RESPONSE-A
 
+- `touch auth/src/middlewares/require-auth.ts`
+
+```ts
+import { Request, Response, NextFunction } from "express";
+// UVOZIM POMENUTI PAKET
+import { NotAuthorizedError } from "../errors/not-authorized-error";
+//
+
+export const requireAuth = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  //
+  if (!req.currentUser) {
+    // UMESTO OVOGA
+    // return res.status(401).send("Unauthorized");
+    // THROW-UJEM ERROR
+    throw new NotAuthorizedError();
+  }
+
+  next();
+};
+
+```
+
+## MOZEMO OPET DA IZVSIMO TEST, KORISCENJEM INSOMNIA-E
+
+SAMO CEMO TRAZITI CURRENT USER-A (**UKLONI COOKIE, PRE OVOGA**)
+
+PRAVIMO REQUEST PREMA
+
+`https://microticket.com/api/users/current-user`
+
+METHOD JE `GET`
+
+DOBIJAMO OVO
+
+```json
+
+```

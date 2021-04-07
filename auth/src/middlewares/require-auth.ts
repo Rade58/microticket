@@ -1,4 +1,7 @@
 import { Request, Response, NextFunction } from "express";
+// UVOZIM POMENUTI PAKET
+import { NotAuthorizedError } from "../errors/not-authorized-error";
+//
 
 export const requireAuth = (
   req: Request,
@@ -7,7 +10,10 @@ export const requireAuth = (
 ) => {
   //
   if (!req.currentUser) {
-    return res.status(401).send("Unauthorized");
+    // UMESTO OVOGA
+    // return res.status(401).send("Unauthorized");
+    // THROW-UJEM ERROR
+    throw new NotAuthorizedError();
   }
 
   next();
