@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { verify } from "jsonwebtoken";
+// import { verify } from "jsonwebtoken";
 // UVOZIM current-user MIDDLEWARE
 import { currentUser } from "../middlewares/current-user";
 //
