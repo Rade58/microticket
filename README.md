@@ -27,4 +27,68 @@ export { router as signOutRouter };
 
 ## MOZEMO OPET DA IZVSIMO TEST, KORISCENJEM INSOMNIA-E
 
+NAPRAVICEMO USER-A
 
+DAKLE REQUEST PRAVIMO PREMA:
+
+`https://microticket.com/api/users/signup`
+
+METHOD JE:
+
+`POST`
+
+SALJEMO JSON
+
+```json
+{
+	"email": "rudy@mail.com",
+	"password": "LyleIsGreat66"
+}
+
+```
+
+SADA SMO KRIRALI USERA A PRIJAVLJENI SMO JER IMAMO JSON WEB TOKEN, KAO VREDNOST `Set-Cookie` HEADER-A
+
+MOZEMO DA ZAHTEVAMO CURRENT USERA
+
+DAKLE REQUEST PRAVIMO PREMA:
+
+`https://microticket.com/api/users/current-user`
+
+METHOD JE: `GET`
+
+I VIDECES DA CEMO DOBITI CURRENT USER-A
+
+**SADA CEMO DA SE SIGN-UJEMO OUT; TO I ZELIMO DA TESTIRAMO**
+
+DAKLE REQUEST PRAVIMO PREMA:
+
+`https://microticket.com/api/users/signout`
+
+METHOD JE:
+
+`GET` (TAKO SMO DEFINISALI HANDLER)
+
+JSON KOJI DOBIJAM BI TREBAL ODA BUDE EMPTY OBJECT
+
+```json
+{}
+```
+
+**SAD MOZES DA POKUSAS DA UZMES CURRENT USER-A**
+
+DAKLE REQUEST PRAVIMO PREMA:
+
+`https://microticket.com/api/users/current-user`
+
+METHOD JE: `GET`
+
+I DOBIO SI
+
+```json
+{
+  "currentUser": null
+}
+```
+
+DAKLE USPESN OSAM PODESIO SIGNING OUT
