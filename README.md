@@ -1,4 +1,4 @@
-# CRETING require-auth MIDDLEWARE
+# CREATING require-auth MIDDLEWARE
 
 OVAJ MIDDLEWARE PRAVIM KAKO BI TAJ MIDDLEWARE, USTVARI SEND-OVAO ODGOVOR TO THE CLIENT DA JE U PITANJU AUTHORIZATIN ERROR (ODNOSNO SALJEMO UNUTHORIZED STATUS CODE (401) TO THE FRONT END), **ONDA KADA NA `req` OBJEKTU NEMA `currentUser` OBJEKTA, KOJEG INSERT-UJEMO SA DRUGIM MIDDLEWARE-OM (KOJEG SMO NAPRAVILI U PROSLOM BRANCH-U)**
 
@@ -129,3 +129,36 @@ DOBIJAMO DATA KOJI CE RECI DA NISMO AUTHORIZED, A DATA CE BITI U CONSISTEND FORM
   ]
 }
 ```
+
+# MEDJUTIM, IAKO JE SVE OK, MENI CURRENTLY VISE ODGOVARA DA MI UMESTO OVOG ERROR-A BUDE VRACEN OBJEKAT `{"currentUser": null}`
+
+ZATO CU DA UKLONIM POMENUTI MIDDLEWARE
+
+- `code auth/src/routes/current-user.ts`
+
+```ts
+import { Router } from "express";
+import { currentUser } from "../middlewares/current-user";
+// import { requireAuth } from "../middlewares/require-auth";
+
+const router = Router();
+
+// UKLANJAM requireAuth
+router.get(
+  "/api/users/current-user",
+  currentUser,
+  /*requireAuth,*/ 
+  (req, res) => {
+    res.send({
+      currentUser: !req.currentUser ? null : req.currentUser,
+    });
+  }
+);
+
+export { router as currentUserRouter };
+
+```
+
+**NAIME, JA SAM POMENUTI MIDDLEWARE USTVARI PRAVIO KAO NESTO STA CE MI BITI POTREBNO U DRUGIM MICROSERVICE-OVIMA**
+
+**JER DA BI SE PROVERILO DA LI JE KORISNIK AUTHORIZED JA CU U DRUGIM MICROSERVICE-OVIMA KORISTITI `currentUser`, `requireAuth` ,DOK MI TRENUTNO SAMO ZA /current-user ROUTE TREBA SAMO OVAJ currentUser MIDDLEWARE**
