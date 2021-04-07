@@ -1,38 +1,28 @@
 import { Router } from "express";
-// UVOZIM OVO JER ZELIM D VIDIM DA LI CE JWT BITI VALID
 import { verify } from "jsonwebtoken";
+// UVOZIM current-user MIDDLEWARE
+import { currentUser } from "../middlewares/current-user";
+//
 
 const router = Router();
 
-router.get("/api/users/current-user", (req, res) => {
-  // AKO NE POSTOJI jwt ON req.session SEND-OVATI RESPONSE
-  // EARLY, A SA user
+// DODACU OVDE, POMENUTI MIDDLEWARW
+router.get("/api/users/current-user", currentUser, (req, res) => {
   if (!req.session || !(req.session as { jwt: string }).jwt) {
-    // AUTOR WORKSHOPA NE STAVLJA STATUS U OVOM SLUCAJU
-    res /* .status(400) */
-      .send({ currentUser: null });
+    res.send({ currentUser: null });
   }
 
   const { jwt } = req.session as { jwt: string };
-
-  // SADA VERIFY-UJEM TOKEN
 
   try {
     const payload = verify(jwt, process.env.JWT_KEY!);
 
     res.status(200).send({ currentUser: payload });
-    // SAMO TI NAPOMINJEM paylod JE U FORMATU {id, email}
   } catch (err) {
     console.log(err);
 
-    res /* .status(400) */
-      .send({ currentUser: null });
+    res.send({ currentUser: null });
   }
-
-  // TI I NISI MORAO DA KORISTIS TRY CATCH BLOK
-  // OVO GORE SI TI MOGAO DA URADDIS TAKO DA SVE WRAPP-UJES U PROMISE
-  // STO SAM RADIO JEDNOM RANIJE, POGLEDAJ OVAJ LINK
-  // https://github.com/Rade58/apis_trying_out_and_practicing/blob/master/Node.js/1.%20API%20DESIGN/e)%20AUTH/VEZBA/SECURING%20API%20SA%20JWT-OM.md
 });
 
 export { router as currentUserRouter };

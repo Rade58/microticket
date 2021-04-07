@@ -86,3 +86,13 @@ export const currentUser = (
   next();
 };
 ```
+
+# SADA CU REFAKTORISATI `/current-user` HANDLER, KAKO BI KORISTIO GORNJI MIDDLEWARE
+
+- `code auth/src/routes/current-user.ts`
+
+```ts
+
+```
+
+
