@@ -140,4 +140,71 @@ export { router as currentUserRouter };
 
 ```
 
+## MOGU SADA OVO DA TESTIRAM U INSOMNIA-I
 
+NAPRAVICEMO USER-A
+
+DAKLE REQUEST PRAVIMO PREMA:
+
+`https://microticket.com/api/users/signup`
+
+METHOD JE:
+
+`POST`
+
+SALJEMO JSON
+
+```json
+{
+	"email": "guliana@mail.com",
+	"password": "ChillyIsGreat26"
+}
+```
+
+SADA SMO KREIRALI USERA A PRIJAVLJENI SMO JER IMAMO JSON WEB TOKEN, KAO VREDNOST Set-Cookie HEADER-A
+
+MOZEMO DA ZAHTEVAMO CURRENT USERA, KAKO BI SMO CONFIRM-OVALI DA SMO SIGNED IN
+
+DAKLE REQUEST PRAVIMO PREMA:
+
+`https://microticket.com/api/users/current-user`
+
+METHOD JE: `GET`
+
+I VIDECES DA CEMO DOBITI CURRENT USER-A
+
+**STO ZNACI DA SMO DOBRO IZVRSILI GORNJI REFACTORING, GORNJU UPOTREBU currentUser MIDDLEWARE-A**
+
+SADA CEMO DA SE SIGN-UJEMO OUT
+
+DAKLE REQUEST PRAVIMO PREMA:
+
+`https://microticket.com/api/users/signout`
+
+METHOD JE:
+
+`GET`
+
+JSON KOJI DOBIJAM BI TREBAL ODA BUDE EMPTY OBJECT
+
+```json
+{}
+```
+
+**SAD MOZES DA POKUSAS DA UZMES CURRENT USER-A**
+
+DAKLE REQUEST PRAVIMO PREMA:
+
+`https://microticket.com/api/users/current-user`
+
+METHOD JE: `GET`
+
+I DOBIO SI
+
+```json
+{
+  "currentUser": null
+}
+```
+
+DAKLE USPESNO SMO DEFINISALI SAV REFACTORING, ODNOSNO NAS currentUser JE USPESNO SVE OBAVIO
