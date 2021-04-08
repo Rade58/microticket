@@ -39,7 +39,7 @@ ZELIM DA JEST-U (TEST RUNNER) DAM SAMO NEKI BASIC CONFIGURATION KAKO BI MAOGAO D
 
 - `mkdir auth/src/test`
 
-- `touch auth/src/test/test.ts`
+- `touch auth/src/test/setup.ts`
 
 ```ts
 import { MongoMemoryServer } from "mongodb-memory-server";
