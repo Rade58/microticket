@@ -132,5 +132,63 @@ E PA TAMO U beforeTest HOOK-U MOZEMO DEFINISATI INSERTING ENV VARIABLE-A U NAS N
 - `code auth/src/test/setup.ts`
 
 ```ts
+import { MongoMemoryServer } from "mongodb-memory-server";
+import mongoose from "mongoose";
+
+import { app } from "../app";
+
+let mongo: any;
+
+beforeAll(async () => {
+  // EVO OVDE DEFINISEM ENVIRONMENT VARIBLE
+  process.env.JWT_KEY = "test";
+  //
+
+  mongo = new MongoMemoryServer();
+
+  const mongoUri = await mongo.getUri();
+
+  await mongoose.connect(mongoUri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+});
+
+beforeEach(async () => {
+  const collections = await mongoose.connection.db.collections();
+
+  for (const collection of collections) {
+    await collection.deleteMany({});
+  }
+});
+
+afterAll(async () => {
+  await mongo.stop();
+  await mongoose.connection.close();
+});
+
+```
+
+# MOZES SADA DA PROBAS DA TESTIRAS
+
+- `cd auth`
+
+- `yarn test`
+
+A AKO TI JE TEST USTVARI HANGOVA-O, ODNOSNO BIO JE U WATCH MODE-U, JER SI TI TAKO PODESIO U test SCRIPT-U (ZADAO SAM WATCH MODE) ,TI NII PONVO MORAO DA STARTUJES ISTI SCRIPT, JER CE TVOJI CHANG-OVI BITII APPLYED ODMAH I TEST CE SE RERAN-OVATI AUTOMATSKI
+
+I ZAISTA SADA JE TEST PROSAO
+
+```zsh
+ PASS  src/routes/__test__/signup.test.ts (5.175 s)
+  ✓ returns 201 on successful signup (304 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
+Snapshots:   0 total
+Time:        5.196 s
+Ran all test suites.
+
+Watch Usage: Press w to show more.
 
 ```
