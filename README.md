@@ -142,7 +142,7 @@ let mongo: any;
 beforeAll(async () => {
   // EVO OVDE DEFINISEM ENVIRONMENT VARIBLE
   process.env.JWT_KEY = "test";
-  //
+  // OVO NIJE NAJBOLJI NACIN DA SE OVO HANDLE-UJE ALI WORK-OVACE ZA SADA
 
   mongo = new MongoMemoryServer();
 
