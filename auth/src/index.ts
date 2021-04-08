@@ -1,7 +1,12 @@
-import express from "express";
+// UVOZIM app
+import { app } from "./app";
+// A OVO TREBA ZA DATABASE CONNECTION
+import mongoose from "mongoose";
+
+// OVO SVE NIJE POTREBNO
+/* import express from "express";
 import "express-async-errors";
 import { json } from "body-parser";
-import mongoose from "mongoose";
 import cookieSession from "cookie-session";
 
 import { currentUserRouter } from "./routes/current-user";
@@ -34,7 +39,7 @@ app.all("*", async (req, res, next) => {
   throw new NotFoundError();
 });
 
-app.use(errorHandler);
+app.use(errorHandler); */
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
