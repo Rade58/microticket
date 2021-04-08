@@ -24,6 +24,7 @@
     "mongoose": "^5.12.3"
   },
   "scripts": {
-    "start": "ts-node-dev src/index.ts"
+    "start": "ts-node-dev src/index.ts",
+    "test": "jest --watchAll --no-cache"
   }
 }
