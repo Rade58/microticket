@@ -26,7 +26,7 @@ ZELIM DA JEST-U (TEST RUNNER) DAM SAMO NEKI BASIC CONFIGURATION KAKO BI MAOGAO D
 ```json
 "jest": {
   "preset": "ts-jest",
-  "testEnviroment": "node",
+  "testEnvironment": "node",
   // GOVORIMO JESTU DA RUNN-UJE SETUP FILE AFTER INITIALLY STARTS UP
   "setupFilesAfterEnv": [
     // OVAJ FILE CE POKUSATI DA SE RUNN-UJE
