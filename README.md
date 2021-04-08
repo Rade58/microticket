@@ -122,3 +122,5 @@ const start = async () => {
 
 start();
 ```
+
+**TO JE SAV REFACTORING KOJ ISAM TREBAO URADITI KAO PRIPREMU ZA TESTING**
