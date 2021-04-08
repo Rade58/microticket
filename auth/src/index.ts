@@ -13,7 +13,7 @@ import { NotFoundError } from "./errors/not-found-error";
 
 const app = express();
 
-// PODESENO ZBOG HTTPS I PAKETA cookie-session
+// PODESENO ZBOG HTTPS I PAKETA cookie-session (DOSTA RANIJE)
 app.set("trust proxy", true);
 
 app.use(json());
