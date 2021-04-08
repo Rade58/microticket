@@ -19,3 +19,21 @@ DAKLE TU JE DA BIH MOGAO TESTIRATI EASYLLY VISE MICROSERVICE-A
 
 **ZATO TREBAS MODIFIKOVATI `Dockerfile`, KAKO BI AVOID-OVAO IMAGE REBUILDS, ZBOG POMENUTIH DEV DEPENDANCIES-A**
 
+- `code auth/Dockerfile`
+
+DAKLE U SLUCJU INSTALIRANJA MODULA, DODACU FLAG `--only=prod`
+
+```dockerfile
+FROM node:lts-alpine3.12
+
+WORKDIR /app
+
+COPY ./package.json ./
+# DODAO OVDE
+RUN npm install --only=prod
+
+COPY ./ ./
+
+CMD ["npm", "start"]
+
+```
