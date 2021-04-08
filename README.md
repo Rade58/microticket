@@ -50,3 +50,67 @@ async SAM KORISTIO GORE KAO HABIT, JER CES TI U BUDUCNOSTI POKUSATI DA RADIS MUL
 - `cd auth`
 
 - `yarn test`
+
+**ALI TEST NECE PROCI ,A SVA JE SRECA DA SAM U ERROR HANDLING MIDDLEWARE-U STAMPAO ERROR, PA SAM SAZNAO U CEMU JE GRESKA**
+
+```bash
+console.log
+    ERROR --> Error: secretOrPrivateKey must have a value
+        at Object.<anonymous>.module.exports [as sign] (/home/eidolonro/PROJECTS/GITHUB IMPORTANT /EXPLORING MICROSERVICES/2_micro_ticket/auth/node_modules/jsonwebtoken/sign.js:107:20)
+        at /home/eidolonro/PROJECTS/GITHUB IMPORTANT /EXPLORING MICROSERVICES/2_micro_ticket/auth/src/routes/signup.ts:53:21
+        at step (/home/eidolonro/PROJECTS/GITHUB IMPORTANT /EXPLORING MICROSERVICES/2_micro_ticket/auth/src/routes/signup.ts:33:23)
+        at Object.next (/home/eidolonro/PROJECTS/GITHUB IMPORTANT /EXPLORING MICROSERVICES/2_micro_ticket/auth/src/routes/signup.ts:14:53)
+        at fulfilled (/home/eidolonro/PROJECTS/GITHUB IMPORTANT /EXPLORING MICROSERVICES/2_micro_ticket/auth/src/routes/signup.ts:5:58)
+        at processTicksAndRejections (internal/process/task_queues.js:93:5)
+
+      at errorHandler (src/middlewares/error-handler.ts:24:11)
+
+ FAIL  src/routes/__test__/signup.test.ts (28.405 s)
+  ✕ returns 201 on successful signup (451 ms)
+
+  ● returns 201 on successful signup
+
+    expected 201 "Created", got 400 "Bad Request"
+
+      19 |       // OVO SU ASSERTIONS (TVRDNJE) ABOUT THE RESPONSE
+      20 |       // OCEKUJEMO DAKLE STATUS CODE 201
+    > 21 |       .expect(201)
+         |        ^
+      22 |   );
+      23 | });
+      24 |
+
+      at src/routes/__test__/signup.test.ts:21:8
+      at step (src/routes/__test__/signup.test.ts:33:23)
+      at Object.next (src/routes/__test__/signup.test.ts:14:53)
+      at src/routes/__test__/signup.test.ts:8:71
+      at Object.<anonymous>.__awaiter (src/routes/__test__/signup.test.ts:4:12)
+      at Object.<anonymous> (src/routes/__test__/signup.test.ts:6:40)
+      ----
+      at Test.Object.<anonymous>.Test._assertStatus (node_modules/supertest/lib/test.js:296:12)
+      at node_modules/supertest/lib/test.js:80:15
+      at Test.Object.<anonymous>.Test._assertFunction (node_modules/supertest/lib/test.js:311:11)
+      at Test.Object.<anonymous>.Test.assert (node_modules/supertest/lib/test.js:201:21)
+      at Server.localAssert (node_modules/supertest/lib/test.js:159:12)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 1 total
+Snapshots:   0 total
+Time:        29.074 s
+Ran all test suites.
+
+Watch Usage
+ › Press f to run only failed tests.
+ › Press o to only run tests related to changed files.
+ › Press p to filter by a filename regex pattern.
+ › Press t to filter by a test name regex pattern.
+ › Press q to quit watch mode.
+ › Press Enter to trigger a test run.
+
+```
+
+**MOZES PROCITTI GORE NA POCETKU U CEMU JE PROBLEM**
+
+**TO JE `secretOrPrivateKey must have a value`**
+
+**SECAS SE DA MORAS PROSLEDITI ENVIROMENT VARIABLE `JWT_KEY` (TO JE ONAJ SECRET KEY, KOJIM ZAJEDNO SA PAYLOAD-OM PRAVIS JSON WEB TOKEN)**
