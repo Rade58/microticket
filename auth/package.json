@@ -26,5 +26,12 @@
   "scripts": {
     "start": "ts-node-dev src/index.ts",
     "test": "jest --watchAll --no-cache"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnviroment": "node",
+    "setupFilesAfterEnv": [
+      "./src/test/setup.ts"
+    ]
   }
 }

@@ -18,3 +18,29 @@ ZELIM DA JEST-U (TEST RUNNER) DAM SAMO NEKI BASIC CONFIGURATION KAKO BI MAOGAO D
 ```
 
 **KADA SE RUNN-UJE START-UPP-OVACE JEST, RECI CE MU DA RUNN-UJE SVE TEST-OVE INSIDE OF OUR PROJECT, KAADA SE GOD BILO KOJI FILE MICROSERVICE-A PROMENI, A --no-cache CE BITI NAS ATEMPT DA KORISTIMO TYPESCRIPT WITH JEST**
+
+**ZADAJEMO I CEO BLOK ZA jest UNUTAR package.json**
+
+- `code auth/package.json`
+
+```json
+"jest": {
+  "preset": "ts-jest",
+  "testEnviroment": "node",
+  // GOVORIMO JESTU DA RUNN-UJE SETUP FILE AFTER INITIALLY STARTS UP
+  "setupFilesAfterEnv": [
+    // OVAJ FILE CE POKUSATI DA SE RUNN-UJE
+    "./src/test/setup.ts"
+  ]
+}
+```
+
+## NAPRAVICU SADA TAJ FILE `./src/test/setup.ts`
+
+- `mkdir auth/src/test`
+
+- `touch auth/src/test/test.ts`
+
+```ts
+
+```
