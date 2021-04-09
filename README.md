@@ -123,3 +123,6 @@ it("response has a cookie when given valid credentials", async () => {
 ```
 
 TEST JE PASS-OVAO
+
+# SADA CU DA TESTIRAM `/signout` ROUTE HANDLER
+
