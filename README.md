@@ -119,3 +119,34 @@ it("returns 400 on invalid email and password, or when email and password are mi
 ```
 
 I OVAJ TEST JE PROSAO
+
+# OVO TVOJI TESTOVI SU ZA SADA STVARNO JAKO JEDNOSTAVNI, ALI ONO STO BI TI RADIO JESTE ISCITAVO ONU FUNKCIJU KOJU TESTIRAS, I ONDA NAPISAO TEST ZA INFRASTRUKTURU, ZA NEKU LOGIKU, NEKU USLOVNU IZJAVU KOJ JE U TVOM CODE-U
+
+SADA CU DA URADIM TKAV TEST, A ONO STO CU TESTIRATI JESTE, UNIQUENESS OF AN EMAIL
+
+JER IMAM TAKVU LOGIKU U HANDLERU KOJA NE DOZVOLJAVA EMAIL DUPLICATES
+
+DAKLE OVDE TREBAS DA NAPISES JEDAN REQUEST U TESTU, KOJI CE PROCI, DA BI SE USPESNO KREIRAO KORISNIK U IN MEMORY DATBASE-U, DAKLE TU EXPECT-UJEMO 201
+
+I ONDA CEMO DUPLICIRATI REQUEST (IMACEMO ISTE EMAIL I PASSWORD INPUTE), ALI CEMO TU OCEKIVATI 400, ZATO STO JE U PITANJU ISTI EMAIL
+
+- `code auth/src/routes/__test__/signup.test.ts`
+
+```ts
+// ...
+
+it("returns 400 if u try to create user with a existing email", async () => {
+  await request(app)
+    .post("/api/users/signup")
+    .send({ email: "nickmullen@comedy.com", password: "Sammich284" })
+    .expect(201);
+
+  await request(app)
+    .post("/api/users/signup")
+    .send({ email: "nickmullen@comedy.com", password: "Sammich284" })
+    .expect(400);
+});
+
+```
+
+I OVAJ TEST JE PROSAO

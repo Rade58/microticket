@@ -52,3 +52,17 @@ it("returns 400 on invalid email and password, or when email and password are mi
     })
     .expect(400);
 });
+
+//
+
+it("returns 400 if u try to create user with a existing email", async () => {
+  await request(app)
+    .post("/api/users/signup")
+    .send({ email: "nickmullen@comedy.com", password: "Sammich284" })
+    .expect(201);
+
+  await request(app)
+    .post("/api/users/signup")
+    .send({ email: "nickmullen@comedy.com", password: "Sammich284" })
+    .expect(400);
+});
