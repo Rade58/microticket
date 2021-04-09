@@ -13,7 +13,26 @@ DA KREIRAM FAJL I POCNEM SA PISANJEM TESTOVA
 - `touch auth/src/routes/__test__/signin.test.ts`
 
 ```ts
+import request from "supertest";
+import { app } from "../../app";
+
+// EVO OVO JE PRVI TEST
+it("returns 200 on successful signin", async () => {
+  // PRVO MORAMO NAPRAVITI USERA (signup)
+  await request(app)
+    .post("/api/users/signup")
+    .send({ email: "georgelopez@mail.com", password: "RookieSinger1" })
+    .expect(201);
+
+  await request(app)
+    .post("/api/users/signin")
+    // MORAMO POSLATI ISTI email I password KAO ABOVE
+    .send({ email: "georgelopez@mail.com", password: "RookieSinger1" })
+    .expect(200);
+});
 
 ```
 
+- `cd auth` `yarn test` (AKO SI UGASIO TESTIRANJE POKRENI PONOVO)
 
+I TEST JE PROSAO
