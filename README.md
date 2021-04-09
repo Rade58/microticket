@@ -126,3 +126,68 @@ TEST JE PASS-OVAO
 
 # SADA CU DA TESTIRAM `/signout` ROUTE HANDLER
 
+POGLEDAJ KAKO IZGLEDA POMENUTI HANDLER (`auth/src/routes/signout.ts`)
+
+OVDE MOGU NAPISATI TEST, ODNOSNO DEFINISATI ASSERTION DA NE OCEKUJEM COOKIE U RESPONSE-U, JER JE ULOGA OVOG HANDLER-A DA CLEAR-UJE TAJ COOKIE
+
+- `touch auth/src/routes/__test__/signout.test.ts`
+
+```ts
+import request from "supertest";
+import { app } from "../../app";
+
+it("response shouldn't have cookie on it", async () => {
+  await request(app)
+    .post("/api/users/signup")
+    .send({ email: "louis@mail.com", password: "PortoSomeone66" })
+    .expect(201);
+
+  const response = await request(app)
+    .get("/api/users/signout")
+    .send()
+    .expect(200);
+
+  expect(response.get("Set-Cookie")).toBeUndefined();
+});
+
+```
+
+TEST CE TI FAIL-OVATI SAM OZBOG POSLEDNJEG LINE-A, JER VREDNOST COOKIE NIJEE KOMPLETNO UNDEFINED
+
+ZATO UMESTO ZADNJEG LINE-MI CEMO STAMPATI EZULTATI COOKIEA
+
+- `touch auth/src/routes/__test__/signout.test.ts`
+
+```ts
+import request from "supertest";
+import { app } from "../../app";
+
+it("response shouldn't have cookie on it", async () => {
+  await request(app)
+    .post("/api/users/signup")
+    .send({ email: "louis@mail.com", password: "PortoSomeone66" })
+    .expect(201);
+
+  const response = await request(app)
+    .get("/api/users/signout")
+    .send()
+    .expect(200);
+
+  // expect(response.get("Set-Cookie")).toBeUndefined();
+  // EVO UMESTO expect SAMO SAM PRINT-OVAO VREDNOST COOKIEA
+  console.log(response.get("Set-Cookie"));
+});
+
+```
+
+U TERMINALUU CES VIDETI DA JE OVO VREDNOT COOKIE-A
+
+```zsh
+
+```
+
+
+
+
+
+
