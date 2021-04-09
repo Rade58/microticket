@@ -52,4 +52,4 @@ app.use(
 );
 ```
 
-**ZATO JE `Set-Cookie` HEADER BIO undefined**
+**ZATO JE `Set-Cookie` HEADER BIO undefined; JER NIJE MOGAO BITI TRANSFERED BES SSL CERTIFICATE-A**
