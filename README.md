@@ -66,7 +66,38 @@ it("responds with details about the current user signed in", async () => {
   // U OVOM FORMATU {currentUser: {id, email, iat}}
   // STO CES MOCI DA VIDIS KADA RUNN-UJES TEST
 });
+```
+
+**MOZES DA NAPISES BOLJI TEST SADA, U KOJEM CES EXPECT-OVATI, UPRAVO TE PODATKE**
+
+- `code auth/src/routes/__test__/current-user.test.ts`
+
+```ts
+import request from "supertest";
+import { app } from "../../app";
+
+it("responds with details about the current user signed in", async () => {
+  const signUpResponse = await request(app)
+    .post("/api/users/signup")
+    .send({
+      email: "stavros@mail.com",
+      password: "CoolAdamCool66",
+    })
+    .expect(201);
+
+  const setCookieHeader = signUpResponse.get("Set-Cookie");
+
+  const response = await request(app)
+    .get("/api/users/current-user")
+    .set("Cookie", setCookieHeader)
+    .send()
+    .expect(200);
+
+  // EVO DODAJEM OVO, USTVARI (ASSERT-UJEM TACNO DA JE TO ONAJ MAIL SA KOJIM JE OBAVLJEN SIGNING UP)
+
+  expect(response.body.currentUser.email).toEqual("stavros@mail.com");
+});
 
 ```
 
-
+I TEST JE PASS-OVAO
