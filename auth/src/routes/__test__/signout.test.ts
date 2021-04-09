@@ -12,7 +12,8 @@ it("response shouldn't have cookie on it", async () => {
     .send()
     .expect(200);
 
-  // expect(response.get("Set-Cookie")).toBeUndefined();
-
-  console.log(response.get("Set-Cookie"));
+  // EVO VIDIS
+  expect(response.get("Set-Cookie")[0]).toEqual(
+    "express:sess=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; httponly"
+  );
 });
