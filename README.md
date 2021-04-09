@@ -34,7 +34,7 @@ BICE RECENO DA Swt-Cookie NIJE DEFINED, DA MI JE VREDNOST undefined ZA OVAJ TEST
 
 SECAS SE OVOGA:
 
-- `cat `
+- `cat auth/src/app.ts`
 
 ```ts
 // ...
@@ -55,4 +55,24 @@ app.use(
 **ZATO JE `Set-Cookie` HEADER BIO undefined; JER NIJE MOGAO BITI TRANSFERED BES SSL CERTIFICATE-A**
 
 DAKLE JA SAM PRAVIO PLAIN HTTP REQUEST
+
+## JA NEMOGU PRAVITI SECURE REQUESTS IN A TEST ENVIROMENT, ZATO MORAM IZVRSITI PROMENU MOG CODEBASE- A, KONKRETNO U OVOM SLUCAJU DA SE ZA TEST-OVE, NE KORISTI secure ZA cookieSession MIDDLEWATE
+
+A TO MOGU LAKO URADITI JER JE DURING TESTS `proces.NODE_ENV` USTVARI `"test"`
+
+- `cat auth/src/app.ts`
+
+```ts
+// ...
+
+app.use(
+  cookieSession({
+    signed: false,
+    // DAKLE OVA OPCIAJ CE BITI false, KADA JE U PITANJU
+    // TESTING
+    secure: process.env.NODE_ENV !== "test",
+  })
+);
+
+```
 

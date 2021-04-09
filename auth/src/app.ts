@@ -20,7 +20,9 @@ app.use(json());
 app.use(
   cookieSession({
     signed: false,
-    secure: true,
+    // DAKLE OVA OPCIAJ CE BITI false, KADA JE U PITANJU
+    // TESTING
+    secure: process.env.NODE_ENV !== "test",
   })
 );
 
