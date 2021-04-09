@@ -106,7 +106,8 @@ it("returns 400 on invalid email and password, or when email and password are mi
     })
     .expect(400);
 
-  // A OVDDE return
+  // A OVDE return , ALI TEHNICKI TI NISI MORAO DA RETURN-UJS
+  // MOZES KORISTITI I OVDE await
   return request(app)
     .post("/api/users/signup")
     .send({
