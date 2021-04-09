@@ -14,11 +14,13 @@ it("responds with details about the current user signed in", async () => {
     })
     .expect(201);
 
-  await request(app).get("/api/users/current-user").send().expect(200);
+  // OVDE OCEKUJEMO 200 SSTATUS KADA GET-UJEMO CURRENT USER-A
+  const response = await request(app)
+    .get("/api/users/current-user")
+    .send()
+    .expect(200);
 
-  // IAKO MISLIS DA CE OVAJ TEST PROCI POGRESIO SI, JER GORNJI
-  // TEST NIJE PROSAO, GORE JE USTVARI TREBAL ODA EXCEPT-UJES
-  // STATUS CODE 400
-
-  // expect(response.body).toEqual()
+  // SADA DAKLE DAT O USER-U TREBA DA SE NALAZE NA body-JU
+  // STAMPACU GA CITO DA VIDIM
+  console.log(response.body);
 });
