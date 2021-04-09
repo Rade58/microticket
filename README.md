@@ -74,7 +74,22 @@ it("returns 200 on successful signin; return 400 on non existing email", async (
 
 I I DALJE OVAJ TEST PASS-UJE
 
+**SADA CU URADITI TEST ZA INVALID PASSWORD (IMJ NA UMU DA JE ZA signin ROUTE, INVALID PASSWORD SAMO EMPTY STRING)**
 
+- `code auth/src/routes/__test__/signin.test.ts`
 
+```ts
+// ...
+// --------
 
+it("returns 400 if password is empty string", async () => {
+  await request(app)
+    .post("/api/users/signin")
+    .send({ email: "siann@mail.com", password: "" })
+    .expect(400);
+});
+
+```
+
+TEST JE PASS-OVAO
 
