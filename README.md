@@ -105,7 +105,7 @@ TEST JE PASS-OVAO
 ```ts
 // ....
 
-it("response has jwt", async () => {
+it("response has a cookie when given valid credentials", async () => {
   await request(app)
     .post("/api/users/signup")
     .send({ email: "stavros@mail.com", password: "RookieSinger1" })
