@@ -11,14 +11,24 @@ it("returns 201 on successful signup", async () => {
     .expect(201);
 });
 
-// EVO PRAVIM NOVI TEST
-
 it("returns 400 on invalid email", async () => {
   return request(app)
     .post("/api/users/signup")
     .send({
       email: "something",
       password: "AdamIsCoolBird6",
+    })
+    .expect(400);
+});
+
+// ZA password
+
+it("returns 400 on invalid password", async () => {
+  return request(app)
+    .post("/api/users/signup")
+    .send({
+      email: "stavvy@mail.com",
+      password: "me",
     })
     .expect(400);
 });
