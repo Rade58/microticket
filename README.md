@@ -80,16 +80,45 @@ I I DALJE OVAJ TEST PASS-UJE
 
 ```ts
 // ...
-// --------
 
 it("returns 400 if password is empty string", async () => {
   await request(app)
+    .post("/api/users/signup")
+    .send({ email: "georgelopez@mail.com", password: "RookieSinger1" })
+    .expect(201);
+
+  await request(app)
     .post("/api/users/signin")
-    .send({ email: "siann@mail.com", password: "" })
+    .send({ email: "georgelopez@mail.com", password: "" })
     .expect(400);
 });
+
 
 ```
 
 TEST JE PASS-OVAO
 
+**SADA TESTIRAM TO DA LI CU IMATI COOKIE U RESPONSE-U**
+
+- `code auth/src/routes/__test__/signin.test.ts`
+
+```ts
+// ....
+
+it("response has jwt", async () => {
+  await request(app)
+    .post("/api/users/signup")
+    .send({ email: "stavros@mail.com", password: "RookieSinger1" })
+    .expect(201);
+
+  const response = await request(app)
+    .post("/api/users/signin")
+    .send({ email: "stavros@mail.com", password: "RookieSinger1" })
+    .expect(200);
+
+  expect(response.get("Set-Cookie")).toBeDefined();
+});
+
+```
+
+TEST JE PASS-OVAO

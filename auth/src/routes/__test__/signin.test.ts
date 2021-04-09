@@ -22,7 +22,28 @@ it("returns 200 on successful signin; return 400 on non existing email", async (
 
 it("returns 400 if password is empty string", async () => {
   await request(app)
+    .post("/api/users/signup")
+    .send({ email: "georgy@mail.com", password: "RookieSinger1" })
+    .expect(201);
+
+  await request(app)
     .post("/api/users/signin")
-    .send({ email: "siann@mail.com", password: "" })
+    .send({ email: "georgy@mail.com", password: "" })
     .expect(400);
+});
+
+// ....
+
+it("response has jwt", async () => {
+  await request(app)
+    .post("/api/users/signup")
+    .send({ email: "stavros@mail.com", password: "RookieSinger1" })
+    .expect(201);
+
+  const response = await request(app)
+    .post("/api/users/signin")
+    .send({ email: "stavros@mail.com", password: "RookieSinger1" })
+    .expect(200);
+
+  expect(response.get("Set-Cookie")).toBeDefined();
 });
