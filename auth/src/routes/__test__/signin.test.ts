@@ -34,7 +34,7 @@ it("returns 400 if password is empty string", async () => {
 
 // ....
 
-it("response has a cookie", async () => {
+it("response has a cookie when given valid credentials", async () => {
   await request(app)
     .post("/api/users/signup")
     .send({ email: "stavros@mail.com", password: "RookieSinger1" })
