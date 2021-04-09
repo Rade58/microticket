@@ -113,6 +113,7 @@ it("response has a cookie when given valid credentials", async () => {
 
   const response = await request(app)
     .post("/api/users/signin")
+    // MORAS OBEZBEDITI VALID CREDENTIALS
     .send({ email: "stavros@mail.com", password: "RookieSinger1" })
     .expect(200);
 
