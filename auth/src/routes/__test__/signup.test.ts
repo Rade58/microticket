@@ -21,14 +21,34 @@ it("returns 400 on invalid email", async () => {
     .expect(400);
 });
 
-// ZA password
-
 it("returns 400 on invalid password", async () => {
   return request(app)
     .post("/api/users/signup")
     .send({
       email: "stavvy@mail.com",
       password: "me",
+    })
+    .expect(400);
+});
+
+// -------
+
+it("returns 400 on invalid email and password, or when email and password are missing", async () => {
+  // EVO OVDE await
+  await request(app)
+    .post("/api/users/signup")
+    .send({
+      email: "",
+      password: "",
+    })
+    .expect(400);
+
+  // A OVDDE return
+  return request(app)
+    .post("/api/users/signup")
+    .send({
+      // email: "",
+      // password: "",
     })
     .expect(400);
 });
