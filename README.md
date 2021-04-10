@@ -1,21 +1,7 @@
-# ADDING NEXTJS CONFIG I FORGON IN PREVIOUS BRANCH, AND ENABLING WEBPACK5
-
-OVO RADIM NA SVOJU RUKU, I NIJE DEO WORKSHOPA, A NE VIDIM DA CE IMATI I BILO KAKVOG BENEFITA ZA WORKSHOP
+# BUILDING Next.js IMAGE
 
 - `cd client`
 
-OVO SLUZI ZA LOADING ENV VARIABLI (IZGLEDA DA OVO NECE BITI BENEFICIAL ZA OVAJ WORKSHOP (MORAM NESTO VISE SAZNATI O OVOME))
+- `touch Dockerfile`
 
-- `yarn add next-env dotenv-load next-compose-plugins`
 
-- `touch client/next.config.js`
-
-POGLEDAJ SAM STA SAM RADIO
-
-- `cat client/next.config.js`
-
-***
-***
-
-***
-***
