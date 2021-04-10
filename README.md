@@ -173,3 +173,94 @@ export default PageName;
 ```
 
 PROMENI TREBA NESTO DUZE DA SE APPY-UJE ALI SE DESILA U BROWSERU SAM VIDEO CHANGE
+
+## AUTOR WORKHOPA MEDJUTIM ELI DA NAPRAVI IZMENU U NEXTJS KONFIGURACIJI KAKO BI POPRAVIO TU POSSIBLE NEZELJENOST, PRI KOJOJ FILES NEXTJS NECE DA SE SYNC-UJU
+
+ON USTVARI ZELI DA JA PODESIM `webpackDevMiddleware` OPCIJU U SAMOJ KONFIGURACIJI (TI IGNORISI SVE STO SAM JA U KONFIGURACIJI PODESAVAO, I SAMO GLEDAJ GDE SAM NAPRAVIO TU webpackDevMiddleware FUNKCIJU)
+
+- `code client/next.config.js`
+
+```js
+const {
+  PHASE_DEVELOPMENT_SERVER,
+  PHASE_PRODUCTION_BUILD,
+  /* PHASE_EXPORT,
+  PHASE_PRODUCTION_SERVER, */
+} = require("next/constants");
+
+const dotenvLoad = require("dotenv-load");
+
+const nextEnv = require("next-env");
+const withPlugins = require("next-compose-plugins");
+
+// const path = require("path");
+
+// ------------------
+
+dotenvLoad();
+
+// ----------------------------------
+
+const envPlugin = nextEnv();
+
+module.exports = (phase, { defaultConfig }) => {
+  if (phase === PHASE_DEVELOPMENT_SERVER) console.log("Development");
+  if (phase === PHASE_PRODUCTION_BUILD) console.log("Production");
+
+  const newConfig = { ...defaultConfig };
+
+  newConfig.webpack = (config, options) => {
+    /* config.module.rules.push({
+      test: /\.js$/,
+      exclude: /(node_modules)/,
+      enforce: "post",
+      use: {
+        loader: "ify-loader",
+      },
+    }); */
+
+    return config;
+  };
+
+  // WEBPACK 5 ENABLING
+  newConfig.future = {
+    webpack5: true,
+  };
+
+  // *********************
+  // EVO OVDE CU DA PODESIM TU webpackDevMiddleware FUNKCIJU
+  newConfig.webpackDevMiddleware = (config) => {
+    // OVO JE USTVARI STVAR TIMING-A
+    // PRE OVOGA, POSTO VALJDA HOT MODULE REPLACEMENT ILI NESTO SLICNO
+    // PRATI PROMENE I JA KADA PROMENIM FILE TO NEXTJS WEBPACK 
+    // DEO SLUSA I ONDA RADI PROMENE AUTOMATSKI
+    // MEDJUTIM DIDAJU CCI OVU OPCIJU JA SAM DEFINISAO DA SVAKIH 300 MILISEKUNDI WEBPACK POGLEDA U FILE DA LI JE PROMENJEN
+    // AKO JESTE IZVRSICE TAJ BRZI PULLING PROMENA
+    // JER SADA CE RADITI U ZAVISNOSTI OD VREMENA
+    config.watchOptions.poll = 300;
+    return config;
+  };
+  // ***********************
+
+  const configuration = withPlugins([envPlugin])(phase, {
+    defaultConfig: newConfig,
+  });
+
+  // console.log({ configuration });
+
+  return configuration;
+};
+
+```
+
+SECAS SE KAKO KADA PROMNIS CONFIGURACIJU NEXT-A DA MORAS DA RESTARTUJES DEV SERVER
+
+ZATO CES MORATI DA RESTARTUJES SKAFFOLD
+
+- `Ctrl + C`
+
+- `skaffold dev`
+
+SACEKAO SAM SA REBUILDINGOM IMAGE-A, PA SAM ONDA NAPRAVIO PROMENU U MOJOJ TRENUTNO JEDINOJ NEXTJS PAGE KOMPONENTI, PROMENA SE DESILA NESTO BRE
+
+UGLAVNO MSVE JE U REDU

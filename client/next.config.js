@@ -10,7 +10,7 @@ const dotenvLoad = require("dotenv-load");
 const nextEnv = require("next-env");
 const withPlugins = require("next-compose-plugins");
 
-const path = require("path");
+// const path = require("path");
 
 // ------------------
 
@@ -44,9 +44,15 @@ module.exports = (phase, { defaultConfig }) => {
     webpack5: true,
   };
 
-  // console.log({ newConfig });
+  // *********************
+  // EVO OVDE CU DA PODESIM TU webpackDevMiddleware FUNKCIJU
+  newConfig.webpackDevMiddleware = (config) => {
+    config.watchOptions.poll = 300;
+    return config;
+  };
+  // ***********************
 
-  let configuration = withPlugins([envPlugin])(phase, {
+  const configuration = withPlugins([envPlugin])(phase, {
     defaultConfig: newConfig,
   });
 

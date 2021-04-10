@@ -4,9 +4,9 @@ import { FunctionComponent } from "react";
 
 const IndexPage: FunctionComponent = () => {
   // UMESTO OVOGA
-  // return <div>👾</div>;
-  // STAVIO OVO
-  return <div>Owls are best birds.</div>;
+
+  // return <div>Owls are best birds.</div>;
+  return <div>Let{"'"}s go</div>;
 };
 
 export default IndexPage;
