@@ -28,3 +28,6 @@ auth/node_modules
 
 # minicube
 ^minicube
+
+# client app
+client/node_modules
