@@ -36,16 +36,27 @@ afterAll(async () => {
 
 // REAKO SAM TI ZATO STO OVU FUNKCIJU DEFINISES OVDE, KAO GLOBAL,
 // ONA CE BITI JEDINO AVAILABLE U TEST ENVIROMENT-U
+
+// PRE DEFINISANJA FUNKCIJE DA BI PRAVILNO TYPE-OVAO
+// GLOBALNU FUNKCIJU, JEDINO SAM MOGAO DA TYPE-UJEM OVAKO
 declare global {
   // eslint-disable-next-line
   namespace NodeJS {
     interface Global {
-      signup(): Promise<string[]>;
+      // FINKCIJA CE DA RETURN-UJE PROMISE
+      // KOJI JE RESOLVED SA EMAIL-OM, PASWORD-OM, I COOKIE-JEM (VREDNOSCU COOKIE-A JA ARRAY)
+      // TAKO SAM TO I TYPE-OVAO
+      makeRequestAndTakeCookie(): Promise<{
+        cookie: string[];
+        email: string;
+        password: string;
+      }>;
     }
   }
 }
 
-global.signup = async () => {
+// DEFINISEM TU METODU
+global.makeRequestAndTakeCookie = async () => {
   const email = "stavros@stavy.com";
   const password = "SuperCoolPerson66";
 
@@ -56,9 +67,14 @@ global.signup = async () => {
     // ALI JA SAM GA IPAK STAVIO
     .expect(201);
 
+  // UZIMAMO COOKIE
   const cookie = response.get("Set-Cookie");
 
-  // MI SADA MOEMO RETURN-OVATI COOKIE
+  // console.log({ cookie });
 
-  return cookie;
+  // MI SADA MOEMO RETURN-OVATI COOKIE
+  // ALI JEA ZELIM DA RETURN-UJEM I mil I pasword
+  // JER MOZDA CE TREBATI ZA LAKSE TESTIRANJE
+
+  return { cookie, email, password };
 };

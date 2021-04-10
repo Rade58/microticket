@@ -3,8 +3,9 @@ import { app } from "../../app";
 
 it("responds with details about the current user signed in", async () => {
   // UMESTO OVOGA
+  /*
 
-  /* const signUpResponse = await request(app)
+  const signUpResponse = await request(app)
     .post("/api/users/signup")
     .send({
       email: "stavros@mail.com",
@@ -12,17 +13,26 @@ it("responds with details about the current user signed in", async () => {
     })
     .expect(201);
 
-  const setCookieHeader = signUpResponse.get("Set-Cookie"); */
+  const setCookieHeader = signUpResponse.get("Set-Cookie");
 
-  const setCookieHeader = await global.signup();
+  */
+  // UPOTREBLJAVAM GLOBALNU FUNKCIJU
 
-  console.log({ setCookieHeader });
+  const cookieEmailAndPassword = await global.makeRequestAndTakeCookie();
+
+  console.log({ cookieEmailAndPassword });
 
   const response = await request(app)
     .get("/api/users/current-user")
-    .set("Cookie", setCookieHeader)
+    .set("Cookie", cookieEmailAndPassword.cookie)
     .send()
     .expect(200);
 
-  expect(response.body.currentUser.email).toEqual("stavros@mail.com");
+  // EVO IAKO MOZDA NIJE PD VELIKE VAZNOSTI PROVERAVAMO MAIL
+  expect(response.body.currentUser.email).toEqual(cookieEmailAndPassword.email);
+
+  console.log({ cookieHere: response.get("Set-Cookie") });
+
+  // OVDE PRAVIMO TVRDNJU ZA COOKIE I PROVERAVMO
+  // expect(response.get("Set-Cookie")).toEqual(cookieEmailAndPassword.cookie);
 });

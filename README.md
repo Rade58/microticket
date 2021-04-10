@@ -19,6 +19,53 @@ TAKO DA CU SADA DEFINISATI GLOBALNU FUNKCIJU U `auth/src/test/setup.ts` FILE-U
 - `code auth/src/test/setup.ts`
 
 ```ts
+// REAKO SAM TI ZATO STO OVU FUNKCIJU DEFINISES OVDE, KAO GLOBAL,
+// ONA CE BITI JEDINO AVAILABLE U TEST ENVIROMENT-U
 
+// PRE DEFINISANJA FUNKCIJE DA BI PRAVILNO TYPE-OVAO
+// GLOBALNU FUNKCIJU, JEDINO SAM MOGAO DA TYPE-UJEM OVAKO
+declare global {
+  // eslint-disable-next-line
+  namespace NodeJS {
+    interface Global {
+      // FINKCIJA CE DA RETURN-UJE PROMISE
+      // KOJI JE RESOLVED SA EMAIL-OM, PASWORD-OM, I COOKIE-JEM (VREDNOSCU COOKIE-A JA ARRAY)
+      // TAKO SAM TO I TYPE-OVAO
+      makeRequestAndTakeCookie(): Promise<{
+        cookie: string[];
+        email: string;
+        password: string;
+      }>;
+    }
+  }
+
+// GGORNJI DECLARATION MOZE DA STOJI NA POCETKU FILE-A, ALI JA 
+// SAM GA UMETNUO OVDE BEZ IKAKVIH PROBLEMA
+
+// DEFINISEM TU METODU
+global.makeRequestAndTakeCookie = async () => {
+  const email = "stavros@stavy.com";
+  const password = "SuperCoolPerson66";
+
+  const response = await request(app)
+    .post("/api/users/signup")
+    .send({ email, password }) // NE TREBA TI EXPECTATION
+    // JER NIJE U FOKUSU (OVO SE OCEKUJE DA UVEK PRODJE)
+    // ALI JA SAM GA IPAK STAVIO
+    .expect(201);
+
+  // UZIMAMO COOKIE
+  const cookie = response.get("Set-Cookie");
+
+  // MI SADA MOEMO RETURN-OVATI COOKIE
+  // ALI JEA ZELIM DA RETURN-UJEM I mil I pasword
+  // JER MOZDA CE TREBATI ZA LAKSE TESTIRANJE
+
+  return { cookie, email, password };
+};
 ```
+
+## MOZEMO SAD GORNJU FUNKCIJU IMPLEMENTIRATI U TESTOVIMA
+
+- `code auth/src/routes/__test__/current-user.test.ts`
 
