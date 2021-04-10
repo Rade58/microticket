@@ -141,3 +141,35 @@ MOCI CES DA ODES NA
 **NARAVNO, KAA ODES NA <http://microticket.com/> TVOJ NEXTJS PAGE BICE SERVED**
 
 **ALI KADA ODES NA `http://microticket.com/<bilo sta sto nije neki od drugih definisanih rout-ova u ingress-u>`; NEXTJS SERV-UJE SVOJ DEFAULT 404 PAGE**
+
+# NOTE ON FILE CHANGE DETECTION
+
+TI SADA MOZES DA PROMENIS PAGE FILE I SAVE-UJES, I NAKON NEKOLIKO SEKUNDI, BAR U MOM SLUCAJU SKAFFOLD CE TO SYNC-OVATI I TI CES BEZ PAGE REFRESH-A VIDETI PROMENU U BROWSER-U
+
+ALI AUTOR WORKSHOP, KAZE DA JE NEXTJS POMALO **FINICKY**
+
+ON KAZE DA CE SE PONEKADA DESITI DA SE TA PROMENA DOGODI NAKON DUGO VREMENA, A NEKAD SE NECE DOGODITI
+
+MENI SE TO DO SADA NIJE DESILO
+
+EVO PRAVIM PROMENU
+
+- `code client/pages/index.tsx`
+
+```tsx
+/* eslint react/react-in-jsx-scope: 0 */
+/* eslint jsx-a11y/anchor-is-valid: 1 */
+import { FunctionComponent } from "react";
+
+const PageName: FunctionComponent = () => {
+  // UMESTO OVOGA
+  // return <div>👾</div>;
+  // STAVIO OVO
+  return <div>Owls are best birds.</div>;
+};
+
+export default PageName;
+
+```
+
+PROMENI TREBA NESTO DUZE DA SE APPY-UJE ALI SE DESILA U BROWSERU SAM VIDEO CHANGE

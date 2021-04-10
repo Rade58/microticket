@@ -2,8 +2,11 @@
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 import { FunctionComponent } from "react";
 
-const PageName: FunctionComponent = () => {
-  return <div>👾</div>;
+const IndexPage: FunctionComponent = () => {
+  // UMESTO OVOGA
+  // return <div>👾</div>;
+  // STAVIO OVO
+  return <div>Owls are best birds.</div>;
 };
 
-export default PageName;
+export default IndexPage;
