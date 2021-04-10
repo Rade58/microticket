@@ -6,7 +6,7 @@ const IndexPage: FunctionComponent = () => {
   // UMESTO OVOGA
 
   // return <div>Owls are best birds.</div>;
-  return <div>Let{"'"}s go</div>;
+  return <div>Stavros</div>;
 };
 
 export default IndexPage;
