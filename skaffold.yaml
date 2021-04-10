@@ -16,7 +16,6 @@ build:
         manual:
           - src: 'src/**/*.{ts,js}'
             dest: .
-# OVO SAM DODAO
     - image: eu.gcr.io/microticket/client
       context: client
       docker:
