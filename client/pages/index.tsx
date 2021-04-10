@@ -6,7 +6,12 @@ const IndexPage: FunctionComponent = () => {
   // UMESTO OVOGA
 
   // return <div>Owls are best birds.</div>;
-  return <div>Stavros</div>;
+  return (
+    <div>
+      Stavros
+      <button>Press</button>
+    </div>
+  );
 };
 
 export default IndexPage;
