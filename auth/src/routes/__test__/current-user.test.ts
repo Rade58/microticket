@@ -2,21 +2,6 @@ import request from "supertest";
 import { app } from "../../app";
 
 it("responds with details about the current user signed in", async () => {
-  // UMESTO OVOGA
-
-  /* const signUpResponse = await request(app)
-    .post("/api/users/signup")
-    .send({
-      email: "stavros@mail.com",
-      password: "CoolAdamCool66",
-    })
-    .expect(201);
-
-  const setCookieHeader = signUpResponse.get("Set-Cookie");
-
-  */
-  // UPOTREBLJAVAM GLOBALNU FUNKCIJU
-
   const { cookie } = await global.makeRequestAndTakeCookie();
 
   const response = await request(app)
@@ -26,4 +11,14 @@ it("responds with details about the current user signed in", async () => {
     .expect(200);
 
   console.log(response.body);
+});
+
+// EVO PRAVIM NOVI TEST
+it("if user isn't signed in, respods with 200, but currentUser is null", async () => {
+  const response = await request(app)
+    .get("/api/users/current-user")
+    .send()
+    .expect(200);
+
+  expect(response.body.currentUser).toEqual(null);
 });
