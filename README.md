@@ -29,18 +29,14 @@ declare global {
   namespace NodeJS {
     interface Global {
       // FINKCIJA CE DA RETURN-UJE PROMISE
-      // KOJI JE RESOLVED SA EMAIL-OM, PASWORD-OM, I COOKIE-JEM (VREDNOSCU COOKIE-A JA ARRAY)
+      // COOKIE-JEM (VREDNOSCU COOKIE-A JA ARRAY)
       // TAKO SAM TO I TYPE-OVAO
       makeRequestAndTakeCookie(): Promise<{
         cookie: string[];
-        email: string;
-        password: string;
       }>;
     }
   }
-
-// GGORNJI DECLARATION MOZE DA STOJI NA POCETKU FILE-A, ALI JA 
-// SAM GA UMETNUO OVDE BEZ IKAKVIH PROBLEMA
+}
 
 // DEFINISEM TU METODU
 global.makeRequestAndTakeCookie = async () => {
@@ -57,11 +53,11 @@ global.makeRequestAndTakeCookie = async () => {
   // UZIMAMO COOKIE
   const cookie = response.get("Set-Cookie");
 
-  // MI SADA MOEMO RETURN-OVATI COOKIE
-  // ALI JEA ZELIM DA RETURN-UJEM I mil I pasword
-  // JER MOZDA CE TREBATI ZA LAKSE TESTIRANJE
+  // console.log({ cookie });
 
-  return { cookie, email, password };
+  // MI SADA MOEMO RETURN-OVATI COOKIE
+
+  return { cookie };
 };
 ```
 
@@ -69,3 +65,34 @@ global.makeRequestAndTakeCookie = async () => {
 
 - `code auth/src/routes/__test__/current-user.test.ts`
 
+```ts
+import request from "supertest";
+import { app } from "../../app";
+
+it("responds with details about the current user signed in", async () => {
+  // UMESTO OVOGA
+
+  /* const signUpResponse = await request(app)
+    .post("/api/users/signup")
+    .send({
+      email: "stavros@mail.com",
+      password: "CoolAdamCool66",
+    })
+    .expect(201);
+
+  const setCookieHeader = signUpResponse.get("Set-Cookie");
+
+  */
+  // UPOTREBLJAVAM GLOBALNU FUNKCIJU
+
+  const { cookie } = await global.makeRequestAndTakeCookie();
+
+  const response = await request(app)
+    .get("/api/users/current-user")
+    .set("Cookie", cookie)
+    .send()
+    .expect(200);
+
+  console.log(response.body);
+});
+```

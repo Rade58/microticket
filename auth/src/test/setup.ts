@@ -44,12 +44,10 @@ declare global {
   namespace NodeJS {
     interface Global {
       // FINKCIJA CE DA RETURN-UJE PROMISE
-      // KOJI JE RESOLVED SA EMAIL-OM, PASWORD-OM, I COOKIE-JEM (VREDNOSCU COOKIE-A JA ARRAY)
+      // COOKIE-JEM (VREDNOSCU COOKIE-A JA ARRAY)
       // TAKO SAM TO I TYPE-OVAO
       makeRequestAndTakeCookie(): Promise<{
         cookie: string[];
-        email: string;
-        password: string;
       }>;
     }
   }
@@ -73,8 +71,6 @@ global.makeRequestAndTakeCookie = async () => {
   // console.log({ cookie });
 
   // MI SADA MOEMO RETURN-OVATI COOKIE
-  // ALI JEA ZELIM DA RETURN-UJEM I mil I pasword
-  // JER MOZDA CE TREBATI ZA LAKSE TESTIRANJE
 
-  return { cookie, email, password };
+  return { cookie };
 };
