@@ -74,5 +74,50 @@ build:
             dest: .
 ```
 
+# MORAMO DA UPDATE-UJEMO INGRESS NGINX KONFIGURACIJU
 
+- `code infra/k8s/ingress-srv.yaml`
 
+```yaml
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-srv
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  rules:
+    - host: microticket.com
+      http:
+        paths:
+          - path: /api/users/?(.*)
+            pathType: Exact
+            backend:
+              serviceName: auth-srv
+              servicePort: 3000
+          # DODAO SAM OVO
+          - path: /?(.*)
+            pathType: Exact
+            backend:
+              serviceName: client-srv
+              servicePort: 3000
+```
+
+**DA TI JOS JEDNOM POJASNIM ZASTO MORA `/?(.*)` I ZASTO MORA NA KRAJU**
+
+***
+
+PA ZATO STO JE LEAST SPECIFIC PATH, AKO SE SVI GORNJI PATH-OVI NE MATCH-UJU, MOJ NEXTJS APP CE BITI SERVED NA
+
+`microticket.com/`
+
+ILI 
+
+`microticket.com/<neki path koji nije jedan od onih gore specificiranih>`
+
+***
+
+# SADA U ROOT-U TVOG CELOKUPNOG PROJEKTA, MOZES DA START-UJES SKAFFOLD
+
+- `skaffold dev`
