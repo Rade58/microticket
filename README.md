@@ -18,3 +18,14 @@ COPY ./ ./
 CMD ["npm","run", "dev"]
 
 ```
+
+**DOCKERIGNORE-UJ I SVE ONO STO SI GITIGNOR-OVAO ZA NEXT**
+
+- `touch .dockerignore`
+
+```dockerfile
+node_modules
+.next
+.env
+.vercel
+```
