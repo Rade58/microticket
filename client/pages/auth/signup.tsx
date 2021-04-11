@@ -7,10 +7,10 @@ const SignupPage: FunctionComponent = () => {
     <form>
       <h1>Sign Up</h1>
       <label htmlFor="email-signup">Email Address: </label>
-      <input id="email-signup" type="email" />
-      <br />
+      <input id="email-signup" type="email" className="form-control" />
       <label htmlFor="password-signup">Password: </label>
-      <input id="password-signup" type="password" />
+      <input id="password-signup" type="password" className="form-control" />
+      <button className="btn btn-primary">Sign Up</button>
     </form>
   );
 };
