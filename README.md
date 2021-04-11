@@ -103,3 +103,12 @@ export default SignupPage;
 
 ## NAPRAVICU SADA JEDAN REQUEST, KOJI TREBA DA FAIL-UJE, JER CE `password` BITI PREKRATAK
 
+EVO STA SE STAMPALO KAO `err.response.data`
+
+```js
+{
+  errors: [
+    {message: "Password must be valid", field: "password"}
+  ]
+}
+```
