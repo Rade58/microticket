@@ -29,6 +29,10 @@ const SignupPage: FunctionComponent = () => {
       setPassword("");
     } catch (err) {
       console.log({ err });
+
+      // JASNO JE DA CU OVDE HANDLE-OVATI ERROROUS RESPONSES
+      // ONDE RESPONSE-OVE, KOJI NISU SA STATUS CODE-OVIMA
+      // KOJI SU U RANGU 200
     }
     // --------------------------------------------
   }, [email, password, setEmail, setPassword]);
