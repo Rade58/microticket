@@ -10,15 +10,6 @@ const SignupPage: FunctionComponent = () => {
   const [password, setPassword] = useState<string>("");
 
   const sendRequest = useCallback(async () => {
-    // UMESTO OVOGA
-    /* const response = await fetch("/api/users/signup", {
-      method: "POST",
-      body: JSON.stringify({ email, password }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }); */
-    // OVO
     const response = await axios.post(
       "/api/users/signup",
       { email, password },
@@ -29,12 +20,10 @@ const SignupPage: FunctionComponent = () => {
       }
     );
 
-    // UMESTO OVOGA
-    // const data = await response.json();
-    // OVO
     const data = response.data;
 
-    // STAMPAM DATA
+    // DAKLE OVAJ OBJEKAT
+
     console.log({ data });
 
     setEmail("");
