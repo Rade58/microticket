@@ -2,6 +2,8 @@
 
 KREIRAM `/auth/signup` PAGE
 
+- `mkddir client/pages/auth`
+
 - `touch client/pages/auth/signup.tsx`
 
 ```tsx
