@@ -270,7 +270,6 @@ const SignupPage: FunctionComponent = () => {
     // OVO
     const data = response.data;
 
-    // STAMPAM DATA
     console.log({ data });
 
     setEmail("");
