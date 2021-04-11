@@ -3,16 +3,26 @@
 import { FunctionComponent, useState, useCallback } from "react";
 import axios from "axios";
 
+import useRequest from "../../hooks/useRequest";
+
 const SignupPage: FunctionComponent = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  // EVO PRAVIM I TAJ errors DEO STATE-A
-  const [errors, setErrors] = useState<{ message: string; field?: string }[]>(
-    []
-  );
+  const {
+    userData,
+    data,
+    errors,
+    makeRequest,
+    hasErrors,
+  } = useRequest("/api/users/signup", "post", { email, password });
 
-  const sendRequest = useCallback(async () => {
+  // EVO PRAVIM I TAJ errors DEO STATE-A
+  /* const [errors, setErrors] = useState<{ message: string; field?: string }[]>(
+    []
+  ); */
+
+  /* const sendRequest = useCallback(async () => {
     try {
       const response = await axios.post(
         "/api/users/signup",
@@ -37,13 +47,29 @@ const SignupPage: FunctionComponent = () => {
       setErrors(err.response.data.errors);
     }
   }, [email, password, setEmail, setPassword, setErrors]);
+  */
+
+  console.log({
+    userData,
+    data,
+    errors,
+    makeRequest,
+    hasErrors,
+  });
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
 
-        sendRequest();
+        // PRAVI MREQUEST
+        // sendRequest();
+        makeRequest().then(() => {
+          if (!hasErrors) {
+            setEmail("");
+            setPassword("");
+          }
+        });
       }}
     >
       <h1>Sign Up</h1>
@@ -68,7 +94,7 @@ const SignupPage: FunctionComponent = () => {
         />
       </div>
       {/* OVO SAM DODAO */}
-      {errors.length > 0 && (
+      {hasErrors && (
         <div className="alert alert-danger">
           <h4>Oooops...</h4>
           <ul className="my-0">
