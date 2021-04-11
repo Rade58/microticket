@@ -2,21 +2,37 @@
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 import { FunctionComponent, useState, useCallback } from "react";
 
+// uvozim axios
+import axios from "axios";
+
 const SignupPage: FunctionComponent = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
   const sendRequest = useCallback(async () => {
-    // EVO SADA STVARNO PRAVIM REQUEST
-    const response = await fetch("/api/users/signup", {
+    // UMESTO OVOGA
+    /* const response = await fetch("/api/users/signup", {
       method: "POST",
       body: JSON.stringify({ email, password }),
       headers: {
         "Content-Type": "application/json",
       },
-    });
+    }); */
+    // OVO
+    const response = await axios.post(
+      "/api/users/signup",
+      { email, password },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-    const data = await response.json();
+    // UMESTO OVOGA
+    // const data = await response.json();
+    // OVO
+    const data = response.data;
 
     // STAMPAM DATA
     console.log({ data });
