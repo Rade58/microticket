@@ -16,3 +16,7 @@ const SignupPage: FunctionComponent = () => {
 export default SignupPage;
 
 ```
+
+AKO TI JE UGASEN SKAFFOLD POKRENI GA `skaffold dev`
+
+SADA MOZES DA POSETIS I PAGE `microticket.com/auth/signup`
