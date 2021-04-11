@@ -112,3 +112,13 @@ EVO STA SE STAMPALO KAO `err.response.data`
   ]
 }
 ```
+
+# SADA CU NAPRAVITI STATE ZA ERRORS, I DISPLAY-OVACU ERROR DATA TO THE USER
+
+- `code client/pages/auth/signup.tsx`
+
+```tsx
+
+```
+
+

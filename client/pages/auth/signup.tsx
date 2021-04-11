@@ -7,9 +7,12 @@ const SignupPage: FunctionComponent = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
+  // EVO PRAVIM I TAJ errors DEO STATE-A
+  const [errors, setErrors] = useState<{ message: string; field?: string }[]>(
+    []
+  );
+
   const sendRequest = useCallback(async () => {
-    // OVDE STAVLJAM TRY CATCH BLOK
-    // --------------------------------------------
     try {
       const response = await axios.post(
         "/api/users/signup",
@@ -23,30 +26,13 @@ const SignupPage: FunctionComponent = () => {
 
       const data = response.data;
 
-      console.log({ data });
-
       setEmail("");
       setPassword("");
     } catch (err) {
-      console.log({ err });
-
-      // JASNO JE DA CU OVDE HANDLE-OVATI ERROROUS RESPONSES
-      // ONDE RESPONSE-OVE, KOJI NISU SA STATUS CODE-OVIMA
-      // KOJI SU U RANGU 200
-
-      // err JE USTVARI Error INSTANCA KOJU JE THROW-OVAO
-      // AXIOS U SLUCAJU FAILED REQUEST-A
-
-      // ONE PODATKE O ERRORU, KOJI MOJ MICROSERVICE SALJE SE NALAZE U
-      //      err.response.data
-
-      console.log(err.response.data); // OVO JE ONAJ
-      //                                {errors: [{message, field}]}
-      //                                 OBJEKAT, KOJI SAM JA TAKO FORMATIRAO
-      //                                  ZA SVAKI ERROR, KAKO BI BIO CONSISTENT
+      // SETT-UJEM ERRORS
+      setErrors(err.response.data.errors);
     }
-    // --------------------------------------------
-  }, [email, password, setEmail, setPassword]);
+  }, [email, password, setEmail, setPassword, setErrors]);
 
   return (
     <form
