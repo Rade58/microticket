@@ -7,8 +7,19 @@ const SignupPage: FunctionComponent = () => {
   const [password, setPassword] = useState<string>("");
 
   const sendRequest = useCallback(async () => {
-    // request will be here
-    console.log("Sending Request");
+    // EVO SADA STVARNO PRAVIM REQUEST
+    const response = await fetch("/api/users/signup", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+
+    // STAMPAM DATA
+    console.log({ data });
 
     setEmail("");
     setPassword("");
