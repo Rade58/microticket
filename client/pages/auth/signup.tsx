@@ -40,7 +40,10 @@ const SignupPage: FunctionComponent = () => {
       // ONE PODATKE O ERRORU, KOJI MOJ MICROSERVICE SALJE SE NALAZE U
       //      err.response.data
 
-      console.log(err.response.data);
+      console.log(err.response.data); // OVO JE ONAJ
+      //                                {errors: [{message, field}]}
+      //                                 OBJEKAT, KOJI SAM JA TAKO FORMATIRAO
+      //                                  ZA SVAKI ERROR, KAKO BI BIO CONSISTENT
     }
     // --------------------------------------------
   }, [email, password, setEmail, setPassword]);
