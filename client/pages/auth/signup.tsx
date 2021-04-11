@@ -24,6 +24,10 @@ const SignupPage: FunctionComponent = () => {
         }
       );
 
+      // OVDE SE MOGU CLEAR-OVATI ERRORS
+      setErrors([]);
+      //
+
       const data = response.data;
 
       setEmail("");
@@ -63,6 +67,18 @@ const SignupPage: FunctionComponent = () => {
           className="form-control"
         />
       </div>
+      {/* OVO SAM DODAO */}
+      {errors.length > 0 && (
+        <div className="alert alert-danger">
+          <h4>Oooops...</h4>
+          <ul className="my-0">
+            {errors.map(({ message, field }) => {
+              return <li key={message}>{message}</li>;
+            })}
+          </ul>
+        </div>
+      )}
+      {/* -------------------------- */}
       <button className="btn btn-primary" type="submit">
         Sign Up
       </button>
