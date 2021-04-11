@@ -1,14 +1,18 @@
 /* eslint react/react-in-jsx-scope: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 import { FunctionComponent, useState, useCallback } from "react";
-import axios from "axios";
 
+// OVO OVDE VISE NIJE POTREBNO
+// import axios from "axios";
+
+// UVOZIM CUSTOM HOOK
 import useRequest from "../../hooks/useRequest";
 
 const SignupPage: FunctionComponent = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
+  // KORISTIM GA
   const {
     userData,
     data,
@@ -17,7 +21,8 @@ const SignupPage: FunctionComponent = () => {
     hasErrors,
   } = useRequest("/api/users/signup", "post", { email, password });
 
-  // EVO PRAVIM I TAJ errors DEO STATE-A
+  // ON ZAMENJUJE SVE OVO STO SAM COMMENT-OVAO OUT
+
   /* const [errors, setErrors] = useState<{ message: string; field?: string }[]>(
     []
   ); */
@@ -43,29 +48,22 @@ const SignupPage: FunctionComponent = () => {
       setEmail("");
       setPassword("");
     } catch (err) {
-      // SETT-UJEM ERRORS
       setErrors(err.response.data.errors);
     }
   }, [email, password, setEmail, setPassword, setErrors]);
   */
-
-  console.log({
-    userData,
-    data,
-    errors,
-    makeRequest,
-    hasErrors,
-  });
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
 
-        // PRAVI MREQUEST
-        // sendRequest();
+        // PRAVIM REQUEST
         makeRequest().then(() => {
-          if (!hasErrors) {
+          // OVDE JE LOGIKA MALO ZAGULJNA ALI SHVATICES
+          // KAD SE MALO ZAGLEDAS ZASTO BAS OVAKAV USLOV
+          // IZGLEDA TI OBRNUTO ALI NECE BITI VERUJ MI
+          if (hasErrors) {
             setEmail("");
             setPassword("");
           }
@@ -93,7 +91,7 @@ const SignupPage: FunctionComponent = () => {
           className="form-control"
         />
       </div>
-      {/* OVO SAM DODAO */}
+      {/* OVO CE SE RENDER-OVATI AKO JE hasErrors USTVARI true */}
       {hasErrors && (
         <div className="alert alert-danger">
           <h4>Oooops...</h4>
@@ -104,7 +102,7 @@ const SignupPage: FunctionComponent = () => {
           </ul>
         </div>
       )}
-      {/* -------------------------- */}
+      {/* ---------------------------------------------------- */}
       <button className="btn btn-primary" type="submit">
         Sign Up
       </button>
