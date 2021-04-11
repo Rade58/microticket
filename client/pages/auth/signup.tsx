@@ -33,6 +33,14 @@ const SignupPage: FunctionComponent = () => {
       // JASNO JE DA CU OVDE HANDLE-OVATI ERROROUS RESPONSES
       // ONDE RESPONSE-OVE, KOJI NISU SA STATUS CODE-OVIMA
       // KOJI SU U RANGU 200
+
+      // err JE USTVARI Error INSTANCA KOJU JE THROW-OVAO
+      // AXIOS U SLUCAJU FAILED REQUEST-A
+
+      // ONE PODATKE O ERRORU, KOJI MOJ MICROSERVICE SALJE SE NALAZE U
+      //      err.response.data
+
+      console.log(err.response.data);
     }
     // --------------------------------------------
   }, [email, password, setEmail, setPassword]);
