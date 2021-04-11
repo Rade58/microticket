@@ -8,6 +8,8 @@ MORAMO DA CAPT-URE-UJEMO ERRORS I DISPLAY-UJEMO IH NA SCREEN-U
 
 - `code client/pages/auth/signup.tsx`
 
+**KORISTICU `try catch` BLOK**
+
 ```tsx
 
 ```

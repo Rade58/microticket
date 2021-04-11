@@ -1,8 +1,6 @@
 /* eslint react/react-in-jsx-scope: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 import { FunctionComponent, useState, useCallback } from "react";
-
-// uvozim axios
 import axios from "axios";
 
 const SignupPage: FunctionComponent = () => {
@@ -10,24 +8,29 @@ const SignupPage: FunctionComponent = () => {
   const [password, setPassword] = useState<string>("");
 
   const sendRequest = useCallback(async () => {
-    const response = await axios.post(
-      "/api/users/signup",
-      { email, password },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    // OVDE STAVLJAM TRY CATCH BLOK
+    // --------------------------------------------
+    try {
+      const response = await axios.post(
+        "/api/users/signup",
+        { email, password },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-    const data = response.data;
+      const data = response.data;
 
-    // DAKLE OVAJ OBJEKAT
+      console.log({ data });
 
-    console.log({ data });
-
-    setEmail("");
-    setPassword("");
+      setEmail("");
+      setPassword("");
+    } catch (err) {
+      console.log({ err });
+    }
+    // --------------------------------------------
   }, [email, password, setEmail, setPassword]);
 
   return (
