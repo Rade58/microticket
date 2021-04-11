@@ -10,11 +10,14 @@ KREIRAM `/auth/signup` PAGE
 import { FunctionComponent } from "react";
 
 const SignupPage: FunctionComponent = () => {
-  return <div>Signup page</div>;
+  return (
+    <form>
+      <h1>Sign Up</h1>
+    </form>
+  );
 };
 
 export default SignupPage;
-
 ```
 
 AKO TI JE UGASEN SKAFFOLD POKRENI GA `skaffold dev`
