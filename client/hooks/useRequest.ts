@@ -34,12 +34,18 @@ const useRequest = (
       setData(response.data);
       setHasErrors(false);
       setErrors([]);
+
+      // DOBRO BI BILO DA OVDE RETURN-UJES NESTO STO ISTO POKAZUJE DA LI IMA ERROR-A
+
+      return { hasErrors: false };
     } catch (err) {
       setErrors(err.response.data.errors);
 
       setHasErrors(true);
       setData(null);
       setUserData(null);
+
+      return { hasErrors: true };
     }
   }, [body, url, method, setUserData, setHasErrors, setErrors, setData]);
 

@@ -21,15 +21,18 @@ const SignupPage: FunctionComponent = () => {
 
   return (
     <form
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
+        // MISLIM DA JE BOLJE DA OVO BUDE async FUNKCIJA
+
         e.preventDefault();
 
-        makeRequest().then(() => {
-          if (hasErrors) {
-            setEmail("");
-            setPassword("");
-          }
-        });
+        const ob = await makeRequest();
+
+        // OVO JE NAKAKO BOLJE RESENJE
+        if (!ob.hasErrors) {
+          setEmail("");
+          setPassword("");
+        }
       }}
     >
       <h1>Sign Up</h1>
