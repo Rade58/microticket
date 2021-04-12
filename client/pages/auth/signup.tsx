@@ -1,8 +1,8 @@
 /* eslint react/react-in-jsx-scope: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 import { FunctionComponent, useState } from "react";
-// ROUTER (KORISTICU useRouter HOOK)
-import { useRouter } from "next/router";
+// OVO VISE NE TREBA OVDE
+// import { useRouter } from "next/router";
 
 import useRequest from "../../hooks/useRequest";
 
@@ -17,11 +17,11 @@ const SignupPage: FunctionComponent = () => {
     ErrorMessages,
     errors,
     makeRequest,
-  } = useRequest("/api/users/signup", "post", { email, password });
+    // DODAJEM OVE DODATNE ARGUMENTE (USTVARI SAMO JEDAN)
+  } = useRequest("/api/users/signup", "post", { email, password }, "/");
 
-  // EVO OVDE UZIMAM push, SA KOJIM MOZES DAA VRSIS NAVIGATING
-  // NA FRONTEND-U
-  const { push: routerPush } = useRouter();
+  // OVO VISEE NIJE POTREBNO
+  // const { push: routerPush } = useRouter();
 
   return (
     <form
@@ -34,9 +34,10 @@ const SignupPage: FunctionComponent = () => {
           setEmail("");
           setPassword("");
 
-          // OVDE BI MOGAO DA OBAVIM REDIRECTING
-          routerPush("/");
+          // OVO VISE NIJE POTREBNO
+          // routerPush("/");
         }
+        // ALI I OVAJ CELA GORNJ USLOVNA IZJAVA IZGLED DA JE BESPOTREBNA ALI CU JE OSTAVITI TU
       }}
     >
       <h1>Sign Up</h1>

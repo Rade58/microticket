@@ -1,14 +1,20 @@
 import { useState, useCallback } from "react";
 import axios from "axios";
+// UVESCU POMENUTI HOOK
+import { useRouter } from "next/router";
+//
 
-// UVOZIM, POMENUTU KOMPONENTU, I SAMO CU DA JE UVRSTIM U
-// RETURNED VALUE CUSTOM HOOK-A
 import ErrorMessages from "../components/ErrorMessages";
 
 const useRequest = (
   url: string,
   method: "post" | "get",
-  body?: { email: string; password: string } | any
+  body?: { email: string; password: string } | any,
+  // DODACU OVDE KAO PARMAETAR REDIRECTING URL
+  redirectUrl?: string,
+  // DEFINISACU I DA SE MOZE ZADATI DODATINI CALLBACK, KOJ IBI SE IZVRSIO
+  // onSuccess
+  onSuccess?: () => any
 ) => {
   const [userData, setUserData] = useState<{
     email: string;
@@ -20,6 +26,21 @@ const useRequest = (
   );
   const [hasErrors, setHasErrors] = useState<boolean>(false);
   const [data, setData] = useState<any>(null);
+
+  // EVO OVDE PRAVIM TU FUNKCIJU ZA REDIRECTING
+  const { push } = useRouter();
+  // MOGU SADA OVU METODU PUSH, KORISTITI UNUTAR CALLBACK-A
+  // KOJEG CU ISTO RETURNOVATI IZ CUSTOM HOOK-A
+
+  const afterSuccess = useCallback(async () => {
+    if (onSuccess) {
+      onSuccess();
+    }
+
+    if (redirectUrl) {
+      await push(redirectUrl);
+    }
+  }, []);
 
   const makeRequest = useCallback(async () => {
     try {
@@ -35,7 +56,9 @@ const useRequest = (
       setHasErrors(false);
       setErrors([]);
 
-      // DOBRO BI BILO DA OVDE RETURN-UJES NESTO STO ISTO POKAZUJE DA LI IMA ERROR-A
+      // MOGAO BI OVDE DA IZVRSIM REDIRRECT
+      afterSuccess();
+      //
 
       return { hasErrors: false };
     } catch (err) {
