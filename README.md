@@ -388,7 +388,7 @@ const SignupPage: FunctionComponent = () => {
         </div>
       )} */}
       {/* KORISTIM SAMO OVO */}
-      <ErrorMessagesComponent />
+      {hasErrors && <ErrorMessagesComponent />}
       {/* ---------------------------------------------------- */}
       <button className="btn btn-primary" type="submit">
         Sign Up
@@ -398,7 +398,6 @@ const SignupPage: FunctionComponent = () => {
 };
 
 export default SignupPage;
-
 ```
 
 MOGAO BI DA TESTIRAM DA LI CE OVO FUNKCIONISATI

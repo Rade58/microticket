@@ -65,7 +65,7 @@ const SignupPage: FunctionComponent = () => {
         </div>
       )} */}
       {/* KORISTIM SAMO OVO */}
-      <ErrorMessagesComponent />
+      {hasErrors && <ErrorMessagesComponent />}
       {/* ---------------------------------------------------- */}
       <button className="btn btn-primary" type="submit">
         Sign Up
