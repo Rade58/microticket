@@ -252,3 +252,5 @@ const SignupPage: FunctionComponent = () => {
 
 export default SignupPage;
 ```
+
+TESTIRAO SAM, I FUNKCIONISALO JE
