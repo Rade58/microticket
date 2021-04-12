@@ -18,3 +18,13 @@ DA JE U PITANJU NORMAL REACT APPLICATION, SIGURNO BI ON MOUNTING INDEX PAGE-A DE
 
 # KORISTICES `getServerSideProps` HOOK NEXTJS-A
 
+JA SAM VEC DOSTA NAPISAO O [`SERVER SIDE DATA FETCHING-U U NEXTJS-U`](https://github.com/Rade58/production_grade-nextjs/tree/8_SERVER_SIDE_DATA_FETCHING#server-side-data-fetching)
+
+SADA CU GA SAMO IMPPLEMENTIRATI BEZ DA PRETERANO SIRIM PRICU
+
+- `code client/pages/index.tsx`
+
+```tsx
+
+```
+
