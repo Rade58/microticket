@@ -1,8 +1,8 @@
 /* eslint react/react-in-jsx-scope: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 import { FunctionComponent } from "react";
-// UVESCU, NEKE TYPE-OVE KOJI SE TICU getServerSideProps-A
 import { GetServerSideProps } from "next";
+import axios from "axios";
 
 interface PropsI {
   placeholder: boolean;
@@ -10,20 +10,35 @@ interface PropsI {
 
 const IndexPage: FunctionComponent<PropsI> = (props) => {
   //
+  console.log({ props });
 
-  console.log(props);
-
+  // eslint-disable-next-line
   return <div>🦉</div>;
 };
 
 export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
-  // OVDE CES PARAVITI REQUEST PREMA /api/users/current-user
+  const { headers } = ctx.req;
 
-  // AKO UZMEM USERA, SLACU GA KAO PROPS U KOMPONENTU
+  const { cookie } = headers;
 
+  console.log({ cookie });
+
+  /* const response = await axios.get(
+    "https://34.89.40.241/api/users/current-user",
+    {
+      headers: {
+        cookie,
+      },
+    }
+  );
+
+  console.log({ data: response.data });
+ */
   return {
     props: {
       placeholder: true,
     },
   };
 };
+
+export default IndexPage;

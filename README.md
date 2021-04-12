@@ -16,7 +16,7 @@ DA JE U PITANJU NORMAL REACT APPLICATION, SIGURNO BI ON MOUNTING INDEX PAGE-A DE
 
 **TREBAS DEFINISATI HOOK, KOJIM CES MOCI DA DEFINISES CODE KOJI CE SE IZVRSITI SERVER SIDE NA DELU NEXTJS-OVOG SERVERA, JER MOGUCE JE DA TAKVO NESTO DEFINISES; TAKO CCES POSTICI DA USTVARI SERVER SIDE TI NA SVAKU POSETU INDEX PAGE-A NAPRAVIS REQUEST PREMA `/api/users/current-user` I TAKO DETERMINE-UJES DA LI JE USER AUTHENTICATED ILI NE**
 
-# KORISTICES `getServerSideProps` HOOK NEXTJS-A
+# KORISTICES `getServerSideProps` HOOK NEXTJS-A, KAKO BI PRAVIO SERVER SIDE REQUESTS, PRE SAMOG RENDERINGA, CIME CE SE PAGE RENDER-OVATI SA PROPSIMA KOJE TI POSALJES IZ TOG HOOK-A
 
 JA SAM VEC DOSTA NAPISAO O [`SERVER SIDE DATA FETCHING-U U NEXTJS-U`](https://github.com/Rade58/production_grade-nextjs/tree/8_SERVER_SIDE_DATA_FETCHING#server-side-data-fetching)
 
@@ -54,5 +54,79 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
     },
   };
 };
+
+
+export default IndexPage;
 ```
 
+## SADA MOZES DA ZAHTEVAS CURRENT USER-A FROM `getServerSideProps`; ALI HAJDE DA POCNEMO MALO SPORIJE; HAJDE DA STAMPAMO HEADERS INSIDE getServerSideProps; A HEADERS MOZEMO UZETI, POSTO INSIDE getServerSideProps IMAMO PRISTUP REQUEST-U I RESPONSE-U
+
+AKO JE COOKIE PRISUTAN PRI NAVIGATINGU NA PAGE (PRI TOM REQUEST-U, ONDA BI TREBALO DA BUDES U MOGUCNOSTI DA UZMES USER-A)
+
+- `code client/pages/index.tsx`
+
+```tsx
+/* eslint react/react-in-jsx-scope: 0 */
+/* eslint jsx-a11y/anchor-is-valid: 1 */
+import { FunctionComponent } from "react";
+import { GetServerSideProps } from "next";
+
+interface PropsI {
+  placeholder: boolean;
+}
+
+const IndexPage: FunctionComponent<PropsI> = (props) => {
+  //
+  console.log({ props });
+
+  return <div>🦉</div>;
+};
+
+export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
+  // UZIMAM REQUEST I STMPAM cookie HEADER
+  const { headers } = ctx.req;
+
+  // A OVI HEADESI SU PARSED INTO JAVASCRIPT OBJECT, A PLUS JOS IMAM TYPESCRIPT
+  // TAKO DA MOGU LAKO SELEKTOVATI HEADERS KOJI ME ZANIMA
+
+  const { cookie } = headers;
+
+  console.log({ cookie });
+  //
+
+  return {
+    props: {
+      placeholder: true,
+    },
+  };
+};
+
+export default IndexPage;
+
+```
+
+**MOZES SADA DA ODES NA `/auth/signup` PAGE I NAPRAVI NOVOG USER-A**
+
+DEFINISAO SI NA POMENUTOM PAGE-U DA BUDES REDIRECTED PREMA INDEX PAGE-U, KADA SE DOGODI USPESNO KREIRANJE NOVOG USER-A, ODNOSNO USPESAN SIGNUP
+
+MOZES U TERMINALU POSMATRATI DA LI CE SE STAMPATI COOKIE NEPOSREDNO PRE NEGO STO TI SE RENDER-UJE INDEX PAGE
+
+```zsh
+{
+  cookie: 'express:sess=eyJqd3QiOiJleUpoYkdjaU9pSklVekkxTmlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKbGJXRnBiQ0k2SW5OMFlYWnliM000T0RnNFFHMWhhV3d1WTI5dElpd2lhV1FpT2lJMk1EYzBPREEwWVdFNE1HVXdOekF3TWpRd1pUSTBNak1pTENKcFlYUWlPakUyTVRneU5EYzNOVFI5LkpFMEVnYndnTmZCYXl3ajlVa1kwMjZnMlQxMnRIMl8tNUtfR1VUSURueGcifQ=='
+}
+```
+
+**COOKIE JE ZAISTA STAMPAN U TERMINALU, STO ZNACI DA JE COOKIE PRISUTAN**
+
+***
+***
+***
+***
+
+RESIZING CLUSTER JE NJEGOVO PAUZIRANJE
+
+***
+***
+***
+***
