@@ -2,16 +2,25 @@
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 import { FunctionComponent } from "react";
 
-const IndexPage: FunctionComponent = () => {
-  // UMESTO OVOGA
+// UVESCU, NEKE TYPE-OVE KOJI SE TICU getServerSideProps-A
+import { GetServerSideProps } from "next";
 
-  // return <div>Owls are best birds.</div>;
-  return (
-    <div>
-      Stavros
-      <button>Press</button>
-    </div>
-  );
+interface PropsI {
+  placeholder: boolean;
+}
+
+const IndexPage: FunctionComponent<PropsI> = (props) => {
+  //
+
+  console.log(props);
+
+  return <div>🦉</div>;
 };
 
-export default IndexPage;
+export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
+  return {
+    props: {
+      placeholder: true,
+    },
+  };
+};
