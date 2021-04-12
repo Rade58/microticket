@@ -1,6 +1,8 @@
 /* eslint react/react-in-jsx-scope: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 1 */
-import { FunctionComponent, useState, useCallback } from "react";
+import { FunctionComponent, useState } from "react";
+// ROUTER (KORISTICU useRouter HOOK)
+import { useRouter } from "next/router";
 
 import useRequest from "../../hooks/useRequest";
 
@@ -11,27 +13,29 @@ const SignupPage: FunctionComponent = () => {
   const {
     // userData,
     // data,
-    // MOZES SADA KORISTITI I KOMPONENTU
+    // hasErrors,
     ErrorMessages,
-    //
     errors,
     makeRequest,
-    hasErrors,
   } = useRequest("/api/users/signup", "post", { email, password });
+
+  // EVO OVDE UZIMAM push, SA KOJIM MOZES DAA VRSIS NAVIGATING
+  // NA FRONTEND-U
+  const { push: routerPush } = useRouter();
 
   return (
     <form
       onSubmit={async (e) => {
-        // MISLIM DA JE BOLJE DA OVO BUDE async FUNKCIJA
-
         e.preventDefault();
 
         const ob = await makeRequest();
 
-        // OVO JE NAKAKO BOLJE RESENJE (LEPSA JE LOGIKA)
         if (!ob.hasErrors) {
           setEmail("");
           setPassword("");
+
+          // OVDE BI MOGAO DA OBAVIM REDIRECTING
+          routerPush("/");
         }
       }}
     >
@@ -56,20 +60,7 @@ const SignupPage: FunctionComponent = () => {
           className="form-control"
         />
       </div>
-      {/* UMESTO OVOGA */}
-      {/* {hasErrors && (
-        <div className="alert alert-danger">
-          <h4>Oooops...</h4>
-          <ul className="my-0">
-            {errors.map(({ message, field }) => {
-              return <li key={message}>{message}</li>;
-            })}
-          </ul>
-        </div>
-      )} */}
-      {/* KORISTIM SAMO OVO */}
       <ErrorMessages errors={errors} />
-      {/* ---------------------------------------------------- */}
       <button className="btn btn-primary" type="submit">
         Sign Up
       </button>
