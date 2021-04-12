@@ -268,12 +268,18 @@ const useRequest = (
       setData(response.data);
       setHasErrors(false);
       setErrors([]);
+
+      // DOBRO BI BILO DA OVDE RETURN-UJES NESTO STO ISTO POKAZUJE DA LI IMA ERROR-A
+
+      return { hasErrors: false };
     } catch (err) {
       setErrors(err.response.data.errors);
 
       setHasErrors(true);
       setData(null);
       setUserData(null);
+
+      return { hasErrors: true };
     }
   }, [body, url, method, setUserData, setHasErrors, setErrors, setData]);
 
@@ -319,15 +325,18 @@ const SignupPage: FunctionComponent = () => {
 
   return (
     <form
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
+        // MISLIM DA JE BOLJE DA OVO BUDE async FUNKCIJA
+
         e.preventDefault();
 
-        makeRequest().then(() => {
-          if (hasErrors) {
-            setEmail("");
-            setPassword("");
-          }
-        });
+        const ob = await makeRequest();
+
+        // OVO JE NAKAKO BOLJE RESENJE (LEPSA JE LOGIKA)
+        if (!ob.hasErrors) {
+          setEmail("");
+          setPassword("");
+        }
       }}
     >
       <h1>Sign Up</h1>
@@ -373,6 +382,7 @@ const SignupPage: FunctionComponent = () => {
 };
 
 export default SignupPage;
+
 ```
 
 MOGAO BI DA TESTIRAM DA LI CE OVO FUNKCIONISATI

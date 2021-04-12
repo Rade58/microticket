@@ -28,7 +28,7 @@ const SignupPage: FunctionComponent = () => {
 
         const ob = await makeRequest();
 
-        // OVO JE NAKAKO BOLJE RESENJE
+        // OVO JE NAKAKO BOLJE RESENJE (LEPSA JE LOGIKA)
         if (!ob.hasErrors) {
           setEmail("");
           setPassword("");
