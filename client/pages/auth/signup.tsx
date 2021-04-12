@@ -12,7 +12,7 @@ const SignupPage: FunctionComponent = () => {
     // userData,
     // data,
     // MOZES SADA KORISTITI I KOMPONENTU
-    ErrorMessagesComponent,
+    ErrorMessages,
     //
     errors,
     makeRequest,
@@ -65,7 +65,7 @@ const SignupPage: FunctionComponent = () => {
         </div>
       )} */}
       {/* KORISTIM SAMO OVO */}
-      {hasErrors && <ErrorMessagesComponent />}
+      <ErrorMessages errors={errors} />
       {/* ---------------------------------------------------- */}
       <button className="btn btn-primary" type="submit">
         Sign Up

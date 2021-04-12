@@ -1,8 +1,9 @@
-import { useState, useCallback, FC } from "react";
+import { useState, useCallback } from "react";
 import axios from "axios";
 
-// UVOZIM, POMENUTI HIGHER ORDER COMPONENT
-import BuildErrorMessages from "../components/higher_order/BuildErrorMessages";
+// UVOZIM, POMENUTU KOMPONENTU, I SAMO CU DA JE UVRSTIM U
+// RETURNED VALUE CUSTOM HOOK-A
+import ErrorMessages from "../components/ErrorMessages";
 
 const useRequest = (
   url: string,
@@ -20,15 +21,6 @@ const useRequest = (
   const [hasErrors, setHasErrors] = useState<boolean>(false);
   const [data, setData] = useState<any>(null);
 
-  // PRAVIM NOVU GRANU STATE-A, KOJA TREBA DA HOLD-UJE
-  // ONO STO OUTPUT-UJE MOJ HIGHER ORDER COMPOMONENT
-  // A TO JE ONA FUNCTIONAL KCOMPONENT,
-  // CIJA JE ULOGA DA DISPLAY-UJE ERROR MESSAGES
-  const [ErrorMessagesComponent, setErrorMessagesComponent] = useState<FC>(
-    null
-  );
-  //
-
   const makeRequest = useCallback(async () => {
     try {
       const response = await axios[method](
@@ -45,32 +37,20 @@ const useRequest = (
     } catch (err) {
       setErrors(err.response.data.errors);
 
-      // OVDE CU DA NAPRAVIM NOVI ERROR MESSAGE COMPONENT
-      setErrorMessagesComponent(BuildErrorMessages(err.response.data.errors));
-
       setHasErrors(true);
       setData(null);
       setUserData(null);
     }
-  }, [
-    body,
-    url,
-    method,
-    setUserData,
-    setHasErrors,
-    setErrors,
-    setData,
-    setErrorMessagesComponent,
-  ]);
+  }, [body, url, method, setUserData, setHasErrors, setErrors, setData]);
 
-  // DODAJEM I BUILT ERROR MESSAGE COMPONENT
   return {
     makeRequest,
     userData,
     errors,
     hasErrors,
     data,
-    ErrorMessagesComponent,
+    // EVO RETURN-UJEM I OVU KOMPONENTU
+    ErrorMessages,
   };
 };
 

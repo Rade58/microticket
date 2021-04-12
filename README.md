@@ -194,53 +194,50 @@ NECE BITI NIKAKVIH, DA KAZEM ODSTUPANJA U LOGICKOM SMISLU, NISAM NAPRAVIO N IJED
 
 U SUSTINI MOGU SMTRATI DA JE SVE OK, KAO I U SLUCAJU IZ PREDHODNOG BRANCH-A KADA NISAM KORISTIO CUSTOM HOOK
 
-# MEDJUTIM AUTOR WORKSHOPA JE DEFINISAO DA useRequest HOOK BUDE TAKAV DA IMA PROPERTI, KOJI CE RETURN-OVATI SAMi JSX, ODNOSNO REACT ELEMENTE; MENI JE TO POMALO PROBLEMATICNO, POGOTOVO, KAKO TAKVO NESTO ASSIGN-OVATI; UMESTO TOGA DEFINIACU HIGHER ORDER COMPONENT KOJA TREBA DA OUTPUT-UJE `ErrorMessages` KOMPONENTU, SA INJECTED DOBIJENIM ERRORSIMA, AKO SU TU; ONDA CU DEFINIATI DA TU KOMPONENTU KORISTI KORISTITI useRequest HOOK ,ALI BOLJE JE DA NAPRAVIM PA DA VIDIS IZ PONUDJENOG NEGO DA PRICAM
+# MEDJUTIM AUTOR WORKSHOPA JE DEFINISAO DA useRequest HOOK BUDE TAKAV DA IMA PROPERTI, KOJI CE RETURN-OVATI SAMI JSX, ODNOSNO REACT ELEMENTE; MENI JE TO POMALO PROBLEMATICNO, POGOTOVO, STO TYPESCRIPT JESTE PROBLEMATICAN ,STALNO YELL-UJE NA MENE DA TAKVO NESTO NE RADIM
 
-- `mkdir -p client/components/higher_order`
+ZATO SAM ODLUCIO DA ODVOJENO KREIRAM KOMPONENTU, KOJU CE useRequest HOOK RETURN-OVATI; MOZDA OVO NIJE NEKO RESENJE ALI ZURI MI SE I ZATO CU TO URADITI
 
-- `touch client/components/higher_order/BuildErrorMessages.tsx`
+- `mkdir client/components`
+
+- `touch client/components/ErrorMessage.tsx`
 
 ```tsx
 import React, { FC } from "react";
 
-// OVO CE BITI HIGHER ORDER COMPONENT
-
-const BuildErrorMessages = (errors: { message: string; field?: string }[]) => {
-  // OVA FUNKCIJA RETURN-UJE KOMPONENTU
-  // OVO SAM URADIO ZATO STO NE ZELIM DA KOMPONENTA KORISTI
-  // ERRORS IZ PROPS-A VEC, DA TAKORECI ONI BUDU HARDCODED
-  const ErrorMessages: FC = () => {
-    return (
-      errors.length > 0 && (
-        <div className="alert alert-danger">
-          <h4>Oooops...</h4>
-          <ul className="my-0">
-            {errors.map(({ message, field }) => {
-              return <li key={message}>{message}</li>;
-            })}
-          </ul>
-        </div>
-      )
-    );
-  };
-
-  return ErrorMessages;
+const ErrorMessages: FC<{
+  errors: { message: string; field?: string }[];
+}> = ({ errors }) => {
+  return (
+    errors.length > 0 && (
+      <div className="alert alert-danger">
+        <h4>Oooops...</h4>
+        <ul className="my-0">
+          {errors.map(({ message, field }) => {
+            return <li key={message}>{message}</li>;
+          })}
+        </ul>
+      </div>
+    )
+  );
 };
 
-export default BuildErrorMessages;
-
+export default ErrorMessages;
 ```
 
-SADA DA IMPLEMENTIRAM, GORNJI HIGHER ORDE COMPONENT U CUSTOM HOOK-U
+SADA DA ISKORISTIS, GORNJI COMPONENT U CUSTOM HOOK-U
+
+U SUSTIN ISAMO CU GA RETURN-OVATI SA OSTALIM STVARIMA IZ TOG HOOK-A
 
 - `code client/hooks/useRequest.ts`
 
 ```tsx
-import { useState, useCallback, FC } from "react";
+import { useState, useCallback } from "react";
 import axios from "axios";
 
-// UVOZIM, POMENUTI HIGHER ORDER COMPONENT
-import BuildErrorMessages from "../components/higher_order/BuildErrorMessages";
+// UVOZIM, POMENUTU KOMPONENTU, I SAMO CU DA JE UVRSTIM U
+// RETURNED VALUE CUSTOM HOOK-A
+import ErrorMessages from "../components/ErrorMessages";
 
 const useRequest = (
   url: string,
@@ -258,15 +255,6 @@ const useRequest = (
   const [hasErrors, setHasErrors] = useState<boolean>(false);
   const [data, setData] = useState<any>(null);
 
-  // PRAVIM NOVU GRANU STATE-A, KOJA TREBA DA HOLD-UJE
-  // ONO STO OUTPUT-UJE MOJ HIGHER ORDER COMPOMONENT
-  // A TO JE ONA FUNCTIONAL KCOMPONENT,
-  // CIJA JE ULOGA DA DISPLAY-UJE ERROR MESSAGES
-  const [ErrorMessagesComponent, setErrorMessagesComponent] = useState<FC>(
-    null
-  );
-  //
-
   const makeRequest = useCallback(async () => {
     try {
       const response = await axios[method](
@@ -283,40 +271,27 @@ const useRequest = (
     } catch (err) {
       setErrors(err.response.data.errors);
 
-      // OVDE CU DA NAPRAVIM NOVI ERROR MESSAGE COMPONENT
-      setErrorMessagesComponent(BuildErrorMessages(err.response.data.errors));
-
       setHasErrors(true);
       setData(null);
       setUserData(null);
     }
-  }, [
-    body,
-    url,
-    method,
-    setUserData,
-    setHasErrors,
-    setErrors,
-    setData,
-    setErrorMessagesComponent,
-  ]);
+  }, [body, url, method, setUserData, setHasErrors, setErrors, setData]);
 
-  // DODAJEM I BUILT ERROR MESSAGE COMPONENT
   return {
     makeRequest,
     userData,
     errors,
     hasErrors,
     data,
-    ErrorMessagesComponent,
+    // EVO RETURN-UJEM I OVU KOMPONENTU
+    ErrorMessages,
   };
 };
 
 export default useRequest;
-
 ```
 
-## SADA OPET MOZES DA REFAKTORISES TVOJ PAGE `/auth/signup`, KAKO BI UMESTO JSX-A TI RENDER-OVAO KOMPONENTU
+## SADA OPET MOZES DA REFAKTORISES TVOJ PAGE `/auth/signup`, KAKO BI UMESTO JSX-A TI RENDER-OVAO KOMPONENTU, KOJU SAM IMPLEMENTIRAO KAO VREDNSOT, KOJA SE RETURN-UJE IZMEDJU OSTALIH STVARI, U MOM CUSTOM HOOK-U
 
 - `code client/pages/auth/signup.tsx`
 
@@ -335,7 +310,7 @@ const SignupPage: FunctionComponent = () => {
     // userData,
     // data,
     // MOZES SADA KORISTITI I KOMPONENTU
-    ErrorMessagesComponent,
+    ErrorMessages,
     //
     errors,
     makeRequest,
@@ -388,7 +363,7 @@ const SignupPage: FunctionComponent = () => {
         </div>
       )} */}
       {/* KORISTIM SAMO OVO */}
-      {hasErrors && <ErrorMessagesComponent />}
+      <ErrorMessages errors={errors} />
       {/* ---------------------------------------------------- */}
       <button className="btn btn-primary" type="submit">
         Sign Up
