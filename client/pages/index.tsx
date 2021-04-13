@@ -2,7 +2,6 @@
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 import { FunctionComponent } from "react";
 import { GetServerSideProps } from "next";
-// SADA UZIMAM AXIOS
 import axios from "axios";
 
 interface PropsI {
@@ -26,7 +25,7 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 
   // EVO SALJEEM REQUEST
   const response = await axios.get(
-    "http://ingress-nginx-controller-admission.ingress-nginx.svc.cluster.local/api/users/current-user",
+    "http://ingress-nginx-controller-admission.ingress-nginx/api/users/current-user",
     {
       headers: {
         cookie,
