@@ -4,17 +4,18 @@ import { FunctionComponent } from "react";
 import { GetServerSideProps } from "next";
 import axios from "axios";
 
+// NAMERNO SAM MALO PROSIRIO TYPE-OVE
 interface PropsI {
   placeholder: boolean;
   data?: any;
-  error?: any;
+  errors?: any;
 }
 
 const IndexPage: FunctionComponent<PropsI> = (props) => {
   //
-  const { data, error } = props;
+  const { data, errors } = props;
 
-  console.log({ data, error });
+  console.log({ data, errors });
 
   // eslint-disable-next-line
   return <div>🦉</div>;
@@ -28,7 +29,6 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
   console.log({ cookie, host });
 
   // DODAJEM try catch BLOK
-
   try {
     const response = await axios.get(
       "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/api/users/current-user",
@@ -55,7 +55,7 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
     return {
       props: {
         placeholder: true,
-        error: err as any,
+        errors: err as any,
       },
     };
   }

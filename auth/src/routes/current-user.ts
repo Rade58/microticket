@@ -9,7 +9,7 @@ router.get(
   "/api/users/current-user",
   currentUser,
   /*requireAuth,*/ (req, res) => {
-    res.send({
+    return res.send({
       currentUser: !req.currentUser ? null : req.currentUser,
     });
   }

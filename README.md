@@ -135,7 +135,7 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 
   // EVO SALJEM REQUEST
   const response = await axios.get(
-    "http://ingress-nginx-controller.ingress-nginx/api/users/current-user",
+    "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/api/users/current-user",
     {
       headers: {
         cookie,
