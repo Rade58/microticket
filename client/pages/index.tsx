@@ -19,15 +19,17 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
 export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
   const { headers } = ctx.req;
 
-  const { cookie } = headers;
+  const { cookie, host } = headers;
 
-  console.log({ cookie });
+  console.log({ cookie, host });
 
-  // EVO SALJEM REQUEST
   const response = await axios.get(
     "http://ingress-nginx-controller.ingress-nginx/api/users/current-user",
     {
       headers: {
+        // EVO DODACU OVDE I host HEADER
+        Host: "microticket.com",
+        //
         cookie,
       },
     }

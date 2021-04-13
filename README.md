@@ -97,7 +97,7 @@ ALI IT IS NICE TO HAVE IT
 ***
 ***
 
-# TI SADA MOZES DA DEFINISEM SLANJE REQUEST I DA VIDIM STA CES DOBITI; ALI NEMOJ DA SE OBRADUJES PRE VREMENA, JER NECES DOBITI ONO STO ZELIS ZBOG DODATNE KONFIGURACIJE KOJU MORAS SPECIFICIRATI
+# TI SADA MOZES DA DEFINISEM SLANJE REQUEST I DA VIDIM STA CES DOBITI; ALI NEMOJ DA SE OBRADUJES PRE VREMENA, JER NECES DOBITI ONO STO ZELIS
 
 NEMA VEZE, JA CU SADA IPAK NAPRAVITI REQUEST, KAKO BI VIDEO KAKV CES RESPONSE DOBITI
 
@@ -156,3 +156,49 @@ export default IndexPage;
 ```
 
 ERROR KOJ ICES DOBITI JE `Error: Request failed with status code 404`
+
+OVAJ 404 ZNACI
+
+**OVO ZNACI DA JE REQUEST USPESNO DOSAO DO INGRESS NGINX-A; ALI INGRESS NE ZNA KOJI DOMAIN POKUSAVAS DA ACCESS-UJES**
+
+TAKO DA NEZNA KOJI CE SET OF RULES KORISTITI DA BI USPESNO ROUTE-OVAO REQUEST
+
+- `code infra/k8s/ingress-srv.yaml`
+
+```yaml
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-srv
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  rules:
+    # ON NE ZNA DA BI TI ZELEO DA SALJES AGAINST THIS HOST
+    # JER TO NISI SPECIFICIRAO U SVOM REQUEST-U
+    - host: microticket.com
+      http:
+        paths:
+          - path: /api/users/?(.*)
+            pathType: Exact
+            backend:
+              serviceName: auth-srv
+              servicePort: 3000
+          - path: /?(.*)
+            pathType: Exact
+            backend:
+              serviceName: client-srv
+              servicePort: 3000
+```
+
+DAKLE U REQUESTU NISTA NIJE BILO STO BI UKAZIVALO NA `microticket.com` HOST
+
+## PROBLEM CES RESITI TAKO STO CES SPECIFICIRATI `host` HEADER U SVOM REQUEST-U
+
+- `code client/pages/index.tsx`
+
+```tsx
+
+```
+

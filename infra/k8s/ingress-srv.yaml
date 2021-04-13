@@ -15,7 +15,6 @@ spec:
             backend:
               serviceName: auth-srv
               servicePort: 3000
-          # DODAO SAM OVO
           - path: /?(.*)
             pathType: Exact
             backend:
