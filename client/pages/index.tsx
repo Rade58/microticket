@@ -6,11 +6,15 @@ import axios from "axios";
 
 interface PropsI {
   placeholder: boolean;
+  data?: any;
+  error?: any;
 }
 
 const IndexPage: FunctionComponent<PropsI> = (props) => {
   //
-  console.log({ props });
+  const { data, error } = props;
+
+  console.log({ data, error });
 
   // eslint-disable-next-line
   return <div>🦉</div>;
@@ -23,25 +27,44 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 
   console.log({ cookie, host });
 
-  const response = await axios.get(
-    "http://ingress-nginx-controller.ingress-nginx/api/users/current-user",
-    {
-      headers: {
-        // EVO DODACU OVDE I host HEADER
-        Host: "microticket.com",
-        //
-        cookie,
+  // DODAJEM try catch BLOK
+
+  try {
+    const response = await axios.get(
+      "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/api/users/current-user",
+      {
+        headers: {
+          // EVO DODACU OVDE I host HEADER
+          Host: "microticket.com",
+          //
+          Cookie: cookie,
+        },
+      }
+    );
+
+    console.log({ data: response.data });
+
+    return {
+      props: {
+        placeholder: true,
+        data: response.data as any,
       },
-    }
-  );
+    };
+  } catch (err) {
+    console.log(err);
+    return {
+      props: {
+        placeholder: true,
+        error: err as any,
+      },
+    };
+  }
 
-  console.log({ data: response.data });
-
-  return {
+  /* return {
     props: {
       placeholder: true,
     },
-  };
+  }; */
 };
 
 export default IndexPage;
