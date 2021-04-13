@@ -117,5 +117,75 @@ MOZES U TERMINALU POSMATRATI DA LI CE SE STAMPATI COOKIE NEPOSREDNO PRE NEGO STO
 }
 ```
 
-**COOKIE JE ZAISTA STAMPAN U TERMINALU, STO ZNACI DA JE COOKIE PRISUTAN**
+**COOKIE JE ZAISTA STAMPAN U TERMINALU, STO ZNACI DA JE COOKIE PRISUTAN** (DAKLE PRISUTAN JE U FOLLOW UP REQUESTU, POSLE ONOG REQUEST-A GDE JE COOKIE SETT-OVAN (Set-Cookie HEADER))
+
+## TI SADA, INSIDE `getServerSideProps` ZELIS DA NAPRAVIS REQUEST PREMA `/api/users/current-user`; I TADA CES TI MORATI MANUELNO DA SETT-UJES COOKIE HEADER, JER `getServerSideProps` NIJE BROWSER I NEMA MOC DA AUTOMASTSKI SALJE COOKIE HEADER; MEDJUTIM TO NIJE JEDINI PROBLEM KOJI CES SUSRECI; PROBLEM CE BITI KUBERNETES INFRASTRUCTURE
+
+HAJDE DA POSALJEMO REQUEST PA DA VIDIS KAKAV CES PROBLEM IMATI
+
+- `code client/pages/index.tsx`
+
+```tsx
+/* eslint react/react-in-jsx-scope: 0 */
+/* eslint jsx-a11y/anchor-is-valid: 1 */
+import { FunctionComponent } from "react";
+import { GetServerSideProps } from "next";
+// SADA UZIMAM AXIOS
+import axios from "axios";
+
+interface PropsI {
+  placeholder: boolean;
+}
+
+const IndexPage: FunctionComponent<PropsI> = (props) => {
+  //
+  console.log({ props });
+
+  // eslint-disable-next-line
+  return <div>🦉</div>;
+};
+
+export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
+  const { headers } = ctx.req;
+
+  const { cookie } = headers;
+
+  console.log({ cookie });
+
+  // EVO SALJEEM REQUEST
+  const response = await axios.get("/api/users/current-user", {
+    headers: {
+      cookie,
+    },
+  });
+
+  console.log({ data: response.data });
+
+  return {
+    props: {
+      placeholder: true,
+    },
+  };
+};
+
+export default IndexPage;
+
+```
+
+MOZES DA RELOAD-UJES PAGE
+
+**ONO STO CU DOBITI JESTE OVAKAV ERROR, I MOCI CES GA VIDETI U TERMINALU (`skaffold`-U), A MOCI CES GA VIDETI I U BROWSER-U, JER JE I SAV RENDERING PREVENTED**
+
+```zsh
+Server Error
+Error: connect ECONNREFUSED 127.0.0.1:80
+
+This error happened while generating the page. Any console logs will be displayed in the terminal window.
+```
+
+## ERROR KOJI JE THROWN JESTE `Error: connect ECONNREFUSED`
+
+IZ GORNJEG ERRORA MOZES VIDETI DA JE ERROR (127.0.0.1:80)
+
+**NAIME TI DA NISI REQUEST PRAVIO INSIDE `getServerSideProps` ;VEC DA SI IZ BROWSERA, ODNOSNO IZ TVOJE REACT KOMPONENTE DA SI NAPRAVIO ISTI REQUEST SVE BI BILO U REDU, IMAO BI USPESAN REQUEST; AKO USER NE BI BIO AUTHENTICATED DOBIO BI `{currentUser: null}`, U SUPROTNOM BI FOBIO `currentUser`-A**
 

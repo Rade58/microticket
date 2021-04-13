@@ -2,6 +2,7 @@
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 import { FunctionComponent } from "react";
 import { GetServerSideProps } from "next";
+// SADA UZIMAM AXIOS
 import axios from "axios";
 
 interface PropsI {
@@ -23,8 +24,9 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 
   console.log({ cookie });
 
-  /* const response = await axios.get(
-    "https://34.89.40.241/api/users/current-user",
+  // EVO SALJEEM REQUEST
+  const response = await axios.get(
+    "http://10.68.6.223/api/users/current-user",
     {
       headers: {
         cookie,
@@ -33,7 +35,7 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
   );
 
   console.log({ data: response.data });
- */
+
   return {
     props: {
       placeholder: true,
