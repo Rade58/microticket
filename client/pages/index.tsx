@@ -39,7 +39,7 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
           // EVO DODACU OVDE I host HEADER STO JE NAJVAZNIJE
           Host: "microticket.com",
           // COOKIE CU I DALJE DA SALJEM
-          Cookie: cookie,
+          Cookie: cookie ? cookie : "",
         },
       }
     );
@@ -59,7 +59,7 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
       props: {
         placeholder: true,
         // SLACU I OVO
-        errors: err as any,
+        errors: err.message as any,
       },
     };
   }

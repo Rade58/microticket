@@ -214,11 +214,11 @@ interface PropsI {
 
 const IndexPage: FunctionComponent<PropsI> = (props) => {
   //
-  const { data, errors } = props;
+  const { data } = props;
 
   // OVO MI JE BITNO DA STAMPAM OVDE JER ZELIM DA VIDIM DA LI CE
   // DATA STICI DO KOMPONENTE
-  console.log({ data, errors });
+  console.log({ data});
 
   // eslint-disable-next-line
   return <div>🦉</div>;
@@ -240,7 +240,10 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
           // EVO DODACU OVDE I host HEADER STO JE NAJVAZNIJE
           Host: "microticket.com",
           // COOKIE CU I DALJE DA SALJEM
-          Cookie: cookie,
+          Cookie: cookie ? cookie : "", // OVO RADIM JER NE 
+          //                      ZELIM DA BUDEM U MOGUCNOSTI
+          //                DA SE NE PROSLEDJUJE undefined
+          //                KAO COOKIE, JER CU TAKO DOBITI ERROR
         },
       }
     );
@@ -270,3 +273,31 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 export default IndexPage;
 ```
 
+POSETIO SAM INDEX PAGE (MOZES DA PROBAS DA NAPRAVIS USERA NA PAGE `/auth/signup` PA DA ONDA BUDES REDIRECTED NA INDEX PAGE)
+
+I EVO STA SE STAMPALO
+
+```js
+{
+  data: {
+    currentUser: {
+      email: 'nickMullenComedy@mail.com',
+      id: '6075e4a1795dac0023884ba7',
+      iat: 1618338977
+    }
+  },
+}
+```
+
+DAKLE SVE JE OK
+
+**PROBAJ DA MNUELNO U BROWSER DEV TOOLSIMA UKLONIS COOKIE**
+
+I ONDA RELOAD-UJE PAGE 
+
+I ONO STO CE SE STAMPATI JE OVO
+
+```js
+{ data: { currentUser: null }}
+
+```
