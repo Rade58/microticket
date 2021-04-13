@@ -55,6 +55,28 @@ TI CES MORATI KORISTITI CROSS NAMESPACE KOMUNIKACIJU
 
 # CROSS-NAMESPACE KOMUNIKACIJA KORISTI DRUGACIJI PATTERN; MORACES DA KONSTRUISES BASE URL NA NACIN KOJI CU TI SADA POKAZATI
 
+PRVO MORAMO OTKRITI KOJI SVE SERVICE-I POSTOJE U `ingress-ngnx` NAMESPACE-U
 
+TI KADA TRAZIS SERVICE-OVE OVAKO: `kubectl get services` PO DEFAULTU LIST-UJE SERVICEOVE IZ `default` NAMESPACE-A
 
+**ALI TI MOZES KORISTITI `-n` FLAG ,DA KAZES IZ KOJEG NAMESPACE TI ZELIS DA LISTUJES SERVICES**
 
+- `kubectl get services -n ingress-nginx`
+
+```zsh
+NAME                                 TYPE           CLUSTER-IP     EXTERNAL-IP    PORT(S)                      AGE
+ingress-nginx-controller             LoadBalancer   10.68.1.177    34.89.40.241   80:30604/TCP,443:31539/TCP   16d
+ingress-nginx-controller-admission   ClusterIP      10.68.12.148   <none>         443/TCP                      16d
+```
+
+GORE MOZES DA VIDIS CLUSTER IP SERVICE INGRESS-A, A VIDIS I LOAD BALANCER-A
+
+SADA FORMIRAS URL NA SLEDECI NACIN
+
+`<ime ingress-ovog cluster ip-ja>.<ime namespace ingress-a>.svc.cluster.local`
+
+EVO TI GA VISE PRAKTICNIJI PRIMER, DAKLE FORMIRAM ONAJ BASE URL, KOJ ICU KKORISTITI ZA SLANJE REQUEST-OVA IZ `getServerSideProps` (IZ client-OVOG PODA)
+
+`http://ingress-nginx-controller-admission.ingress-nginx.svc.cluster.local`
+
+DALJE BI NARAVNO DOADAO EKSTENZIJU, KOJA SE ODNOSI NA EXPRESS ENDPOINT, KO IZELI MDA HITT-UJEM
