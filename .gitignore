@@ -28,3 +28,7 @@ auth/node_modules
 
 # minicube
 ^minicube
+
+# client
+client/.next
+client/node_modules
