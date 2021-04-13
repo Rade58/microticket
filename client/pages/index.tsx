@@ -25,14 +25,11 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
   console.log({ cookie });
 
   // EVO SALJEEM REQUEST
-  const response = await axios.get(
-    "http://10.68.6.223/api/users/current-user",
-    {
-      headers: {
-        cookie,
-      },
-    }
-  );
+  const response = await axios.get("/api/users/current-user", {
+    headers: {
+      cookie,
+    },
+  });
 
   console.log({ data: response.data });
 
