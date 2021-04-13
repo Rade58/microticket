@@ -15,6 +15,8 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
   //
   const { data, errors } = props;
 
+  // OVO MI JE BITNO DA STAMPAM OVDE JER ZELIM DA VIDIM DA LI CE
+  // DATA STICI DO KOMPONENTE
   console.log({ data, errors });
 
   // eslint-disable-next-line
@@ -34,9 +36,9 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
       "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/api/users/current-user",
       {
         headers: {
-          // EVO DODACU OVDE I host HEADER
+          // EVO DODACU OVDE I host HEADER STO JE NAJVAZNIJE
           Host: "microticket.com",
-          //
+          // COOKIE CU I DALJE DA SALJEM
           Cookie: cookie,
         },
       }
@@ -47,6 +49,7 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
     return {
       props: {
         placeholder: true,
+        // NAMERNO PROSLEDJUJEM DATA U KOMPONENTU
         data: response.data as any,
       },
     };
@@ -55,16 +58,11 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
     return {
       props: {
         placeholder: true,
+        // SLACU I OVO
         errors: err as any,
       },
     };
   }
-
-  /* return {
-    props: {
-      placeholder: true,
-    },
-  }; */
 };
 
 export default IndexPage;
