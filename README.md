@@ -86,11 +86,11 @@ DALJE BI NARAVNO DOADAO EKSTENZIJU, KOJA SE ODNOSI NA EXPRESS ENDPOINT, KO IZELI
 
 **digresija:**
 
-`TI MOZES SKARATITI GORNJU URL, ODNOSNO ZADATI CUSTOM, MORE SIMPLER URL, ALI TADA BI MORAO DEFINISATI NESTO STA SE ZOVE` **`EXTERNAL NAME SERVICE`**
+`TI MOZES SKARATITI GORNJU URL, ODNOSNO ZADATI CUSTOM, MORE SIMPLER URL, ALI TADA BI MORAO DEFINISATI NESTO STA SE ZOVE` **`External Name Service`** (MISLIM DA SM SPOMINJAO OVAJ SERVICE, KOJI SE PRETEZNO KORISTIT KADA SE TESTIRA SINGLE POD (NI ZA STA DRUGO NEGO ZA TESTIRANJE, ALI OVDE BI BIO STVARNO CONVINIENT))
 
 ON, ESSENTIALLY REMAP-UJE NOVI DOMAIN NAME DO OVOG PREDUGACKOG
 
-ALI JA TO SADA NECU DEFINISATI ZBOG
+ALI JA TO SADA NECU DEFINISATI JER TRAZI DEFINISANJE DODATNE KONFIGURACIJE, A JA NEMAM VREMENA
 
 ***
 ***
@@ -100,6 +100,10 @@ ALI JA TO SADA NECU DEFINISATI ZBOG
 NEMA VEZE, JA CU SADA IPAK NAPRAVITI REQUEST, KAKO BI VIDEO KAKV CES RESPONSE DOBITI
 
 - `code client/pages/index.tsx`
+
+FORMIRAO SAM URL; DAKLE SLACU REQUEST AGAINS THIS URL:
+
+`http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/api/users/current-user`
 
 ```tsx
 /* eslint react/react-in-jsx-scope: 0 */
@@ -129,7 +133,7 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 
   // EVO SALJEM REQUEST
   const response = await axios.get(
-    "http://ingress-nginx-controller-admission.ingress-nginx/api/users/current-user",
+    "http://ingress-nginx-controller.ingress-nginx/api/users/current-user",
     {
       headers: {
         cookie,
@@ -147,7 +151,6 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 };
 
 export default IndexPage;
-
 ```
 
-ERROR KOJ ICES DOBITI JE ``
+ERROR KOJ ICES DOBITI JE `Error: Request failed with status code 404`
