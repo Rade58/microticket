@@ -25,7 +25,7 @@ export const errorHandler = (
 
   // IMAM SAMO JEDNU
   if (err instanceof CustomError) {
-    res.status(err.statusCode).send(err.serializeErrors());
+    return res.status(err.statusCode).send(err.serializeErrors());
   }
   //
 

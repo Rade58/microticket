@@ -47,12 +47,12 @@ export const currentUser = (
     // OVDE UMECEM USER-A U REQUEST
     req.currentUser = payload;
     // I OVDE POZIVAMO next
-    next();
+    return next();
   } catch (err) {
     // A OVDE BI OPET TREBAO DA POZOVEM NEXT KAKO BI SE PRESLO NA SLEDECI MIDDLEWARE
     // ALI NE MORAM TO OVDE JER CU next, I INACE POZVATI NAKON BLOKA
     // next();
   }
 
-  next();
+  return next();
 };
