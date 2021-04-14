@@ -1,12 +1,3 @@
-# CREATING `/auth/signin` PAGE
-
-**DA ZAISTA ZA OVO MI NIJE TREBALA SEPARATE PAGE, VEC SAM TO MOGO DEFINISATI U SKLOPU SIGNUP PAGE, SAMO CONDITINAL RENDERINGOM, ALI REACT MI NIJE U FOCUSU, TAK ODA UBRZAM STVARI SAMO CU KREIRATI SIGNIN PAGE**
-
-- `touch client/pages/auth/signin.tsx`
-
-U SUSTINI PREKOPIRAO SAM CODE `client/pages/auth/signup.tsx` I IZVRSIO SAMO IZMENE
-
-```tsx
 /* eslint react/react-in-jsx-scope: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 import { FunctionComponent, useState } from "react";
@@ -69,14 +60,3 @@ const SignupPage: FunctionComponent = () => {
 };
 
 export default SignupPage;
-```
-
-MOZES DA TESTIRAS
-
-NAPRAVI PRVO USER-A NA SIGNUP PAGE
-
-NAKON STO TO URADIS MOZES DA UKLONIS COOKIE, MANELNO, ILI PRAVLJENJEM REQUESTA, NA PRIMER IZ INSOMNIA-E PREMA /api/iuser/signout
-
-ONDA POSETI TVOJ NOVI `/auth/sigin` PAGE I UKUCAJ EMAIL I PASSWORD DA VIDIS DA LI CES SE PUSPESNO PRIJAVITI
-
-
