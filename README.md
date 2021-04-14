@@ -253,8 +253,8 @@ AKO POGLEDAS TERMINAL (SKAFFOLD TERMINAL) VIDECES DA SE OVO STMAPALO
 [client] BACKEND
 [client] {
 [client]   currentUser: {
-[client]     email: 'stavros66@mail.com',
-[client]     id: '6076be41e2f90400194af2d6',
+[client]     email: 'stavros76@mail.com',
+[client]     id: '6076be41e2f91400194af2d6',
 [client]     iat: 1618394689
 [client]   }
 [client] }
@@ -266,8 +266,8 @@ AKO POGLEDAS KONZOLU U BROWSER-U VIDECES DA SE OVO STMAPALO
 "FRONTEND"
 {
   currentUser: {
-    email: 'stavros66@mail.com',
-    id: '6076be41e2f90400194af2d6',
+    email: 'stavros76@mail.com',
+    id: '6076be41e2f91400194af2d6',
     iat: 1618394689
   }
 }
