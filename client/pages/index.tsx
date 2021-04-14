@@ -21,7 +21,7 @@ interface PropsI {
 const IndexPage: FunctionComponent<PropsI> = (props) => {
   const { data, errors } = props;
 
-  console.log({ data, errors });
+  // console.log({ data, errors });
 
   // OVO SAM DODAO, CISTO DA PRIKAZEM ERRORS
   if (errors) {
@@ -61,7 +61,7 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
       }
     );
 
-    console.log({ data: response.data });
+    // console.log({ data: response.data });
 
     return {
       props: {
