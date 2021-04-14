@@ -8,35 +8,36 @@ interface HeadersI {
   Cookie: string;
 }
 
-// ZELIM DA NAPRAVIM SIGNATURES ZA OVU FUNKCIJU
-
-export const buildClient = (
-  path: string,
-  method: "get" | "post",
-  // OVO SU ONI HEADERSI (Host, Cookie)
-  mainHeaders?: HeadersI,
-  body?: any,
-  otherHeaders?: Record<string, string>
-) => {
-  if (method === "post" && !body)
-    throw new Error("You didn't provide the body of request");
-
+export const buildApiClient = () => {
   const baseUrl = isSSR()
     ? "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local"
     : "";
 
-  const url = baseUrl + (path.startsWith("/") ? "" : "/") + path;
+  // MOGAO SAM DA NAPRAVIM SIGNATURES, ALI ME MRZI
+  // HOCU STO PRE DA ZAVRSIM
 
-  let headers = {};
+  return async (
+    path: string,
+    method: "get" | "post",
+    // OVO SU ONI HEADERSI (Host, Cookie)
+    mainHeaders?: HeadersI,
+    body?: any,
+    otherHeaders?: Record<string, string>
+  ) => {
+    if (method === "post" && !body)
+      throw new Error("You didn't provide the body of request");
 
-  if (otherHeaders) {
-    headers = { ...headers, ...otherHeaders };
-  }
-  if (mainHeaders) {
-    headers = { ...headers, ...mainHeaders };
-  }
+    const url = baseUrl + (path.startsWith("/") ? "" : "/") + path;
 
-  return async () => {
+    let headers = {};
+
+    if (otherHeaders) {
+      headers = { ...headers, ...otherHeaders };
+    }
+    if (mainHeaders) {
+      headers = { ...headers, ...mainHeaders };
+    }
+
     if (isSSR()) {
       if (method === "get") {
         return axios[method](url, {

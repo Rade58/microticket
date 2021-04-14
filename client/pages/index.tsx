@@ -1,8 +1,9 @@
 /* eslint react/react-in-jsx-scope: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 1 */
-import { FunctionComponent } from "react";
+import { FunctionComponent, useEffect } from "react";
 import { GetServerSideProps } from "next";
-import axios from "axios";
+// import axios from "axios";
+import { buildApiClient } from "../utils/buildApiClient";
 
 interface CurrentUserI {
   id: string;
@@ -18,6 +19,20 @@ interface PropsI {
 }
 
 const IndexPage: FunctionComponent<PropsI> = (props) => {
+  // OVO JE SAMO U CILJU TESTIRANJE DA PROVERIM DA LI SE OVAJ
+  // MOJ API CLIENT USPESNO KORISTI I U FRONTEND CODE-U
+
+  useEffect(() => {
+    const apiClient = buildApiClient();
+
+    apiClient("/api/users/current-user", "get").then((response) => {
+      console.log("FRONTEND");
+
+      console.log(response.data);
+    });
+  }, []);
+  // --------------------------------------------------
+
   const { data, errors } = props;
 
   if (errors) {
@@ -39,7 +54,8 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
   const { cookie, host } = headers;
 
   try {
-    const response = await axios.get(
+    // UMESTO OVOGA
+    /* const response = await axios.get(
       // MISLIM NA OVAJ URL, POGLEDAJ KOLIKI JE
       "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/api/users/current-user",
       {
@@ -48,7 +64,19 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
           Cookie: cookie ? cookie : "",
         },
       }
-    );
+    ); */
+    // PISEM OVO
+    const apiClient = buildApiClient();
+
+    const response = await apiClient("/api/users/current-user", "get", {
+      Host: host,
+      Cookie: cookie,
+    });
+
+    console.log("BACKEND");
+    console.log(response.data);
+
+    // ----------------------------------
 
     return {
       props: {
