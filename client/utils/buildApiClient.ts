@@ -52,11 +52,11 @@ export const buildApiClient = () => {
       }
     } else {
       if (method === "get") {
-        return axios[method](url, {});
+        return axios[method](url, { headers });
       }
 
       if (method === "post") {
-        return axios[method](url, body);
+        return axios[method](url, body, { headers });
       }
     }
   };
