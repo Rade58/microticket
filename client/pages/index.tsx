@@ -20,19 +20,15 @@ interface PropsI {
 
 const IndexPage: FunctionComponent<PropsI> = (props) => {
   useEffect(() => {
-    // EVO OVDE SE PRAVI DAKLE NOVI axios ALI SA PREDEFINITIONSIMA
-    // KOJE SAM DEFINISAO
+    // OVDE NIS NE MENJAMO, OSTAVLJAMO, KAKVO JE BILO I RANIJE
     const apiClient = buildApiClient();
 
-    // REQUEST SE ISTO SALJE KAO I KOD axios
     apiClient.get("/api/users/current-user").then((response) => {
-      // NAMERNO STMPAM DATA KAKO BI VIDO DA LI CE SE
-      // POKLAPATI SA ONIM PODACIMA KOJE CU ISTO STMAPATI NA SERVERU
       console.log("FRONTEND");
       console.log(response.data);
     });
   }, []);
-  // --------------------------------------------------
+  // ----------------------------------------------------------
 
   const { data, errors } = props;
 
@@ -50,32 +46,31 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
 };
 
 export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
-  const { headers } = ctx.req;
+  // OVDE NAM SADA NE TREBA MASA STVARI
 
-  const { cookie, host } = headers;
+  // OVO RESTRUKTURIRANJE NIJE POTREBNO
+  /* const { headers } = ctx.req;
+
+  const { cookie, host } = headers; */
 
   try {
-    // I OVDE TO RADIM ISTO, PRAVIM NOVOG API CLIENT-A
-    const apiClient = buildApiClient();
+    // OVDE KAO ARGUMENT PROSLEDJUJEMO CONTEXT
+    const apiClient = buildApiClient(ctx);
 
-    // EVO PRAVIM REQUEST
-    // I OPET TI NAPOMINJEM DA OVDE NE MORAS DEFINISATI BASE URL
-    // JER TO SI VEC URADIO U FUNKCIJI KOJU SI KREIRAO KOJA IZBACUJE
-    // PREDEFINED axios CLIENT
-    const response = await apiClient.get("/api/users/current-user", {
+    // OVDE VISE NE MORAMO DA PROSLEDJUJEMO HEADERS
+    // JER JE TO PREDEFINED POZIVANJEM GORNJE FUNKCIJE
+    const response = await apiClient.get(
+      "/api/users/current-user" /* , {
       headers: {
-        // NARAVNO I DALJE TI MOZES U SKLADU SA axios-OVIM API-OM
-        // DA PROSLEDJUJES ONO STO ZELIS
         Host: host,
         Cookie: cookie,
       },
-    });
+    } */
+    );
 
-    // I OVO NAMERNO STMAPAM DA VIDIM DA LI CE SE DATA STVARNO UZETI
     console.log("BACKEND");
     console.log(response.data);
-
-    // ----------------------------------
+    // ----------------------------------------------------------
 
     return {
       props: {

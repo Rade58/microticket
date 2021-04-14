@@ -278,5 +278,167 @@ DAKLE U BUDUCNOSTI MOZES KORISTITI TOG API CLIENT, KADA BUDES ZELEO DA PRAVIS RE
 
 **A STO JE NAJVAZNIJE, I SA TIM, TI I DALJE KORISTIS axios ZA SLANJE REQUEST-OVA, STO ZNAACI DA JE SINTAKSA U SKLADU SA AXIOS-OVOM, A JOS IMAM I TYPESCRIPT PODRSKU STO JE ODLICNO**
 
-# ALI MOGUCE JE JOS VECE REFAKTORISANJE INSIDE `getServerSideProps`, A GLAVNA STVAR ZASTO TO RADIS JESTE CINJENICA DA TI IMAS PRISTUP `Request` INSTANIC, U POMENUTOM NextJS HOOK-U
+# MEDJUTIM KADA PRAVIS REQUEST FROM `getServerSideProps`, ZASTO TI IPAK NE BI PROSLEDJIVAO SVE HEADERS-E, KOJE BI UZEO SA Request OBJEKTA `getServerSideProps`; USTVARI TI MOZES DA DEFINISES DA TVOA buildApiClient FUNKCIJA USTVARI UZIMA CEO context ARGUMENT `getServerSideProps` HOOK-A
 
+ZATO CU DA SADA IZMENIM MOJU buildApiClient FUNKCIJU
+
+- `code client/utils/buildApiClient.ts`
+
+```ts
+import axios from "axios";
+import { isSSR } from "./isSSR";
+// UVOZIM TYPE ZA CONTEXT
+import { GetServerSidePropsContext } from "next";
+
+// DEFINIACU DA OVA FUNKCIJA USTVARI UZIMA REQUEST FROM
+// TYPE-OVACU ARGUMENT TAKODJE
+export const buildApiClient = (ctx?: GetServerSidePropsContext) => {
+  const isServerSide = isSSR();
+
+  const baseURL = isServerSide
+    ? "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local"
+    : "";
+
+  // SADA MOGU OVAKO NESTO DA URADIM
+  if (isServerSide && ctx) {
+    // OVDE MOZES DA PROSLEDIS I SVE COOKIES FROM THE ctx.req
+    return axios.create({
+      baseURL,
+      headers: ctx.req.headers,
+    });
+  } else {
+    // OVDE TI USTVARI MOZES DA RETURN-UJES SAMO axios
+    return axios;
+  }
+};
+```
+
+## MOZEMO OPET DA REFAKTORISEMO CODE MAIN PAGE, KOJI SE ODNSI NA DEFINED NETWORK REQUESTS
+
+- `code client/pages/index.tsx`
+
+```tsx
+/* eslint react/react-in-jsx-scope: 0 */
+/* eslint jsx-a11y/anchor-is-valid: 1 */
+import { FunctionComponent, useEffect } from "react";
+import { GetServerSideProps } from "next";
+// import axios from "axios";
+import { buildApiClient } from "../utils/buildApiClient";
+
+interface CurrentUserI {
+  id: string;
+  email: string;
+  iat: number;
+}
+
+type currentUserType = CurrentUserI | null;
+
+interface PropsI {
+  data?: { currentUser: currentUserType };
+  errors?: any;
+}
+
+const IndexPage: FunctionComponent<PropsI> = (props) => {
+  useEffect(() => {
+    // OVDE NIS NE MENJAMO, OSTAVLJAMO, KAKVO JE BILO I RANIJE
+    const apiClient = buildApiClient();
+
+    apiClient.get("/api/users/current-user").then((response) => {
+      console.log("FRONTEND");
+      console.log(response.data);
+    });
+  }, []);
+  // ----------------------------------------------------------
+
+  const { data, errors } = props;
+
+  if (errors) {
+    return <pre>{JSON.stringify(errors, null, 2)}</pre>;
+  }
+
+  if (data) {
+    const { currentUser } = data;
+
+    return <div>You are {!currentUser ? "not" : ""} signed in.</div>;
+  }
+
+  return null;
+};
+
+export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
+  // OVDE NAM SADA NE TREBA MASA STVARI
+
+  // OVO RESTRUKTURIRANJE NIJE POTREBNO
+  /* const { headers } = ctx.req;
+
+  const { cookie, host } = headers; */
+
+  try {
+    // OVDE KAO ARGUMENT PROSLEDJUJEMO CONTEXT
+    const apiClient = buildApiClient(ctx);
+
+    // OVDE VISE NE MORAMO DA PROSLEDJUJEMO HEADERS
+    // JER JE TO PREDEFINED POZIVANJEM GORNJE FUNKCIJE
+    const response = await apiClient.get(
+      "/api/users/current-user" /* , {
+      headers: {
+        Host: host,
+        Cookie: cookie,
+      },
+    } */
+    );
+
+    console.log("BACKEND");
+    console.log(response.data);
+    // ----------------------------------------------------------
+
+    return {
+      props: {
+        data: response.data as { currentUser: currentUserType },
+      },
+    };
+  } catch (err) {
+    console.log(err);
+    return {
+      props: {
+        errors: err.message as any,
+      },
+    };
+  }
+};
+
+export default IndexPage;
+
+```
+
+**MOZEMO I SADA DA TESTIRAMO**
+
+MOZES DA SE OPET DA NAPRAVIS USERA NA PAGE /auth/signup
+
+TO CE TE PROGRAMTICALLY NAVIGATE-OVATI DO MAIN PAGE
+
+AKO POGLEDAS TERMINAL (SKAFFOLD TERMINAL) VIDECES DA SE OVO STMAPALO
+
+```zsh
+[client] BACKEND
+[client] {
+[client]   currentUser: {
+[client]     email: 'mike66@mail.com',
+[client]     id: '6076be41e2f91400194af2d6',
+[client]     iat: 1618394689
+[client]   }
+[client] }
+```
+
+AKO POGLEDAS KONZOLU U BROWSER-U VIDECES DA SE OVO STMAPALO
+
+```js
+"FRONTEND"
+{
+  currentUser: {
+    email: 'mike66@mail.com',
+    id: '6076be41e2f91400194af2d6',
+    iat: 1618394689
+  }
+}
+```
