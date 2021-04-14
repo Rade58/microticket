@@ -1,6 +1,4 @@
-// UVESCU axios
 import axios from "axios";
-// I isSSR HELPER-A
 import { isSSR } from "./isSSR";
 
 interface HeadersI {
@@ -9,17 +7,20 @@ interface HeadersI {
 }
 
 export const buildApiClient = () => {
-  const baseUrl = isSSR()
+  const baseURL = isSSR()
     ? "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local"
     : "";
 
-  // MOGAO SAM DA NAPRAVIM SIGNATURES, ALI ME MRZI
-  // HOCU STO PRE DA ZAVRSIM
+  // MOGAO SAM SAMO OVO URADITI
+  return axios.create({
+    baseURL,
+  });
 
-  return async (
+  // OVO DOLE JA NISTA NISAM MORAO RADITI
+
+  /* return async (
     path: string,
     method: "get" | "post",
-    // OVO SU ONI HEADERSI (Host, Cookie)
     mainHeaders?: HeadersI,
     body?: any,
     otherHeaders?: Record<string, string>
@@ -59,5 +60,5 @@ export const buildApiClient = () => {
         return axios[method](url, body, { headers });
       }
     }
-  };
+  }; */
 };

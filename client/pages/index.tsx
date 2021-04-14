@@ -25,9 +25,8 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
   useEffect(() => {
     const apiClient = buildApiClient();
 
-    apiClient("/api/users/current-user", "get").then((response) => {
+    apiClient.get("/api/users/current-user").then((response) => {
       console.log("FRONTEND");
-
       console.log(response.data);
     });
   }, []);
@@ -54,23 +53,14 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
   const { cookie, host } = headers;
 
   try {
-    // UMESTO OVOGA
-    /* const response = await axios.get(
-      // MISLIM NA OVAJ URL, POGLEDAJ KOLIKI JE
-      "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/api/users/current-user",
-      {
-        headers: {
-          Host: host,
-          Cookie: cookie ? cookie : "",
-        },
-      }
-    ); */
-    // PISEM OVO
     const apiClient = buildApiClient();
 
-    const response = await apiClient("/api/users/current-user", "get", {
-      Host: host,
-      Cookie: cookie,
+    // EVO
+    const response = await apiClient.get("/api/users/current-user", {
+      headers: {
+        Host: host,
+        Cookie: cookie,
+      },
     });
 
     console.log("BACKEND");
