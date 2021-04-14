@@ -19,13 +19,15 @@ interface PropsI {
 }
 
 const IndexPage: FunctionComponent<PropsI> = (props) => {
-  // OVO JE SAMO U CILJU TESTIRANJE DA PROVERIM DA LI SE OVAJ
-  // MOJ API CLIENT USPESNO KORISTI I U FRONTEND CODE-U
-
   useEffect(() => {
+    // EVO OVDE SE PRAVI DAKLE NOVI axios ALI SA PREDEFINITIONSIMA
+    // KOJE SAM DEFINISAO
     const apiClient = buildApiClient();
 
+    // REQUEST SE ISTO SALJE KAO I KOD axios
     apiClient.get("/api/users/current-user").then((response) => {
+      // NAMERNO STMPAM DATA KAKO BI VIDO DA LI CE SE
+      // POKLAPATI SA ONIM PODACIMA KOJE CU ISTO STMAPATI NA SERVERU
       console.log("FRONTEND");
       console.log(response.data);
     });
@@ -53,16 +55,23 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
   const { cookie, host } = headers;
 
   try {
+    // I OVDE TO RADIM ISTO, PRAVIM NOVOG API CLIENT-A
     const apiClient = buildApiClient();
 
-    // EVO
+    // EVO PRAVIM REQUEST
+    // I OPET TI NAPOMINJEM DA OVDE NE MORAS DEFINISATI BASE URL
+    // JER TO SI VEC URADIO U FUNKCIJI KOJU SI KREIRAO KOJA IZBACUJE
+    // PREDEFINED axios CLIENT
     const response = await apiClient.get("/api/users/current-user", {
       headers: {
+        // NARAVNO I DALJE TI MOZES U SKLADU SA axios-OVIM API-OM
+        // DA PROSLEDJUJES ONO STO ZELIS
         Host: host,
         Cookie: cookie,
       },
     });
 
+    // I OVO NAMERNO STMAPAM DA VIDIM DA LI CE SE DATA STVARNO UZETI
     console.log("BACKEND");
     console.log(response.data);
 

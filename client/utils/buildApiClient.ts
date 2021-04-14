@@ -1,11 +1,6 @@
 import axios from "axios";
 import { isSSR } from "./isSSR";
 
-interface HeadersI {
-  Host: string;
-  Cookie: string;
-}
-
 export const buildApiClient = () => {
   const baseURL = isSSR()
     ? "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local"
@@ -16,7 +11,7 @@ export const buildApiClient = () => {
     baseURL,
   });
 
-  // OVO DOLE JA NISTA NISAM MORAO RADITI
+  // OVO DOLE JA NISTA NISAM NI MORAO RADITI, I ZATO TO UKLANJAM
 
   /* return async (
     path: string,
