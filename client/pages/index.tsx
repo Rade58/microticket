@@ -39,7 +39,7 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
   if (data) {
     const { currentUser } = data;
 
-    return <div>You are {!currentUser ? "not" : ""} signed in.</div>;
+    return <h1>You are {!currentUser ? "not" : ""} signed in.</h1>;
   }
 
   return null;
