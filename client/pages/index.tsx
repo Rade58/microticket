@@ -4,23 +4,39 @@ import { FunctionComponent } from "react";
 import { GetServerSideProps } from "next";
 import axios from "axios";
 
-// NAMERNO SAM MALO PROSIRIO TYPE-OVE
+// DA DEFINISEM BOLJI TYPESCRIPT SUPPORT
+interface CurrentUserI {
+  id: string;
+  email: string;
+  iat: number;
+}
+
+type currentUserType = CurrentUserI | null;
+
 interface PropsI {
-  placeholder: boolean;
-  data?: any;
+  data?: { currentUser: currentUserType };
   errors?: any;
 }
 
 const IndexPage: FunctionComponent<PropsI> = (props) => {
-  //
   const { data, errors } = props;
 
-  // OVO MI JE BITNO DA STAMPAM OVDE JER ZELIM DA VIDIM DA LI CE
-  // DATA STICI DO KOMPONENTE
   console.log({ data, errors });
 
-  // eslint-disable-next-line
-  return <div>🦉</div>;
+  // OVO SAM DODAO, CISTO DA PRIKAZEM ERRORS
+  if (errors) {
+    return <pre>{JSON.stringify(errors, null, 2)}</pre>;
+  }
+
+  if (data) {
+    const { currentUser } = data;
+
+    // NAMERNO SAM OVDE ZA ZA SADA DEFINISAO DA SE OVAKO
+    // POKAZE DA LI JE USER SIGNED IN ILI NIJE
+    return <div>You are {!currentUser ? "not" : ""} signed in.</div>;
+  }
+
+  return null;
 };
 
 export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
@@ -30,15 +46,16 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 
   console.log({ cookie, host });
 
-  // DODAJEM try catch BLOK
   try {
     const response = await axios.get(
       "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/api/users/current-user",
       {
         headers: {
-          // EVO DODACU OVDE I host HEADER STO JE NAJVAZNIJE
-          Host: "microticket.com",
-          // COOKIE CU I DALJE DA SALJEM
+          // NE MORAS OVO DA HARDCODE-UJES
+          // Host: "microticket.com",
+          // MOZE I OVAKO
+          Host: host,
+          //
           Cookie: cookie ? cookie : "",
         },
       }
@@ -48,16 +65,13 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 
     return {
       props: {
-        placeholder: true,
-        // NAMERNO PROSLEDJUJEM DATA U KOMPONENTU
-        data: response.data as any,
+        data: response.data as { currentUser: currentUserType },
       },
     };
   } catch (err) {
     console.log(err);
     return {
       props: {
-        placeholder: true,
         // SLACU I OVO
         errors: err.message as any,
       },

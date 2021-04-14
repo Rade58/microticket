@@ -300,3 +300,12 @@ I ONO STO CE SE STAMPATI JE OVO
 ```js
 { data: { currentUser: null }}
 ```
+
+# MOZES SADA DA ODRADIS MALO REFAKTORISANJA, I UNUTAR `getServerSideProps` ALI I U KOMPONENTI
+
+- `code client/pages/index.tsx`
+
+```tsx
+
+```
+
