@@ -4,7 +4,6 @@ import { FunctionComponent } from "react";
 import { GetServerSideProps } from "next";
 import axios from "axios";
 
-// DA DEFINISEM BOLJI TYPESCRIPT SUPPORT
 interface CurrentUserI {
   id: string;
   email: string;
@@ -21,9 +20,6 @@ interface PropsI {
 const IndexPage: FunctionComponent<PropsI> = (props) => {
   const { data, errors } = props;
 
-  // console.log({ data, errors });
-
-  // OVO SAM DODAO, CISTO DA PRIKAZEM ERRORS
   if (errors) {
     return <pre>{JSON.stringify(errors, null, 2)}</pre>;
   }
@@ -31,8 +27,6 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
   if (data) {
     const { currentUser } = data;
 
-    // NAMERNO SAM OVDE ZA ZA SADA DEFINISAO DA SE OVAKO
-    // POKAZE DA LI JE USER SIGNED IN ILI NIJE
     return <div>You are {!currentUser ? "not" : ""} signed in.</div>;
   }
 
@@ -44,24 +38,17 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 
   const { cookie, host } = headers;
 
-  console.log({ cookie, host });
-
   try {
     const response = await axios.get(
+      // MISLIM NA OVAJ URL, POGLEDAJ KOLIKI JE
       "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/api/users/current-user",
       {
         headers: {
-          // NE MORAS OVO DA HARDCODE-UJES
-          // Host: "microticket.com",
-          // MOZE I OVAKO
           Host: host,
-          //
           Cookie: cookie ? cookie : "",
         },
       }
     );
-
-    // console.log({ data: response.data });
 
     return {
       props: {
@@ -72,7 +59,6 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
     console.log(err);
     return {
       props: {
-        // SLACU I OVO
         errors: err.message as any,
       },
     };
