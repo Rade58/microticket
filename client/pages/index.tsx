@@ -48,15 +48,11 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
   return null;
 };
 
-/* export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
-
+export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
   try {
-
     const apiClient = buildApiClient(ctx);
 
-    const response = await apiClient.get(
-      "/api/users/current-user"
-    );
+    const response = await apiClient.get("/api/users/current-user");
 
     console.log("BACKEND");
     console.log(response.data);
@@ -75,6 +71,6 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
       },
     };
   }
-}; */
+};
 
 export default IndexPage;
