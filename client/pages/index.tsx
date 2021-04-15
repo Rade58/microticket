@@ -48,27 +48,14 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
   return null;
 };
 
-export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
-  // OVDE NAM SADA NE TREBA MASA STVARI
-
-  // OVO RESTRUKTURIRANJE NIJE POTREBNO
-  /* const { headers } = ctx.req;
-
-  const { cookie, host } = headers; */
+/* export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 
   try {
-    // OVDE KAO ARGUMENT PROSLEDJUJEMO CONTEXT
+
     const apiClient = buildApiClient(ctx);
 
-    // OVDE VISE NE MORAMO DA PROSLEDJUJEMO HEADERS
-    // JER JE TO PREDEFINED POZIVANJEM GORNJE FUNKCIJE
     const response = await apiClient.get(
-      "/api/users/current-user" /* , {
-      headers: {
-        Host: host,
-        Cookie: cookie,
-      },
-    } */
+      "/api/users/current-user"
     );
 
     console.log("BACKEND");
@@ -88,6 +75,6 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
       },
     };
   }
-};
+}; */
 
 export default IndexPage;

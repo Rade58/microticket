@@ -40,9 +40,9 @@ module.exports = (phase, { defaultConfig }) => {
   };
 
   // WEBPACK 5 ENABLING
-  newConfig.future = {
+  /* newConfig.future = {
     webpack5: true,
-  };
+  }; */
 
   // *********************
   // EVO OVDE CU DA PODESIM TU webpackDevMiddleware FUNKCIJU
