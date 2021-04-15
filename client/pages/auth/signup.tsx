@@ -6,7 +6,9 @@ import { FunctionComponent, useState } from "react";
 
 import useRequest from "../../hooks/useRequest";
 
-const SignupPage: FunctionComponent = () => {
+const SignupPage: FunctionComponent = (props) => {
+  console.log(props);
+
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 

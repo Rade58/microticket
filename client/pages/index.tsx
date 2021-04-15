@@ -16,9 +16,12 @@ type currentUserType = CurrentUserI | null;
 interface PropsI {
   data?: { currentUser: currentUserType };
   errors?: any;
+  placeholder?: string;
 }
 
 const IndexPage: FunctionComponent<PropsI> = (props) => {
+  console.log(props.placeholder);
+
   useEffect(() => {
     // OVDE NIS NE MENJAMO, OSTAVLJAMO, KAKVO JE BILO I RANIJE
     const apiClient = buildApiClient();

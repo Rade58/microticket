@@ -1,7 +1,7 @@
 import React from "react";
 // EVO UZEO SAM I TYPE SA KOJI MCU TYPE-OVATI
 // context ZA getInitialProps
-import { AppProps, AppContext } from "next/app";
+import App, { AppProps, AppContext } from "next/app";
 import "bootstrap/dist/css/bootstrap.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -14,12 +14,15 @@ function MyApp({ Component, pageProps }: AppProps) {
 }
 
 // EVO TYPE-OVAO SAM TAJ context ARGUMENT
-MyApp.getInitialProps = async (ctx: AppContext) => {
-  // PROSLEDJUJEM BILO KAKAV PROPS
+MyApp.getInitialProps = async (appCtx: AppContext) => {
+  console.log("GET INITIAL PROPS");
 
-  return {
-    placeholder: "placeholder",
-  };
+  const appProps = await App.getInitialProps(appCtx);
+
+  console.log({ appProps });
+
+  // PROSLEDJUJEM BILO KAKAV PROPS
+  return { ...appProps, placeholder: "placeholder" };
 };
 
 export default MyApp;
