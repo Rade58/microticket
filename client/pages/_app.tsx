@@ -1,6 +1,7 @@
 import React from "react";
-//
-import App, { AppProps, AppContext } from "next/app";
+// EVO UZEO SAM I TYPE SA KOJI MCU TYPE-OVATI
+// context ZA getInitialProps
+import { AppProps, AppContext } from "next/app";
 import "bootstrap/dist/css/bootstrap.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -12,8 +13,12 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
+// EVO TYPE-OVAO SAM TAJ context ARGUMENT
 MyApp.getInitialProps = async (ctx: AppContext) => {
-  return {};
+  // PROSLEDJUJEM BILO KAKAV PROPS
+  return {
+    placeholder: "placeholder",
+  };
 };
 
 export default MyApp;
