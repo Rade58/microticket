@@ -2,7 +2,6 @@
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 import { FunctionComponent, useEffect } from "react";
 import { GetServerSideProps } from "next";
-// import axios from "axios";
 import { buildApiClient } from "../utils/buildApiClient";
 
 interface CurrentUserI {
@@ -16,15 +15,11 @@ export type currentUserType = CurrentUserI | null;
 interface PropsI {
   data?: { currentUser: currentUserType };
   errors?: any;
-  placeholder?: string;
+  foo?: string;
 }
 
 const IndexPage: FunctionComponent<PropsI> = (props) => {
-  console.log("INDEX PAGE");
-  console.log(props.placeholder);
-
   useEffect(() => {
-    // OVDE NIS NE MENJAMO, OSTAVLJAMO, KAKVO JE BILO I RANIJE
     const apiClient = buildApiClient();
 
     apiClient.get("/api/users/current-user").then((response) => {
@@ -49,28 +44,13 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
   return null;
 };
 
-/* export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
-  try {
-    const apiClient = buildApiClient(ctx);
-
-    const response = await apiClient.get("/api/users/current-user");
-
-    console.log("BACKEND");
-    console.log(response.data);
-
-    return {
-      props: {
-        data: response.data as { currentUser: currentUserType },
-      },
-    };
-  } catch (err) {
-    console.log(err);
-    return {
-      props: {
-        errors: err.message as any,
-      },
-    };
-  }
-}; */
+export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
+  // EVO ODAVDE SAMO RETURN-UJEM NESTO BEZVEZE
+  return {
+    props: {
+      foo: "bar",
+    },
+  };
+};
 
 export default IndexPage;
