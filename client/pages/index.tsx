@@ -20,6 +20,7 @@ interface PropsI {
 }
 
 const IndexPage: FunctionComponent<PropsI> = (props) => {
+  console.log("INDEX PAGE");
   console.log(props.placeholder);
 
   useEffect(() => {
