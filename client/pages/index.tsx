@@ -19,6 +19,8 @@ interface PropsI {
 }
 
 const IndexPage: FunctionComponent<PropsI> = (props) => {
+  console.log(props);
+
   useEffect(() => {
     const apiClient = buildApiClient();
 
