@@ -72,12 +72,89 @@ NAIME JA SAM I U `/`, I U `auth/signup`, I U `auth/signin` PAGE DEFINISAO DA SE 
 ***
 ***
 
-# TI NARAVNO MOZES INTERCEPT-OVATI PROSLEDJENI DATA IZ `_app.getInitialProps` U SAMOJ `MyApp` KOMPONENTI
+# TI NARAVNO MOZES INTERCEPT-OVATI PROSLEDJENI DATA IZ `_app.getInitialProps` U SAMOJ `MyApp` KOMPONENTI ;ALI DAKLE TO NIJE JEDINI DATA, AKO IMAS NEKI HOOK NA INDIVIDUAL PAGE-U, INSIDE MyApp, BI TREBAL OD IMAS PRISTUP I TIM PROPSIMA
 
-MORAMO TO MALO BOLJE DA INSPECT-UJEMO
+MORAMO TO MALO BOLJE DA INSPECT-UJEMO SVE AROUND _app
 
 - `code client/pages/_app.tsx`
 
 ```tsx
+import React from "react";
+import { AppProps, AppContext } from "next/app";
+import "bootstrap/dist/css/bootstrap.css";
+
+function MyApp({ Component, pageProps }: AppProps) {
+  // ONO STO JE BITNO JESTE DA AKO OVDE ZADAS NEKI CODE
+  // TO CE BITI FRONTEND CODE KOJI CE BITI IZVRSEN ZA SVAKI PAGE
+  // TAKO DA I AKO ZADAS console.log
+  // ON CE SE IZVRSITI U BROWSER-VOJ KONZOLI
+  // PAGE-, KOJI SE POSECUJE
+  console.log(JSON.stringify({ pageProps }, null, 2));
+
+  // pageProps SU, DAKLE PROPSI, JEDNOG PAGE-A
+  // ALI MEDJU NJIMA TREBAJ UDA BUDU I ONI PROSI PROSLEDJENI OD
+  //    MyApp.getInitialProps 
+
+  // SADA SVE MALO IMA VISE SMISLA
+  // ZATO JE OVO CONVINIENT
+
+  // DAKLE NE SAM ODA MOZEMO PROSLEDJIVATI ADDITINAL JSX KOJI 
+  // CE IMATI SVAKI PAGE, MI MOZEMO DA PROSLEDJUJEMO I PROPSE
+
+  // PA NE SAMO U Component, KOJEM JE BOLJE DA SE ZOVE
+  // PageComponent (BILO BI INTUITIVNIJE)
+
+  // VEC MOZEMO DA U ODNOSU NA TE PROPSE DA MI, TAKODJE
+  // CONDITIONALLY RENDER-UJEMO ON OSTO SMO OVDE PODESILI
+  // DA TREBA DA IMA SVAKI PAGE 
+
+  return (
+    <div>
+      <h1>Navigation</h1>
+      <Component {...pageProps} />
+    </div>
+  );
+}
+
+MyApp.getInitialProps = async (appCtx: AppContext) => {
+  console.log("GET INITIAL PROPS");
+
+  return {
+    pageProps: {
+      placeholder: "plceholder",
+    },
+  };
+};
+
+export default MyApp;
 
 ```
+
+MOJI TRENUTNI INDIVIDUAL PAGE-OVI NEMAJU NI JEDAN HOOK POPUT `getServerSideProps`; TAKAV HOOK IMA SAMO JEDAN PAGE, A TO JE INDEX PAGE (**"/"**)
+
+**MENE SADA ZANIMA DA LI KADA POSETIM `/`; DA LI CE SE U GORNJEM OBJEKTU `pageProp` (INSIDE MyApp) NACI I ONI PROPSI KOJI PROSLEDI `getServerSideProps`**
+
+EVO POSETIO SAM `/`
+
+I VIDIM DA SE U BROWSER-OVOJ KONZOLI STAMPAO OVAKAV OBJEKAT
+
+```js
+{
+  "pageProps": {
+    // DAKLE OVO JE ONO STO SAM PROSLEDI FROM  _app.getInitialProps
+    "placeholder": "plceholder",
+    // A OVO JE ONO STO JE PROSLEDJENO IZ `getServerSideProps`
+    "data": {
+      "currentUser": {
+        "email": "rustplayer6@mail.com",
+        "id": "60774baf6a28f4001926f1f6",
+        "iat": 1618430941
+      }
+    }
+  }
+}
+```
+
+## ISTO TAKO PRIMECUJEM DA ONO STO SAM STMPAO U SAMOJ `MyApp` KOMPONENTI, JESTE ISTO STMAPANO I SERVER SIDE
+
+ZATO STO SAM VIDEO TO U TERMINALU

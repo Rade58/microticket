@@ -8,7 +8,13 @@ function MyApp({ Component, pageProps }: AppProps) {
   // TAKO DA I AKO ZADAS console.log
   // ON CE SE IZVRSITI U BROWSER-VOJ KONZOLI
   // PAGE-, KOJI SE POSECUJE
-  console.log({ pageProps });
+  console.log(JSON.stringify({ pageProps }, null, 2));
+
+  // pageProps SU, DAKLE PROPSI, JEDNOG PAGE-A
+  // ALI MEDJU NJIMA TREBAJ UDA BUDU I ONI PROSI PROSLEDJENI OD
+  //    MyApp.getInitialProps
+
+  // SADA SVE MALO IMA VISE SMISLA
 
   return (
     <div>
