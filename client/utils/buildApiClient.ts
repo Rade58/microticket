@@ -1,11 +1,13 @@
 import axios from "axios";
 import { isSSR } from "./isSSR";
 // UVOZIM TYPE ZA CONTEXT
-import { GetServerSidePropsContext } from "next";
+import { GetServerSidePropsContext, NextPageContext } from "next";
 
 // DEFINIACU DA OVA FUNKCIJA USTVARI UZIMA REQUEST FROM
 // TYPE-OVACU ARGUMENT TAKODJE
-export const buildApiClient = (ctx?: GetServerSidePropsContext) => {
+export const buildApiClient = (
+  ctx?: GetServerSidePropsContext | NextPageContext
+) => {
   const isServerSide = isSSR();
 
   const baseURL = isServerSide

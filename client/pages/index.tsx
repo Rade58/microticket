@@ -11,7 +11,7 @@ interface CurrentUserI {
   iat: number;
 }
 
-type currentUserType = CurrentUserI | null;
+export type currentUserType = CurrentUserI | null;
 
 interface PropsI {
   data?: { currentUser: currentUserType };
@@ -49,7 +49,7 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
   return null;
 };
 
-export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
+/* export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
   try {
     const apiClient = buildApiClient(ctx);
 
@@ -57,7 +57,6 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 
     console.log("BACKEND");
     console.log(response.data);
-    // ----------------------------------------------------------
 
     return {
       props: {
@@ -72,6 +71,6 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
       },
     };
   }
-};
+}; */
 
 export default IndexPage;

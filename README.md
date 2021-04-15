@@ -2,3 +2,8 @@
 
 **NARAVNO RAIM OVO DA BI SVAKI PAGE MOGAO DA UZME CURRENT USER-A**
 
+- `code client/pages/_app.tsx`
+
+```tsx
+
+```

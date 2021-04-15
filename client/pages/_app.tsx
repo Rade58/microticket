@@ -1,21 +1,13 @@
 import React from "react";
 import { AppProps, AppContext } from "next/app";
+// UVESCU JOS OVO
+import { buildApiClient } from "../utils/buildApiClient";
+import { currentUserType } from "./index";
+//
+
 import "bootstrap/dist/css/bootstrap.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
-  // ONO STO JE BITNO JESTE DA AKO OVDE ZADAS NEKI CODE
-  // TO CE BITI FRONTEND CODE KOJI CE BITI IZVRSEN ZA SVAKI PAGE
-  // TAKO DA I AKO ZADAS console.log
-  // ON CE SE IZVRSITI U BROWSER-VOJ KONZOLI
-  // PAGE-, KOJI SE POSECUJE
-  console.log(JSON.stringify({ pageProps }, null, 2));
-
-  // pageProps SU, DAKLE PROPSI, JEDNOG PAGE-A
-  // ALI MEDJU NJIMA TREBAJ UDA BUDU I ONI PROSI PROSLEDJENI OD
-  //    MyApp.getInitialProps
-
-  // SADA SVE MALO IMA VISE SMISLA
-
   return (
     <div>
       <h1>Navigation</h1>
@@ -25,13 +17,37 @@ function MyApp({ Component, pageProps }: AppProps) {
 }
 
 MyApp.getInitialProps = async (appCtx: AppContext) => {
-  console.log("GET INITIAL PROPS");
+  // JEDINO STO OVDE MORAS VODITI RACUNA DA JE CONTEXT
+  // OBJEKAT SA req OBJEKTOM, INSIDE appCtx, A TO JE LAKO PRONACI
+  // JER AM ODRADIO DOBRU TYPESCRIPT PODRSKU
+  const { ctx } = appCtx;
 
-  return {
-    pageProps: {
-      placeholder: "plceholder",
-    },
-  };
+  // EVO POTPUNO SAM SVE PREKOPIRAO STO SE NLAZILO INSIDE getServerSideProps
+  // NA STRANICI client/pages/index.tsx
+
+  try {
+    const apiClient = buildApiClient(ctx);
+
+    const response = await apiClient.get("/api/users/current-user");
+
+    console.log("BACKEND");
+    console.log(response.data);
+    // ----------------------------------------------------------
+
+    return {
+      // SAMO STO UMESTO props OVDE PISEM pageProps
+      pageProps: {
+        data: response.data as { currentUser: currentUserType },
+      },
+    };
+  } catch (err) {
+    console.log(err);
+    return {
+      pageProps: {
+        errors: err.message as any,
+      },
+    };
+  }
 };
 
 export default MyApp;
