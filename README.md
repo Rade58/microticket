@@ -85,3 +85,9 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 
 };
 ```
+
+## MOZES OVO DA TESTIRAS
+
+PRVO U SVAKOJ KOMPONENTI STAMPAJ PROPSE
+
+ONDA STAMPAJ
