@@ -16,6 +16,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 // EVO TYPE-OVAO SAM TAJ context ARGUMENT
 MyApp.getInitialProps = async (ctx: AppContext) => {
   // PROSLEDJUJEM BILO KAKAV PROPS
+
   return {
     placeholder: "placeholder",
   };
