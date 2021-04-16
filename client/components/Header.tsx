@@ -1,5 +1,5 @@
 /* eslint jsx-a11y/anchor-is-valid: 1 */
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, Fragment } from "react";
 import Link from "next/link";
 import { currentUserType } from "../pages/index";
 
@@ -19,11 +19,14 @@ const Header: FunctionComponent<HeaderPropsI> = ({ currentUser }) => {
     .map((item) => {
       if (item && item.label) {
         return (
-          <li key={item.label} className="nav-item">
-            <Link href={item.href}>
-              <a>{item.label}</a>
-            </Link>
-          </li>
+          <Fragment key={item.label}>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <li key={item.label} className="nav-item">
+              <Link href={item.href}>
+                <a>{item.label}</a>
+              </Link>
+            </li>
+          </Fragment>
         );
       }
     });
