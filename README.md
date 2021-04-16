@@ -120,3 +120,71 @@ UKLONI COOKIE, I VIDECES DA CE NA EKRANU BITI PRIKAZANI SIGN IN I SIGNUP LINKOVI
 
 DOK AKO SE SIGN-UJES UP ILI IN, VIDECES DA CE NA HEADERU BITI SIGNOUT DUGME
 
+# SADA CU DA UMESTO TERNARY-JA KORISTIM "`&&` LOGIKU" ZA CONDITIONAL RENDERING
+
+DAKLE OVO SMO RADIM DA TI POKAZEM DA MOZE I OVAKO, IAKO JE TERNARY SASVIM OK STVAR
+
+**A USPUT CU MALO DA POPRAVIM UI HEADER-A (USTVARI DODACU BOOTSTRAP KLASU nav-item NA SVAKI OD LIST ITEMA)** (IAKO MI CSS NE IZGLEDA DOBRO, ALI NIJE NI BITNO JER MI NIJE PREDMET INTERESOVANJA U OVOM WORKSHOP-U)
+
+- `code client/components/Header.tsx`
+
+```tsx
+/* eslint jsx-a11y/anchor-is-valid: 1 */
+import React, { FunctionComponent } from "react";
+import Link from "next/link";
+import { currentUserType } from "../pages/index";
+
+interface HeaderPropsI {
+  currentUser: currentUserType;
+}
+
+const Header: FunctionComponent<HeaderPropsI> = ({ currentUser }) => {
+  return (
+    <nav className="navbar navbar-light bg-light">
+      <Link href="/">
+        <a className="navbar-brand">MicTick</a>
+      </Link>
+      <div className="d-flex justify-content-end">
+        <ul className="nav d-flex align-items-center">
+          {/* EVO KORISTIM && */}
+          {!currentUser && (
+              <li className="nav-item">
+                <button>Sign Out</button>
+              </li>
+            ) && (
+              <>
+                <li className="nav-item">
+                  <Link href="/auth/signup">
+                    <a>Sign Up</a>
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link href="/auth/signin">
+                    <a>Sign In</a>
+                  </Link>
+                </li>
+              </>
+            )}
+        </ul>
+      </div>
+    </nav>
+  );
+};
+
+export default Header;
+```
+
+# MEDJUTIM MOGLO JE JOS JEDNOSTAVNIJE DA SE URADI, TAKO STO CES DEFINISATI ARRY LINKOVA, KOJI BI ONDA MAP-OVAO
+
+NISAM PRVI PUT VIDEO U OVOM WORKSHOP-U, LJUDI VOLE DA ORGANIZUJU LINKOVE NA NACIN KAKO CU TI POKAZATI
+
+
+
+
+
+## NESTO DA KAZEM
+
+ISTO TAKO MOZES DA VIDIS DA JE AUTOR WORKSHOPA ODLUCIO DA IMA I SIGNUP PAGE (ISTO TAKO IRACIONALNO KAO STO IMAM I SIGIN I SIGNUP PAGE (TO BI USTVARI SVE TREBALO DA BUDU CONDITIONALY RENDERED FORMULARI NA JEDNOM PAGE-U; ALI OVO JE CISTO ZBOG BRZINE, DA STO VISE STVARI PREDJEM, A TI ZNAS KAKO DA NAPRAVIS CONDITIONALLY RENDERE FORMS BY YOURSELF))
+
+U SLEDECEM BRANCH-U CU DA NAPRAVIM SIGNUP PAGE
+
