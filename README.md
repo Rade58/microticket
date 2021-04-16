@@ -146,25 +146,26 @@ const Header: FunctionComponent<HeaderPropsI> = ({ currentUser }) => {
       </Link>
       <div className="d-flex justify-content-end">
         <ul className="nav d-flex align-items-center">
-          {/* EVO KORISTIM && */}
-          {!currentUser && (
+          {/* EVO KORISTIM && LOGICKI OPERATOR */}
+           {!currentUser && (
+            <li className="nav-item">
+              <button>Sign Out</button>
+            </li>
+          )}
+          {currentUser && (
+            <>
               <li className="nav-item">
-                <button>Sign Out</button>
+                <Link href="/auth/signup">
+                  <a>Sign Up</a>
+                </Link>
               </li>
-            ) && (
-              <>
-                <li className="nav-item">
-                  <Link href="/auth/signup">
-                    <a>Sign Up</a>
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link href="/auth/signin">
-                    <a>Sign In</a>
-                  </Link>
-                </li>
-              </>
-            )}
+              <li className="nav-item">
+                <Link href="/auth/signin">
+                  <a>Sign In</a>
+                </Link>
+              </li>
+            </>
+          )}
         </ul>
       </div>
     </nav>
@@ -174,17 +175,21 @@ const Header: FunctionComponent<HeaderPropsI> = ({ currentUser }) => {
 export default Header;
 ```
 
+MENI SE MEDJUTIM NE SVIDJA, POMENUTI NACIN, JER OBICNO POMENUTI NACIN, JER KORISCENJE TERNARY-JA U GORNJEM SLUCAJU NEKEKO MI DELUJE PRIRODNIJE
+
 # MEDJUTIM MOGLO JE JOS JEDNOSTAVNIJE DA SE URADI, TAKO STO CES DEFINISATI ARRY LINKOVA, KOJI BI ONDA MAP-OVAO
 
-NISAM PRVI PUT VIDEO U OVOM WORKSHOP-U, LJUDI VOLE DA ORGANIZUJU LINKOVE NA NACIN KAKO CU TI POKAZATI
+NISAM PRVI PUT OVO VIDEO U OVOM WORKSHOP-U, LJUDI VOLE DA ORGANIZUJU LINKOVE NA NACIN TAK OSTO IH STAVE U ARRAY OBJEKATA, ALI OVDE CU KORISTITI `&&` OPERATOR, NA NACIN KOJI JE SLICAN GORNJEM NACINU
 
+- `code client/components/Header.tsx`
 
+```tsx
 
-
+```
 
 ## NESTO DA KAZEM
 
-ISTO TAKO MOZES DA VIDIS DA JE AUTOR WORKSHOPA ODLUCIO DA IMA I SIGNUP PAGE (ISTO TAKO IRACIONALNO KAO STO IMAM I SIGIN I SIGNUP PAGE (TO BI USTVARI SVE TREBALO DA BUDU CONDITIONALY RENDERED FORMULARI NA JEDNOM PAGE-U; ALI OVO JE CISTO ZBOG BRZINE, DA STO VISE STVARI PREDJEM, A TI ZNAS KAKO DA NAPRAVIS CONDITIONALLY RENDERE FORMS BY YOURSELF))
+ISTO TAKO MOZES DA VIDIS DA JE AUTOR WORKSHOPA ODLUCIO DA IMA I SIGNUP PAGE (ISTO TAKO IRACIONALNO, KAO STO IMAM I SIGIN I SIGNUP PAGE (TO BI USTVARI SVE TREBALO DA BUDU CONDITIONALY RENDERED FORMULARI NA JEDNOM PAGE-U; ALI OVO JE CISTO ZBOG BRZINE, DA STO VISE STVARI PREDJEM, A TI ZNAS KAKO DA NAPRAVIS CONDITIONALLY RENDERE FORMS BY YOURSELF))
 
 U SLEDECEM BRANCH-U CU DA NAPRAVIM SIGNUP PAGE
 

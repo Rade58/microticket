@@ -17,23 +17,24 @@ const Header: FunctionComponent<HeaderPropsI> = ({ currentUser }) => {
         <ul className="nav d-flex align-items-center">
           {/* EVO KORISTIM && */}
           {!currentUser && (
+            <li className="nav-item">
+              <button>Sign Out</button>
+            </li>
+          )}
+          {currentUser && (
+            <>
               <li className="nav-item">
-                <button>Sign Out</button>
+                <Link href="/auth/signup">
+                  <a>Sign Up</a>
+                </Link>
               </li>
-            ) && (
-              <>
-                <li className="nav-item">
-                  <Link href="/auth/signup">
-                    <a>Sign Up</a>
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link href="/auth/signin">
-                    <a>Sign In</a>
-                  </Link>
-                </li>
-              </>
-            )}
+              <li className="nav-item">
+                <Link href="/auth/signin">
+                  <a>Sign In</a>
+                </Link>
+              </li>
+            </>
+          )}
         </ul>
       </div>
     </nav>
