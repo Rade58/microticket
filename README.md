@@ -147,12 +147,12 @@ const Header: FunctionComponent<HeaderPropsI> = ({ currentUser }) => {
       <div className="d-flex justify-content-end">
         <ul className="nav d-flex align-items-center">
           {/* EVO KORISTIM && LOGICKI OPERATOR */}
-           {!currentUser && (
+           {currentUser && (
             <li className="nav-item">
               <button>Sign Out</button>
             </li>
           )}
-          {currentUser && (
+          {!currentUser && (
             <>
               <li className="nav-item">
                 <Link href="/auth/signup">
@@ -184,7 +184,73 @@ NISAM PRVI PUT OVO VIDEO U OVOM WORKSHOP-U, LJUDI VOLE DA ORGANIZUJU LINKOVE NA 
 - `code client/components/Header.tsx`
 
 ```tsx
+/* eslint jsx-a11y/anchor-is-valid: 1 */
+import React, { FunctionComponent } from "react";
+import Link from "next/link";
+import { currentUserType } from "../pages/index";
 
+interface HeaderPropsI {
+  currentUser: currentUserType;
+}
+
+const Header: FunctionComponent<HeaderPropsI> = ({ currentUser }) => {
+  // EVO DEFINISEM OVAKO
+  const links = [
+    currentUser && { label: "Sign Out", href: "/auth/signout" },
+    !currentUser && { label: "Sign In", href: "/auth/signin" },
+    !currentUser && { label: "Sign Up", href: "/auth/signup" },
+  ]
+    // IAKO TO CESTO NE VOLIM DA RADIM, JSX MOZES OVAKO DA SE STORE-UJE
+    // U VARIJABLOJ
+    .map((item) => {
+      if (item && item.label) {
+        return (
+          <li key={item.label} className="nav-item">
+            <Link href={item.href}>
+              <a>{item.label}</a>
+            </Link>
+          </li>
+        );
+      }
+    });
+
+  return (
+    <nav className="navbar navbar-light bg-light">
+      <Link href="/">
+        <a className="navbar-brand">MicTick</a>
+      </Link>
+      <div className="d-flex justify-content-end">
+        <ul className="nav d-flex align-items-center">
+          {/* UMESTO OVOGA*/}
+          {/* {currentUser && (
+            <li className="nav-item">
+              <button>Sign Out</button>
+            </li>
+          )}
+          {!currentUser && (
+            <>
+              <li className="nav-item">
+                <Link href="/auth/signup">
+                  <a>Sign Up</a>
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link href="/auth/signin">
+                  <a>Sign In</a>
+                </Link>
+              </li>
+            </>
+          )} */}
+          {/* STAVLJAM OVO */}
+          {links}
+          {/* ------------------ */}
+        </ul>
+      </div>
+    </nav>
+  );
+};
+
+export default Header;
 ```
 
 ## NESTO DA KAZEM

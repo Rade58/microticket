@@ -8,6 +8,26 @@ interface HeaderPropsI {
 }
 
 const Header: FunctionComponent<HeaderPropsI> = ({ currentUser }) => {
+  // EVO DEFINISEM OVAKO
+  const links = [
+    currentUser && { label: "Sign Out", href: "/auth/signout" },
+    !currentUser && { label: "Sign In", href: "/auth/signin" },
+    !currentUser && { label: "Sign Up", href: "/auth/signup" },
+  ]
+    // IAKO TO CESTO NE VOLIM DA RADIM, JSX MOZES OVAKO DA SE STORE-UJE
+    // U VARIJABLOJ
+    .map((item) => {
+      if (item && item.label) {
+        return (
+          <li key={item.label} className="nav-item">
+            <Link href={item.href}>
+              <a>{item.label}</a>
+            </Link>
+          </li>
+        );
+      }
+    });
+
   return (
     <nav className="navbar navbar-light bg-light">
       <Link href="/">
@@ -15,13 +35,13 @@ const Header: FunctionComponent<HeaderPropsI> = ({ currentUser }) => {
       </Link>
       <div className="d-flex justify-content-end">
         <ul className="nav d-flex align-items-center">
-          {/* EVO KORISTIM && */}
-          {!currentUser && (
+          {/* UMESTO OVOGA*/}
+          {/* {currentUser && (
             <li className="nav-item">
               <button>Sign Out</button>
             </li>
           )}
-          {currentUser && (
+          {!currentUser && (
             <>
               <li className="nav-item">
                 <Link href="/auth/signup">
@@ -34,7 +54,10 @@ const Header: FunctionComponent<HeaderPropsI> = ({ currentUser }) => {
                 </Link>
               </li>
             </>
-          )}
+          )} */}
+          {/* STAVLJAM OVO */}
+          {links}
+          {/* ------------------ */}
         </ul>
       </div>
     </nav>
