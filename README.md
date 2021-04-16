@@ -1,11 +1,57 @@
-# EVENTS AND `auth` MICROSERVICE
+# CODE SHARING AND REUSING BETWEEN MICROSERVICES
 
-DAKLE JA SAM SADA ZAVRSIO SA DEFINISANJEM AUTHENTICATION LOGIKE, U MOJOJ NEXTJS APLIKACIJI
+NAIME, TI CES U CLUSTERU DODAVATI JOS DEPLOYMENTA, ODNOSNO JOS POD-OVA, ODNOSNO DODAVACES JOS MICROSERVICE-OVA, A ONI CE BITI EXPRESS BASED
 
-ISTO TAKO PRE DEFINISANJA AUTHENTICATION PORTION-A OF NEXTJS APP, JA SAM DEFINISAO `auth` MICROSERVICE
+NA PRIMER POSTOJI LOGIKA KOJU TI TRENUTNO KORISTIS U `auth` MICROSERVICE-U, A KOJA MOZE BITI REUSED I U DRUGIM, TVOJIM BUDUCIM MICROSERVICE-OVIMA, KAO STO CE BITI MICROERVICES ZA `orders` I `tickets` SERVICE
 
-**PRIMETIO SI DA TI NISI DEFINISAO NIAKVE EVENT RELATED STUFF ZA auth MOCROSERVICE**
+NA PRIMER KORISNIK NECE MOCI KREIRATI NEW TICKETS AKO NIJE AUTHENTICATED
 
-ONO STO BI BIO ZAKLJUCAK JESTE DA NI JEDAN OD MICROSERVICE-OVA, KOJE CU NAPRAVITI, NE TREBA DA ZNA STA TO auth MICROSERVICE RADI; DAKLE ZATO IZ NJEGA NE EMMIT-UJEM NIKAKVE EVENT-OVE, KAO STO BI BILI SIGNIN EVENT, SIGNOUT EVENT I TAK ODALJE
+**A JA SAM NA PRIMER LOGIKU KOJU PROVERAVA DA LI POSTOJI VALID COOKIE I LOGIKU KOJA VERIFIKUJE JWT, ENCAPSULATE-OVAO INSIDE EXPRESS MIDDLEWARE `auth/src/middlewares/current-user.ts`**
 
-**TO JE ZATO STO auth MICROSERVICE, USTVARI KOMUNICIRA KROZ JSON WEB TOKEN, ODNONO auth MICROSERVICE JE EXPOSED THROUGH JSON WEB TOKEN, KOJI JE INSIDE A COOKIE**
+- `cat auth/src/middlewares/current-user.ts`
+
+```ts
+import { Request, Response, NextFunction } from "express";
+import { verify } from "jsonwebtoken";
+
+interface UserPayloadI {
+  email: string;
+  id: string;
+  iat: number;
+}
+
+declare global {
+  // eslint-disable-next-line
+  namespace Express {
+    interface Request {
+      currentUser?: UserPayloadI;
+    }
+  }
+}
+
+export const currentUser = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.session || !req.session.jwt) {
+    return next();
+  }
+
+  try {
+    const { jwt } = req.session as { jwt: string };
+    const payload = verify(jwt, process.env.JWT_KEY as string) as UserPayloadI;
+
+    req.currentUser = payload;
+
+    return next();
+  } catch (err) {
+    console.log(err);
+  }
+
+  return next();
+};
+
+```
+
+E PA TAJ MIDDLEWARE JA BIH MOGAO KORISTITI I U DRUGIM MICROSERVICE-OVIMA
