@@ -18,5 +18,5 @@ export const validateRequest = (
 
   // AKO NEMA ERROR-A NASTAVLJA SE SE IZVRSAVANJEM HANDLER-A
   // ILI SLEDECEG MIDDLEWARE-A
-  next();
+  return next();
 };
