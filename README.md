@@ -76,8 +76,8 @@ import "bootstrap/dist/css/bootstrap.css";
 import Header from "../components/Header";
 
 function MyApp({ Component, pageProps }: AppProps) {
-  // IZDVAJAMO currentUser
-  const { currentUser } = pageProps;
+  // IZDVAJAMO currentUser IZ data PROP-A
+  const { currentUser } = pageProps.data;
 
   return (
     <div>

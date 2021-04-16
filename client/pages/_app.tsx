@@ -8,7 +8,7 @@ import Header from "../components/Header";
 
 function MyApp({ Component, pageProps }: AppProps) {
   // IZDVAJAMO currentUser
-  const { currentUser } = pageProps;
+  const { currentUser } = pageProps.data;
 
   return (
     <div>
