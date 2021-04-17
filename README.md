@@ -3,8 +3,17 @@
 ***
 ***
 
-HAJDE DA SADA PRVO DEFINISEMO .gitignore
+digresija:
 
+HAJDE DA SADA PRVO DEFINISEMO `.gitignore`
+FOLDERI KOJE GITIGNORE-UJES SU `node_modules` ,A TAKODJE I `build` FOLDER (**DAKLE TRANSPILED JAVASCRIPT I TYPE DEFINISTIONS FILE SE NE COMMIT-UJU I NE PUBLISH-UJU**)
+
+- `touch common/.gitignore`
+
+```gitignore
+node_modules
+build
+```
 
 ***
 ***
