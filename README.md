@@ -67,7 +67,7 @@ export * from "./errors/database-connection-error";
 export * from "./errors/not-authorized-error";
 export * from "./errors/not-found-error";
 export * from "./errors/request-validation-error";
-export * from "./middlewares/current-user";
+export * from "./middlewares/current-user"; 
 export * from "./middlewares/error-handler";
 export * from "./middlewares/require-auth";
 export * from "./middlewares/validate-request";
@@ -110,3 +110,7 @@ POMENUTI SCRIPT USTVARI, KAO STO SAM TI OBJASNIO I RANIJE, USTVARI GIT COMMIT-UJ
 - `cd common`
 
 - `npm run pub`
+
+MOJ COMMON MODULE JE READY
+
+JA CU OVER TIME DOAVATI A LOT MORE CODE INSIDE
