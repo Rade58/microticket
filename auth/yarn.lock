@@ -483,6 +483,20 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
+"@ramicktick/common@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@ramicktick/common/-/common-1.0.3.tgz#13ae8c915c08c2ee82f37f542040dc9dca92beba"
+  integrity sha512-oFJW07FZmxzzxYmT66SvjE+ckl2T36Gw10iySYap9fEjFm8WrUw25Mm8qBHefRT81+gxDqEm/rXMU+7y9z+l2Q==
+  dependencies:
+    "@types/cookie-session" "^2.0.42"
+    "@types/express" "^4.17.11"
+    "@types/jsonwebtoken" "^8.5.1"
+    cookie-session "^1.4.0"
+    express "^4.17.1"
+    express-async-errors "^3.1.1"
+    express-validator "^6.10.0"
+    jsonwebtoken "^8.5.1"
+
 "@sinonjs/commons@^1.7.0":
   version "1.8.3"
   resolved "https://registry.yarnpkg.com/@sinonjs/commons/-/commons-1.8.3.tgz#3802ddd21a50a949b6721ddd72da36e67e7f1b2d"
