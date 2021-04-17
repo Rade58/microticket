@@ -206,7 +206,7 @@ ONO STO TI MOZE BITI INTERESANTNO JESTE DA CE PORED IMENA PAKETA STAJATI PLAVA I
 
 **TI OVO NE BI RADIO U REAL PROJECTU, POGOTOVO TICAJUCI SE GIT-A; TAMO NE TREBA DA STOJI GENERIC COMMIT MESSAGE (JER UVEK TREBAS DA OBJASNIS STA SI URADIO)**
 
-ALI JA CU SADA KREIRATI AUTOMATED SCRIPT U CILJU USTEDE VREMENA 
+ALI JA CU SADA KREIRATI AUTOMATED SCRIPT U CILJU USTEDE VREMENA, U OVOM WORKSHOPU
 
 - `code common/package.json`
 
@@ -233,7 +233,32 @@ NOVI SCRIPT CE SE ZVATI `"pub"`
     "pub": "git add -A && git commit -am \"updates\" && npm version patch && npm run build && npm publish"
   }
 }
+```
 
+## PROBAJ OPET DA UPDATE-UJES CODE PA RUNN-UJ TAJ "AUTOMATION" SCRIPT
+
+- `code common/src/index.ts`
+
+```ts
+interface Color {
+  red: number;
+  blue: number;
+  green: number;
+}
+
+const color: Color = {
+  // EVO MENJAM OVO
+  // blue: 18,
+  blue: 46,
+  //
+  green: 18,
+  red: 18,
+};
+
+console.log({ color });
+
+// DODAO SAM OVO
+export default color;
 ```
 
 

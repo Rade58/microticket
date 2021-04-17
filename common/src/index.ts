@@ -5,7 +5,10 @@ interface Color {
 }
 
 const color: Color = {
-  blue: 18,
+  // EVO MENJAM OVO
+  // blue: 18,
+  blue: 46,
+  //
   green: 18,
   red: 18,
 };
