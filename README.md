@@ -138,9 +138,26 @@ export default color;
 
 # SADA CEMO DA COMMIT-UJEMO CHANGES
 
+- `cd common`
+
 - `git status`
 
 - `git add -A`
 
 - `git commit -am "feat(index.ts) exporting colors"`
+
+# SADA MOZEMO DA PROMENIMO VERZIJU; ODNOSNO DA INCREMENT-UJEMO VERSION
+
+TO MOZEMO URADITI MANUELNO MENJAJUCI *"version"* FIELD U `package.json`
+
+ALI MOZES KORISTITI SOME NPM BUILT IN COMMANDS
+
+MOZES DA RUNN-UJES
+
+- `cd common`
+
+- `npm version patch`
+
+TO CE POVECATI ONAJ LAST NUMBER VREDNOSTI *"version"*-A
+
 
