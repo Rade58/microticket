@@ -83,7 +83,7 @@ SVI ERRORI SE ODNOSE NA MISSING DEPENDANCIES, KOJE TVOJI MIDDLEWARES I CUSTOM ER
 
 DOBRO JE RUNN-OVATI GORNJU KOMANDU U OVOM TRENUTKU JER IZ OUTPUTA CES VIDETI KOJE TI DEPENDANCIES FALE, PA CES MOCI DA IH INSTALIRAS SVE ODJEDNOM
 
-- `npm i express express-validator jsonwebtoken --save`
+- `npm i express express-validator jsonwebtoken cookie-session --save`
 
 ALI TU SU I PAKETI ZA KOJE TI NIJE JAVLJEN ERROR
 
@@ -91,12 +91,6 @@ JEDAN JE `"express-async-errors"` JER ON NIJE NI NAMED A N IDEFAULT EXPORT (UVOZ
 
 - `npm i express-async-errors --save`
 
-**NIJE MI MEDJUTIM JASNO ZASTO JE AUTOR WORKSHOPA INSTALIRAO PAKET `cookie-session`** (ZATO STO SE TAJ PAKET NE KORISTI U `common/src/middlewares/current-user.ts`, VEC SE TU KORISTI )
-
-ALI NEMA VEZE INSTALIRACU GA
-
-- `npm i cookie-session --save`
-
 MORAM INSTALIRATI I TYPE DEFINITIONS ZA NEKKE MODULE
 
-- `npm i @types/jsonwebtoken @types/express --save`
+- `npm i @types/jsonwebtoken @types/express @types/cookie-session --save`

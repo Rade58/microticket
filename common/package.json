@@ -17,6 +17,7 @@
     "pub": "git add -A && git commit -am \"updates\" && npm version patch && npm run build && npm publish"
   },
   "dependencies": {
+    "@types/cookie-session": "^2.0.42",
     "@types/express": "^4.17.11",
     "@types/jsonwebtoken": "^8.5.1",
     "cookie-session": "^1.4.0",
