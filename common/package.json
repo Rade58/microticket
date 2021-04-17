@@ -15,5 +15,10 @@
     "clean": "del ./build/*",
     "build": "npm run clean && tsc",
     "pub": "git add -A && git commit -am \"updates\" && npm version patch && npm run build && npm publish"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-validator": "^6.10.0",
+    "jsonwebtoken": "^8.5.1"
   }
 }
