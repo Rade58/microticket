@@ -11,3 +11,6 @@ const color: Color = {
 };
 
 console.log({ color });
+
+// DODAO SAM OVO
+export default color;

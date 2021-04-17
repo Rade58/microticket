@@ -53,7 +53,6 @@ TAKO DA CU TO IZMENITI
     "build": "npm run clean && tsc"
   }
 }
-
 ```
 
 ## SADA CEMO DA SE POZABAVIMO I FIELDOM `"types"`, A TO KORISTI TYPESCRIPT, I GOVORI TYPESCRIPT GDE SE NALZI MAIN TYPE DEFINITIONS
@@ -110,7 +109,38 @@ ZA NAS TO JE SVE FROM INSIDE OF build DIRECTORY
     "build": "npm run clean && tsc"
   }
 }
-
 ```
 
+# SADA CEMO DA NAPRAVIMO CHANGE U NASEM LIBRARY-JU, SAGRADICE CODE (TRANSPILE-OVACEMO TYPESCRIPT INTO JAVSCRIPT SA TYPE DEFINITIONSIMA) I ONDA CEMO TO DA PUBLISH-UJEMO TO NPM
+
+- `code common/src/index.ts`
+
+SAMO CEMO NESTO EXPORT-OVATI IZ FILE-A
+
+```ts
+interface Color {
+  red: number;
+  blue: number;
+  green: number;
+}
+
+const color: Color = {
+  blue: 18,
+  green: 18,
+  red: 18,
+};
+
+console.log({ color });
+
+// DODAO SAM OVO
+export default color;
+```
+
+# SADA CEMO DA COMMIT-UJEMO CHANGES
+
+- `git status`
+
+- `git add -A`
+
+- `git commit -am "feat(index.ts) exporting colors"`
 
