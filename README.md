@@ -78,3 +78,33 @@ NISTA DRUGO NECU TU DEFINISATI
   "build": "tsc"
 }
 ```
+
+## MOGU SADA DA POKRENEM TRANSPILING
+
+- `cd common`
+
+- `npm run build`
+
+NAPRAVLJEN JE `common/build` FOLDER A U NJEMU SU `index.d.ts` I `index.js`
+
+## DODACU DA SE PRE SAMOG TRANSPILING-A UKLANJA SVE IZ `build` FOLDER-A
+
+ZA TU SAM POTREBU INSTALIRAO, ONAJ `del-cli` TOOL
+
+- `code common/package.json`
+
+```json
+"scripts": {
+  "clean": "del ./build/*",
+  "build": "npm run clean && tsc"
+}
+```
+
+DA PROBAM SADA OVO
+
+- `code common`
+
+- `npm run build`
+
+DSADA JE PRVO UKLONJEN SAV CODE IZ build FOLDERA, PA JE TYPESCRIPT COMPILER TRANSPILE-OVAO SAV TYPESCRIPT IZ src FOLDERA I STAVIO GA Ubuild FOLDER
+
