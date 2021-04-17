@@ -1,110 +1,107 @@
-# TYPESCRIPT AND JAVASCRIPT IN YOUR NPM MODULE
+# EASY PUBLISH COMMAND
 
-DAKLE PUBLISH-OVAO SAM MOJ NPM PACKAGE, ON SADA NEMA NISTA OSIM `package.json` FILE-A
+***
+***
 
-PRE NEGO STO KRENEM DA DALJE DEVELOP-UJEM `@ramicktick/common` LIBRARY, MORAM NESTO RECI O JAVASCRIPTU I TYPESCRIPT-U
+HAJDE DA SADA PRVO DEFINISEMO .gitignore
 
-# NAS `common` LIBRARY CE BITI NAPISAN SA TYPESCRIPTOM, I TO NEKOM SPECIFIC VERZIJOM TYPESCRIPT-A; A BICE PUBLISHED AS JAVASCRIPT
 
-MOZDA POSTOJE RAZLIKE U VERZIJAM TYPESCRIPTA KOJE BI KORISTIO COMMON LIBRARY I TYPESCRIPT-A KOJI KORISTE MICROSERVICE-OVI, KOJI BI KORISTILI NAS PACKAGE; JA NAIME NE ZELI MDA IMAM TE VERSION ISSUES
+***
+***
 
-ISTO TAKO NEKI MICROSERVICE-OVI MOGU BITI TAAKVI DA NE BUDU PISANI SA TYPESCRIPTOM UOPSTE
+SADA CEMO SE POZABAVITI `"main"` FIELD-OM U package.json FILE-U
 
-DAKLE BEFORE PUBLISHING WE WILL TRANSPILE OUT TYPESCRIPT INTO JAVASCRIPT
+ON PO DEFAULTU IMA VREDNOST `"index.js"`
 
-# ZATO MORAM SETT-OVATI TOOLING IN OUR SHARED LIBRARY, KOJI CE UZETI SAV TYPESCRIPT, KOJI WRITE-UJEMO INSIDE OF IT I CONVERT-OVATI GA U PLAIN JAVASCRIPT
+**TO ZNACI DA JE TAJ FILE, KOJI SE IMPORT-UJE, KADA SE ATTEMPT-UJE OVERALL MODULE**
 
-TO JE OD PRILIKE TO
+U SLUCAJU MOG MODULE-A, TO NE ODGOVARA
 
-ZA TO CE MITREBTI NEKOLIKO DEPENDANCIES
+U SLUCAJU MOG `common` LIBRARY-JA, ONO STO BI TREBAL ODA SE KORISTI JE ONO INSIDE `build` FOLDER
 
-- `cd common`
+ODNOSNO JA IMAM index.js U BUILD DIRECTORY-JU
 
-**PRVO CEMO GENERISATI TYPESCRIPT CONFIG FILE**
-
-- `npx tsc --init`
-
-**ONDA CEMO INSTALIRATI TYPESCRIPT**
-
-ALI CEMO INSTALIRATI I NESTO STO CE NAM PRUZITI ASISTANCE U OVOM TOOLING PROCESS-U
-
-OBA PAKETA INSTALIRAM KAO DEV DEPENDANCIES
-
-- `npm i typescript del-cli --save-dev`
-
-**INSTALIRAM IH KAO DEV DEPENDANCIES JER ZELIM DA IH IMAM SAKO KADA RADIM DEVELOPMENT NA `common` PACKAGE-U, ALI NE ZELIM DA ONI ZAVRSE KAO DEPENDANCIES AKO PAKET ADD-UJES INTO SOME OTHER MICROSERVICE**
-
-## SADA CU KREIRATI JEDAN TYOPESCRIPT FILE, KOJI CE M ISLUZITI DA TESTIRAM STVARI, TAK OSTO CU GA EVENTUALLY TRANSPILE-OVATI U PLAIN JAVASCRIPT AND PUBLISH IT 
-
-- `mkdir common/src`
-
-- `touch common/src/index.ts`
-
-```ts
-interface Color {
-  red: number;
-  blue: number;
-  green: number;
-}
-
-const color: Color = {
-  blue: 18,
-  green: 18,
-  red: 18,
-};
-
-console.log({ color });
-
-```
-
-### UNCOMMENT-UJE NEKE STVARI IZ GENERATED TYPESCRIPT CONFIG-A
-
-UNCOMMENT-UJE `"declaration": true`; **JER KADA TRANSPILE-UJES BICE TI GENERATED TYPE DEFINITION FILE, KOJI CE BITI NAMENJEN ZA TO DA AKO NEKO TVOJ MODUL INSTALIRA I KRISTI INSIDE TYPESCRIPT CODEBASE DA SE ZA NJEGA OBEZBEDI I TYPESCRIPT SUPPORT**
-
-ZA `"outDir"` PODESI DA SE GENERISE `./build` DIRECTORY
-
-PODESI SADA TO SVE
-
-- `code common/tsconfig.json`
-
-NISTA DRUGO NECU TU DEFINISATI
-
-### KREIRAM SCRIPT KOJI USTVARI TRANSPILE-UJE
+TAKO DA CU TO IZMENITI
 
 - `code common/package.json`
 
-```json
-"scripts": {
-  "build": "tsc"
+```js
+{
+  "name": "@ramicktick/common",
+  "version": "1.0.0",
+  // UMESTO OVOGA
+  // "main": "index.js",
+  // OVO
+  "main": "./build/index.js",
+  // 
+  "license": "MIT",
+  "devDependencies": {
+    "del-cli": "^3.0.1",
+    "typescript": "^4.2.4"
+  },
+  "scripts": {
+    "clean": "del ./build/*",
+    "build": "npm run clean && tsc"
+  }
 }
+
 ```
 
-## MOGU SADA DA POKRENEM TRANSPILING
+## SADA CEMO DA SE POZABAVIMO I FIELDOM `"types"`, A TO KORISTI TYPESCRIPT, I GOVORI TYPESCRIPT GDE SE NALZI MAIN TYPE DEFINITIONS
 
-- `cd common`
-
-- `npm run build`
-
-NAPRAVLJEN JE `common/build` FOLDER A U NJEMU SU `index.d.ts` I `index.js`
-
-## DODACU DA SE PRE SAMOG TRANSPILING-A UKLANJA SVE IZ `build` FOLDER-A
-
-ZA TU SAM POTREBU INSTALIRAO, ONAJ `del-cli` TOOL
+ZA NAS TO JE FILE `common/build/index.d.ts`
 
 - `code common/package.json`
 
-```json
-"scripts": {
-  "clean": "del ./build/*",
-  "build": "npm run clean && tsc"
+```js
+{
+  "name": "@ramicktick/common",
+  "version": "1.0.0",
+  "main": "./build/index.js",
+  // OVO SAM DODAO
+  "types": "./build/index.d.ts",
+  // 
+  "license": "MIT",
+  "devDependencies": {
+    "del-cli": "^3.0.1",
+    "typescript": "^4.2.4"
+  },
+  "scripts": {
+    "clean": "del ./build/*",
+    "build": "npm run clean && tsc"
+  }
 }
 ```
 
-DA PROBAM SADA OVO
+## ZADA CEMO DA DEFINISEMO `"files"` ARRAY, U KOJI CEMO DA SPECIFICIRAMO KOJE TO SET FILE-OVA U NASEM PROJEKTU, ZELIM ODA 100% BUDU INCLUDED U FINAL PUBLISHED VERSION OF OUR PACKAGE
 
-- `code common`
+ZA NAS TO JE SVE FROM INSIDE OF build DIRECTORY
 
-- `npm run build`
+- `code common/package.json`
 
-DSADA JE PRVO UKLONJEN SAV CODE IZ build FOLDERA, PA JE TYPESCRIPT COMPILER TRANSPILE-OVAO SAV TYPESCRIPT IZ src FOLDERA I STAVIO GA Ubuild FOLDER
+```js
+{
+  "name": "@ramicktick/common",
+  "version": "1.0.0",
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
+  // DODAO SAM OVO (NEMO JDA STAVLJAS ./ NA POCETKU)
+  "files": [
+    // DAKLE SVI FILE-OVI I FLDERI IZ build FOLDERA
+    "build/**/*"
+  ],
+  // 
+  "license": "MIT",
+  "devDependencies": {
+    "del-cli": "^3.0.1",
+    "typescript": "^4.2.4"
+  },
+  "scripts": {
+    "clean": "del ./build/*",
+    "build": "npm run clean && tsc"
+  }
+}
+
+```
+
 
