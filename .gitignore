@@ -33,3 +33,7 @@ auth/node_modules
 client/node_modules
 client/.next
 client/.env
+
+#common
+node_modules
+package.lock.json
