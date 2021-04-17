@@ -94,3 +94,11 @@ JEDAN JE `"express-async-errors"` JER ON NIJE NI NAMED A N IDEFAULT EXPORT (UVOZ
 MORAM INSTALIRATI I TYPE DEFINITIONS ZA NEKKE MODULE
 
 - `npm i @types/jsonwebtoken @types/express @types/cookie-session --save`
+
+# POKUSAJ SADA DA BUILD-UJES
+
+- `cd common`
+
+- `npm run build`
+
+I IMAO SAM USPSAN BUILD; IMAM build FOLDER (U KOJEM SU middleware I errors FOLDERI) SA TRANSPILED JAVASCRIPTOM I TYPE DEFINITIONSIMA ZA SVAKI JAVASCRIPT FILE
