@@ -202,7 +202,7 @@ OPET MOZES DA ODES DO SVOG PAKETA NA NPM SITE-U DA VIDIS DA LI JE PUBLISHED
 
 ONO STO TI MOZE BITI INTERESANTNO JESTE DA CE PORED IMENA PAKETA STAJATI PLAVA IKONICA `ts`, STO ZNACI DA JE PREPOZNATO TO STO SAM OBEZBEDIO TYPE DEFINITIONS
 
-# JA CU SADA SVE TE PROCESE: GIT UPOTRBU, ZATIM PODESAVANJE VERZIJE, I PUBLISHING, AUTOMATIZOVATI, KROZ JEDAN NPM SCRIPT
+# JA CU SADA SVE TE PROCESE: GIT UPOTRBU, ZATIM PODESAVANJE VERZIJE, BUILDING, I PUBLISHING, AUTOMATIZOVATI, KROZ JEDAN NPM SCRIPT
 
 TAKODJE CU TU DODATI I 
 
@@ -211,6 +211,26 @@ TAKODJE CU TU DODATI I
 NOVI SCRIPT CE SE ZVATI `"pub"`
 
 ```js
+{
+  "name": "@ramicktick/common",
+  "version": "1.0.1",
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "files": [
+    "build/**/*"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "del-cli": "^3.0.1",
+    "typescript": "^4.2.4"
+  },
+  "scripts": {
+    "clean": "del ./build/*",
+    "build": "npm run clean && tsc",
+    // OVO SAM DODAO
+    "pub": "git add -A && git commit -am \"updates\" && npm version patch && npm run build && npm publish"
+  }
+}
 
 ```
 
