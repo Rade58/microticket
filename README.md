@@ -72,3 +72,15 @@ export * from "./middlewares/error-handler";
 export * from "./middlewares/require-auth";
 export * from "./middlewares/validate-request";
 ```
+
+# AKO SADA POKUSAS DA BUILD-UJES GORNJI TYPESCRIPT IZACE TI BUNCH OF ERROR
+
+- `cd common`
+
+- `npm run build`
+
+SVI ERRORI SE ODNOSE NA MISSING DEPENDANCIES, KOJE TVOJI MIDDLEWARES I CUSTOM ERRORS KORISTE
+
+DOBRO JE RUNN-OVATI GORNJU KOMANDU U OVOM TRENUTKU JER IZ OUTPUTA CES VIDETI KOJE TI DEPENDANCIES FALE, PA CES MOCI DA IH INSTALIRAS SVE ODJEDNOM
+
+- `npm i express express-validator express-validator --save`
