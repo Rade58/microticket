@@ -19,3 +19,56 @@ import {validateRequest} from '@ramicktick/common/src/middlewares/validate-reque
 ```ts
 import {validateRequest} from '@ramicktick/common'
 ```
+
+A SADA DA IMPORT-UJEM SVE TE FAJLOVE U `common/src/index.ts` I DA IH ODANDE EXPORT-UJEM
+
+**URADICU TO PRVO N NACIN KOJI BI FUNKCIONISAO ALI IZGLEDA RUZNO**
+
+- `code common/src/index.ts`
+
+```ts
+import { BadRequestError } from "./errors/bad-request-error";
+import { CustomError } from "./errors/custom-error";
+import { DatabseConnectionError } from "./errors/database-connection-error";
+import { NotAuthorizedError } from "./errors/not-authorized-error";
+import { NotFoundError } from "./errors/not-found-error";
+import { RequestValidationError } from "./errors/request-validation-error";
+import { currentUser } from "./middlewares/current-user";
+import { errorHandler } from "./middlewares/error-handler";
+import { requireAuth } from "./middlewares/require-auth";
+import { validateRequest } from "./middlewares/validate-request";
+
+export {
+  BadRequestError,
+  CustomError,
+  DatabseConnectionError,
+  NotAuthorizedError,
+  NotFoundError,
+  RequestValidationError,
+  currentUser,
+  errorHandler,
+  requireAuth,
+  validateRequest,
+};
+
+```
+
+**MEDJUTIM GORNJA SINTAKSA JE ROBUSNA ZATO SE NE KORISTI, VEC SE KORITI `export *` SINTAKSA**
+
+`export *` ZNACI UVEZI SVE IZ FAJLA, AL ITAKODJE IZVEZI
+
+- `code common/src/index.ts`
+
+```ts
+// OVO VEC IZGLEDA NESTO LEPSE
+export * from "./errors/bad-request-error";
+export * from "./errors/custom-error";
+export * from "./errors/database-connection-error";
+export * from "./errors/not-authorized-error";
+export * from "./errors/not-found-error";
+export * from "./errors/request-validation-error";
+export * from "./middlewares/current-user";
+export * from "./middlewares/error-handler";
+export * from "./middlewares/require-auth";
+export * from "./middlewares/validate-request";
+```
