@@ -13,6 +13,7 @@
   },
   "scripts": {
     "clean": "del ./build/*",
-    "build": "npm run clean && tsc"
+    "build": "npm run clean && tsc",
+    "pub": "git add -A && git commit -am \"updates\" && npm version patch && npm run build && npm publish"
   }
 }
