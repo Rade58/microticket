@@ -261,5 +261,5 @@ console.log({ color });
 export default color;
 ```
 
-
+- `npm run pub`
 
