@@ -3,11 +3,6 @@ import { app } from "./app";
 // A OVO TREBA ZA DATABASE CONNECTION
 import mongoose from "mongoose";
 
-//
-import { color } from "@ramicktick/common";
-console.log({ color });
-//
-
 const start = async () => {
   if (!process.env.JWT_KEY) {
     throw new Error("JWT_KEY env variable undefined");
