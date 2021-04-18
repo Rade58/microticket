@@ -22,7 +22,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# SERVICES AND EVENT BUS
+# auth
 auth/node_modules
 
 
@@ -37,3 +37,6 @@ client/.env
 #common
 node_modules
 package.lock.json
+
+# tickets
+tickets/node_modules
