@@ -24,3 +24,11 @@ build:
         manual:
           - src: '**/*.{tsx,ts,js}'
             dest: .
+    - image: eu.gcr.io/microticket/tickets
+      context: tickets
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '**/*.{ts,js}'
+            dest: .

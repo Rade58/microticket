@@ -95,3 +95,45 @@ spec:
 DAKLE ONAJ SECRET `JWT_KEY` CE MI TREBATI I ZA TICKETS MICROSERVICE
 
 JER CEMO I U OVOM SERVICE-U KORISTITI VERIFIKACIJU JWT-A
+
+# MORAMO SPECIFICIRATI IMAGE I SYNC SETTINGSE ZA `tickets` MICROSERVICE, U NASEM SKAFFOLD CONFIG FILE-U
+
+- `code skaffold.yaml`
+
+```yaml
+apiVersion: skaffold/v2beta12
+kind: Config
+deploy:
+  kubectl:
+    manifests:
+      - ./infra/k8s/*
+build:
+  googleCloudBuild:
+    projectId: microticket
+  artifacts:
+    - image: eu.gcr.io/microticket/auth
+      context: auth
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.{ts,js}'
+            dest: .
+    - image: eu.gcr.io/microticket/client
+      context: client
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '**/*.{tsx,ts,js}'
+            dest: .
+    # EVO OVO SAM DODAO OVO
+    - image: eu.gcr.io/microticket/tickets
+      context: tickets
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '**/*.{ts,js}'
+            dest: .
+```
