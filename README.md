@@ -100,3 +100,90 @@ I SADA CE SE DESITI SYNC, ODNOSNO OVAJ FAILE JE SYNCED U CLUSTERU, CHANGES CE SE
 ```zsh
 [auth] { color: 'crimson' }
 ```
+
+# TI NISI NARAVNO MORAO DA PROVERAVAS NA POMENUTI NACIN, MOGAO SI USKOCITI U POD auth-A, ODNOSNO U CONTAINER, ODNOSNO MOGAO SI TAMO OTVORITI SHELL, KORISCENJEM `kubectl` KOMANDE
+
+- `cd auth`
+
+OTVARAM NOVI TERMINAL I KUCAM
+
+- `kubectl list pods`
+
+```sh
+NAME                               READY   STATUS    RESTARTS   AGE
+auth-depl-6ccbcff6d4-7f9p2         1/1     Running   0          17m
+auth-mongo-depl-6575689d86-hhpvk   1/1     Running   0          37m
+client-depl-5c7dc9c7b-kzzqb        1/1     Running   0          37m
+```
+
+- `kubectl exec -it auth-depl-6ccbcff6d4-7f9p2 sh`
+
+**SAD SI U SHELL-U CONTAINERA**
+
+MOZES DA TRAZIS VERZIJE INSPECT-UJUCI `package.json` FILE-OVE
+
+- `ls node_modules/@ramicktick/common`
+
+KAO STO VIDIS TU JE I ONAJ `build` FOLDER; NJEGA SMO JEDINOG PUBLISH-OVALI NA NPM (U NJEMU JE DAKLE TRANSPILED JAVASCRIPT SA TYPESCRIPT TYPE DEFINITIONSIMA)
+
+```zsh
+build         package.json
+```
+
+- `ls node_modules/@ramicktick/common/build`
+
+```zsh
+errors       index.d.ts   index.js     middlewares
+```
+
+- `ls node_modules/@ramicktick/common/build/middlewares`
+
+```zsh
+current-user.d.ts      current-user.js        error-handler.d.ts     error-handler.js       require-auth.d.ts      require-auth.js        validate-request.d.ts  validate-request.js
+```
+
+STAMPACU package.json AMOG INSTALIRANOG PAKETA
+
+- `cat node_modules/@ramicktick/common/package.json`
+
+```js
+//...
+// EVO NESTO STO IZ TOG FILE-A 
+"_from": "@ramicktick/common@^1.0.4",
+"_id": "@ramicktick/common@1.0.4",
+```
+
+A MOGU I U CODEBASE-U, TRANSPILED JAVASCRIPT-A, DA NADJEM IZMENU KOJU SAM DEFINISAO, PRE REPUBLISHING-A
+
+- `cat ls node_modules/@ramicktick/common/build/index.js`
+
+```js
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.color = void 0;
+__exportStar(require("./errors/bad-request-error"), exports);
+__exportStar(require("./errors/custom-error"), exports);
+__exportStar(require("./errors/database-connection-error"), exports);
+__exportStar(require("./errors/not-authorized-error"), exports);
+__exportStar(require("./errors/not-found-error"), exports);
+__exportStar(require("./errors/request-validation-error"), exports);
+__exportStar(require("./middlewares/current-user"), exports);
+__exportStar(require("./middlewares/error-handler"), exports);
+__exportStar(require("./middlewares/require-auth"), exports);
+__exportStar(require("./middlewares/validate-request"), exports);
+
+exports.color = "crimson"; // OVO JE ONO STA SAM DODAO 
+
+```
+
+MOZES SA exit SADA DA IZADJES IS CONTAINER SHELL-A
