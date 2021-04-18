@@ -41,3 +41,7 @@ ps.
 UPDATE-UJ IMPORTS I U `auth/src/app.ts` FILE-U
 
 ***
+
+# MOZES SADA DA OPET POKRENES skaffold KAKO BI SE CHANGES ODRAZILE I NA TVOJ CLUSTER
+
+- `skaffold dev`
