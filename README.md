@@ -34,3 +34,26 @@ await mongoose.connect(/* "mongodb://auth-mongo-srv:27017/auth" */, {
   useCreateIndex: true,
 });
 ```
+
+**U APP FILE-U USE-UJES DOSTA ROUTERA, KOJI NISU RELEVANTNI I NECU IH KOTRISTITI, I TO TREBAS UKLONITI**
+
+- `code tickets/src/app.ts`
+
+```ts
+
+// ...
+
+/* import { currentUserRouter } from "./routes/current-user";
+import { signInRouter } from "./routes/signin";
+import { signOutRouter } from "./routes/signout";
+import { signUpRouter } from "./routes/signup"; */
+
+
+// ...
+
+/* app.use(currentUserRouter);
+app.use(signInRouter);
+app.use(signOutRouter);
+app.use(signUpRouter); */
+
+```
