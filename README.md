@@ -34,4 +34,10 @@ export { router as currentUserRouter };
 
 **SVE OSTALO MOZES SAM UPDATE-OVATI, I JA TO SADA NE MORAM OVDE POKAZIVATI**
 
+***
 
+ps.
+
+UPDATE-UJ IMPORTS I U `auth/src/app.ts` FILE-U
+
+***
