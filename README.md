@@ -134,6 +134,6 @@ build:
         dockerfile: Dockerfile
       sync:
         manual:
-          - src: '**/*.{ts,js}'
+          - src: 'src/**/*.{ts,js}'
             dest: .
 ```
