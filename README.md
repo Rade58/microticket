@@ -11,3 +11,26 @@ REKAO SAM U PROSLOM BRANCHU DA CU NEKE FILE-OVE KOPIRATI IZ `auth` MICROSERVICE-
 **JA CU KOPIRATI `auth/yarn.lock`(JER IMAM TJ FILE) I KOPIRACU `auth/tsconfig.json`, `auth/src/app.ts` I `auth/src/test` **
 
 SAD SVE TE FILE-OVE I FOLDERE IMAM U MOM `tickets` FOLDERU
+
+# SADA DA U FAJLOVIM KOJE SAM KOPIRAO DA ZAMENIM REFERENCE NA `auth`
+
+NARAVNO TO JE `package.json`
+
+- `code tickets/package.json`
+
+TU MENJS `"name"` FIELD; UMESTO "auth" STAVLJAS "tickets" VREDNOST
+
+**STO SE TICE KONEKTOVANJA NA DATABESE, U index.ts FILE-U, IMAS ONAJ URL, KOJI JE USTVARI URL DATBASE ZA USERS**
+
+UKLONI TO DOOK NE NAPRAVIS DEPLOYMENT ZA ANOTHER DATBASE
+
+- `code tickets/src/index.ts`
+
+```ts
+// ...
+await mongoose.connect(/* "mongodb://auth-mongo-srv:27017/auth" */, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true,
+});
+```
