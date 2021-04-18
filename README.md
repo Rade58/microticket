@@ -48,7 +48,6 @@ import { signInRouter } from "./routes/signin";
 import { signOutRouter } from "./routes/signout";
 import { signUpRouter } from "./routes/signup"; */
 
-
 // ...
 
 /* app.use(currentUserRouter);
@@ -57,3 +56,15 @@ app.use(signOutRouter);
 app.use(signUpRouter); */
 
 ```
+
+## INSTALIRACU SADA DEPENDANCIES
+
+MADA NIJE MI JASNO ZASTO, JER CE CLUSTER NA GOOGLE CLOUD-U BITI ODGOVORAN ZA TO
+
+JEDINO STO BI TO URADIO JESTE AKO BI PISAO TESTS ZA OVAJ MICROSERVICE, U BUDUCNOSTI A VEROVATNO HOCU
+
+- `cd tickets`
+
+- `yarn`
+
+
