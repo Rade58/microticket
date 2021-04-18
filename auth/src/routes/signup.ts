@@ -1,16 +1,14 @@
 import { Router, Request, Response } from "express";
 import "express-async-errors";
-// VISAK
-import { body /*validationResult*/ } from "express-validator";
+import { body } from "express-validator";
 import { sign } from "jsonwebtoken";
-// VISAK
-// import { RequestValidationError } from "../errors/request-validation-error";
-import { BadRequestError } from "../errors/bad-request-error";
 
 import { User } from "../models/user.model";
-
-// UZIMAM MIDDLEWARE
-import { validateRequest } from "../middlewares/validate-request";
+//
+// import { BadRequestError } from "../errors/bad-request-error";
+// import { validateRequest } from "../middlewares/validate-request";
+import { BadRequestError, validateRequest } from "@ramicktick/common";
+//
 
 const router = Router();
 

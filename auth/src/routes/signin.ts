@@ -6,9 +6,11 @@ import { User } from "../models/user.model";
 import { sign } from "jsonwebtoken";
 import { body } from "express-validator";
 import { Password } from "../utils/password";
-import { validateRequest } from "../middlewares/validate-request";
-
-import { BadRequestError } from "../errors/bad-request-error";
+//
+// import { validateRequest } from "../middlewares/validate-request";
+// import { BadRequestError } from "../errors/bad-request-error";
+import { validateRequest, BadRequestError } from "@ramicktick/common";
+//
 
 const router = Router();
 
