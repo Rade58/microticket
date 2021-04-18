@@ -18,6 +18,85 @@ DAKLE ZELIM DA TI POKAZEM KAKO ESYLY MOZEMO DA NAPRAVIMO CHANGE NA NECEMU U NASE
 
 **NE MORAS DA ZAUSTAVLJAS SKAFFOLD AKO TI JE UPALJEN (TACNIJE UPPALI GA)**
 
-SADA MENJAM NESTO U MOM PAKETU; NA PRIMER EXPORT-UJ NEKI SIMPLE STRIN
+## SADA MENJAM NESTO U MOM PAKETU; NA PRIMER EXPORT-UJ NEKI SIMPLE STRING
 
+- `code common/src/index.ts`
 
+```ts
+export * from "./errors/bad-request-error";
+export * from "./errors/custom-error";
+export * from "./errors/database-connection-error";
+export * from "./errors/not-authorized-error";
+export * from "./errors/not-found-error";
+export * from "./errors/request-validation-error";
+export * from "./middlewares/current-user";
+export * from "./middlewares/error-handler";
+export * from "./middlewares/require-auth";
+export * from "./middlewares/validate-request";
+
+// EVO EXPORTOVAO SAM OVO
+export const color = "crimson"
+
+```
+
+## ONDA POKRECEM ONAJ AUTOMATED PUBLISHING SCRIPT
+
+OPET TI NAPOMINJEM DA SE OVAJ SCRIPT NE KORISTI U REAL WORL PROJEKTIMA
+
+AKO I SAM POGLEDAS SCRIPT VIDIS DA ON IMA GENERIC COMMIT MESSAGE STO JE LOSE
+
+***
+
+OPET TI NAPOMINJEM DA CE OVAJ SCRIPT TRANSPILE-OVATI TYPESCRIPT; I ONDA CE TRANSPILED JAVASCRIPT BITI PUBLISHED TO NPM; ALI ZAJEDNO SA TYPESCRIPT TYPE DFINITIONSIMA
+
+STO SE TICE GITA, ONAJ TRANSPILED JAVASCRIPT I TYPE DEFINITIONS NECE BITI GIT COMMITED
+
+***
+
+- `cd common`
+
+- `npm run pub`
+
+DAKLE REPUBLISH-OVAO SI SVOJ `"@ramicktick/common"` PACKAGE TO NPM
+
+ISTO TAKO VERZIJA PAKETA JE DOBILA INCREMENTED BROJ, STO CES NARAVNO ODMAH VIDETI
+
+## POSTO JE PAKET PUBLISHED, MOZES SADA DA U MICROSERVICU, KOJI GA KORISTI, UPRAVO UPDATE-UJES POMENUTI PAKET, JER SAM GA TAMO INSTALIRAO RANIJE
+
+- `cd auth`
+
+- `yarn add @ramicktick/common --latest` (INSTALIRAM SA YARNOM, JER VEC IMAM yarn.lock FILE, NECU DA GENERISEM I paclage.lock.json)
+
+PROVERI PRVO DA LI SADA IMAS NOVU VERZIJU PAKETA
+
+- `cat auth/package.json`
+
+IMAM ZAISTA NOVU VERZIJU @ramicktick/common PAKETA
+
+***
+
+digresija:
+
+NEMOJ DA KORISTIS NI JEDNU updade ILI upgrade KOMANDU NPM-A ILI YARNA JER NE RADE; KORISTI npm install ILI yarn add
+
+***
+
+## INSTALIRANJE MOG PAKTA JE IZAZVALO REBUILDING IMAGE-A; I SADA KADA SE TO ZAVRSI TREBALO BI DA BUDES U MOGUCNOSTI DA KORISTIS ONO IZ NASEG PAKETA, STO SI NEDAVNO DODAO
+
+- `code auth/src/index.ts`
+
+```ts
+//...
+
+// ZAISTA OVA STVAR JE TU PRISUTNA JER TU JE I TYPE DEFINITION
+// MOGAO SAMM DA UVEZEM I DA STMAPAM
+import { color } from "@ramicktick/common";
+console.log({ color });
+//
+```
+
+I SADA CE SE DESITI SYNC, ODNOSNO OVAJ FAILE JE SYNCED U CLUSTERU, CHANGES CE SE ODMAH DESITI I MOCI CES U TERMINALU SKAFFOLD-A DA VIIDIS STMAPAN TEKST
+
+```zsh
+[auth] { color: 'crimson' }
+```
