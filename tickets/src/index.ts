@@ -1,6 +1,4 @@
-// UVOZIM app
 import { app } from "./app";
-// A OVO TREBA ZA DATABASE CONNECTION
 import mongoose from "mongoose";
 
 const start = async () => {
@@ -9,13 +7,14 @@ const start = async () => {
   }
 
   try {
-    await mongoose.connect(/* "mongodb://auth-mongo-srv:27017/auth" */, {
+    // await mongoose.connect(/* "mongodb://auth-mongo-srv:27017/auth" */, {
+    await mongoose.connect("mongodb://tickets-mongo-srv:27017/tickets", {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
     });
 
-    console.log("Connected to DB");
+    console.log("Connected to DB (tickets-mongo)");
   } catch (err) {
     console.log("Failed to connect to DB");
     console.log(err);
@@ -23,7 +22,7 @@ const start = async () => {
 
   const PORT = 3000;
   app.listen(PORT, () => {
-    console.log(`listening on  http://localhost:${PORT} INSIDE auth POD`);
+    console.log(`listening on http://localhost:${PORT} INSIDE tickets POD`);
   });
 };
 
