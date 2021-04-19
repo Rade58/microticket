@@ -1,14 +1,18 @@
 import { Router, Request, Response } from "express";
+//
+import { body } from "express-validator";
 
-// OVO NE TREBA
-import { requireAuth } from "@ramicktick/common"; // OVO JE MOJ LIBRARY
+// UVOZIM MOJ MIDDLEWARE validatteRquest
+import { requireAuth, validateRequest } from "@ramicktick/common";
 
 const router = Router();
 
 router.post(
   "/api/tickets",
-  // DODAJEM GA
-  requireAuth, // ON THROW-UJE ERROR AKO NEM req.currentUser
+  requireAuth,
+  // ZADAJEM MIDDLEWARES
+  [body("title").not().isEmpty().withMessage("title is required")],
+  //
 
   async (req: Request, res: Response) => {
     return res.status(201).send({});
