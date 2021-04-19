@@ -190,3 +190,13 @@ global.getCookie = async () => {
 ```
 
 KADA SVE OVO NAPRAVIS MOCI CES DA SIMULIRAS AUTHENTICATION SA POMENUTOM FUNKCIJOM, U TEST ENVIROMENT-U
+
+# SADA CU DA IMPLEMENTIRAM CODE, MOJE, JESTOVE GLOBALNE `getCookie` FUNKCIJE
+
+- `code tickets/src/test/setup.ts`
+
+```ts
+
+```
+
+
