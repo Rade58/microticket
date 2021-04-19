@@ -3,11 +3,10 @@ import "express-async-errors";
 import { json } from "body-parser";
 import cookieSession from "cookie-session";
 
-// UVEZAO
 import { createTicketRouter } from "./routes/new";
-//
 
-import { errorHandler, NotFoundError } from "@ramicktick/common";
+// EVO UVEZAO SAM MIDDLEWARE currentUser
+import { errorHandler, NotFoundError, currentUser } from "@ramicktick/common";
 
 const app = express();
 
@@ -23,9 +22,12 @@ app.use(
   })
 );
 
-// EVO OVDE CU POVEZATI ROUTERA
-app.use(createTicketRouter);
+// STAVICEMO GA OVDE KAKO BI USER BIO PROVIDED (AKO JE AUTHORIZATION OK)
+// ZA SLEDECU SERIJU POVEZANIH HANDLER
+app.use(currentUser);
 //
+
+app.use(createTicketRouter);
 
 app.all("*", async (req, res, next) => {
   throw new NotFoundError();
