@@ -78,3 +78,115 @@ global.makeRequestAndTakeCookie = async () => {
 NE MOGU DAKLE DA KORISTIM GORNJI APPROACH ZA DOBIJANJE COOKIE-A
 
 **ISTO TAKO OTPADA MOGUCNOST DA NEKAKO PROGRMATICALLY KOPIRAMO COOKIE, KADA TESTIRAMO auth ,JER NE ZELIMO NIKAKVU MOGUCNOST DA KADA TESTIRAMO tickets D MORAMO DA REACH-UJEMO OUT U NKI DRUGI MICROSERVICE** (DAKLE TEST MICROSERVICE-A TREBA BITI SELF CONTAINED)
+
+## JEDINO ST MOZES JE DA U NAPRAVIS GLOBALNU FUNKCIJU JEST, KOJA CE DA FABRIKUJE, ODNOSNO BUILD-UJE COOKIE FROM SKRATCH
+
+PROCES CE BITI KOMPKIKOVAN ALI RADICEM OSVE ONO STO SMO DOSADA RADILI U AUTHENTICATION-U
+
+SAMO STO CE TO SADA BITI STEPS KREIRANI BY HAND
+
+## HAJDE DA USTVARI UZMEMO JEDAN COOKIE, PA DA SE PODSETIMO STA JE INSIDE OF IT
+
+OTVORI `https://microticket/api/users/signup` DA BI NAPRAVILI NOVOG USERA
+
+BICES NARAVNO REDIRECTED NA INDEX PAGE
+
+ALI TI SADA **OTVORI `Network` SEKCIJU BROWSER TOOLS-A ,STIKLIRJ `XHR`**
+
+**KLIKNI NA RESPONSE, U PITANJU JE `current-user` (JER SE PREMA TOME IZVRSIO REQUEST PO REDIRECTING-U NA MAIN PAGE, KAKO BI SE UZEO CURRENT USER)**
+
+**INSPECT-UJ HEADERS, I PRONADJI `cookie` HEADER**
+
+EVO GA
+
+```zsh
+express:sess=eyJqd3QiOiJleUpoYkdjaU9pSklVekkxTmlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKbGJXRnBiQ0k2SW5OMFlYWnlhR3hyYjI5elFHMWhhV3d1WTI5dElpd2lhV1FpT2lJMk1EZGtPV1kyTUdSa1lXSTBOekF3TWpNM1pEaGxZakFpTENKcFlYUWlPakUyTVRnNE5EVTFNelo5LmtYdjRVMl81X3lHYzQyS0hCcHFfNkl2eXI4dGotY3pBU1ZiQmxsRmpHN1EifQ==
+```
+
+**KAO STO SMO REKLI U PITANJU JE BASE64 STRING, KOJEG MOZEMO DECODE-OVATI**
+
+```js
+// browser
+// STAVI OSVE OSIM ONOG   express:sess= 
+> atob("eyJqd3QiOiJleUpoYkdjaU9pSklVekkxTmlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKbGJXRnBiQ0k2SW5OMFlYWnlhR3hyYjI5elFHMWhhV3d1WTI5dElpd2lhV1FpT2lJMk1EZGtPV1kyTUdSa1lXSTBOekF3TWpNM1pEaGxZakFpTENKcFlYUWlPakUyTVRnNE5EVTFNelo5LmtYdjRVMl81X3lHYzQyS0hCcHFfNkl2eXI4dGotY3pBU1ZiQmxsRmpHN1EifQ==")
+
+// I OVO SAM DOBIO ZAUZVRAT (STRING U JSON FORMATU)
+// I SAM VIDIS STA JE U NJEMU
+"{"jwt":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN0YXZyaGxrb29zQG1haWwuY29tIiwiaWQiOiI2MDdkOWY2MGRkYWI0NzAwMjM3ZDhlYjAiLCJpYXQiOjE2MTg4NDU1MzZ9.kXv4U2_5_yGc42KHBpq_6Ivyr8tj-czASVbBllFjG7Q"}"
+```
+
+## NA OSNOVU SVEGA STO MOZES DA VIDIS IZ GORNJEG COOKIE-A, HAJDE DA VIDIMO STA BI TO SVE MORALI DA RADIMO U NOVOJ GLOBALNOJ FUNKCIJI JESTA, KOJ UCEMO KREIRATI
+
+- `code tickets/src/test/setup.ts`
+
+```ts
+import { MongoMemoryServer } from "mongodb-memory-server";
+import mongoose from "mongoose";
+import request from "supertest";
+
+import { app } from "../app";
+
+let mongo: any;
+
+beforeAll(async () => {
+  process.env.JWT_KEY = "test"; // OVO CE TI ZNACITI JER CE TI I OVO TREBATI
+  //                                I TO SAM KOPIRAO IZ auth MICROSERVICE-A
+  mongo = new MongoMemoryServer();
+
+  const mongoUri = await mongo.getUri();
+
+  await mongoose.connect(mongoUri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+});
+
+beforeEach(async () => {
+  const collections = await mongoose.connection.db.collections();
+
+  for (const collection of collections) {
+    await collection.deleteMany({});
+  }
+});
+
+afterAll(async () => {
+  await mongo.stop();
+  await mongoose.connection.close();
+});
+
+// NEKA SE FUNKCIJA ZOVE getCookie
+
+declare global {
+  // eslint-disable-next-line
+  namespace NodeJS {
+    interface Global {
+      getCookie(): Promise<{
+        // cookie: string[];
+        cookie: string;
+      }>;
+    }
+  }
+}
+
+global.getCookie = async () => {
+  // MOAMO BUILD-OVATI JSON WEB TOKEN PAYLOAD
+  // {id: string; email: string}
+  //
+  // KREIRATI JSON WEB TOKEN
+  //
+  // MORAMO KREIRTI SESSION OBJECT
+  // {jwt: <JSON WEB TOKEN> }
+  //
+  // SESSION OBJECT PRETVORITI U JSON
+  // "{"jwt": "<json web token>"}"
+  //
+  // UZETI TAJ JSON I ENCODE-OVATI GA INTO BASE64
+  // ZANS DA TO OBICNO RADI ONAJ cookie-session PACKAGE
+  // PRE PODESAVANJA COOKIE
+  //
+  // KONACNO RETURN-UJEMO TAJ BASE64 STRING
+};
+
+```
+
+KADA SVE OVO NAPRAVIS MOCI CES DA SIMULIRAS AUTHENTICATION SA POMENUTOM FUNKCIJOM, U TEST ENVIROMENT-U
