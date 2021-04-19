@@ -143,7 +143,7 @@ export { app };
 
 ```
 
-**MEDJUTIM MI MORAMO NEKEKO DA FAKE-UJEMO DA JE REQUEST TAK OSTO BI PROVIDE-OVALI COOKIE**
+**MEDJUTIM MI MORAMO NEKEKO DA FAKE-UJEMO DA JE COOKIE PROVIDED REQUEST TAK OSTO BI PROVIDE-OVALI COOKIE**
 
 TAKO DA ZA SADA SLEDECEI TEST KOJI BUDEM NAPISAO NECE PROCI, ALI DEFINISACU GA
 
@@ -177,6 +177,13 @@ it("it returns an error if invalid 'title' is provided", async () => {});
 it("it returns an error if invalid 'price' is provided", async () => {});
 it("it creates ticket with valid inputs", async () => {});
 ```
+
+TEST NARAVNO NIJE PROSAO
+
+## U SLEDECEM BRANCH-U POKAZACU TI KAKO DA FAKEUJES AUTHENTICATION
+
+
+
 
 ***
 
