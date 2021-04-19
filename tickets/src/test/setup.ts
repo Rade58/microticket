@@ -43,10 +43,7 @@ declare global {
   // eslint-disable-next-line
   namespace NodeJS {
     interface Global {
-      getCookie(): Promise<{
-        // cookie: string[];
-        cookie: string;
-      }>;
+      getCookie(): Promise<string[]>;
     }
   }
 }
@@ -54,7 +51,6 @@ declare global {
 global.getCookie = async () => {
   // MOAMO BUILD-OVATI JSON WEB TOKEN PAYLOAD
   // {id: string; email: string}
-
   const payload = {
     // OVO SAM SMISLIO FAKE DATA
     id: "fdfhf324325ffb",
@@ -68,25 +64,24 @@ global.getCookie = async () => {
   // MORAMO KREIRTI SESSION OBJECT
   // {jwt: <JSON WEB TOKEN> }
   //
-
   const session = { jwt };
 
   // SESSION OBJECT PRETVORITI U JSON
   // "{"jwt": "<json web token>"}"
   //
-
   const sessionJSON = JSON.stringify(session);
 
   // UZETI TAJ JSON I ENCODE-OVATI GA INTO BASE64
   // ZANS DA TO OBICNO RADI ONAJ cookie-session PACKAGE
   // PRE PODESAVANJA COOKIE
-
   const buf = Buffer.from(sessionJSON, "utf-8");
 
   //
-  // KONACNO RETURN-UJEMO TAJ BASE64 STRING
+  // KONACNO RETURN-UJEMO TAJ BASE64
   // ALI VODIM RACUNA DA ISPRED SEB IMA ONAJ `"express:sess="`
   // TO STAVLJAM JER COOKIE TAKO IZGLEDA KADA SAM GA PREGLEDAO
   // U BROWSERU
-  return { cookie: `express:sess=${buf.toString("base64")}` };
+  // RETURN-UJEM ARRAY, JER supertest
+  // CE OCEKIVATI STRING INSIDE ARRAY
+  return [`express:sess=${buf.toString("base64")}`];
 };
