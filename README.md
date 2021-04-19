@@ -1,189 +1,80 @@
-# ADDING AUTH PTECTION
+# FAKING AUTHETICATION DURING TESTS
 
-SADA PISEM ONAJ TEST U KOJE EXPECT-UJEM DA USER BUDE AUTHENTICATED KADA PRAVI REQUEST ZA KREIRANJE NOVOG TICKET-A
+U CODE-U KOJI SAM KOPIRAO IZ auth MICROSERVICE-A, A KOJI SE NALAZI U `tickets/src/test/setup.ts` JA SAM USTVARI DEFINISAO GLOBALNU JEST FUNKCIJU KOJA UPRAVO AKE-UJE AUTHETICATION; USTVARI FUNKCIJA NA KRAJU PROVIDE-UJE COOKIE
 
-- `code tickets/src/routes/__tests__/new.test.ts`
+EVO POGLEDAJ
+
+- `cat tickets/src/test/setup.ts`
 
 ```ts
+import { MongoMemoryServer } from "mongodb-memory-server";
+import mongoose from "mongoose";
 import request from "supertest";
-import { app } from "../../app";
 
-it("has a route handler listening on /api/tickets for post requests", async () => {
-  const response = await request(app).post("/api/tickets").send({});
+import { app } from "../app";
 
-  expect(response.status).not.toEqual(404);
+let mongo: any;
+
+beforeAll(async () => {
+  process.env.JWT_KEY = "test";
+
+  mongo = new MongoMemoryServer();
+
+  const mongoUri = await mongo.getUri();
+
+  await mongoose.connect(mongoUri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
 });
 
-// OVO DEFINISEM
-it("can't be accessed if user is not signed in", async () => {
-  const response = await request(app).post("/api/tickets").send({});
+beforeEach(async () => {
+  const collections = await mongoose.connection.db.collections();
 
-  // OVDE MOZES ZASTATI JER MORAMO USTVARI DA IZ SAMOG HANDLER-A THROW-UJEMO
-  // ERROR, AKO NE POSTOJI cookie HEADER, U KOJEM JE JWT
-});
-//
-
-it("it returns an error if invalid 'title' is provided", async () => {});
-it("it returns an error if invalid 'price' is provided", async () => {});
-it("it creates ticket with valid inputs", async () => {});
-
-```
-
-**MEDJUTIM TU LOGIKU THROWING-A ERROR, SAM JA VEC DEFINISAO U MIDDLEWARE-U KOJEGG SAM STAVIO U MOJ LIBRARY**
-
-- `code tickets/src/routes/new.ts`
-
-```tsx
-import { Router, Request, Response } from "express";
-
-// OVO NE TREBA
-import { requireAuth } from "@ramicktick/common"; // OVO JE MOJ LIBRARY
-
-const router = Router();
-
-router.post(
-  "/api/tickets",
-  // DODAJEM GA
-  requireAuth, // ON THROW-UJE CUSTOM ERROR AKO NEM req.currentUser
-
-  async (req: Request, res: Response) => {
-    return res.status(201).send({});
+  for (const collection of collections) {
+    await collection.deleteMany({});
   }
-);
+});
 
-export { router as createTicketRouter };
+afterAll(async () => {
+  await mongo.stop();
+  await mongoose.connection.close();
+});
+
+
+// EVO OVO PA NADALJE JE SVE VEZANO ZA TU FUNKCIJU
+
+declare global {
+  // eslint-disable-next-line
+  namespace NodeJS {
+    interface Global {
+      
+      makeRequestAndTakeCookie(): Promise<{
+        cookie: string[];
+      }>;
+    }
+  }
+}
+
+
+global.makeRequestAndTakeCookie = async () => {
+  const email = "stavros@stavy.com";
+  const password = "SuperCoolPerson66";
+
+  const response = await request(app)
+    .post("/api/users/signup")
+    .send({ email, password })
+    .expect(201);
+
+
+  const cookie = response.get("Set-Cookie");
+
+  return { cookie };
+};
 ```
 
-AKO PROVERIS ONAJ MOJ CUSTOM ERROR, KOJEG SAM KRIRAO DAVNO RANIJE, I KOJEG SAM PUBLISH-OVAO LIBRARY-JU NA NPM-U, MOZES DA VIDIS DA ON RETURN-UJE 401
+**GORNJE NIJE RELEVANTNO ZA MOJ tickets MICROSERVICE, JER NECU IMATI ROUTE ZA SIGNING UP, KOJA JE PODESENA U FUNKCIJI KAO STO VIDIS**
 
-**TAKO DA CU U TESTU EXPECT-OVATI 401 STATUS CODE, I TAKV ASSERTION CU NAPRAVITI**
+NE MOGU DAKLE DA KORISTIM GORNJI APPROACH ZA DOBIJANJE COOKIE-A
 
-- `code tickets/src/routes/__tests__/new.test.ts`
-
-```ts
-import request from "supertest";
-import { app } from "../../app";
-
-it("has a route handler listening on /api/tickets for post requests", async () => {
-  const response = await request(app).post("/api/tickets").send({});
-
-  expect(response.status).not.toEqual(404);
-});
-
-//  -------------------------
-it("can't be accessed if user is not signed in", async () => {
-  const response = await request(app).post("/api/tickets").send({});
-
-  // OCEKUJEMO 401
-  expect(response.status).toEqual(401);
-});
-//
-
-it("it returns an error if invalid 'title' is provided", async () => {});
-it("it returns an error if invalid 'price' is provided", async () => {});
-it("it creates ticket with valid inputs", async () => {});
-
-```
-
-**TEST JE PROSAO**
-
-***
-
-digresija:
-
-AKO IMAS NEKIH PROBLEMA GDE TI SVI TESTIVI FAIL-UJU, ZAUSTAVI TEST SUITE I ONDA GA PONOVO POKRENI SA `yarn test` (U tickets FOLDERU NARAVNO, JER TO TESTIRAM)
-
-***
-
-# MEDJUTIM MI TREBAMO BOLJI ASSERTION; TREBA DA NAPRAVIMO TVRDNJU PO KOJOJ, MI OCEKUJEMO STATUS CODE 201 ILI 200, AKO JE currentUser TO
-
-MI IMAMO MIDDLWARE, KOJI U RQUEST INSERT-UJE CURRENT USERA, AKO POSTOJI, AKO SE MOZE UZETI IZ JWT-A, KOJI JE PARSED OUT OF COOKIE HEADER
-
-- `code tickets/src/app.ts`
-
-```ts
-import express from "express";
-import "express-async-errors";
-import { json } from "body-parser";
-import cookieSession from "cookie-session";
-
-import { createTicketRouter } from "./routes/new";
-
-// EVO UVEZAO SAM MIDDLEWARE currentUser
-import { errorHandler, NotFoundError, currentUser } from "@ramicktick/common";
-
-const app = express();
-
-app.set("trust proxy", true);
-
-app.use(json());
-
-app.use(
-  cookieSession({
-    signed: false,
-
-    secure: process.env.NODE_ENV !== "test",
-  })
-);
-
-// STAVICEMO GA OVDE KAKO BI USER BIO PROVIDED (AKO JE AUTHORIZATION OK)
-// ZA SLEDECU SERIJU POVEZANIH HANDLER
-app.use(currentUser);
-// POMENUTI MIDDLEWARE CITI COOKIE, VERIFIKUJE JWT
-// I AKO IMAS VALID JWT UZIMA PAYLOAD SA NJEGA I
-// INSERT-UJE curretUser INTO req
-
-app.use(createTicketRouter);
-
-app.all("*", async (req, res, next) => {
-  throw new NotFoundError();
-});
-
-app.use(errorHandler);
-
-export { app };
-
-```
-
-**MEDJUTIM MI MORAMO NEKEKO DA FAKE-UJEMO DA JE COOKIE PROVIDED REQUEST TAK OSTO BI PROVIDE-OVALI COOKIE**
-
-TAKO DA ZA SADA SLEDECEI TEST KOJI BUDEM NAPISAO NECE PROCI, ALI DEFINISACU GA
-
-- `code tickets/src/routes/__tests__/new.test.ts`
-
-```ts
-import request from "supertest";
-import { app } from "../../app";
-
-it("has a route handler listening on /api/tickets for post requests", async () => {
-  const response = await request(app).post("/api/tickets").send({});
-
-  expect(response.status).not.toEqual(404);
-});
-
-it("can't be accessed if user is not signed in", async () => {
-  const response = await request(app).post("/api/tickets").send({});
-
-  expect(response.status).toEqual(401);
-});
-
-// EVO OVAJ TEST NE BI TREBAL ODA PASS-UJE ZA SADA
-it("can be accessed if user is signed in", async () => {
-  const response = await request(app).post("/api/tickets").send({});
-
-  expect(response.status).toEqual(201);
-});
-// ------------
-
-it("it returns an error if invalid 'title' is provided", async () => {});
-it("it returns an error if invalid 'price' is provided", async () => {});
-it("it creates ticket with valid inputs", async () => {});
-```
-
-TEST NARAVNO NIJE PROSAO
-
-## U SLEDECEM BRANCH-U POKAZACU TI KAKO DA FAKEUJES AUTHENTICATION
-
-DAKLE ZELIM DA IMAM `currentUser`-A NA REQUEST-U, DA BI MI TEST PROSAO
-
-JA SAM NAIME NESTO SLICNO RADIO ZA auth MICROSERVICE
+**ISTO TAKO OTPADA MOGUCNOST DA NEKAKO PROGRMATICALLY KOPIRAMO COOKIE, KADA TESTIRAMO auth ,JER NE ZELIMO NIKAKVU MOGUCNOST DA KADA TESTIRAMO tickets D MORAMO DA REACH-UJEMO OUT U NKI DRUGI MICROSERVICE** (DAKLE TEST MICROSERVICE-A TREBA BITI SELF CONTAINED)
