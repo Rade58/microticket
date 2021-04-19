@@ -35,6 +35,8 @@ const start = async () => {
     // EVO SAGRADIO SAM PRAVI URL
     // await mongoose.connect(/* "mongodb://auth-mongo-srv:27017/auth" */, {
     await mongoose.connect("mongodb://tickets-mongo-srv:27017/tickets", {
+      // KAKO VIDIS GORE ZADAO SAM I NAME ZA DATABASE, NA KOJ IZELIS DA SE KONEKTUJES
+      // (STAVIO SAM tickets ,TO JE NAJVISE APPROPRIATE)
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
