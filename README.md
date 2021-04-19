@@ -1,10 +1,10 @@
-# CONNECTING `tickets` MICROSERVICE SA PRAVOM INSTANCOM MoongoDB-JA
+# CONNECTING `tickets` MICROSERVICE SA PRAVOM INSTANCOM MoongoDB-JA; MAKING URI THROUGH ENV VARIABLES
 
-***
+DA PRVO ODRADIM SVE "MANUELNO", ODNOSNO "HARDCODE"-OVANO PA DA TI KAZEM KOJA SU JOS MOGUCA RESENJA, ZA TO DA SLUCAJNO NE GRESIS SA ZADAVANJEM URI-OVA MONG-OA, ODNOSNO DA NE GRESIS SA KONEKTOVANJE MICROSERVICE-A NA ONAJ DATABSE NA KOJI NE TREBA DA BUDE CONNECTED
 
-DA PRVO ODRADIM SVE PA DA TI KAZEM KOJA SU JOS MOGUCA RESENJA, ZA TO DA SLUCAJNO NE GRESIS SA ZADAVANJEM URI-OVA MONG-OA, ODNOSNO DA NE GRESIS SA KONEKTOVANJE MICROSERVICE-A NA ONAJ DATABSE NA KOJI NE TREBA DA BUDE CONNECTED
+NAKON STO URADIM, THE HARDOCEDED WAY; **PODESAVACU KONFIGURACIJE ZA ENV VARIJALU**
 
-***
+# HARDCODING MONGODB URI
 
 - `kubectl get services`
 
@@ -58,4 +58,104 @@ start();
 
 ```
 
-AKO TI NIJE SKAFFOL POKRENUT POKRENI GA SA `skaffold dev`
+AKO TI NIJE SKAFFOLD POKRENUT POKRENI GA SA `skaffold dev`
+
+I VIDECES DA SI USPESNO CONNECTED, NA APPROPRIATE DATBASE
+
+# PODESAVANJE MONGODB URI AS A ENV VARIABLE
+
+*TI SI RANIJE VEC PROBAO OVAKO NESTO, SAMO STO SI JOS MORAO DEFINISATI DODATNU STVAR, A TO JE DA SI MORAO KREIRATI SECRET K8S OBJECT, U KOJM JE TVOJ SECRET, PA SI PODESAVANJEM KONFIGURACIJE PULL-OVAO VREDNOST IZ SECRET-A, DA TA VREDNOST BUDE ENV VARIABLE U TVOM NODE ENVIROMENTU U MICROSERVICE-U* ([SECURELY STORING SECRETS WITH KUBERNETES](https://github.com/Rade58/microticket/tree/2_5_SECURELY_STORING_SECRETS_WITH_KUBERNETES#securely-storing-secrets-with-kubernetes))
+
+**E PA OVOG PUTA NECEMO KORISTITI SECRET OBJECTS** (`NEMA POTREBE DA STORE-UJEMO MONGODB URI AS A SECRET`), SAMO CEMO PODESITIT NOVU ENV VARIABLE INSIDE DEPLOYMENT CONFIGA ZA tickets MICROSERVICE
+
+SPECIFICIRACEMO NOVU VATRIJABLU `MONGO_URI`
+
+- `code infra/k8s/tickets-depl.yaml`
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tickets-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tickets
+  template:
+    metadata:
+      labels:
+        app: tickets
+    spec:
+      containers:
+        - name: tickets
+          image: eu.gcr.io/microticket/tickets
+          env:
+            # EVO OVO SAM ZADAO
+            - name: MONGO_URI
+              # EVO JE VREDNOST URI
+              value: 'mongodb://tickets-mongo-srv:27017/tickets'
+            #
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tickets-srv
+spec:
+  selector:
+    app: tickets
+  type: ClusterIP
+  ports:
+    - name: tickets
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+
+```
+
+# KORISTIMO REFERENCU ENV VARIAJBLE
+
+- `code tickets/src/index.ts`
+
+```ts
+import { app } from "./app";
+import mongoose from "mongoose";
+
+const start = async () => {
+  if (!process.env.JWT_KEY) {
+    throw new Error("JWT_KEY env variable undefined");
+  }
+  // OVDE MOZEMO DA NAPRAVIMO I PROVERU ZA MONGO_URI ENV VARIABLE
+  if (!process.env.MONGO_URI) {
+    throw new Error("MONGO_URI env variable undefined");
+  }
+
+  try {
+    // UMESTO OVOGA
+    // await mongoose.connect("mongodb://tickets-mongo-srv:27017/tickets", {
+    // KORISTIMO ENV VARIABLU
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+    });
+
+    console.log("Connected to DB (tickets-mongo)");
+  } catch (err) {
+    console.log("Failed to connect to DB");
+    console.log(err);
+  }
+
+  const PORT = 3000;
+  app.listen(PORT, () => {
+    console.log(`listening on http://localhost:${PORT} INSIDE tickets POD`);
+  });
+};
+
+start();
+```

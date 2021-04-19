@@ -5,10 +5,16 @@ const start = async () => {
   if (!process.env.JWT_KEY) {
     throw new Error("JWT_KEY env variable undefined");
   }
+  // OVDE MOZEMO DA NAPRAVIMO I PROVERU ZA MONGO_URI ENV VARIABLE
+  if (!process.env.MONGO_URI) {
+    throw new Error("MONGO_URI env variable undefined");
+  }
 
   try {
-    // await mongoose.connect(/* "mongodb://auth-mongo-srv:27017/auth" */, {
-    await mongoose.connect("mongodb://tickets-mongo-srv:27017/tickets", {
+    // UMESTO OVOGA
+    // await mongoose.connect("mongodb://tickets-mongo-srv:27017/tickets", {
+    // KORISTIMO ENV VARIABLU
+    await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
