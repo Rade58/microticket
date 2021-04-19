@@ -1,7 +1,108 @@
 # ADDING AUTH PTECTION
 
+SADA PISEM ONAJ TEST U KOJE EXPECT-UJEM DA USER BUDE AUTHENTICATED KADA PRAVI REQUEST ZA KREIRANJE NOVOG TICKET-A
+
+- `code tickets/src/routes/__tests__/new.test.ts`
+
+```ts
+import request from "supertest";
+import { app } from "../../app";
+
+it("has a route handler listening on /api/tickets for post requests", async () => {
+  const response = await request(app).post("/api/tickets").send({});
+
+  expect(response.status).not.toEqual(404);
+});
+
+// OVO DEFINISEM
+
+it("can only be accessed if user is signed in", async () => {
+  const response = await request(app).post("/api/tickets").send({});
+
+  // OVDE MOZES ZASTATI JER MORAMO USTVARI DA IZ SAMOG HANDLER-A THROW-UJEMO
+  // ERROR, AKO NE POSTOJI cookie HEADER, U KOJEM JE JWT
+});
+//
+
+it("it returns an error if invalid 'title' is provided", async () => {});
+it("it returns an error if invalid 'price' is provided", async () => {});
+it("it creates ticket with valid inputs", async () => {});
+
+```
+
+- `code tickets/src/routes/new.ts`
+
+```tsx
+import { Router, Request, Response } from "express";
+
+// UVESCU I ONO STO MI DOZVOLJAVA DA THROW-UJEM ERRORS
+import "express-async-errors";
+
+// UVOZIM OVAJ MIDDLEWARE, CIJA JE ULOGA DA PROVERI COOKIE
+// I D LI JE VALIDNI JSON WEB TOKEN U NJEMU
+import { currentUser, NotAuthorizedError } from "@ramicktick/common"; // OVO JE MOJ LIBRARY
+
+const router = Router();
+
+router.post(
+  "/api/tickets",
+  // MIDDLWEARE CE INSERTOVATI currentUser U req
+  // AKO JE SVE VALID
+  currentUser,
+  async (req: Request, res: Response) => {
+    // PRAVIMO USLOVNU IZJAVU
+    if (!req.currentUser) {
+      throw new NotAuthorizedError();
+    }
+
+    return res.status(201).send({});
+  }
+);
+
+export { router as createTicketRouter };
+
+```
+
+AKO PROVERIS ONAJ MOJ CUSTOM ERROR, KOJEG SAM KRIRAO DAVNO RANIJE, I KOJEG SAM PUBLISH-OVAO LIBRARY-JU NA NPM-U, MOZES DA VIDIS DA ON RETURN-UJE 401
+
+**TAKO DA CU U TESTU EXPECT-OVATI 401 STATUS CODE, I TAKV ASSERTION CU NAPRAVITI**
+
+- `code tickets/src/routes/__tests__/new.test.ts`
+
+```ts
+import request from "supertest";
+import { app } from "../../app";
+
+it("has a route handler listening on /api/tickets for post requests", async () => {
+  const response = await request(app).post("/api/tickets").send({});
+
+  expect(response.status).not.toEqual(404);
+});
+
+it("can only be accessed if user is signed in", async () => {
+  const response = await request(app).post("/api/tickets").send({});
+
+  // OCEKUJEMO 401
+  expect(response.status).toEqual(401);
+});
+//
+
+it("it returns an error if invalid 'title' is provided", async () => {});
+it("it returns an error if invalid 'price' is provided", async () => {});
+it("it creates ticket with valid inputs", async () => {});
+
+```
+
+**TEST JE PROSAO**
 
 
+***
+
+digresija:
+
+AKO IMAS NEKIH PROBLEMA GDE TI SVI TESTIVI FAIL-UJU, ZAUSTAVI TEST SUITE I ONDA GA PONOVO POKRENI SA `yarn test` (U tickets FOLDERU NARAVNO, JER TO TESTIRAM)
+
+***
 
 
 ***
