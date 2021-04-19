@@ -61,7 +61,7 @@ it("can be accessed if user is signed in", async () => {
   const response = await request(app)
     .post("/api/tickets")
     .set("Cookie", global.getCookie())
-    .send({});
+    .send({ title: "ssdfsdf", price: 442 });
 
   expect(response.status).toEqual(201);
 
@@ -75,7 +75,7 @@ it("it returns an error if invalid 'title' is provided", async () => {
     .post("/api/tickets")
     .set("Cookie", global.getCookie())
     // title TREBA DA BUDE STRING ,A JA NAMERNO UBACUJEM POGRESNO
-    .send({ title: 16, price: "200" });
+    .send({ title: 16, price: 122 });
 
   expect(response1.status).toEqual(400);
 
@@ -84,7 +84,7 @@ it("it returns an error if invalid 'title' is provided", async () => {
     .post("/api/tickets")
     .set("Cookie", global.getCookie())
     // PODESAVAMO "" ZA title
-    .send({ title: "", price: "200" });
+    .send({ title: "", price: 122 });
 
   expect(response2.status).toEqual(400);
 
@@ -93,7 +93,7 @@ it("it returns an error if invalid 'title' is provided", async () => {
     .post("/api/tickets")
     .set("Cookie", global.getCookie())
 
-    .send({ price: "200" });
+    .send({ price: 122.4 });
 
   expect(response3.status).toEqual(400);
 });
@@ -102,8 +102,8 @@ it("it returns an error if invalid 'price' is provided", async () => {
   const response1 = await request(app)
     .post("/api/tickets")
     .set("Cookie", global.getCookie())
-    // price ISTO TREBA DA BUDE STRING, A JA NAMERNO GRESIM
-    .send({ title: "nebula", price: 16 });
+    // NAMERN OSALJEM PRICE KAO NEGATIVNU VREDNOST
+    .send({ title: "nebula", price: -16 });
 
   expect(response1.status).toEqual(400);
 
@@ -111,17 +111,16 @@ it("it returns an error if invalid 'price' is provided", async () => {
   const response2 = await request(app)
     .post("/api/tickets")
     .set("Cookie", global.getCookie())
-    // price ISTO TREBA DA BUDE STRING, A JA NAMERNO GRESIM
-    .send({ title: "nebula", price: "" });
+    // STAVLJAM DA JE PRICE NULA
+    .send({ title: "nebula", price: 0 });
 
   expect(response2.status).toEqual(400);
-
 
   // PRAVIM TEST ZA MISSING FIELD price
   const response3 = await request(app)
     .post("/api/tickets")
     .set("Cookie", global.getCookie())
-    // price ISTO TREBA DA BUDE STRING, A JA NAMERNO GRESIM
+    // IZOSTAVLJAM PRICE
     .send({ title: "nebula" });
 
   expect(response3.status).toEqual(400);
@@ -142,6 +141,85 @@ ONDA SE SA DRUGOM FUNKCIJOM `validationResult` (IZ PAKETA express-validator) PRO
 - `code tickets/src/routes/new.ts`
 
 ```ts
+import { Router, Request, Response } from "express";
+//
+import { body } from "express-validator";
+
+// UVOZIM MOJ MIDDLEWARE validateRquest
+import { requireAuth, validateRequest } from "@ramicktick/common";
+
+const router = Router();
+
+router.post(
+  "/api/tickets",
+  requireAuth,
+  // ZADAJEM MIDDLEWARES
+  [
+    body("title")
+      .isString()
+      .isLength({ max: 30, min: 6 })
+      .not()
+      .isEmpty()
+      .withMessage("title is required"),
+  ],
+  // ZA SADA JOS NECU DEFINISATI VALIDATIONS ZA price
+  // VEC CU DODATI validateRequest MIDDLEWARE
+  validateRequest,
+  //
+  async (req: Request, res: Response) => {
+    return res.status(201).send({});
+  }
+);
+
+export { router as createTicketRouter };
 
 ```
+
+PROSAO MI JE TEST ZA VALIDNOST title-A
+
+## DA DODAM I MIDDLEWARES ZA VALIDEATING price-A
+
+ZASTO OVO RADIM SADA U ODVOJENOM NASLOVU
+
+ZATO STO ZELIM DA TI OBJASNIM DA price OBICNO TREBA DA IMA DECIMALE, ODNOSNO DA BUDE FLOAT, JER SE TAKO CEN PREDSTAVLJAJU, ISTO TAKO ON NE SME DA BUDE NEGATIVAN
+
+- `code tickets/src/routes/new.ts`
+
+```ts
+import { Router, Request, Response } from "express";
+import { body } from "express-validator";
+import { requireAuth, validateRequest } from "@ramicktick/common";
+
+const router = Router();
+
+router.post(
+  "/api/tickets",
+  requireAuth,
+  [
+    body("title")
+      .isString()
+      .isLength({ max: 30, min: 6 })
+      .not()
+      .isEmpty()
+      .withMessage("title is required"),
+    // DODAJEM OVO
+    // price MOZE DA BUDE FLOATING POINT, VECI OD NULA
+    body("price").isFloat({ gt: 0 }),
+  ],
+  validateRequest,
+  async (req: Request, res: Response) => {
+    return res.status(201).send({});
+  }
+);
+
+export { router as createTicketRouter };
+
+```
+
+POGLEDAO SAM SADA TESTS, I PROSAO JE TEST ZA price FIELD VALIDATION
+
+**MEDJUTIM TI KADA SEND-UJES NE DECIMALNE BROJEVE (PRONADJI U TESTOVIMA, GDE SAM TO SLAO, TEBI CE TEST PROLAZITI. DAKLE PASS-OVACE), NEMA VEZE STO SI TI PODESIO isFloat**
+
+**PREDPOSTAVLJAM DA JE TO UKLUCIVO, ODNOSNO AKO SE NAPISE BRO JSA DECIMALO DA CE ON BITI VALID**
+
 

@@ -17,7 +17,7 @@ it("can be accessed if user is signed in", async () => {
   const response = await request(app)
     .post("/api/tickets")
     .set("Cookie", global.getCookie())
-    .send({});
+    .send({ title: "ssdfsdf", price: 442 });
 
   expect(response.status).toEqual(201);
 
@@ -31,7 +31,7 @@ it("it returns an error if invalid 'title' is provided", async () => {
     .post("/api/tickets")
     .set("Cookie", global.getCookie())
     // title TREBA DA BUDE STRING ,A JA NAMERNO UBACUJEM POGRESNO
-    .send({ title: 16, price: "200" });
+    .send({ title: 16, price: 122 });
 
   expect(response1.status).toEqual(400);
 
@@ -40,7 +40,7 @@ it("it returns an error if invalid 'title' is provided", async () => {
     .post("/api/tickets")
     .set("Cookie", global.getCookie())
     // PODESAVAMO "" ZA title
-    .send({ title: "", price: "200" });
+    .send({ title: "", price: 122 });
 
   expect(response2.status).toEqual(400);
 
@@ -49,7 +49,7 @@ it("it returns an error if invalid 'title' is provided", async () => {
     .post("/api/tickets")
     .set("Cookie", global.getCookie())
 
-    .send({ price: "200" });
+    .send({ price: 122.4 });
 
   expect(response3.status).toEqual(400);
 });
@@ -58,8 +58,8 @@ it("it returns an error if invalid 'price' is provided", async () => {
   const response1 = await request(app)
     .post("/api/tickets")
     .set("Cookie", global.getCookie())
-    // price ISTO TREBA DA BUDE STRING, A JA NAMERNO GRESIM
-    .send({ title: "nebula", price: 16 });
+    // NAMERN OSALJEM PRICE KAO NEGATIVNU VREDNOST
+    .send({ title: "nebula", price: -16 });
 
   expect(response1.status).toEqual(400);
 
@@ -67,17 +67,16 @@ it("it returns an error if invalid 'price' is provided", async () => {
   const response2 = await request(app)
     .post("/api/tickets")
     .set("Cookie", global.getCookie())
-    // price ISTO TREBA DA BUDE STRING, A JA NAMERNO GRESIM
-    .send({ title: "nebula", price: "" });
+    // STAVLJAM DA JE PRICE NULA
+    .send({ title: "nebula", price: 0 });
 
   expect(response2.status).toEqual(400);
-
 
   // PRAVIM TEST ZA MISSING FIELD price
   const response3 = await request(app)
     .post("/api/tickets")
     .set("Cookie", global.getCookie())
-    // price ISTO TREBA DA BUDE STRING, A JA NAMERNO GRESIM
+    // IZOSTAVLJAM PRICE
     .send({ title: "nebula" });
 
   expect(response3.status).toEqual(400);
