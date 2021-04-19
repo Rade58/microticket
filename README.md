@@ -72,13 +72,55 @@ router.post("/api/tickets", async (req, res) => {
   return res.status(201).send({});
 });
 
-export { router as newRouter };
+export { router as createTicketRouter };
 
 ```
 
+POVEZI GA NA app
 
+- `code tickets/src/app.ts`
 
+```ts
+import express from "express";
+import "express-async-errors";
+import { json } from "body-parser";
+import cookieSession from "cookie-session";
 
+// UVEZAO
+import { createTicketRouter } from "./routes/new";
+//
+
+import { errorHandler, NotFoundError } from "@ramicktick/common";
+
+const app = express();
+
+app.set("trust proxy", true);
+
+app.use(json());
+
+app.use(
+  cookieSession({
+    signed: false,
+
+    secure: process.env.NODE_ENV !== "test",
+  })
+);
+
+// EVO OVDE CU POVEZATI ROUTERA
+app.use(createTicketRouter);
+//
+
+app.all("*", async (req, res, next) => {
+  throw new NotFoundError();
+});
+
+app.use(errorHandler);
+
+export { app };
+
+```
+
+**CIM SI SAVE-OVAO FILE, TEST, POSTO JE U WATCH MODE-U CE NASTAVITI, DA TESTIRA, `OVOG PUTA TEST JE PROSAO`**
 
 
 
