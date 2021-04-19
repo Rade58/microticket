@@ -15,6 +15,13 @@ spec:
             backend:
               serviceName: auth-srv
               servicePort: 3000
+          # DODAO SAM OVO I TO NA OVOM MESTU
+          - path: /api/tickets/?(.*)
+            pathType: Exact
+            backend:
+              serviceName: tickets-srv
+              servicePort: 3000
+          #
           - path: /?(.*)
             pathType: Exact
             backend:
