@@ -336,3 +336,6 @@ POKRENI TEST, AKO TI JE BIO UGASEN
 
 - `yarn test`
 
+**TEST JE PASS-OVAO**
+
+
