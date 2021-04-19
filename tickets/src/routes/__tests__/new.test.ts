@@ -26,6 +26,9 @@ it("can be accessed if user is signed in", async () => {
     .send({});
 
   expect(response.status).toEqual(201);
+  // A MOGAO SAM I OVO DA NAPISEM
+
+  expect(response.status).not.toEqual(401);
 });
 // --------------------------------
 
