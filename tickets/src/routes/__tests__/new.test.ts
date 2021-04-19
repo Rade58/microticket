@@ -13,13 +13,21 @@ it("can't be accessed if user is not signed in", async () => {
   expect(response.status).toEqual(401);
 });
 
-// EVO OVAJ TEST NE BI TREBAL ODA PASS-UJE ZA SADA
+// -------------------------------
 it("can be accessed if user is signed in", async () => {
-  const response = await request(app).post("/api/tickets").send({});
+  // FUNKCIJA JE DOSTUPNA GLOBLNO, I NE MORAS DA JE UVOZIS
+  // ALI JE KORISTIS SA global OBJECT-A
+
+  const response = await request(app)
+    .post("/api/tickets")
+    // EVO
+    .set("Cookie", global.getCookie())
+    //
+    .send({});
 
   expect(response.status).toEqual(201);
 });
-// ------------
+// --------------------------------
 
 it("it returns an error if invalid 'title' is provided", async () => {});
 it("it returns an error if invalid 'price' is provided", async () => {});
