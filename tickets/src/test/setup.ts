@@ -43,12 +43,15 @@ declare global {
   // eslint-disable-next-line
   namespace NodeJS {
     interface Global {
-      getCookie(): Promise<string[]>;
+      // NEE TREBA DA BUDE ASYNC JER NISATA SYNC NECU RADITI
+      // getCookie(): Promise<string[]>;
+      getCookie(): string[];
     }
   }
 }
 
-global.getCookie = async () => {
+// OVO NE MORA MORA DA BUDE ASYNC
+global.getCookie = () => {
   // MOAMO BUILD-OVATI JSON WEB TOKEN PAYLOAD
   // {id: string; email: string}
   const payload = {
