@@ -44,7 +44,7 @@ const router = Router();
 router.post(
   "/api/tickets",
   // DODAJEM GA
-  requireAuth, // ON THROW-UJE ERROR AKO NEM req.currentUser
+  requireAuth, // ON THROW-UJE CUSTOM ERROR AKO NEM req.currentUser
 
   async (req: Request, res: Response) => {
     return res.status(201).send({});
