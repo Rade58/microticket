@@ -44,7 +44,7 @@ export const errorHandler = (
 
 ```
 
-# SADA REBUILD-UJEM I REPUBLISH-UJEM MOJ `2rammicktick/common` MODULE
+# SADA REBUILD-UJEM I REPUBLISH-UJEM MOJ `@ramicktick/common` MODULE
 
 ***
 
@@ -74,10 +74,14 @@ A SVE JE TO ZBOG `pub` SCRIPT-A
 
 ***
 
-
 - `cd common`
 
 - `npm run pub`
 
+**SADA JE DAKLE TVOJ LIBRARY REPUBLISHED I IMA NOVU VERZIJU, STO MZOES VIDETI IZ LOGS-A ALI IAKO POGLEDAS TVOJ PACKAGE NA NPM WEBSITE-U**
 
+# DA REINSTALIRAM SADA `@ramicktick/common`, U MOM `tickets` MICROSERVICE-U
 
+- `cd tickets`
+
+- `yarn add @ramicktick/common --latest` (REKAO SAM TI RANIJE DA OVAKO PREFERIRM DA KORISTIM yarn KADA UPDATE-UJEM PACKAGE INSTLACIJU)
