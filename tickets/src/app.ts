@@ -5,8 +5,10 @@ import cookieSession from "cookie-session";
 
 import { createTicketRouter } from "./routes/new";
 
-// UZEO OVO
 import { getOneTicketByIdRouter } from "./routes/show";
+// UZEO OVO
+import { getAllTicketsRouter } from "./routes/";
+//
 
 import { errorHandler, NotFoundError, currentUser } from "@ramicktick/common";
 
@@ -27,8 +29,9 @@ app.use(
 app.use(currentUser);
 
 app.use(createTicketRouter);
-// DODAO OVO
 app.use(getOneTicketByIdRouter);
+// DODAO OVO
+app.use(getAllTicketsRouter);
 
 app.all("*", async (req, res, next) => {
   throw new NotFoundError();
