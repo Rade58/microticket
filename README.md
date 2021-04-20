@@ -119,4 +119,5 @@ POKRENI TEST SUITE, AKO VEC NISI
 - `cd ticket`
 
 - `yarn test`
-- 
+
+I TEST JE PASS-OVAO
