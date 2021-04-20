@@ -2,17 +2,19 @@ import request from "supertest";
 import { app } from "../../app";
 
 it("returns 404 if the ticket is not found", async () => {
-  const someRandomId = "sfsdgdgd3534534";
+  const someRandomId = "sfsdsdfasd";
 
   const response = await request(app)
     .get(`/api/tickets/${someRandomId}`)
     .set("Cookie", global.getCookie())
-    .send()
+    .send();
 
-    // MOZE I OVAKO
-    // expect(response.status).toEqual(404);
-    // ALI MOZE I CHAINING
-    .expect(404);
+  console.log(JSON.stringify({ response }, null, 2));
+
+  // MOZE I OVAKO
+  // expect(response.status).toEqual(404);
+  // ALI MOZE I CHAINING
+  expect(response.status).toEqual(404);
 });
 
 it("returns the ticket if the ticket is found", async () => {

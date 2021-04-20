@@ -1,4 +1,5 @@
 import { Router, Request, Response } from "express";
+import "express-async-errors";
 
 import { requireAuth, NotFoundError } from "@ramicktick/common";
 
@@ -10,9 +11,9 @@ router.get(
   "/api/tickets/:id",
   requireAuth,
   async (req: Request, res: Response) => {
-    const { id } = req.query;
+    const { id } = req.params;
 
-    const ticket = await Ticket.findOne({ id });
+    const ticket = await Ticket.findById(id);
 
     console.log({ ticket });
 
