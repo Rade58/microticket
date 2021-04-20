@@ -28,7 +28,7 @@ const ticketSchema = new Schema(
 );
 
 /**
- * @description this fields are the one I'm adding when creating Ticket document
+ * @description this fields are inputs for the document creation
  */
 interface TicketFields {
   title: string;
@@ -37,7 +37,7 @@ interface TicketFields {
 }
 
 /**
- * @description interface for additional thing I can search on obtaind document
+ * @description interface for thing, among others I can search on obtaind document
  */
 interface TicketDocumentI extends Document, TicketFields {
   //
