@@ -6,7 +6,7 @@ import { Types } from "mongoose";
 
 it("returns 404 if the ticket is not found", async () => {
   // UZ POMOC OVOGA KRIRAM ID
-  const someRandomId = new Types.ObjectId();
+  const someRandomId = new Types.ObjectId().toHexString();
 
   // const someRandomId = "sfsdsdfasd46";
   // const someRandomId = "sfsds";
