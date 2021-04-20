@@ -123,5 +123,7 @@ it("returns 404 if the ticket is not found", async () => {
 EVO POKAZUJEM TI OUTPUT
 
 ```zsh
-
+console.error
+      CastError: Cast to ObjectId failed for value "sfsds" at path "_id" for model "Ticket"
+# ...
 ```
