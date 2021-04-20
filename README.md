@@ -127,3 +127,41 @@ console.error
       CastError: Cast to ObjectId failed for value "sfsds" at path "_id" for model "Ticket"
 # ...
 ```
+
+## SADA MOZES DA POPRAVIS TEST KAKO BI TI TEST PROSAO OPET, ALI SAA CEMO MI DA GENNERISEMO id; I TO SA BUILT IN FUNKCIJOM MONGOOSE-A
+
+- `code tickets/src/routes/__tests__/show.test.ts`
+
+```ts
+import request from "supertest";
+import { app } from "../../app";
+
+//UVOZIM IZ mongoose-A
+import { Types } from "mongoose";
+
+it("returns 404 if the ticket is not found", async () => {
+  // UZ POMOC OVOGA KRIRAM ID
+  const someRandomId = new Types.ObjectId();
+
+  // const someRandomId = "sfsdsdfasd46";
+  // const someRandomId = "sfsds";
+  //
+
+  const response = await request(app)
+    .get(`/api/tickets/${someRandomId}`)
+    .set("Cookie", global.getCookie())
+    .send();
+
+  expect(response.status).toEqual(404);
+});
+
+// ...
+// ...
+
+```
+
+MOZES DA POKRENES OPET TESTING SUITE AKO SI GA UGASIO
+
+- `cd tickets`
+
+- `yarn test`

@@ -1,10 +1,15 @@
 import request from "supertest";
 import { app } from "../../app";
 
+//UVOZIM IZ mongoose-A
+import { Types } from "mongoose";
+
 it("returns 404 if the ticket is not found", async () => {
-  // DEFINISEM DA OVAJ STRING IMA MANJE OD 12 KARAKTERA
+  // UZ POMOC OVOGA KRIRAM ID
+  const someRandomId = new Types.ObjectId();
+
   // const someRandomId = "sfsdsdfasd46";
-  const someRandomId = "sfsds";
+  // const someRandomId = "sfsds";
   //
 
   const response = await request(app)
