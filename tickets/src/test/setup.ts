@@ -46,6 +46,7 @@ declare global {
       // NEE TREBA DA BUDE ASYNC JER NISATA SYNC NECU RADITI
       // getCookie(): Promise<string[]>;
       getCookie(): string[];
+      getOtherCookie(payload: { id: string; email: string }): string[];
     }
   }
 }
@@ -86,5 +87,17 @@ global.getCookie = () => {
   // U BROWSERU
   // RETURN-UJEM ARRAY, JER supertest
   // CE OCEKIVATI STRING INSIDE ARRAY
+  return [`express:sess=${buf.toString("base64")}`];
+};
+
+global.getOtherCookie = (payload: { id: string; email: string }) => {
+  const jwt = sign(payload, process.env.JWT_KEY as string);
+
+  const session = { jwt };
+
+  const sessionJSON = JSON.stringify(session);
+
+  const buf = Buffer.from(sessionJSON, "utf-8");
+
   return [`express:sess=${buf.toString("base64")}`];
 };
