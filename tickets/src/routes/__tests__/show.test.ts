@@ -32,7 +32,7 @@ it("returns the ticket if the ticket is found", async () => {
 
   const response2 = await request(app).get(`/api/tickets/${id}`).send();
 
-  expect(response2.status).toEqual(200);
+  expect(response2.status).toEqual(200); // I OVO SI MOGAO DA CHAIN-UJES ALI NEMA VEZE
 
   expect(response2.body.title).toEqual(title);
   expect(response2.body.price).toEqual(price);
