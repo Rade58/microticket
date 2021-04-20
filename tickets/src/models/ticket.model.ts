@@ -17,6 +17,9 @@ const ticketSchema = new Schema(
   },
   {
     toJSON: {
+      /**
+       * @param ret object to be returned later as json
+       */
       transform(doc, ret, options) {
         ret.id = ret._id;
 
