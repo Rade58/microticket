@@ -2,6 +2,10 @@ import { Router, Request, Response } from "express";
 import { body } from "express-validator";
 import { requireAuth, validateRequest } from "@ramicktick/common";
 
+// UVOZIM MODEL
+import { Ticket } from "../models/ticket.model";
+//
+
 const router = Router();
 
 router.post(
@@ -14,13 +18,26 @@ router.post(
       .not()
       .isEmpty()
       .withMessage("title is required"),
-    // DODAJEM OVO
-    // price MORA DA BUDE FLOATING POINT, VECI OD NULA
     body("price").isFloat({ gt: 0 }),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    return res.status(201).send({});
+    // UZIMA DATA SA BODy-JA
+    const { title, price } = req.body;
+    // UZIMAM USER ID
+    const userId = (req.currentUser as {
+      id: string;
+      email: string;
+      iat: number;
+    }).id;
+    // OVAJ GORNJI TYPING SAM URADIO SAMO ZATO STO JE TYPESCRIPT
+    // YELL-OVAO NA MENE
+    // ALI NEM SANSE DA JE currentUser, USTVARI null, JER
+    // requireAuth MIDDLEWARE BRINE O TOME
+
+    const ticket = await Ticket.create({ title, price, userId });
+
+    return res.status(201).send(ticket);
   }
 );
 
