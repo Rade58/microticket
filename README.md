@@ -50,6 +50,12 @@ it("it creates ticket with valid inputs", async () => {
 
 ```
 
+MOZES DA ISPROBAS TEST ALI DEFINITIVNO CE FAIL-OVATI
+
+- `cd tickets`
+
+- `yarn test`
+
 # MEDJUTIM DA BI TEST PROSAO MI MORAMO DEFINISATI ACTUAL CREATION OF Ticket DOCUMENT, STO CEMO DEFINISATI U HANDLERU
 
 
