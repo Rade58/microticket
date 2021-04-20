@@ -46,6 +46,35 @@ export const errorHandler = (
 
 # SADA REBUILD-UJEM I REPUBLISH-UJEM MOJ `2rammicktick/common` MODULE
 
+***
+
+digresija:
+
+**TREBS DA ZANAS, ODNOSNO DA SE SETIS DA common FOLDER TREBA DA BUDE SEPARATE REPO**
+
+ODNONO BI TREBALO DA TO JESTE SEM AKO NISI REDOWNLOAD-OVAO OVAJ PROJEKAT SA GITHUB-A (TADA TO STO SI PODESIO DA U FOLDERU BUDE SUB REPO, TO SE NECE REGISTROVATI NA GITHUBU NARAVNO (SAM ZAKLJUCI ZASTO, ALI IPAK CU TI RECI; PA NITI NISI IKADA DEFINISAO DA HOST-UJES OVAJ SUBREPO NA GITHUB-U STO BI INACE URADIO (TI USTVARI NIKAD NE BI NI IMAO SUB REPO, VEC BI TI LIBRARY BIO U NEKOM DRUGOM FOLDERU))))
+
+**DOSTA SAM POTROSIO RECI DA TI SAMO KAZEM DA TREBAS URADITI**
+
+- `cd common` `git init`
+
+U SLUCAJ UDA SI REDOWNLOAD-OVAO CEO OVAJ MICROSERVICES REPO
+
+A SVE JE TO ZBOG `pub` SCRIPT-A
+
+- `cat common/package.json`
+
+```ts
+ "scripts": {
+    "clean": "del ./build/*",
+    "build": "npm run clean && tsc",
+    "pub": "git add -A && git commit -am \"updates\" && npm version patch && npm run build && npm publish"
+  },
+```
+
+***
+
+
 - `cd common`
 
 - `npm run pub`
