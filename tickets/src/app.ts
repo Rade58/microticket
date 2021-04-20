@@ -5,7 +5,9 @@ import cookieSession from "cookie-session";
 
 import { createTicketRouter } from "./routes/new";
 
-// EVO UVEZAO SAM MIDDLEWARE currentUser
+//
+import { getOneTicketByIdRouter } from "./routes/show";
+
 import { errorHandler, NotFoundError, currentUser } from "@ramicktick/common";
 
 const app = express();
@@ -28,6 +30,8 @@ app.use(currentUser);
 //
 
 app.use(createTicketRouter);
+//
+app.use(getOneTicketByIdRouter);
 
 app.all("*", async (req, res, next) => {
   throw new NotFoundError();

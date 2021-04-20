@@ -6,6 +6,7 @@ it("returns 404 if the ticket is not found", async () => {
 
   const response = await request(app)
     .get(`/api/tickets/${someRandomId}`)
+    .set("Cookie", global.getCookie())
     .send()
 
     // MOZE I OVAKO
@@ -26,11 +27,15 @@ it("returns the ticket if the ticket is found", async () => {
     .send({
       title,
       price,
-    });
+    })
+    .expect(201);
 
   const { id } = response1.body;
 
-  const response2 = await request(app).get(`/api/tickets/${id}`).send();
+  const response2 = await request(app)
+    .get(`/api/tickets/${id}`)
+    .set("Cookie", global.getCookie())
+    .send();
 
   expect(response2.status).toEqual(200); // I OVO SI MOGAO DA CHAIN-UJES ALI NEMA VEZE
 
