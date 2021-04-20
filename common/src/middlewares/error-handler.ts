@@ -1,8 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-/* import { DatabseConnectionError } from "../errors/database-connection-error";
-import { RequestValidationError } from "../errors/request-validation-error"; */
-// OVA DVA GORNJA ERROR-A MI NISU NI POTREBNA ZA TO SAM IH COMMENT-OVAO OUT
-// A OVO SAM UVEZAO
+
 import { CustomError } from "../errors/custom-error";
 
 export const errorHandler = (
@@ -11,22 +8,20 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  // UMESTO DVE USLOVNE IZJAVE
+  // JASA SAM OVAKO DEFINISAO DA SE STAMPAJU ERRORI
+  // TO JE DAKLE CODE KOJI JE TO BIO RANIJE
+  // OVO JE DOBRO, ALI POSTOJI BOLJI NACIN
+  // console.log("ERROR -->", err);
 
-  /* if (err instanceof RequestValidationError) {
-    return res.status(err.statusCode).send(err.serializeErrors());
-  }
-
-  if (err instanceof DatabseConnectionError) {
-    return res.status(err.statusCode).send(err.serializeErrors());
-  } */
-
-  console.log("ERROR -->", err);
-
-  // IMAM SAMO JEDNU
   if (err instanceof CustomError) {
     return res.status(err.statusCode).send(err.serializeErrors());
   }
+
+  // BOLJE JE DA STMAPAP ERROR, ZA KOJE NE ZNAM, KOJI NISU INSTANCE
+  // MOG CustomError-A, KAO STO SU SVI ERROR-I KOJE SAM NAPRAVIO
+  // OVDE CE SE DAKLE STMAPATI SAMO ERRORS KOJE
+  // NE ATICIPATE-UJEM
+  console.error(err);
   //
 
   res.status(400).send({
