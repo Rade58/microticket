@@ -1,16 +1,64 @@
 import { Schema, model, Document, Model } from "mongoose";
 
-const ticketSchema = new Schema({
-  title: {
-    type: String,
-    required: true,
+const ticketSchema = new Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    userId: {
+      type: String,
+      required: true,
+    },
   },
-  price: {
-    type: Number,
-    required: true,
-  },
-  userId: {
-    type: String,
-    required: true,
-  },
-});
+  {
+    toJSON: {
+      transform(doc, ret, options) {
+        ret.id = ret._id;
+
+        delete ret.__v;
+        delete ret.__id;
+      },
+    },
+  }
+);
+
+/**
+ * @description this fields are the one I'm adding when creating Ticket document
+ */
+interface TicketFields {
+  title: string;
+  price: number;
+  userId: string;
+}
+
+/**
+ * @description interface for additional thing I can search on obtaind document
+ */
+interface TicketDocumentI extends Document, TicketFields {
+  //
+}
+/**
+ * @description interface for additional things on the model
+ */
+interface TicketModelI extends Model<TicketDocumentI> {
+  // NECU NISTA DODAVATI, ALI OVDE BI TYPE-OVAO STATICKE METODE KOJE
+  // SAMO TI OSTAVLJAM OVO KAO TEMPLATE DEFINISANJA
+  __nothing: (input: string) => void; //stavio samo jer moram nesto da dodam, ali ovu metodu necu sigurno definisati
+}
+
+// BUILDING STATIC METHODS ON MODEL ( JUST SHOVING NOT GOING TO USE IT )
+// ticketSchema.statics.__nothing = async function (input) {/**/};
+// pre HOOK
+// ticketSchema.pre("save", async function (next) {/**/});
+
+/**
+ * @description Ticket model
+ */
+const Ticket = model<TicketDocumentI, TicketModelI>("Ticket", ticketSchema);
+
+export { Ticket };
