@@ -114,7 +114,7 @@ export { app };
 
 ```
 
-POKRENI TEST SUITE, AKO VEC NISI
+POKRENI TESTs, AKO VEC NISI
 
 - `cd ticket`
 
