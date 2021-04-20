@@ -5,7 +5,7 @@ import cookieSession from "cookie-session";
 
 import { createTicketRouter } from "./routes/new";
 
-//
+// UZEO OVO
 import { getOneTicketByIdRouter } from "./routes/show";
 
 import { errorHandler, NotFoundError, currentUser } from "@ramicktick/common";
@@ -24,13 +24,10 @@ app.use(
   })
 );
 
-// STAVICEMO GA OVDE KAKO BI USER BIO PROVIDED (AKO JE AUTHORIZATION OK)
-// ZA SLEDECU SERIJU POVEZANIH HANDLER
 app.use(currentUser);
-//
 
 app.use(createTicketRouter);
-//
+// DODAO OVO
 app.use(getOneTicketByIdRouter);
 
 app.all("*", async (req, res, next) => {

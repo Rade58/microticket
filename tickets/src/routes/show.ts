@@ -1,5 +1,4 @@
 import { Router, Request, Response } from "express";
-import "express-async-errors";
 
 import { requireAuth, NotFoundError } from "@ramicktick/common";
 

@@ -2,14 +2,16 @@ import request from "supertest";
 import { app } from "../../app";
 
 it("returns 404 if the ticket is not found", async () => {
-  const someRandomId = "sfsdsdfasd";
+  // BITNO JE DA ID IMA 12 KARAKTERA
+  // TO JE JER CE SE PRI GETTINGU BY ID DESITI CastError
+  // KOJI CE THROW-OVATI MONGOOSE, PREDPOSTAVLJAM
+  const someRandomId = "sfsdsdfasd46";
+  // TO SAM TEK NAKNADNO SAZNAO, TAKO STO SAM STAMPAO RESPONSE
 
   const response = await request(app)
     .get(`/api/tickets/${someRandomId}`)
     .set("Cookie", global.getCookie())
     .send();
-
-  console.log(JSON.stringify({ response }, null, 2));
 
   // MOZE I OVAKO
   // expect(response.status).toEqual(404);
