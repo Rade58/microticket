@@ -85,3 +85,43 @@ A SVE JE TO ZBOG `pub` SCRIPT-A
 - `cd tickets`
 
 - `yarn add @ramicktick/common --latest` (REKAO SAM TI RANIJE DA OVAKO PREFERIRM DA KORISTIM yarn KADA UPDATE-UJEM PACKAGE INSTLACIJU)
+
+# AKO OPET POKRENES TESTS MOCI CES VIDETI DA SE LEPSE STMAPJU ERRORS KOJI NISU INSTANCE TVOG `CustomError`-A, ODNOSNO ERRORS KOJE NE ANTICIPATE-UJES
+
+EVO IZMENICEMO TESTS DA TI POKAZEM TO
+
+- `code tickets/src/routes/__tests__/show.test.ts`
+
+```ts
+import request from "supertest";
+import { app } from "../../app";
+
+it("returns 404 if the ticket is not found", async () => {
+  // DEFINISEM DA OVAJ STRING IMA MANJE OD 12 KARAKTERA
+  // const someRandomId = "sfsdsdfasd46";
+  const someRandomId = "sfsds";
+  //
+
+  const response = await request(app)
+    .get(`/api/tickets/${someRandomId}`)
+    .set("Cookie", global.getCookie())
+    .send();
+
+  expect(response.status).toEqual(404);
+});
+
+// ...
+
+```
+
+**I SADA CE TI TEST FAIL-OVATI**
+
+- `cd tickets` `yarn test`
+
+**ALI ZNACES ZASTO TI JE FAIL-OVAO**
+
+EVO POKAZUJEM TI OUTPUT
+
+```zsh
+
+```
