@@ -159,7 +159,7 @@ it("if there is no authenticated user, it returns 401", async () => {
 
 // NASTAVLJAM SA OVIM TESTOM ZA KOJI SAM REKAO DA CU GA PISATI
 
-it("if the user does not own a ticket, return 404", async () => {
+it("if the user does not own a ticket, return 401", async () => {
   // NASTAVLJAM SA OVIM TESTOM
   // CREATING A TICKET
   const response = await createTicketResponse();
@@ -176,23 +176,16 @@ it("if the user does not own a ticket, return 404", async () => {
       global.getOtherCookie({ email: "otherguy@test.com", id: "sdfdsdgfd34" })
     )
     //
-    .send({ price })
+    .send({ title, price })
     .expect(401);
 
-
-  // DOBRO BI BILO NAPRAVITI FOLLOW UP REQUEST I PROVERITI
-  // DA SE MOZDA SLUCAJNO NIJE DOGODIO UPDATE
-  // TO NE ZELIMO 
-
-   const response2 = await request(app)
+  const response2 = await request(app)
     .get(`/api/tickets/${id}`)
     .set("Cookie", global.getCookie())
     .send();
 
   expect(response2.body.title).toEqual(response.body.title);
   expect(response2.body.price).toEqual(response.body.price);
-
-
 });
 ```
 
@@ -320,7 +313,123 @@ export { app };
 
 **I TEST-OVI SU PASS-OVALI**
 
-## OSTAJE MI DA NAPISEM TEST O TOM DA LI SU PROVIDED VALIDNI INPUTI, ODNONO DA SU U VALIDNOM FORMATU `title` I `price`
+## DA SADA NAPISEM TEST O TOM DA LI SU PROVIDED VALIDNI INPUTI, ODNONO DA SU U VALIDNOM FORMATU `title` I `price`
 
+NAPRAVICU TESTSA ASSERTIONSIMA O NEVALIDNOSTI
 
+- `code tickets/src/routes/__tests__/update.test.ts`
+
+```ts
+// ...
+
+it("returns 400, if price or title is invalid", async () => {
+  // OVDE NECU PRAVITI NIKAKV NOVI TICKET
+  // JER PLANIRA DA U HANDLERU DAKLE RETURN-UJEM EARLY
+  // AKO JE NEKI INPUT INVALID
+  // (ZATO STO CU KORISTITI validateRequest MIDDLEWARE
+  // KOJI CE THROW-OVATI ONE ERRORS, KOJE CE U REQUEST UBACITI
+  // body-JI (MIDDLEWARE-OVI express-validator-A KOJE CU ISTIO POSTAVITI))
+
+  await request(app)
+    // ZATO GENERISEM id NA SLEDECI NACIN
+    .put(`/api/tickets/${new Types.ObjectId().toHexString()}`)
+    .set("Cookie", global.getCookie())
+    // UBACICU NESTO NEVALIDNO
+    .send({
+      price: -90,
+      title: "Something",
+    })
+    .expect(400);
+
+  //
+
+  await request(app)
+    .put(`/api/tickets/${new Types.ObjectId().toHexString()}`)
+    .set("Cookie", global.getCookie())
+    // UBACICU NESTO NEVALIDNO
+    .send({
+      price: 306,
+      title: "",
+    })
+    .expect(400);
+});
+
+```
+
+SADA MOGU DA MODIFIKUJEM CODE MOG HANDLER-A
+
+- `code tickets/src/routes/update.ts`
+
+```ts
+import { Router, Request, Response } from "express";
+import {
+  NotAuthorizedError,
+  NotFoundError,
+  validateRequest,
+  requireAuth,
+} from "@ramicktick/common";
+
+// SADA CU UPOTREBITI I OVO
+import { body } from "express-validator";
+
+import { Ticket } from "../models/ticket.model";
+
+const router = Router();
+
+// OVDE DAKEL NECU RADITI NISTA VISE OD DODAVANJE MIDDLEWARE-OVA
+
+router.put(
+  "/api/tickets/:id",
+  requireAuth,
+
+  // DODAJEM OVE MIDDLEWARES
+  [
+    body("title")
+      .isString()
+      .not()
+      .isEmpty()
+      .withMessage("title has invalid format"),
+    body("price").isFloat({ gt: 0 }).withMessage("price has invalid format"),
+  ],
+  // DAKLE AKO body MIDDLEWARI ODOZGO PRONADJU ERRORS (TO SU USTVARI ERROR MESSAGES)
+  // ONI GA STAVE U REQUEST
+  // A OVAJ SLEDECI MIDDLEWRE CE AKO SE NADJE I JEDNA TAKVA STVAR NA REQUEST-U,
+  //  USTVARI THROW-UJE ERROR DO MOG ERROR HANDLER-A
+  validateRequest,
+  //
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const userId = req.currentUser?.id;
+    const { title, price } = req.body;
+
+    const data: { title?: string; price?: number } = {};
+
+    if (title) {
+      data["title"] = title;
+    }
+    if (price) {
+      data["price"] = price;
+    }
+
+    let ticket = await Ticket.findById(id).exec();
+
+    if (!ticket) {
+      throw new NotFoundError();
+    }
+
+    if (ticket.userId !== userId) {
+      throw new NotAuthorizedError();
+    }
+
+    ticket = await Ticket.findByIdAndUpdate(id, { data }).exec();
+
+    res.status(201).send(ticket);
+  }
+);
+
+export { router as updateOneTicketRouter };
+
+```
+
+MOGU DA PRIMETIM DA MI JE TEST ODMAH PROSAO
 

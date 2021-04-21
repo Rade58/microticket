@@ -2,22 +2,38 @@ import { Router, Request, Response } from "express";
 import {
   NotAuthorizedError,
   NotFoundError,
-  validateRequest, // OVO JE ONAJ HANDLER, KOJI THROW-UJE VALIDATION ERROR
-  //                 KOJE PASS-UJE EXPRESS VALIDATOR
+  validateRequest,
   requireAuth,
 } from "@ramicktick/common";
 
-// OVO NECU ODMAH UPOTREBITI
+// SADA CU UPOTREBITI I OVO
 import { body } from "express-validator";
 
 import { Ticket } from "../models/ticket.model";
 
 const router = Router();
 
+// OVDE DAKEL NECU RADITI NISTA VISE OD DODAVANJE MIDDLEWARE-OVA
+
 router.put(
   "/api/tickets/:id",
   requireAuth,
+
+  // DODAJEM OVE MIDDLEWARES
+  [
+    body("title")
+      .isString()
+      .not()
+      .isEmpty()
+      .withMessage("title has invalid format"),
+    body("price").isFloat({ gt: 0 }).withMessage("price has invalid format"),
+  ],
+  // DAKLE AKO body MIDDLEWARI ODOZGO PRONADJU ERRORS (TO SU USTVARI ERROR MESSAGES)
+  // ONI GA STAVE U REQUEST
+  // A OVAJ SLEDECI MIDDLEWRE CE AKO SE NADJE I JEDNA TAKVA STVAR NA REQUEST-U,
+  //  USTVARI THROW-UJE ERROR DO MOG ERROR HANDLER-A
   validateRequest,
+  //
   async (req: Request, res: Response) => {
     const { id } = req.params;
     const userId = req.currentUser?.id;
@@ -32,19 +48,16 @@ router.put(
       data["price"] = price;
     }
 
-    // FINDING TICKET FIRST
     let ticket = await Ticket.findById(id).exec();
 
     if (!ticket) {
       throw new NotFoundError();
     }
 
-    // IF IT'S NOT A RIGHT USER
     if (ticket.userId !== userId) {
       throw new NotAuthorizedError();
     }
 
-    // UPDATING
     ticket = await Ticket.findByIdAndUpdate(id, { data }).exec();
 
     res.status(201).send(ticket);

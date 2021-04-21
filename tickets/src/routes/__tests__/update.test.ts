@@ -45,15 +45,13 @@ it("if there is no authenticated user, it returns 401", async () => {
 
 // NASTAVLJAM SA OVIM TESTOM ZA KOJI SAM REKAO DA CU GA PISATI
 
-it("if the user does not own a ticket, return 404", async () => {
+it("if the user does not own a ticket, return 401", async () => {
   // NASTAVLJAM SA OVIM TESTOM
   // CREATING A TICKET
   const response = await createTicketResponse();
 
   // TICKET ID
   const { id } = response.body;
-
-  console.log("Ticket", { id });
 
   // TRYING AN TICKET UPDATE BUT WITH DIFFERENT CREDENTIALS
   await request(app)
@@ -64,7 +62,7 @@ it("if the user does not own a ticket, return 404", async () => {
       global.getOtherCookie({ email: "otherguy@test.com", id: "sdfdsdgfd34" })
     )
     //
-    .send({ price })
+    .send({ title, price })
     .expect(401);
 
   const response2 = await request(app)
@@ -74,4 +72,40 @@ it("if the user does not own a ticket, return 404", async () => {
 
   expect(response2.body.title).toEqual(response.body.title);
   expect(response2.body.price).toEqual(response.body.price);
+});
+
+// -------------------
+
+// ...
+
+it("returns 400, if price or title is invalid", async () => {
+  // OVDE NECU PRAVITI NIKAKV NOVI TICKET
+  // JER PLANIRA DA U HANDLERU DAKLE RETURN-UJEM EARLY
+  // AKO JE NEKI INPUT INVALID
+  // (ZATO STO CU KORISTITI validateRequest MIDDLEWARE
+  // KOJI CE THROW-OVATI ONE ERRORS, KOJE CE U REQUEST UBACITI
+  // body-JI (MIDDLEWARE-OVI express-validator-A KOJE CU ISTIO POSTAVITI))
+
+  await request(app)
+    // ZATO GENERISEM id NA SLEDECI NACIN
+    .put(`/api/tickets/${new Types.ObjectId().toHexString()}`)
+    .set("Cookie", global.getCookie())
+    // UBACICU NESTO NEVALIDNO
+    .send({
+      price: -90,
+      title: "Something",
+    })
+    .expect(400);
+
+  //
+
+  await request(app)
+    .put(`/api/tickets/${new Types.ObjectId().toHexString()}`)
+    .set("Cookie", global.getCookie())
+    // UBACICU NESTO NEVALIDNO
+    .send({
+      price: 306,
+      title: "",
+    })
+    .expect(400);
 });
