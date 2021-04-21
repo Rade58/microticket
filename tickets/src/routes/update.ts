@@ -25,7 +25,6 @@ router.put(
 
     const data: { title?: string; price?: number } = {};
 
-    // OVAKO NIJE RADIO AUTOR WORKSHOP-A
     if (title) {
       data["title"] = title;
     }

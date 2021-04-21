@@ -174,5 +174,124 @@ it("if the user does not own a ticket, return 404", async () => {
 SAMO CU TI TRCI DA SAM GA DRUGACIJE MALO NAPRAVIO NAEGO AUTOR WORKSHOPA
 
 ```ts
+import { Router, Request, Response } from "express";
+import {
+  NotAuthorizedError,
+  NotFoundError,
+  validateRequest, // OVO JE ONAJ HANDLER, KOJI THROW-UJE VALIDATION ERROR
+  //                 KOJE PASS-UJE EXPRESS VALIDATOR
+  requireAuth,
+} from "@ramicktick/common";
+
+// OVO NECU ODMAH UPOTREBITI
+import { body } from "express-validator";
+
+import { Ticket } from "../models/ticket.model";
+
+const router = Router();
+
+router.put(
+  "/api/tickets/:id",
+  requireAuth,
+  validateRequest,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const userId = req.currentUser?.id;
+    const { title, price } = req.body;
+
+    const data: { title?: string; price?: number } = {};
+
+    if (title) {
+      data["title"] = title;
+    }
+    if (price) {
+      data["price"] = price;
+    }
+
+    // FINDING TICKET FIRST
+    let ticket = await Ticket.findById(id).exec();
+
+    if (!ticket) {
+      throw new NotFoundError();
+    }
+
+    // IF IT'S NOT A RIGHT USER
+    if (ticket.userId !== userId) {
+      throw new NotAuthorizedError();
+    }
+
+    // UPDATING
+    ticket = await Ticket.findByIdAndUpdate(id, { data }).exec();
+
+    res.status(201).send(ticket);
+  }
+);
+
+export { router as updateOneTicketRouter };
+```
+
+SADA DA WIRE-UJEM HANDLER-A
+
+- `code tickets/src/app.ts`
+
+```ts
+import express from "express";
+import "express-async-errors";
+import { json } from "body-parser";
+import cookieSession from "cookie-session";
+
+import { createTicketRouter } from "./routes/new";
+
+import { getOneTicketByIdRouter } from "./routes/show";
+import { getAllTicketsRouter } from "./routes/";
+// UZEO OVO
+import { updateOneTicketRouter } from "./routes/update";
+//
+
+import { errorHandler, NotFoundError, currentUser } from "@ramicktick/common";
+
+const app = express();
+
+app.set("trust proxy", true);
+
+app.use(json());
+
+app.use(
+  cookieSession({
+    signed: false,
+
+    secure: process.env.NODE_ENV !== "test",
+  })
+);
+
+app.use(currentUser);
+
+app.use(createTicketRouter);
+app.use(getOneTicketByIdRouter);
+app.use(getAllTicketsRouter);
+// DODAO OVO
+app.use(updateOneTicketRouter);
+//
+
+app.all("*", async (req, res, next) => {
+  throw new NotFoundError();
+});
+
+app.use(errorHandler);
+
+export { app };
 
 ```
+
+**MOZES DA POKRENES TESTOVE, AKO VEC NISI**
+
+- `cd tickets`
+
+- `yarn test`
+
+**I TEST-OVI SU PASS-OVALI**
+
+## OSTAJE MI DA NAPISEM TEST O TOM DA LI SU PROVIDED VALIDNI INPUTI, ODNONO DA SU U VALIDNOM FORMATU `title` I `price`
+
+
+
