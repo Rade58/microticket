@@ -243,7 +243,7 @@ router.put(
     }
 
     // UPDATING
-    ticket = await Ticket.findByIdAndUpdate(id, { data }).exec();
+    ticket = await Ticket.findByIdAndUpdate(id, { data }, { new: true }).exec();
 
     res.status(201).send(ticket);
   }
@@ -421,7 +421,8 @@ router.put(
       throw new NotAuthorizedError();
     }
 
-    ticket = await Ticket.findByIdAndUpdate(id, { data }).exec();
+    // UPDATING
+    ticket = await Ticket.findByIdAndUpdate(id, { data }, { new: true }).exec();
 
     res.status(201).send(ticket);
   }
