@@ -29,6 +29,22 @@ it("if ticket with that id doesn't exist, return 400", async () => {
     .expect(404);
 });
 
+// DODACI U TEST KOJI PROVERAVA SAMO DA LI POSTOJI KORISNIK
+it("if there is no authenticated user, it returns 401", async () => {
+  const response = await createTicketResponse();
+
+  const { id } = response.body;
+
+  // SLACU REQUEST BEZ COOKIE-A I OCEKUJEM 401
+
+  await request(app)
+    .put(`/api/tickets/${id}`)
+    .send({ title, price })
+    .expect(401);
+});
+
+// NASTAVLJAM SA OVIM TESTOM ZA KOJI SAM REKAO DA CU GA PISATI
+
 it("if the user does not own a ticket, return 404", async () => {
   // NASTAVLJAM SA OVIM TESTOM
   // CREATING A TICKET
@@ -48,26 +64,4 @@ it("if the user does not own a ticket, return 404", async () => {
     //
     .send({ price })
     .expect(401);
-});
-
-// ----------------
-it("if the user does not own a ticket, return 404", async () => {
-  // WE MUST CREATE TICKET FIRST
-
-  const invalidId = "isdds26";
-
-  await request(app)
-    .put(`/api/tickets/${invalidId}`)
-    .set("Cookie", global.getCookie())
-    .expect(404);
-});
-it("if the user does not own a ticket, return 404", async () => {
-  // WE MUST CREATE TICKET FIRST
-
-  const invalidId = "isdds26";
-
-  await request(app)
-    .put(`/api/tickets/${invalidId}`)
-    .set("Cookie", global.getCookie())
-    .expect(404);
 });
