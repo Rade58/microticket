@@ -45,7 +45,7 @@ const price = 406;
  */
 const createTicketResponse = async () =>
   request(app)
-    .post("api/tickets")
+    .post("/api/tickets")
     .set("Cookie", global.getCookie())
     .send({ title: titleCreate, price: priceCreate });
 
@@ -115,7 +115,7 @@ const price = 406;
  */
 const createTicketResponse = async () =>
   request(app)
-    .post("api/tickets")
+    .post("/api/tickets")
     .set("Cookie", global.getCookie())
     .send({ title: titleCreate, price: priceCreate });
 

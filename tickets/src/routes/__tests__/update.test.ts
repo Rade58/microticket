@@ -3,10 +3,10 @@ import { app } from "../../app";
 
 import { Types } from "mongoose";
 
-const titleCreate = "Stavros is hone";
+const titleCreate = "Stavros ey";
 const priceCreate = 602;
 
-const title = "Nick M is here";
+const title = "Nick hola";
 const price = 406;
 
 /**
@@ -15,7 +15,7 @@ const price = 406;
  */
 const createTicketResponse = async () =>
   request(app)
-    .post("api/tickets")
+    .post("/api/tickets")
     .set("Cookie", global.getCookie())
     .send({ title: titleCreate, price: priceCreate });
 
@@ -32,6 +32,8 @@ it("if ticket with that id doesn't exist, return 400", async () => {
 // DODACI U TEST KOJI PROVERAVA SAMO DA LI POSTOJI KORISNIK
 it("if there is no authenticated user, it returns 401", async () => {
   const response = await createTicketResponse();
+
+  console.log({ response });
 
   const { id } = response.body;
 
@@ -52,6 +54,8 @@ it("if the user does not own a ticket, return 404", async () => {
 
   // TICKET ID
   const { id } = response.body;
+
+  console.log("Ticket", { id });
 
   // TRYING AN TICKET UPDATE BUT WITH DIFFERENT CREDENTIALS
   await request(app)

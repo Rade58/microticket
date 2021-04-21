@@ -31,17 +31,17 @@ router.put(
     // IF IT'S NOT A RIGHT USER
     // TREBA DA SE POKLOPI PRONLAZAK userId, id (U ISTOM DOKUMENTU)
 
-    let ticket = await Ticket.findOne({ userId }).exec();
-
-    if (!ticket) {
-      throw new NotAuthorizedError();
-    }
-
-    ticket = await Ticket.findByIdAndUpdate(id, { data });
+    let ticket = await Ticket.findById(id).exec();
 
     if (!ticket) {
       throw new NotFoundError();
     }
+
+    if (ticket.userId !== userId) {
+      throw new NotAuthorizedError();
+    }
+
+    ticket = await Ticket.findByIdAndUpdate(id, { data }).exec();
 
     res.status(201).send(ticket);
 
