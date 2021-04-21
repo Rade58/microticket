@@ -1,6 +1,7 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 
-import { requireAuth, NotFoundError } from "@ramicktick/common";
+// OVO NE TREBAM
+import { /*  requireAuth, */ NotFoundError } from "@ramicktick/common";
 
 import { Ticket } from "../models/ticket.model";
 
@@ -8,13 +9,12 @@ const router = Router();
 
 router.get(
   "/api/tickets/:id",
-  requireAuth,
-  async (req: Request, res: Response) => {
+  // OVO NE TREBAM
+  // requireAuth,
+  async (req, res) => {
     const { id } = req.params;
 
     const ticket = await Ticket.findById(id);
-
-    console.log({ ticket });
 
     if (!ticket) {
       throw new NotFoundError();

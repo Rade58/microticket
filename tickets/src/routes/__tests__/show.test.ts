@@ -14,7 +14,7 @@ it("returns 404 if the ticket is not found", async () => {
 
   const response = await request(app)
     .get(`/api/tickets/${someRandomId}`)
-    .set("Cookie", global.getCookie())
+    // .set("Cookie", global.getCookie())
     .send();
 
   expect(response.status).toEqual(404);
@@ -37,7 +37,7 @@ it("returns the ticket if the ticket is found", async () => {
 
   const response2 = await request(app)
     .get(`/api/tickets/${id}`)
-    .set("Cookie", global.getCookie())
+    // .set("Cookie", global.getCookie())
     .send();
 
   expect(response2.status).toEqual(200);
