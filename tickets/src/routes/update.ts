@@ -2,9 +2,13 @@ import { Router, Request, Response } from "express";
 import {
   NotAuthorizedError,
   NotFoundError,
-  validateRequest,
+  validateRequest, // OVO JE ONAJ HANDLER, KOJI THROW-UJE VALIDATION ERROR
+  //                 KOJE PASS-UJE EXPRESS VALIDATOR
   requireAuth,
 } from "@ramicktick/common";
+
+// OVO NECU ODMAH UPOTREBITI
+import { body } from "express-validator";
 
 import { Ticket } from "../models/ticket.model";
 
@@ -21,6 +25,7 @@ router.put(
 
     const data: { title?: string; price?: number } = {};
 
+    // OVAKO NIJE RADIO AUTOR WORKSHOP-A
     if (title) {
       data["title"] = title;
     }
@@ -28,24 +33,22 @@ router.put(
       data["price"] = price;
     }
 
-    // IF IT'S NOT A RIGHT USER
-    // TREBA DA SE POKLOPI PRONLAZAK userId, id (U ISTOM DOKUMENTU)
-
+    // FINDING TICKET FIRST
     let ticket = await Ticket.findById(id).exec();
 
     if (!ticket) {
       throw new NotFoundError();
     }
 
+    // IF IT'S NOT A RIGHT USER
     if (ticket.userId !== userId) {
       throw new NotAuthorizedError();
     }
 
+    // UPDATING
     ticket = await Ticket.findByIdAndUpdate(id, { data }).exec();
 
     res.status(201).send(ticket);
-
-    // const ticket = await Ticket.findByIdAndUpdate(id,).exec
   }
 );
 

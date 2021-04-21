@@ -171,6 +171,8 @@ it("if the user does not own a ticket, return 404", async () => {
 
 - `touch tickets/src/routes/update.ts`
 
+SAMO CU TI TRCI DA SAM GA DRUGACIJE MALO NAPRAVIO NAEGO AUTOR WORKSHOPA
+
 ```ts
 
 ```

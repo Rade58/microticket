@@ -33,8 +33,6 @@ it("if ticket with that id doesn't exist, return 400", async () => {
 it("if there is no authenticated user, it returns 401", async () => {
   const response = await createTicketResponse();
 
-  console.log({ response });
-
   const { id } = response.body;
 
   // SLACU REQUEST BEZ COOKIE-A I OCEKUJEM 401
