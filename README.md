@@ -176,6 +176,21 @@ it("if the user does not own a ticket, return 404", async () => {
     //
     .send({ price })
     .expect(401);
+
+
+  // DOBRO BI BILO NAPRAVITI FOLLOW UP REQUEST I PROVERITI
+  // DA SE MOZDA SLUCAJNO NIJE DOGODIO UPDATE
+  // TO NE ZELIMO 
+
+   const response2 = await request(app)
+    .get(`/api/tickets/${id}`)
+    .set("Cookie", global.getCookie())
+    .send();
+
+  expect(response2.body.title).toEqual(response.body.title);
+  expect(response2.body.price).toEqual(response.body.price);
+
+
 });
 ```
 
