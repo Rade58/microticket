@@ -93,6 +93,8 @@ global.getOtherCookie = (payload: { id: string; email: string }) => {
 };
 ```
 
+MEDJUTIM, UMESTO OVOGA STA SAM JA RADIO, KORISNIK JE SAMO U POSTOJECOJ `global.getCookie` FUNKCIJI DEFINISAO DA SE id PAYLOAD-A GENERISE KORISCENJEM `new mongoose.Types.ObjectId.toHexString()` (MENE MRZZI DA TO SADA RADIM, **IPAK CU U TESTOVIMA KORISTITI, OVU MOJU GLOBALNU JEST FUNKCIJU, KOJ UAM MALOCAS NAPRAVIO**)
+
 ## SADA MOGU DA NASTAVIM SA TESTOM U KOJM PRAVIM ASSERTION "if a user doesn't own a ticket return 401"
 
 - `code tickets/src/routes/__tests__/update.test.ts`
