@@ -478,3 +478,5 @@ AKO SI MOZDA UGASIO TEST, MOZES DA GA PKRENES OPET
 - `cd tickets`
 
 - `yarn test`
+
+**TEST JE PROSAO**
