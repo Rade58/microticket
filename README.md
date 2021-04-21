@@ -75,3 +75,130 @@ POSTO KORISTIMO "FAKE" HTTPS, TAKORECI, MORAMO DA UNCHECK-UJEMO `Validate Certif
 MORAMO PRVO NAPRAVITI NOVOG USER-A DA BI IMALI COOKIE (NE BRINI DALJE O COOKIE-U VODI RACUNA INSOMNIA, ONA CE GA UVRSTITI U SVAKI FOLLOWUP REQUEST)
 
 A COOKIE NAM MORA BITI PROVIDED JER JE KREIRANJE I UPDATING TICKETA IZISKUJU DA USER-A MORA BITI
+
+***
+
+KREIRAM USER-A
+
+`"POST"` `https://microticket.com/api/users/signup`
+
+body:
+
+```json
+{
+	"email": "guliana@mail.com",
+	"password": "ChillyIsGreat26"
+}
+```
+
+**USER JE SADA CREATED, POGLEDAO SAM I HEADERS I NASO `set-cookie` HEADER**
+
+DAKLE SVE JE TU U REDU, NADAMO SE DA CE BITI POSALT U SVAKOM FOLLOW UP REQUEST-U, KOJEG CEMO PRAVITI
+
+***
+
+## 1. KREIRACU SADA TICKET
+
+`"POST"` `https://microticket.com/api/tickets/`
+
+body:
+
+```json
+{
+	"title": "Stavros is cool",
+	"price": 406
+}
+```
+
+**I USPESNO JE KREIRAN TICKET**
+
+OVO JE DATA FROM RESPONSE
+
+```json
+{
+  "title": "Stavros is cool",
+  "price": 406,
+  "userId": "608065f306299c0018282f40",
+  "id": "60806e70c7f2d80019017230"
+}
+```
+
+**NAPRAVIO SAM JOS NEKOLIKO TICKET-A**
+
+## 2. SADA CU DA OBTAIN-UJEM SVE TICKETS
+
+`"GET"` `https://microticket.com/api/tickets/`
+
+I EVO KADA SAM EXECUTE-OVAO REQUEST, DOBIO SAM OVAJ DATA
+
+```json
+[
+  {
+    "title": "Stavros is cool",
+    "price": 406,
+    "userId": "608065f306299c0018282f40",
+    "id": "60806e70c7f2d80019017230"
+  },
+  {
+    "title": "Gully is nice",
+    "price": 208,
+    "userId": "608065f306299c0018282f40",
+    "id": "60806ef1c7f2d80019017231"
+  },
+  {
+    "title": "Hello friend",
+    "price": 69,
+    "userId": "608065f306299c0018282f40",
+    "id": "60806f0bc7f2d80019017232"
+  },
+  {
+    "title": "Nick dance",
+    "price": 509,
+    "userId": "608065f306299c0018282f40",
+    "id": "60806f26c7f2d80019017233"
+  }
+]
+```
+
+## 3. OBTAINING SINGLE TICKET BY ID
+
+INSIDE URL STAVIO SAM, ONAJ ID PRVOG TICKETA, KOJEG SAM NAPRAVIO
+
+`"GET"` `https://microticket.com/api/tickets/60806e70c7f2d80019017230`
+
+**OVAJ DATA SAM DOBIO U RESPONSE-U**
+
+```json
+{
+  "title": "Stavros is cool",
+  "price": 406,
+  "userId": "608065f306299c0018282f40",
+  "id": "60806e70c7f2d80019017230"
+}
+```
+
+## 4. SADA CU DA UPDATE-UJEM ISTI TICKET 
+
+`"PUT"` `https://microticket.com/api/tickets/60806e70c7f2d80019017230`
+
+***
+
+body:
+
+ZELIM DA PROMENIM SAMO PRICE
+
+**ALI SECAS SE DA SAM NAPRAVIO VALIDACUJU ZA OBA FIELDA**
+
+JA NA PRIMER HOCU DA PROMENIM SAMO `price` I ZATO CU ZA `title` DA PROSLEDIM ISTU VREDNOST
+
+JER KADA BI IZOSTAVIO JEDAN FIELD, IMAO BI VALIDATION ERROR 
+
+```json
+{
+  "title": "Stavros is cool",
+	"price": 166
+}
+```
+
+***
+
