@@ -433,3 +433,48 @@ export { router as updateOneTicketRouter };
 
 MOGU DA PRIMETIM DA MI JE TEST ODMAH PROSAO
 
+## SLEDECI TEST KOJI CU DA NAPISEM JESTE TEST KOJI TESTIRA DA LI JE TICKET UPDATE-OVAN
+
+- `code tickets/src/routes/__tests__/update.test.ts`
+
+```ts
+//...
+it("updates the ticket, and returns 201", async () => {
+  const cookie = global.getCookie();
+
+  // CREATING TICKET
+  const response = await createTicketResponse();
+
+  const { id } = response.body;
+
+  // UPDATING TICKET
+  const response2 = await request(app)
+    .put(`/api/tickets/${id}`)
+    .set("Cookie", cookie)
+    .send({
+      title: "Grendel is home",
+      price: 66,
+    });
+
+  // 201 ASSERTION
+  expect(response2.status).toEqual(201);
+
+  // GETTING THE UPDATED TICKET
+  const response3 = await request(app)
+    .get(`/api/ticket/${response2.body.id}`)
+    .set("Cookie", cookie)
+    .send();
+
+  // ASSERTION ABOUT FIELDS
+  expect(response3.body.title).toEqual(response3.body.title);
+  expect(response3.body.price).toEqual(response3.body.price);
+});
+```
+
+NIAKAV CODE VISE NE TREBAM PISATI, POSTO SA U HANDLERU SVE NAPISAO RANIJE, ODNOSNO SEND-OVAO SAM RESPONSE FROM THE HANDLER
+
+AKO SI MOZDA UGASIO TEST, MOZES DA GA PKRENES OPET
+
+- `cd tickets`
+
+- `yarn test`

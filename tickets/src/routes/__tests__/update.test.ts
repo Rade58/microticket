@@ -109,3 +109,36 @@ it("returns 400, if price or title is invalid", async () => {
     })
     .expect(400);
 });
+
+//  --------------------
+//...
+it("updates the ticket, and returns 201", async () => {
+  const cookie = global.getCookie();
+
+  // CREATING TICKET
+  const response = await createTicketResponse();
+
+  const { id } = response.body;
+
+  // UPDATING TICKET
+  const response2 = await request(app)
+    .put(`/api/tickets/${id}`)
+    .set("Cookie", cookie)
+    .send({
+      title: "Grendel is home",
+      price: 66,
+    });
+
+  // 201 ASSERTION
+  expect(response2.status).toEqual(201);
+
+  // GETTING THE UPDATED TICKET
+  const response3 = await request(app)
+    .get(`/api/ticket/${response2.body.id}`)
+    .set("Cookie", cookie)
+    .send();
+
+  // ASSERTION ABOUT FIELDS
+  expect(response3.body.title).toEqual(response3.body.title);
+  expect(response3.body.price).toEqual(response3.body.price);
+});
