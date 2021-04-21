@@ -1,5 +1,11 @@
 # MANUAL TESTING WITH INSOMNIA
 
+***
+
+**DOBRO JE STO CES RADITI OVAKAV TESTING, JER NA KRAJU SE POKAZALO DA SAM NASAO GRESKU**
+
+***
+
 IAKO SAM JA TOKOM KREIRANJA tickets MICROSERVICE-A, KORISTIO TAKOZVANI TEST-FIRST APPROACH, DOBRO JE NAPAVITI I MANUELNI TEST
 
 ## MEDJUTIM MI JOS NISMO U INGRESS NGINX KONFIGURACIJI SPECICIRALICLUSTER CLUSTER IP SERVICE, ZA tickets MICROSERVICE
@@ -119,7 +125,7 @@ OVO JE DATA FROM RESPONSE
   "title": "Stavros is cool",
   "price": 406,
   "userId": "608065f306299c0018282f40",
-  "id": "60806e70c7f2d80019017230"
+  "id": "608074a5d5fd580019e060ff"
 }
 ```
 
@@ -137,7 +143,7 @@ I EVO KADA SAM EXECUTE-OVAO REQUEST, DOBIO SAM OVAJ DATA
     "title": "Stavros is cool",
     "price": 406,
     "userId": "608065f306299c0018282f40",
-    "id": "60806e70c7f2d80019017230"
+    "id": "608074a5d5fd580019e060ff"
   },
   {
     "title": "Gully is nice",
@@ -164,7 +170,7 @@ I EVO KADA SAM EXECUTE-OVAO REQUEST, DOBIO SAM OVAJ DATA
 
 INSIDE URL STAVIO SAM, ONAJ ID PRVOG TICKETA, KOJEG SAM NAPRAVIO
 
-`"GET"` `https://microticket.com/api/tickets/60806e70c7f2d80019017230`
+`"GET"` `https://microticket.com/api/tickets/608074a5d5fd580019e060ff`
 
 **OVAJ DATA SAM DOBIO U RESPONSE-U**
 
@@ -173,13 +179,13 @@ INSIDE URL STAVIO SAM, ONAJ ID PRVOG TICKETA, KOJEG SAM NAPRAVIO
   "title": "Stavros is cool",
   "price": 406,
   "userId": "608065f306299c0018282f40",
-  "id": "60806e70c7f2d80019017230"
+  "id": "608074a5d5fd580019e060ff"
 }
 ```
 
 ## 4. SADA CU DA UPDATE-UJEM ISTI TICKET 
 
-`"PUT"` `https://microticket.com/api/tickets/60806e70c7f2d80019017230`
+`"PUT"` `https://microticket.com/api/tickets/608074a5d5fd580019e060ff`
 
 ***
 
@@ -202,3 +208,165 @@ JER KADA BI IZOSTAVIO JEDAN FIELD, IMAO BI VALIDATION ERROR
 
 ***
 
+EXECUTE-OVAO SAM REQUEST, I U RESPONSE-U SAM DOBIO SLEDECI DATA
+
+```json
+{
+  "title": "Stavros is cool",
+  "price": 406,
+  "userId": "608065f306299c0018282f40",
+  "id": "608074a5d5fd580019e060ff"
+}
+```
+
+**DAKLE UPDATE JE BIO NEUSPESAN, JER SAM DOBIO ISTI DATA**
+
+A MOJ POKUSAJ DA OPET UZMEM ISTI DOCUMENT, SLANJEM `"GET"` PREMA `/api/tickets/<ticket-ov id>` JE POKAZO OPET ISTI DATA; DAKLE UPDATE JE BIO NEUSPESAN
+
+**PROBLEM JE U SAMOJ METODI MODELA, KOJU SAM KORISTITO ZA UPDATE; TO JE `findByIdAndUpdate`**
+
+NE ZNAM ZASTO NIJE FUNKCIONISALA, JEDNOSTAVNO SAM PROBO NEKOLIKO STVARI I NIJE FUNKCIONISALA
+
+ODLUCIO SAM DA KORISTIM DRUGU METODU
+
+# ODLUCIO SAM DA KORISTIM `Model.FindOneAndUpdate` KAKO BI PREVAZISAO POMENUTI PROBLEM
+
+- `tickets/src/routes/update.ts`
+
+```ts
+import { Router, Request, Response } from "express";
+import {
+  NotAuthorizedError,
+  NotFoundError,
+  validateRequest,
+  requireAuth,
+} from "@ramicktick/common";
+
+import { body } from "express-validator";
+
+import { Ticket } from "../models/ticket.model";
+
+const router = Router();
+
+router.put(
+  "/api/tickets/:id",
+  requireAuth,
+  [
+    body("title")
+      .isString()
+      .not()
+      .isEmpty()
+      .withMessage("title has invalid format"),
+    body("price").isFloat({ gt: 0 }).withMessage("price has invalid format"),
+  ],
+
+  validateRequest,
+
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const userId = req.currentUser?.id;
+    const { title, price } = req.body;
+
+    const data: { title?: string; price?: number } = {};
+
+    if (title) {
+      data["title"] = title;
+    }
+    if (price) {
+      data["price"] = price;
+    }
+
+    let ticket = await Ticket.findById(id).exec();
+
+    if (!ticket) {
+      throw new NotFoundError();
+    }
+
+    if (ticket.userId !== userId) {
+      throw new NotAuthorizedError();
+    }
+
+    // EVO ODLUCIO SAM DA KORISTIM OVU METODU
+
+    ticket = await Ticket.findOneAndUpdate(
+      // TRAZIM BY ID
+      { _id: id },
+      { price: data.price, title: data.title },
+      // ZA OVU useFindAndModify OCIJU, DA JE KORISTIS,
+      // CE TE SAVETOVATI SAMI LOG U TERMINALU, ZATO SAM JE UPOTREBIO
+      { new: true, useFindAndModify: true }
+    ).exec();
+
+    res.status(201).send(ticket);
+  }
+);
+
+export { router as updateOneTicketRouter };
+```
+
+**KREIRAO SAM JEDAN TICKET**
+
+`"POST"` `https://microticket.com/api/tickets/`
+
+body:
+
+```json
+{
+	"title": "Nick hey",
+	"price": 406
+}
+```
+
+DATA:
+
+```json
+{
+  "title": "Nick hey",
+  "price": 406,
+  "userId": "608089c4eedc6e0018ea6301",
+  "id": "608089d29cfd7c00184b3135"
+}
+```
+
+**ONDA SAM POKUSAO DA GA UPDATE-UJEM**
+
+`"PUT"` `https://microticket.com/api/tickets/608089d29cfd7c00184b3135`
+
+body:
+
+```json
+{
+  "title": "Stavros swims",
+	"price": 69
+}
+```
+
+DATA:
+
+```json
+{
+  "title": "Stavros swims",
+  "price": 69,
+  "userId": "608089c4eedc6e0018ea6301",
+  "id": "608089d29cfd7c00184b3135"
+}
+```
+
+**VIDIM DA JE UPDATE BIO USPESAN**
+
+**ALI ZELI MDA PROVERI MDA LI JE BIO STVARNO USPESAN, TAK OSTO CU GET-OVATI TAJ SINGLE DOCUMENT**
+
+`"GET"` `https://microticket.com/api/tickets/608089d29cfd7c00184b3135`
+
+DATA:
+
+```json
+{
+  "title": "Stavros swims",
+  "price": 69,
+  "userId": "608089c4eedc6e0018ea6301",
+  "id": "608089d29cfd7c00184b3135"
+}
+```
+
+SVE JE U REDU

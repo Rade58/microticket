@@ -6,20 +6,15 @@ import {
   requireAuth,
 } from "@ramicktick/common";
 
-// SADA CU UPOTREBITI I OVO
 import { body } from "express-validator";
 
 import { Ticket } from "../models/ticket.model";
 
 const router = Router();
 
-// OVDE DAKEL NECU RADITI NISTA VISE OD DODAVANJE MIDDLEWARE-OVA
-
 router.put(
   "/api/tickets/:id",
   requireAuth,
-
-  // DODAJEM OVE MIDDLEWARES
   [
     body("title")
       .isString()
@@ -28,12 +23,9 @@ router.put(
       .withMessage("title has invalid format"),
     body("price").isFloat({ gt: 0 }).withMessage("price has invalid format"),
   ],
-  // DAKLE AKO body MIDDLEWARI ODOZGO PRONADJU ERRORS (TO SU USTVARI ERROR MESSAGES)
-  // ONI GA STAVE U REQUEST
-  // A OVAJ SLEDECI MIDDLEWRE CE AKO SE NADJE I JEDNA TAKVA STVAR NA REQUEST-U,
-  //  USTVARI THROW-UJE ERROR DO MOG ERROR HANDLER-A
+
   validateRequest,
-  //
+
   async (req: Request, res: Response) => {
     const { id } = req.params;
     const userId = req.currentUser?.id;
@@ -58,8 +50,13 @@ router.put(
       throw new NotAuthorizedError();
     }
 
-    // UPDATING
-    ticket = await Ticket.findByIdAndUpdate(id, { data }, { new: true }).exec();
+    // EVO ODLUCIO SAM DA KORISTIM OVU METODU
+
+    ticket = await Ticket.findOneAndUpdate(
+      { _id: id },
+      { price: data.price, title: data.title },
+      { new: true, useFindAndModify: true }
+    ).exec();
 
     res.status(201).send(ticket);
   }
