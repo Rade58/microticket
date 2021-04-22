@@ -78,7 +78,6 @@ stan.on("connect", () => {
   });
   // GORNJI data JE U WORLDU OF EVENTS INATS
   // COMMONLY REFERED AS message
-  // DAKLE KORISTICU TAJ TERMIN U BUDUCNOSTI
 
   // POZIVAM stan.publish
 
