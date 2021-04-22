@@ -1,4 +1,5 @@
-# LISTENING FOR DATA
+# LISTENING FOR DATA; AND ACCESSING THE DATA ON THE LISTENER SIDE
+
 
 PIBLISHER JE SETTED, A SADA RADIM ONA IMPLEMENTACIJI LISTENERA
 
@@ -191,95 +192,7 @@ RESTARTUJ `yarn run publish` U TERMINALU PUBLISHERA
 
 TO SAM RADIO I POSMTRAO SAM TERMIANL LISTNERA
 
-EVO STA SE STAMPALO
-
-```zsh
-{
-  msg: Message {
-    stanClient: Stan {
-      _events: [Object: null prototype],
-      _eventsCount: 1,
-      _maxListeners: undefined,
-      clusterID: 'microticket',
-      clientID: '123',
-      ackSubject: '_STAN.acks.NHZ0FE9TCI02N7TSPUEIVO',
-      pubPrefix: '_STAN.pub.gJdbZHGPGN7jortjoENBWo',
-      subRequests: '_STAN.sub.gJdbZHGPGN7jortjoENBWo',
-      unsubRequests: '_STAN.unsub.gJdbZHGPGN7jortjoENBWo',
-      subCloseRequests: '_STAN.subclose.gJdbZHGPGN7jortjoENBWo',
-      closeRequests: '_STAN.close.gJdbZHGPGN7jortjoENBWo',
-      options: [Object],
-      pubAckMap: {},
-Listener connected to nats
-{
-  msg: Message {
-    stanClient: Stan {
-      _events: [Object: null prototype],
-      _eventsCount: 1,
-      _maxListeners: undefined,
-      clusterID: 'microticket',
-      clientID: '123',
-      ackSubject: '_STAN.acks.84DPZIOVOZTVSH5L7NFPDB',
-      pubPrefix: '_STAN.pub.gJdbZHGPGN7jortjoENBWo',
-      subRequests: '_STAN.sub.gJdbZHGPGN7jortjoENBWo',
-      unsubRequests: '_STAN.unsub.gJdbZHGPGN7jortjoENBWo',
-      subCloseRequests: '_STAN.subclose.gJdbZHGPGN7jortjoENBWo',
-      closeRequests: '_STAN.close.gJdbZHGPGN7jortjoENBWo',
-      options: [Object],
-      pubAckMap: {},
-      pubAckOutstanding: 0,
-      subMap: [Object],
-      nc: [Client],
-      ncOwned: true,
-      hbSubscription: 1,
-      pingInbox: '_INBOX.84DPZIOVOZTVSH5L7NFPLT',
-      pingSubscription: 2,
-      ackSubscription: 3,
-      connId: <Buffer 38 34 44 50 5a 49 4f 56 4f 5a 54 56 53 48 35 4c 37 4e 46 50 51 32>,
-      pingRequests: '_STAN.discover.microticket.pings',
-      stanPingInterval: 5000,
-      stanMaxPingOut: 3,
-      pingBytes: <Buffer 0a 16 38 34 44 50 5a 49 4f 56 4f 5a 54 56 53 48 35 4c 37 4e 46 50 51 32>,
-      pingOut: 0,
-      pingTimer: Timeout {
-        _idleTimeout: 5000,
-        _idlePrev: [TimersList],
-        _idleNext: [TimersList],
-        _idleStart: 111427,
-        _onTimeout: [Function: pingFun],
-        _timerArgs: undefined,
-        _repeat: null,
-        _destroyed: false,
-        [Symbol(refed)]: true,
-        [Symbol(kHasPrimitive)]: false,
-        [Symbol(asyncId)]: 176,
-        [Symbol(triggerId)]: 169
-      },
-      [Symbol(kCapture)]: false
-    },
-    msg: {
-      wrappers_: null,
-      messageId_: undefined,
-      arrayIndexOffset_: -1,
-      array: [Array],
-      pivot_: 1.7976931348623157e+308,
-      convertedPrimitiveFields_: {}
-    },
-    subscription: Subscription {
-      stanConnection: [Stan],
-      subject: 'ticket:created',
-      qGroup: undefined,
-      inbox: '_INBOX.84DPZIOVOZTVSH5L7NFQ2T',
-      opts: [SubscriptionOptions],
-      ackInbox: '_INBOX.gJdbZHGPGN7jortjoENBcm',
-      inboxSub: 5,
-      _events: [Object: null prototype],
-      _eventsCount: 1
-    }
-  }
-}
-
-```
+**STMPAO SE MASIVAN OBJEKAT**
 
 DAKLE KASNIJE CU JA INSPECT-OVATI STA JE SVE NA OVOM OBJEKTU
 
@@ -297,6 +210,125 @@ OPET CE LISTENER RECEIVE-OVATI MESSAGE, I TO INSTANTNO, VAZNO JE DA SE KAZE INST
 
 AKO MISLIS DA JE OVO SIMPLE, E PA VIDECE DA NIJE
 
-U SLEDECIM BRANCH-VIMA CEMO BLOW-OVATI LID ON COMPLEXITY
+U NASTAVKU I U SLEDECIM BRANCH-VIMA CEMO BLOW-OVATI LID ON COMPLEXITY
 
 JER CE NEKI SMALL SETTINGS USTVARI DRAMATICNO CHANGE-OVATI KAKO NASA APLIKACIJA RADI
+
+# HAJDE DA DAMO MALO BPLJ UTYPESCRIPT PODRSKU ONOM GORNJEM `msg` PARAMETRU CALLBACKU  ZA LISTENING FOR "message"
+
+ON JE SADA any TYPE-A A TO MI NE ODGOVARA
+
+- `code nats_test_project/src/listener.ts`
+
+```ts
+// EVO UVEZO SAM Message TYPE
+import nats, { Message } from "node-nats-streaming";
+
+console.clear();
+
+const stan = nats.connect("microticket", "123", {
+  url: "http://localhost:4222",
+});
+
+stan.on("connect", () => {
+  console.log("Listener connected to nats");
+
+  const subscription = stan.subscribe("ticket:created");
+
+  // EVO SAD SAM TYPE-OVA OMESSAGE
+  subscription.on("message", (msg: Message) => {
+    // EVO OVDE IMAM FUNKCIJU getData
+    // PROBACU DA STMAPAM DATA
+
+    const data = msg.getData();
+
+    console.log({ data });
+  });
+});
+
+```
+
+OTISAO SAM U PUBLISHER TERMINLAL DA BI OPET RESTARTOVAO PUBLISHER-A SA `yarn run publish`
+
+POGLEDAO SAM LISTENER TERMINAL
+
+EVO STA SE INSTANTNO STAMPALO U LISTENER TRMIANLU
+
+```zsh
+{ data: '{"id":"123","title":"concert","price":20}' }
+```
+
+## DOKUMENTACIJA NATS STREAMING SERVERA USTVARI POKRIVA SOME NITTY-GRITTY DETAILS I ZATO JE BOLJE DA POSMATRAS TYPESCRIPT TYPE DEFINITIONS
+
+TO KAO STO ZNAS RADIS SA `Ctrl + Alt + Click` NA SAMI NEKI INTERFACE
+
+PROBAJ TO DA URADIS SA Message INTERFACE-OM I OTVORICE TI SE TYPE DEFINITION FILE I VIDECES OVO
+
+```ts
+declare class Message {
+    /**
+     * Returns the subject associated with this Message
+     */
+    getSubject():string;
+
+    /**
+     * Returns the sequence number of the message in the stream.
+     */
+    getSequence():number;
+
+    /**
+     * Returns a Buffer with the raw message payload
+     */
+    getRawData():Buffer;
+
+    /**
+     * Returns the data associated with the message payload. If the stanEncoding is not
+     * set to 'binary', a string is returned.
+     */
+    getData():String|Buffer;
+
+    /**
+     * Returns the raw timestamp set on the message. This number is not a valid time in JavaScript.
+     */
+    getTimestampRaw():number;
+
+    /**
+     * Returns a Date object representing the timestamp of the message. This is an approximation of the timestamp.
+     */
+    getTimestamp():Date;
+
+    /**
+     * Returns a boolean indicating if the message is being redelivered
+     */
+    isRedelivered():boolean;
+
+    /**
+     * Returns an optional IEEE CRC32 checksum
+     */
+    getCrc32():number;
+
+    /**
+     * Acks the message, note this method shouldn't be called unless
+     * the manualAcks option was set on the subscription.
+     */
+    ack(): void;
+}
+```
+
+KAO STO VIDIS PRETTY MUCH SVE JE DOCUMENTED
+
+## MEDJUTIM POSTOJE I DRUGE METODE msg-A
+
+MEKE OD VAZNIJIH SU:
+
+`getSubject` KOJI RETURN-UJE IME CHANNELLA I KOJEG JE MESSAGE POTEKAO (NJE NAM SUPER IMPORTANT DA ZNAMO IMA KANALA JER ZNAM ODA SMO PODESILI `"ticket:created"` KAO IME KANALA)
+
+`getData` SAM TI VEC POKAZO I SASVIM JE JSNO DA SE TIME DOBIJA ONAJ DATA KOJI JE ORIGINALY PUBLISHER POSLAO DO NATS TREAMING SERVERA U SPECIFIED CHANNEL
+
+VAZNA JE I
+
+`getSequence`
+
+ON CE PROSLEDITI BROJ EVENTA, DAKLE RECI CE KOJI JE TO EVENT PO REDU ZA RELATED KANAL
+
+A BROJ ISE OD 1
