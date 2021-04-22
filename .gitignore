@@ -40,3 +40,6 @@ package.lock.json
 
 # tickets
 tickets/node_modules
+
+# subproject
+nats_test_project/node_modules
