@@ -1,5 +1,11 @@
 import nats from "node-nats-streaming";
 
+// EVO OVDE MOZES POZVATI console.clear
+console.clear();
+// I TO CE POCIITI ONE LOGS KOJI NASTANU
+// OD TOOLS SA KOJIM RUNN-UJES SCRIPT
+// U OVOM SLUCAJU TO JE ts-node-dev
+
 const stan = nats.connect("microticket", "abc", {
   url: "http://localhost:4222",
 });
@@ -7,22 +13,12 @@ const stan = nats.connect("microticket", "abc", {
 stan.on("connect", () => {
   console.log("Publisher connected to NATS");
 
-  // OVO JE DATA, KOJI CU PUBLISH-OVATI
-  // NA PRIMER OVO JE TICKE KOJI JE KREIRAN
-  // MEDJUTIM MI MOZEMO SHARE-OVATI SMO STRINGS,
-  // ODNOOSNO RAW DATA
-  // ZATO MORAMO CONVERTOVATI TO JSON
   const data = JSON.stringify({
     id: "123",
     title: "concert",
     price: 20,
   });
 
-  // POZIVAM stan.publish
-
-  // PRVO IDE SUBJECT (CHANELL) PA ONDA DATA
-  // A THIRD OPTIONAL ARGUMENT JE CALLBACK FUNCTION
-  // FUNKCIJA CE BITI INVOKED AFTER WE PUBLISH DATA
   stan.publish("ticket:created", data, () => {
     console.log("Event published");
   });

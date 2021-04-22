@@ -46,3 +46,73 @@ Listener connected to nats
 
 DAKLE IMACES HANGING TERMINAL, KOJI OPET TE NAPOMINJEM DA NE PREKIDAS
 
+**BILO BI TI ZANIMLJIVO DA U SPLIT SCREEN-UU IMAS OTVOREN TERMINAL LISTENERA I TERMINAL PUBLISHER-A**
+
+## TI MOZES POCITITI TERMINAL OD ONIH LOG-OVA NASTALIH OD `ts-node-dev`, TAK OSTO CES POKRENUTI `console.clear` NA POCETKU FILE-OVA
+
+EVO POGLEDAJ
+
+- `code nats_test_project/src/publisher.ts`
+
+```ts
+import nats from "node-nats-streaming";
+
+// EVO OVDE MOZES POZVATI console.clear
+console.clear();
+// I TO CE POCIITI ONE LOGS KOJI NASTANU
+// OD TOOLS SA KOJIM RUNN-UJES SCRIPT
+// U OVOM SLUCAJU TO JE ts-node-dev
+
+const stan = nats.connect("microticket", "abc", {
+  url: "http://localhost:4222",
+});
+
+stan.on("connect", () => {
+  console.log("Publisher connected to NATS");
+
+  const data = JSON.stringify({
+    id: "123",
+    title: "concert",
+    price: 20,
+  });
+
+  stan.publish("ticket:created", data, () => {
+    console.log("Event published");
+  });
+});
+
+```
+
+- `code nats_test_project/src/listener.ts`
+
+```ts
+import nats from "node-nats-streaming";
+
+// I OVDE STAVLJAM console.clear
+console.clear();
+
+const stan = nats.connect("microticket", "123", {
+  url: "http://localhost:4222",
+});
+
+stan.on("connect", () => {
+  console.log("Listener connected to nats");
+});
+
+```
+
+SADA IMAS CISTIJI OUTPUT U TERMINALU STRIKTNO NASTAO OD ONOGA STA SI DEFINISAO DA SE STAMPA
+
+PUBLISHER TERMINAL:
+
+```zsh
+Publisher connected to NATS
+Event published
+
+```
+
+LISTENER TERMINAL:
+
+```zsh
+Listener connected to nats
+```
