@@ -134,3 +134,159 @@ ALI I NE ZNAM ZA STA BI MI TREBALO
 ***
 
 DAKLE KOD MENE OVO NIJE RESTARTOVALO EXECUTABLE
+
+A AUTOR WORKSHOPA POSTO JE 'HARDCODE'-OVAO PUBLISHING EVENTA (POZIVAO JE `stan.publish` U SAMOM CALLBACKU KOJI SE IZVRSAVA NAKON KONEKCIJE)
+
+A KUCAJUCI `rs` U TERMINALU PUBLISHERA STALNO JE IZVRSAVAO RESTARTS, KAKO BI STALNO RESTARTOVAO
+
+A TIME JE PUBLISHOVAO TAJ IVENT
+
+TAKO DA AKO JE DOZEN TIMES RESTARTOVAO, DOZEN TIMES JE PUBLISH-OVAO EVENTS DO NATS STREAMING SERVERA
+
+MEDJUTIM JA CU MORATI RUCNO RESTARTOVATI PUBLISHER-A
+
+# SADA CU DA NAPRAVIM SUBSCRIPTION
+
+- `code nats_test_project/src/listener.ts`
+
+```ts
+import nats from "node-nats-streaming";
+
+console.clear();
+
+const stan = nats.connect("microticket", "123", {
+  url: "http://localhost:4222",
+});
+
+stan.on("connect", () => {
+  console.log("Listener connected to nats");
+
+  // EVO PRAVIM SUBSCRIPTION NA "tickets:created" SUBSCRIPTION
+
+  const subscription = stan.subscribe("ticket:created");
+
+  // KROZ OVAJ OBJEKAT TREBAM RECEIVE-OVATI DATA
+  // ALI VIDIS KAKO GORE NISAM DEFINISAO CALLBACK
+  // JER CALLBACK JE NESTO SLICN OSTO BI KORISTIL DRUGI LIBRARIES
+  //
+
+  // TI CES OVDE USTVARI MORATI DEFINISATI NA KOJI TYPE EVENT-A
+  // TVOJ SUBSCRIPTION LISTEN-UJE
+
+  // JA SLUSAM NA "message" TYPE OF THE EVENT
+  subscription.on("message", (msg) => {
+    // ARGUMENT FUNKCIJE JESTE ACTUL MESSAGE
+    // ODNOSNO DATA KOJI JE EVENT BUS PROSLEDIO IZ KANALA
+    // KOJI SUBSCRIPTION LISTEN-UJE
+
+    console.log({ msg });
+
+    // msg NIJE RAW DATA, STO CES I VIDETI U TERMIANLU
+  });
+});
+
+```
+
+RESTARTUJ `yarn run publish` U TERMINALU PUBLISHERA
+
+TO SAM RADIO I POSMTRAO SAM TERMIANL LISTNERA
+
+EVO STA SE STAMPALO
+
+```zsh
+{
+  msg: Message {
+    stanClient: Stan {
+      _events: [Object: null prototype],
+      _eventsCount: 1,
+      _maxListeners: undefined,
+      clusterID: 'microticket',
+      clientID: '123',
+      ackSubject: '_STAN.acks.NHZ0FE9TCI02N7TSPUEIVO',
+      pubPrefix: '_STAN.pub.gJdbZHGPGN7jortjoENBWo',
+      subRequests: '_STAN.sub.gJdbZHGPGN7jortjoENBWo',
+      unsubRequests: '_STAN.unsub.gJdbZHGPGN7jortjoENBWo',
+      subCloseRequests: '_STAN.subclose.gJdbZHGPGN7jortjoENBWo',
+      closeRequests: '_STAN.close.gJdbZHGPGN7jortjoENBWo',
+      options: [Object],
+      pubAckMap: {},
+Listener connected to nats
+{
+  msg: Message {
+    stanClient: Stan {
+      _events: [Object: null prototype],
+      _eventsCount: 1,
+      _maxListeners: undefined,
+      clusterID: 'microticket',
+      clientID: '123',
+      ackSubject: '_STAN.acks.84DPZIOVOZTVSH5L7NFPDB',
+      pubPrefix: '_STAN.pub.gJdbZHGPGN7jortjoENBWo',
+      subRequests: '_STAN.sub.gJdbZHGPGN7jortjoENBWo',
+      unsubRequests: '_STAN.unsub.gJdbZHGPGN7jortjoENBWo',
+      subCloseRequests: '_STAN.subclose.gJdbZHGPGN7jortjoENBWo',
+      closeRequests: '_STAN.close.gJdbZHGPGN7jortjoENBWo',
+      options: [Object],
+      pubAckMap: {},
+      pubAckOutstanding: 0,
+      subMap: [Object],
+      nc: [Client],
+      ncOwned: true,
+      hbSubscription: 1,
+      pingInbox: '_INBOX.84DPZIOVOZTVSH5L7NFPLT',
+      pingSubscription: 2,
+      ackSubscription: 3,
+      connId: <Buffer 38 34 44 50 5a 49 4f 56 4f 5a 54 56 53 48 35 4c 37 4e 46 50 51 32>,
+      pingRequests: '_STAN.discover.microticket.pings',
+      stanPingInterval: 5000,
+      stanMaxPingOut: 3,
+      pingBytes: <Buffer 0a 16 38 34 44 50 5a 49 4f 56 4f 5a 54 56 53 48 35 4c 37 4e 46 50 51 32>,
+      pingOut: 0,
+      pingTimer: Timeout {
+        _idleTimeout: 5000,
+        _idlePrev: [TimersList],
+        _idleNext: [TimersList],
+        _idleStart: 111427,
+        _onTimeout: [Function: pingFun],
+        _timerArgs: undefined,
+        _repeat: null,
+        _destroyed: false,
+        [Symbol(refed)]: true,
+        [Symbol(kHasPrimitive)]: false,
+        [Symbol(asyncId)]: 176,
+        [Symbol(triggerId)]: 169
+      },
+      [Symbol(kCapture)]: false
+    },
+    msg: {
+      wrappers_: null,
+      messageId_: undefined,
+      arrayIndexOffset_: -1,
+      array: [Array],
+      pivot_: 1.7976931348623157e+308,
+      convertedPrimitiveFields_: {}
+    },
+    subscription: Subscription {
+      stanConnection: [Stan],
+      subject: 'ticket:created',
+      qGroup: undefined,
+      inbox: '_INBOX.84DPZIOVOZTVSH5L7NFQ2T',
+      opts: [SubscriptionOptions],
+      ackInbox: '_INBOX.gJdbZHGPGN7jortjoENBcm',
+      inboxSub: 5,
+      _events: [Object: null prototype],
+      _eventsCount: 1
+    }
+  }
+}
+
+```
+
+DAKLE KASNIJE CU JA INSPECT-OVATI STA JE SVE NA OVOM OBJEKTU
+
+**MENI JE VAZNIJE DA JE SUBSCRIPTION USPEO**
+
+DATA JE ZAISTA DOBIJEN U LISTENERU, SLUSAJUCI ON EVENT TYPE "message"
+
+STO ZNACI DA JE PUBLISHER POSLAO TOPIC, ODNOSNO CHANNEL , I SA NJIM DATA, A NATS STREAMING SERVER JE POSLAO POSALO DATA ONOM LISTENERU KOJI JE SUBSCRIBED NA TAJ TOPIC, ODNONO KOJI SLUSA TAJ CHANNEL
+
+PROBAJ OPET DA RESTARTUJES `yarn run publish` U TERMINALU PUBLISHER-A
