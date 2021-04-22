@@ -75,3 +75,19 @@ ALI CU KASNIJE J OBJASNITI TE OPCIJE
 
 - `skaffold dev`
 
+PRINT OUT-OVACU SADA SVE PODS KOJI RUNN-UJU U MOM CLUSTERU
+
+- `kubectl get pods`
+
+```zsh
+NAME                                  READY   STATUS    RESTARTS   AGE
+auth-depl-865bdcff84-zq5c8            1/1     Running   0          97s
+auth-mongo-depl-fff5dcdd9-lhwz7       1/1     Running   0          97s
+client-depl-68d8f8cbd5-wpcl5          1/1     Running   0          96s
+nats-depl-f878fb4f9-k6fgq             1/1     Running   0          96s
+tickets-depl-6b9c6b485c-lsvgq         1/1     Running   0          96s
+tickets-mongo-depl-8456f7b84c-8bbzl   1/1     Running   0          96s
+
+```
+
+GORE MOGU VIDETI **nats-depl-**
