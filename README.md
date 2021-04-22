@@ -1,99 +1,35 @@
-# BUILDING DEPLOYMENT FOR NATS STREAMING SERVER; TAKODJE BUILD-UJEM CCONFIG ZA CLUSTER IP SERVICE
+# BIG NOTES ON NATS STREAMING
 
-SIMILAR TO OTHER THAT I ALREADY HAVE ,I'M MAKING THIS DEPLOYMENT
+ZA RAZLIKU OD CUSTOM RESENJA U KOJEM SAM IMAO EVENT BUS KOJI JE BIO EXPRESS UP KOJI RECEIVE-UJE I EMMIT-UJE EVENTS, **NATS STREAMING SERVER UOPSTE NIJE TAKAV**
 
-- `touch infra/k8s/nats-depl.yaml`
+KORISTICU CLIENT LIBRARY, KOJI SE ZOVE **`node-nats-streaming`**
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: nats-depl
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: nats
-  template:
-    metadata:
-      labels:
-        app: nats
-    spec:
-      containers:
-      - name: nats
-        # OVO CE BITI BITNO (MISLI MDA MORAM OVU VERZIJU)
-        image: nats-streaming:0.17.0
-        # SET KOMANDI KKOJI CE SE EXECUTE-OVATI KADA SE BUILD-UJE NAS IMAGE
-        # MOGU IH NACI NA STRANICI
-        args: [
-          #
-          '-p',
-          '4222',
-          #
-          '-m',
-          '8222',
-          #
-          '-hbi',
-          '5s',
-          #
-          '-hbt',
-          '5s',
-          #
-          '-hbf',
-          '2',
-          #
-          '-SD',
-          #
-          '-cid',
-          'microticket'
-        ]
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: nats-srv
-spec:
-  selector:
-    app: nats
-  ports:
-    # DODACU DVA PORT-A
-    - name: client
-      protocol: TCP
-      port: 4222
-      targetPort: 4222
-    - name: monitoring
-      protocol: TCP
-      port: 8222
+<https://www.npmjs.com/package/node-nats-streaming>
 
-```
+TESKO JE SHVATITI KAKO OVO FUNKCIONISE NA PRVI POGLED
 
-OBJASNJENJA ZA KOMANDE KOJE SAM PODESIO U ARRAY-U, NALAZE SE IN `Commandline Options` NA PAGE-U <https://hub.docker.com/_/nats-streaming>
+ZATO CU MORATI ODRADITI JEDAN STAND ALONE PROJECT KAKO BI SHVATIO KAKO SVE OVO FUNKCIONISE
 
-ALI CU KASNIJE J OBJASNITI TE OPCIJE
+OVAJ LIBRARY JE CALLBACK BASED, TAK ODA NECES KORISTI async await SINTAKSU
 
-## SADA CU DA APPLY-UJEM OVAJ CONFIG POKRETANJEM SKAFFOLD-A
+**node-nats-streamin CU KORITITI I ZA SLANJE EVENT-OVA DO NATS SERVER-A I TAKODJE CU GA KORISTITI ZA ANTICIPATION EVENT-OVA FROM NATS**
 
-- `skaffold dev`
+KADA SAM RANIJE PRAVIO EVENT BUS-A KOJI JE BIO EXPRESS APP, ON JE EMMIT-OVAO EVENTS TO EVERY SINGLE MICROSERVICE, PA CAK I ONAJ MICROSERVICE, KOJI JE INICIJALNO POSLAO EVENT, DOBIO BI ECHOED BACK ISTI TAJ EVENT FROM THE MICROSERVICE
 
-PRINT OUT-OVACU SADA SVE PODS KOJI RUNN-UJU U MOM CLUSTERU
+**U SLUCAJU NATS STREAMING-A, DOBIJACE EVENT SAMO ONO SERVICE-OVI SUBSCRIBED TO SPECIFI CHANNELS**
 
-- `kubectl get pods`
+TO CE BITI CHANELLS OF EVENTS ZA KOJE SE DEFINISE SUBSCRIPTION
 
-```zsh
-NAME                                  READY   STATUS    RESTARTS   AGE
-auth-depl-865bdcff84-zq5c8            1/1     Running   0          97s
-auth-mongo-depl-fff5dcdd9-lhwz7       1/1     Running   0          97s
-client-depl-68d8f8cbd5-wpcl5          1/1     Running   0          96s
-nats-depl-f878fb4f9-k6fgq             1/1     Running   0          96s
-tickets-depl-6b9c6b485c-lsvgq         1/1     Running   0          96s
-tickets-mongo-depl-8456f7b84c-8bbzl   1/1     Running   0          96s
+ZA CHAANELLS CE SE KORITITI I TERMIN TOPICS
 
-```
+## MOZES DA POSMATRAS OVAKO
 
-GORE MOGU VIDETI **nats-depl-**
+KANALI SU KCREATED NA NATS SERVERU
 
-ON JE U RAUNNING STATUSU
+KANALI SU U OVAKVOM FORMATU: `ticket:created`, `ticket:updated`
 
-## U SLEDECEM BRANCHU CU SAZNATI STA JE USTVARI NATS TREAMING SERVER
+tickets MICROSERVICE, UZ POMOC POMENUTOG node-nats-streaming LIBRARY-JA BI REKAO PUBLISH THIS DATA TO THE `ticket:updated` CHANNEL
 
-I KAKO DA SA NJIM RADIMO VIA NODEjs
+ONDA BI NATS STREAMING SERVER, POSALO "Ticket Updated Event" DO MICROSERVICE-A, KOJI SU SUBSCRIBED NA KANAL `ticket:updated`
+
+ONA MICROSERVICE, KOJI NE LISTEN-UJE NA TAJ CHANNAL NE BI DOBIO NISTA
