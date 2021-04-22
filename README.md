@@ -51,3 +51,56 @@ INFORMACIJU LISTENER RECEIVE-UJE U NECEMU STO SE ZOVE SUBSCRIPTION
 SUBSCRIPTION CE ESSENTIALLY DA LISTEN-UJE FOR SOME INFORMATION I RECI CE NAM KADA JE SOME INFO RECEIVED
 
 TO SU BILI NEKI INPORTANT PIECES OF TERMINOLOGY
+
+# SADA CEMO POKUSATI A PUBLISH-UJEMO AN EVENT
+
+- `code nats_test_project/src/publisher.ts`
+
+```ts
+import nats from "node-nats-streaming";
+
+const stan = nats.connect("microticket", "abc", {
+  url: "http://localhost:4222",
+});
+
+stan.on("connect", () => {
+  console.log("Publisher connected to NATS");
+
+  // OVO JE DATA, KOJI CU PUBLISH-OVATI
+  // NA PRIMER OVO JE TICKE KOJI JE KREIRAN
+  // MEDJUTIM MI MOZEMO SHARE-OVATI SMO STRINGS,
+  // ODNOOSNO RAW DATA
+  // ZATO MORAMO CONVERTOVATI TO JSON
+  const data = JSON.stringify({
+    id: "123",
+    title: "concert",
+    price: 20,
+  });
+  // GORNJI data JE U WORLDU OF EVENTS INATS
+  // COMMONLY REFERED AS message
+  // DAKLE KORISTICU TAJ TERMIN U BUDUCNOSTI
+
+  // POZIVAM stan.publish
+
+  // PRVO IDE SUBJECT (CHANELL) PA ONDA DATA
+  // A THIRD OPTIONAL ARGUMENT JE CALLBACK FUNCTION
+  // FUNKCIJA CE BITI INVOKED AFTER WE PUBLISH DATA
+  stan.publish("ticket:created", data, () => {
+    console.log("Event published");
+  });
+});
+```
+
+KADA SAM SAVE-OVAO FILE, POGLEDAO SAM ONAJ TERMINAL, GDE SAM EXECUTE-OVAO SCRIPT DA BI STARTOVAO PUBLISHERA, VIDEO I OVO
+
+```zsh
+[INFO] 20:03:19 Restarting: /home/eidolonro/PROJECTS/GITHUB IMPORTANT /EXPLORING MICROSERVICES/2_microticket/nats_test_project/src/publisher.ts has been modified
+Publisher connected to NATS
+Event published
+```
+
+JER KADA SI SAVE-OVAO, ONAJ ts-node-dev (SPECIFICIRAN U SCRIPT-U) ODGOVORAN JE I ZA RESTARTING EXECUTBLE-A NODEJS-A KADA NESTO PROMENIMO
+
+TAKO DA SE PUBLISHER ODMAH RESTARTOVAO ZA NAS
+
+I VIDELI SMO DA JE I EVENT PUBLISHED

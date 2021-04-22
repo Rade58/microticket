@@ -1,21 +1,29 @@
 import nats from "node-nats-streaming";
 
-// KREIRACEMO CLIENT, UZ PMOC KOJEG SE KONEKTUJEMO NA NATS STREAMING SERVER
-// AND TO TRY TO EXCHNGE SOME INFO WITH IT
-
-// AUTORI NATSA, VOLE OVO DA IMENUJU SA stan (NATS BCKWARDS)
-// ALI ZNAJ DA JE OVO CLIENT
 const stan = nats.connect("microticket", "abc", {
-  // OBJASNICU KASNIJE STA OVI SETTINGS ZNACE
   url: "http://localhost:4222",
 });
 
-// NE MOGU DA KORISTIM async await SINTAKSU, JER JE OVAJ SISTEM EVENT BASE
-// PRVO CEMO DA SLUSAMO NA connect EVENT, KOJI SE DOGADJA, NAKON USPESNOG
-// KONEKTOVANJA
-
 stan.on("connect", () => {
-  // FUNKCIJA EXECUTED NAKON STO SE CLIENT (stan)
-  // USPESNO CONNECT-UJE NA NATS STREAMING SERVER
   console.log("Publisher connected to NATS");
+
+  // OVO JE DATA, KOJI CU PUBLISH-OVATI
+  // NA PRIMER OVO JE TICKE KOJI JE KREIRAN
+  // MEDJUTIM MI MOZEMO SHARE-OVATI SMO STRINGS,
+  // ODNOOSNO RAW DATA
+  // ZATO MORAMO CONVERTOVATI TO JSON
+  const data = JSON.stringify({
+    id: "123",
+    title: "concert",
+    price: 20,
+  });
+
+  // POZIVAM stan.publish
+
+  // PRVO IDE SUBJECT (CHANELL) PA ONDA DATA
+  // A THIRD OPTIONAL ARGUMENT JE CALLBACK FUNCTION
+  // FUNKCIJA CE BITI INVOKED AFTER WE PUBLISH DATA
+  stan.publish("ticket:created", data, () => {
+    console.log("Event published");
+  });
 });
