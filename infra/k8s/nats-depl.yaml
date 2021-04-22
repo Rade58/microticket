@@ -1,10 +1,3 @@
-# BUILDING DEPLOYMENT FOR NATS STREAMING SERVER; TAKODJE BUILD-UJEM CCONFIG ZA CLUSTER IP SERVICE
-
-SIMILAR TO OTHER THAT I ALREADY HAVE ,I'M MAKING THIS DEPLOYMENT
-
-- `touch infra/k8s/nats-depl.yaml`
-
-```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -64,14 +57,4 @@ spec:
     - name: monitoring
       protocol: TCP
       port: 8222
-
-```
-
-OBJASNJENJA ZA KOMANDE KOJE SAM PODESIO U ARRAY-U, NALAZE SE IN `Commandline Options` NA PAGE-U <https://hub.docker.com/_/nats-streaming>
-
-ALI CU KASNIJE J OBJASNITI TE OPCIJE
-
-## SADA CU DA APPLY-UJEM OVAJ CCONFIG POKRETANJEM SKAFFOLD-A
-
-- `skaffold dev`
 
