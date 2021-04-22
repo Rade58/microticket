@@ -331,4 +331,49 @@ VAZNA JE I
 
 ON CE PROSLEDITI BROJ EVENTA, DAKLE RECI CE KOJI JE TO EVENT PO REDU ZA RELATED KANAL
 
-A BROJ ISE OD 1
+A BROJI SE OD 1
+
+## KAO STO SE DATA MORA PUBLISH-OVATI KAO STRING, JASNO TI JE DA CE ON LISTENER SIDE TAJ DAT BITI STRING ,TAK ODA MORAS DA GA PARSE-UJES
+
+- `code nats_test_project/src/listener.ts`
+
+```ts
+import nats, { Message } from "node-nats-streaming";
+
+console.clear();
+
+const stan = nats.connect("microticket", "123", {
+  url: "http://localhost:4222",
+});
+
+stan.on("connect", () => {
+  console.log("Listener connected to nats");
+
+  const subscription = stan.subscribe("ticket:created");
+
+  subscription.on("message", (msg: Message) => {
+    const eventNumber = msg.getSequence();
+    const topic = msg.getSubject();
+    console.log({ topic, eventNumber });
+
+    // DAKLE OVO JE JSON
+    const data = msg.getData();
+
+    // PRAVIMO JAVASCRIPT OBJECT
+    // ALI TYPE JE MOGUCE DA BUDE Buffer ILI String (TKO KAZU TYPES)
+
+    // ZATO MOZEMO NAPRAVITI OVU PROVERU
+
+    if (typeof data === "string") {
+      const dataObject = JSON.parse(data);
+
+      // SADA MOZES DA ACCESS-UJES PROPERTIJIMA
+      console.log(dataObject.title);
+      console.log(dataObject.id);
+      console.log(dataObject.price);
+    }
+  });
+});
+```
+
+RESTARTOVAO SAM OPET PUBLISHING SCRIPT, ODNOSNO PUBLISHER-A, ZA KOJEG TI OPET NAPOMINJM DA PUBLISH-UJEM EVENT DIRETNO U connect CALLBACK-U I ZATO SE SALJE SAM AKO RESTARTUJEM (DAKLE U TERMIANLU PAUBLISHERA `Ctrl +C` PA `yarn run publish`) (A UMESTO OVOG GASENJA PALJNJ MOZES DODATI EXTRA RED PA SAVE-OVATI nats_test_project/src/publisher.ts I TAKO CES RESTARTOVATI)

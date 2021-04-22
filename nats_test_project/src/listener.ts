@@ -1,4 +1,3 @@
-// EVO UVEZO SAM Message TYPE
 import nats, { Message } from "node-nats-streaming";
 
 console.clear();
@@ -12,14 +11,26 @@ stan.on("connect", () => {
 
   const subscription = stan.subscribe("ticket:created");
 
-  // EVO SAD SAM TYPE-OVA OMESSAGE
   subscription.on("message", (msg: Message) => {
-    // EVO OVDE IMAM FUNKCIJU getData
-    // PROBACU DA STMAPAM DATA
+    const eventNumber = msg.getSequence();
+    const topic = msg.getSubject();
+    console.log({ topic, eventNumber });
 
+    // DAKLE OVO JE JSON
     const data = msg.getData();
-    const sequence = msg.getSequence();
 
-    console.log({ data, sequence });
+    // PRAVIMO JAVASCRIPT OBJECT
+    // ALI TYPE JE MOGUCE DA BUDE Buffer ILI String (TKO KAZU TYPES)
+
+    // ZATO MOZEMO NAPRAVITI OVU PROVERU
+
+    if (typeof data === "string") {
+      const dataObject = JSON.parse(data);
+
+      // SADA MOZES DA ACCESS-UJES PROPERTIJIMA
+      console.log(dataObject.title);
+      console.log(dataObject.id);
+      console.log(dataObject.price);
+    }
   });
 });
