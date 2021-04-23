@@ -93,7 +93,7 @@ POSTO POSMATRAS JSON DATA SKINI NEKI CHROME EXTENSSION DA TI LEPO FORMATIRA TO, 
 
 NAJVAZNIJE STO MOZES VIDETI SU
 
-clients:
+**clients**:
 
 ```json
 {
@@ -123,4 +123,83 @@ clients:
 
 LISTET TI JE SVAKI CONNECTED CLIENT TO NATS STREAMING SERVER
 
-SECAS SE DA SI PODESIO `"abc"` CLIENT ID ZA PUBLISHERA, DOK SI ZA LISTENERA TO RANDOMIZO-OVAO; IMAS DVA LISTENERA
+SECAS SE DA SI PODESIO `"abc"` CLIENT ID ZA PUBLISHERA, DOK SI ZA LISTENERA TO RANDOMIZO-OVAO; IMAS DVA LISTENERA ("5ea96532" I
+"c343ebfa")
+
+**chanells**:
+
+```json
+{
+  "cluster_id": "microticket",
+  "server_id": "gJdbZHGPGN7jortjoENBVc",
+  "now": "2021-04-23T13:53:19.655122042Z",
+  "offset": 0,
+  "limit": 1024,
+  "count": 1,
+  "total": 1,
+  "names": [
+    "ticket:created"
+  ]
+}
+```
+
+KAO STO VIDIS IMAS LISTIU SVIH AKTIVNIH KANALA ZA NATS STREEAMING SERVER
+
+IMAMO SAMO JEDAN "ticket:created"
+
+## POSTOJI JOS INFORMACIJA KOJE MOZES DA EXTRACTUJES, A VEZANE SU ZA CHANNNEL, ALI NIJE WELL DOCUMENTED
+
+MORACES DA DODAS QUERY STRING
+
+`http://localhost:8222/streaming/channelsz?subs=1`
+
+EVO KAKAV INFO IMAS TU
+
+```json
+{
+  "cluster_id": "microticket",
+  "server_id": "gJdbZHGPGN7jortjoENBVc",
+  "now": "2021-04-23T13:57:17.79136232Z",
+  "offset": 0,
+  "limit": 1024,
+  "count": 1,
+  "total": 1,
+  "channels": [
+    {
+      "name": "ticket:created",
+      "msgs": 30,
+      "bytes": 2130,
+      "first_seq": 1,
+      "last_seq": 30,
+      "subscriptions": [
+        {
+          "client_id": "c343ebfa",
+          "inbox": "_INBOX.HWBBS0JJKCMQ2ECODTFL5L",
+          "ack_inbox": "_INBOX.gJdbZHGPGN7jortjoENCQu",
+          "queue_name": "orders-microservice-queue-group",
+          "is_durable": false,
+          "is_offline": false,
+          "max_inflight": 16384,
+          "ack_wait": 30,
+          "last_sent": 0,
+          "pending_count": 0,
+          "is_stalled": false
+        },
+        {
+          "client_id": "5ea96532",
+          "inbox": "_INBOX.LAF6FLRAX9NIWYZANC2GN7",
+          "ack_inbox": "_INBOX.gJdbZHGPGN7jortjoENCPi",
+          "queue_name": "orders-microservice-queue-group",
+          "is_durable": false,
+          "is_offline": false,
+          "max_inflight": 16384,
+          "ack_wait": 30,
+          "last_sent": 30,
+          "pending_count": 0,
+          "is_stalled": false
+        }
+      ]
+    }
+  ]
+}
+```
