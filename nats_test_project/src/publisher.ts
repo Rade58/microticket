@@ -6,6 +6,7 @@ console.clear();
 // OD TOOLS SA KOJIM RUNN-UJES SCRIPT
 // U OVOM SLUCAJU TO JE ts-node-dev
 //
+//
 
 const stan = nats.connect("microticket", "abc", {
   url: "http://localhost:4222",

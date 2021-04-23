@@ -65,6 +65,131 @@ ILI JOS BOLJE, MOGU RECI DA NEKI MOJ POSTOJECI SERVICE IS GETTING A LOT OF TRFFI
 
 NARAVNO MORAO BI SE POSTARATI DA OBA MICROSERVICE-A BUDU CONNECTED DO NATS STREAMING SERVER
 
-## JA CU TAJ HORIZONTALNI SCALING, SIMULIRATI PROSTOM POKRETANJEM, JOS JEDNOG LISTENER SCRIPT-A
+## JA CU POKUSATI DA TAJ HORIZONTALNI SCALING, SIMULIRATI  POKRETANJEM, JOS JEDNOG LISTENER SCRIPT-A
 
-DAKLE OTVARMA NOVI TERMINAL I U NJEMU POKRECEM OPET LISTENER SCRIPT
+DAKLE IDEJA JE DA OTVARIM NOVI TERMINAL I U NJEMU POKRENEM OPET LISTENER SCRIPT
+
+STO SE NADAM DA CE POKRENUTI LISTNERA, I STO SE NADAM DA CE ISTO OBAVITI SUBSCRIPTION, ZA `"tickets:created"` EVENT
+
+IDEJJA JE DA IMAM I DALJE JEDNOG PUBLISHER-A I IMAS JEDAN NATS STREAMING SERVER
+
+ALI ZELIM DA IMAM DVA RUNNING LISTENER-A
+
+- `cd nats_test_project/package.json`
+
+- `yarn listen`
+
+**MEDJUTIM OVO NECE PROCI JER CES DOBITI ERROR**
+
+```zsh
+Error [ERR_UNHANDLED_ERROR]: Unhandled error. ('stan: clientID already registered')
+
+```
+
+DAKLE GOVORI TI DA TI JE CLIENT ID ALREADY REGISTERED
+
+**AKO SE SECAS, KADA SI KONEKTOVAO LISTENERA, TI SI PORED URL-A I OSTALOGA, OBEZBEDIO I DODATNE ARGUMENTE, E PA JEDAN OD NJIH JE ID CLIENT-A, ODNOSNO TO JE ID LISTENERA** (TAKODJE SI TO RADIO I ZA PUBLISHERA)
+
+NE MORAS DA ZATVARS I TAJ ERORREUS HANGING TERMINAL
+
+EVO, MOZES VIDETI KOJI SI CLIENT ID PODESIO ZA LISTENER-A
+
+- `cat nats_test_project/src/listener.ts`
+
+```ts
+import nats, { Message } from "node-nats-streaming";
+
+console.clear();
+
+// EVO VIDIS "123" KOJI SAM DODAO
+// TO JE ID stan CLIENT-A
+const stan = nats.connect("microticket", "123", {
+  url: "http://localhost:4222",
+});
+
+stan.on("connect", () => {
+  console.log("Listener connected to nats");
+
+  const subscription = stan.subscribe("ticket:created");
+
+  subscription.on("message", (msg: Message) => {
+    const eventNumber = msg.getSequence();
+    const topic = msg.getSubject();
+    console.log({ topic, eventNumber });
+    const data = msg.getData();
+
+    if (typeof data === "string") {
+      const dataObject = JSON.parse(data);
+
+      console.log(dataObject.title);
+      console.log(dataObject.id);
+      console.log(dataObject.price);
+    }
+  });
+});
+
+```
+
+**NATS STREAMING SERVER KEEP-UJE RECORD O CLIENTIMA KOJI SU CONNECTED**
+
+A ONO STA SI TI POKUSAO JESTE DA KONEKTUJE DODATNOG LISTENER CLIENTA, ALI SA ISTIM ID-JEM KOJI VEC IMA JEDAN CLIENT, KOJI JE ALREADY CONNECTED
+
+## NATS STREAMING SERVER NE DOZVOLJVA DUPLIKATE stan CLIENT ID-JA
+
+ZATO SI I VIDEO, POMENUTI ERROR MESSAGE
+
+DAKLE SVAKI PUT KADA ZELIS DA RUNN-UJES MULTIPLE CLIENTS, BIL ODA SU TO PUBLISHERS OR LISTENERS, SVAKI OD NJIH MORA BITI CONNECTED SA RAZLICITIM ID-JEM
+
+**KUBERNETES TI PRUZA EASY WAY TO DEAL WITH THAT (MI CEMO TO KASNIJE OTKRITI), ALI MI SADA RUNN-UJEMO PUBLISHER-A I LISTENERE NA LOKALNOM MACHINE-U**
+
+ALI ZA SADA U OVOM "TEST ENVIROMENTU" (U SUBPROJECTU) U KOJEM SAM, JA CU NAPRAVITI WORKAROUND
+
+## POKUSACU DA DEFINISEM RANDOMIZATION PRI KREIRANJU TOG CLIENT ID-JA, KAKO BI MOGAO DA RUNN-UJEM ISTI SCRIPT DVA PUTA, CIME BI MI SE NA TAJ NACIN KONEKTOVALA DVA RAZLICITA LISTENER-A
+
+- `code nats_test_project/src/listener.ts`
+
+```ts
+import nats, { Message } from "node-nats-streaming";
+
+// EVO SA OVIM CU DA GENERISEM RANDOM STRING
+import { randomBytes } from "crypto";
+
+console.clear();
+
+// EVO VIDIS, GENERISEM ID
+const stan = nats.connect("microticket", randomBytes(4).toString("hex"), {
+  url: "http://localhost:4222",
+});
+
+stan.on("connect", () => {
+  console.log("Listener connected to nats");
+
+  const subscription = stan.subscribe("ticket:created");
+
+  subscription.on("message", (msg: Message) => {
+    const eventNumber = msg.getSequence();
+    const topic = msg.getSubject();
+    console.log({ topic, eventNumber });
+    const data = msg.getData();
+
+    if (typeof data === "string") {
+      const dataObject = JSON.parse(data);
+
+      console.log(dataObject.title);
+      console.log(dataObject.id);
+      console.log(dataObject.price);
+    }
+  });
+});
+
+```
+
+MOZES SADA SAM O DA SAVE-UJES
+
+NE TREBA NISTA DA POKRECES JER TI SVI TERMINALI HANG-UJU, A ONAJ ts-node-dev SE STARA O RESTARTU
+
+SADA MOZES DA RESTARTUJES PUBLISHER, NA NACIN KAKO SAM TI OBJASNIO, VEC MNOGO PUTA RANIJE
+
+I ZNAS DA BI TIME TREBALO DA SE PUBLISH-UJE EVENT, JER SI TAKO PODESIO
+
+I STVARNO SAM U TERMINALIMA OBA LISTENERA VIDEO DA SE STMAPA, ONO STO SMA ZADA ODA SE STAMPA, NAKON STO LISTENER, DOBIJE EVENT
