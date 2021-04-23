@@ -181,11 +181,21 @@ I TERMINALI TVOJA DVA MAMBERA E SE PUNITI LOGOVIMA O USPESNO POSLATIM EVENTIM, N
 JEDAN TERMIANL:
 
 ```zsh
-
+Listener connected to nats
+Received event #24, with data: {"id":"123","title":"concert","price":20}
+Received event #24, with data: {"id":"123","title":"concert","price":20}
+Received event #24, with data: {"id":"123","title":"concert","price":20}
+Received event #24, with data: {"id":"123","title":"concert","price":20}
+Received event #24, with data: {"id":"123","title":"concert","price":20}
 ```
 
 DRUGI TERMIANL:
 
 ```zsh
-
+Listener connected to nats
+Received event #24, with data: {"id":"123","title":"concert","price":20}
+Received event #24, with data: {"id":"123","title":"concert","price":20}
+Received event #24, with data: {"id":"123","title":"concert","price":20}
+Received event #24, with data: {"id":"123","title":"concert","price":20}
+Received event #24, with data: {"id":"123","title":"concert","price":20}
 ```
