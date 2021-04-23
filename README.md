@@ -81,16 +81,6 @@ tickets-mongo-depl-8456f7b84c-8bbzl   1/1     Running   0          24h
 
 **TI SADA MOZES OTVORITI BROWSER I UKUCATI**
 
-`http://localhost:8222`
-
-I TU CE TI BITI MONITORING
-
-IMACES OVE LINKOVE-OVE, ODNOSNO ROUTEOVE: `varz`, `connz`, `routez`, `gatewayz`, `leafz`, `subsz`, `help`,
-
-NA KOJIMA MOES VIDETI RAZNI DATA, RAZNI INFO; TO JE MONITORING INFO O NATS SERVERU
-
-**MEDJUTIM NE ZANIMA ME NI JEDAN OD NABROJANIH LINKOVA, PISTOJI I `/streaming`, KOJI NIJE LISTED**
-
-DAKLE IDEM NA
-
 `http://localhost:8222/streaming`
+
+![localhst](images/localhost8222.jpg)
