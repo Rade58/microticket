@@ -10,23 +10,16 @@ const stan = nats.connect("microticket", randomBytes(4).toString("hex"), {
 stan.on("connect", () => {
   console.log("Listener connected to nats");
 
-  const subscription = stan.subscribe("ticket:created");
+  // EVO VIDIS DODAO SAM GRUPU
+  const subscription = stan.subscribe("ticket:created", "listenerQueueGroup");
 
   subscription.on("message", (msg: Message) => {
-    // const eventNumber = msg.getSequence();
-    // const topic = msg.getSubject();
-    // console.log({ topic, eventNumber });
     const data = msg.getData();
 
     if (typeof data === "string") {
       const dataObject = JSON.parse(data);
-
-      // console.log(dataObject.title);
-      // console.log(dataObject.id);
-      // console.log(dataObject.price);
     }
-    // EVO ZELIM DA STMAPAM OVAKAV STRING
+
     console.log(`Received event #${msg.getSequence()}, with data: ${data}`);
-    //
   });
 });

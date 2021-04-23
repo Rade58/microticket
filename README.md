@@ -117,3 +117,51 @@ ODNONO AKO JE TAKAV SERVICE DA MU NISU BITNE QUEUE GROUPS
 ON MOZE GENERALLY DA LISTEN-UJE NA KANAL, NA PRIMER NA "ticket:created", BEZ DA KORISTI QUEUE GROUP
 
 ODNOSNO NE MORA DA BUDE MEMBER TE QUEUE GRUPE
+
+# QUEUE GROUP JE LAKO PODESITI
+
+SAMO PRILIKOM DEFINISANJA SUBSCRIPTIONA, DODAS JOS JEDAN STRING, KOJIM DEFINISES IME QUEUE GRUPE
+
+- `code nats_test_project/src/listener.ts`
+
+```ts
+import nats, { Message } from "node-nats-streaming";
+import { randomBytes } from "crypto";
+
+console.clear();
+
+const stan = nats.connect("microticket", randomBytes(4).toString("hex"), {
+  url: "http://localhost:4222",
+});
+
+stan.on("connect", () => {
+  console.log("Listener connected to nats");
+
+  // EVO VIDIS DODAO SAM GRUPU
+  const subscription = stan.subscribe("ticket:created", "listenerQueueGroup");
+
+  subscription.on("message", (msg: Message) => {
+    const data = msg.getData();
+
+    if (typeof data === "string") {
+      const dataObject = JSON.parse(data);
+    }
+
+    console.log(`Received event #${msg.getSequence()}, with data: ${data}`);
+  });
+});
+```
+
+OVO SADA LAKO MOZES TESTIRATI
+
+I DALJE IMAS DVA LISTENERA I JEDNOG PUBLISHERA
+
+RESTARTUJ PUBLISHER SCRIPT, CIME CES POSLATI EVENT
+
+**I ZAISTA SMO U TERMINALU, JEDNOG LISTENERA JE SADA STAMPANO ONO STO SAM PODESIO**
+
+```zsh
+Received event #17, with data: {"id":"123","title":"concert","price":20}
+```
+
+**STO ZNACI DA ONI, KOJI SU SUBSCRIBED NA ISTU QUEUE GRUPU, NE DOBIJAJ USVI EVENT, SAMO JEDAN OD SUBSCRIBERA DOBIJA EVENT OD NATS STREAMING SERVERA**
