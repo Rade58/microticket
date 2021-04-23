@@ -105,3 +105,64 @@ I BRZO RESTARTUJ PUBLISHER, JER SI PODESIO DA SE TAKO SALJU EVENT-OVI
 **ON TREBA DA BUDE POSLAT LISTENERU KOJI JE NEWLY CONNECTED, A NE ONI MSTARIM KOJI SU UNISTENI, JER SMO EKSPLICITNO REKLI NATS STREAMING SERVERU DA SU ONI UNISTENI**
 
 I SVE JE OK
+
+# MEDJUTIM OVO CES BOLJE DA VIDIS GLEDAJUCI U ONU STRANICU GDE TI JE MONITORING
+
+<http://localhost:8222/streaming/channelsz?subs=1>
+
+SADA KADA SVE RADI TI IMAS DVA OBJEKTA KOJA POKAZUJU RUNNING LISTENER CLIENTE
+
+```json
+{
+  "cluster_id": "microticket",
+  "server_id": "gJdbZHGPGN7jortjoENBVc",
+  "now": "2021-04-23T15:51:13.447315825Z",
+  "offset": 0,
+  "limit": 1024,
+  "count": 1,
+  "total": 1,
+  "channels": [
+    {
+      "name": "ticket:created",
+      "msgs": 36,
+      "bytes": 2556,
+      "first_seq": 1,
+      "last_seq": 36,
+      "subscriptions": [
+        {
+          "client_id": "052e9178",
+          "inbox": "_INBOX.10B8APIMZQC1ABDD18C736",
+          "ack_inbox": "_INBOX.gJdbZHGPGN7jortjoENCx8",
+          "queue_name": "orders-microservice-queue-group",
+          "is_durable": false,
+          "is_offline": false,
+          "max_inflight": 16384,
+          "ack_wait": 30,
+          "last_sent": 35,
+          "pending_count": 0,
+          "is_stalled": false
+        },
+        {
+          "client_id": "61905e71",
+          "inbox": "_INBOX.3HFPLARLS5N0QG46WFCYXQ",
+          "ack_inbox": "_INBOX.gJdbZHGPGN7jortjoENCvw",
+          "queue_name": "orders-microservice-queue-group",
+          "is_durable": false,
+          "is_offline": false,
+          "max_inflight": 16384,
+          "ack_wait": 30,
+          "last_sent": 36,
+          "pending_count": 0,
+          "is_stalled": false
+        }
+      ]
+    }
+  ]
+}
+```
+
+SADA KADA RESTARTUJES LISTENERE I KADA RELOADUJES PAGE, NE BI NA OVOJ LISTI TREBAL ODA SE NADJE VISE OD DVA LISTNERA
+
+I ZISTA JE TAKO
+
+ALI TAKO NIJE BILO RANIJE KADA NISM PODESIO SVE STO SAM TI POKZO U OVOM BRANCH-U
