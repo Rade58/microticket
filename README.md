@@ -138,7 +138,7 @@ stan.on("connect", () => {
   console.log("Listener connected to nats");
 
   // EVO VIDIS DODAO SAM GRUPU
-  const subscription = stan.subscribe("ticket:created", "listenerQueueGroup");
+  const subscription = stan.subscribe("ticket:created", "orders-microservice-queue-group");
 
   subscription.on("message", (msg: Message) => {
     const data = msg.getData();
