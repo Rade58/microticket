@@ -199,3 +199,47 @@ Received event #24, with data: {"id":"123","title":"concert","price":20}
 Received event #24, with data: {"id":"123","title":"concert","price":20}
 Received event #24, with data: {"id":"123","title":"concert","price":20}
 ```
+
+## ZATO CEMO SADE POSLATI AKNOWLEDGMENT BACK TO THE NATS STREAMING SERVER, TAKO STO CEMO INSIDE "message" HANDLER, POZVATI `msg.ack()`
+
+- `code nats_test_project/src/listener.ts`
+
+```ts
+import nats, { Message } from "node-nats-streaming";
+import { randomBytes } from "crypto";
+
+console.clear();
+
+const stan = nats.connect("microticket", randomBytes(4).toString("hex"), {
+  url: "http://localhost:4222",
+});
+
+stan.on("connect", () => {
+  console.log("Listener connected to nats");
+
+  const options = stan.subscriptionOptions().setManualAckMode(true);
+
+  const subscription = stan.subscribe(
+    "ticket:created",
+    "orders-microservice-queue-group",
+    options
+  );
+
+  subscription.on("message", (msg: Message) => {
+    const data = msg.getData();
+
+    if (typeof data === "string") {
+      const dataObject = JSON.parse(data);
+    }
+
+    console.log(`Received event #${msg.getSequence()}, with data: ${data}`);
+
+    // EVO OVDE CEMO TO URADITI
+    msg.ack();
+  });
+});
+```
+
+I TO JE SVE
+
+.ack() CE RECI NODE STREAMING SERVERU DA JE SVE OK, I DA NE ORA VISE DA SLAJE ISTI EVENT DO DRUGIH MEMBER-A QUEUE GRUPE

@@ -18,9 +18,6 @@ stan.on("connect", () => {
     options
   );
 
-  // KAO STO VIDIS INSIDE TI NISI DODAO NISTA ZA AKNOWLEDGMENT
-  // DA JE SVE PROSLO OK
-
   subscription.on("message", (msg: Message) => {
     const data = msg.getData();
 
@@ -29,5 +26,8 @@ stan.on("connect", () => {
     }
 
     console.log(`Received event #${msg.getSequence()}, with data: ${data}`);
+
+    // EVO OVDE CEMO TO URADITI
+    msg.ack();
   });
 });
