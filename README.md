@@ -84,3 +84,43 @@ tickets-mongo-depl-8456f7b84c-8bbzl   1/1     Running   0          24h
 `http://localhost:8222/streaming`
 
 ![localhst](images/localhost8222.jpg)
+
+DAKLE U PITANJU JE NATS STREAMING SERVER MONITORING PAGE
+
+KLIKCI I GLEDAJ RZLICITI STATS ABOUT OUR STREAMING SERVER
+
+POSTO POSMATRAS JSON DATA SKINI NEKI CHROME EXTENSSION DA TI LEPO FORMATIRA TO, MEDJUTIM JA SAM NA BRAVE BROWSERU I ON TO LEPO FORMATIRA
+
+NAJVAZNIJE STO MOZES VIDETI SU
+
+clients:
+
+```json
+{
+  "cluster_id": "microticket",
+  "server_id": "gJdbZHGPGN7jortjoENBVc",
+  "now": "2021-04-23T13:21:13.916042283Z",
+  "offset": 0,
+  "limit": 1024,
+  "count": 3,
+  "total": 3,
+  "clients": [
+    {
+      "id": "5ea96532",
+      "hb_inbox": "_INBOX.LAF6FLRAX9NIWYZANC2FQA"
+    },
+    {
+      "id": "abc",
+      "hb_inbox": "_INBOX.CWUTWK0FJWKXKLSXAQB9G6"
+    },
+    {
+      "id": "c343ebfa",
+      "hb_inbox": "_INBOX.HWBBS0JJKCMQ2ECODTFKZ7"
+    }
+  ]
+}
+```
+
+LISTET TI JE SVAKI CONNECTED CLIENT TO NATS STREAMING SERVER
+
+SECAS SE DA SI PODESIO `"abc"` CLIENT ID ZA PUBLISHERA, DOK SI ZA LISTENERA TO RANDOMIZO-OVAO; IMAS DVA LISTENERA
