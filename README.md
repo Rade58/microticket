@@ -211,3 +211,136 @@ VIIS DA IMAS TWO SUBSCRIPTIONS ZA TAJ CHANNEL, I VIDIS DA ONI KORISTE ISTI QUEUE
 CAK VIDIS I `ack_wait` PROPERTI KOJI IZNOSI 30; TO ZNACI AKNOWLEDGMENT OD 30 SEKUNDI
 
 POSTOJI I DRUGI INFO KOJI MOZES FIGURATE-OVATI ON YOUR OWN IN YOUR SPARE TIME
+
+# SADA POSMATRAJUCI BAS POMENUTI DATA, MOZES SHVATITI STA SE DESAVALO U SLUCAJU ONOG PROBLEMA ZA KOJI SAM REKAO DA SE JAVLJA, A KOJI SAM OBZNANIO NA POCETKU BRANCH-A
+
+POKUSAJ DA RESTRATUJES JEDAN LISTENER, I ONDA RELOADUJ PAGE: `http://localhost:8222/streaming/channelsz?subs=1`
+
+EVO KAKAV DATA VIDIS
+
+```json
+{
+  "cluster_id": "microticket",
+  "server_id": "gJdbZHGPGN7jortjoENBVc",
+  "now": "2021-04-23T14:08:52.584974339Z",
+  "offset": 0,
+  "limit": 1024,
+  "count": 1,
+  "total": 1,
+  "channels": [
+    {
+      "name": "ticket:created",
+      "msgs": 30,
+      "bytes": 2130,
+      "first_seq": 1,
+      "last_seq": 30,
+      "subscriptions": [
+        {
+          "client_id": "c343ebfa",
+          "inbox": "_INBOX.HWBBS0JJKCMQ2ECODTFL5L",
+          "ack_inbox": "_INBOX.gJdbZHGPGN7jortjoENCQu",
+          "queue_name": "orders-microservice-queue-group",
+          "is_durable": false,
+          "is_offline": false,
+          "max_inflight": 16384,
+          "ack_wait": 30,
+          "last_sent": 0,
+          "pending_count": 0,
+          "is_stalled": false
+        },
+        {
+          "client_id": "5ea96532",
+          "inbox": "_INBOX.LAF6FLRAX9NIWYZANC2GN7",
+          "ack_inbox": "_INBOX.gJdbZHGPGN7jortjoENCPi",
+          "queue_name": "orders-microservice-queue-group",
+          "is_durable": false,
+          "is_offline": false,
+          "max_inflight": 16384,
+          "ack_wait": 30,
+          "last_sent": 30,
+          "pending_count": 0,
+          "is_stalled": false
+        },
+        {
+          "client_id": "6bcbd044",
+          "inbox": "_INBOX.S8UPHTA8YEQDQCWVRYMTB3",
+          "ack_inbox": "_INBOX.gJdbZHGPGN7jortjoENCS6",
+          "queue_name": "orders-microservice-queue-group",
+          "is_durable": false,
+          "is_offline": false,
+          "max_inflight": 16384,
+          "ack_wait": 30,
+          "last_sent": 0,
+          "pending_count": 0,
+          "is_stalled": false
+        }
+      ]
+    }
+  ]
+}
+```
+
+**KAO STO VIDIS DOBIO SI TRECEG LISTENER-A**
+
+STO JE CUDNO, JER ZNAS DA BI TREBAL ODA IMAS DVA JER TI SI SAMO JEDNOG RESTARTOVAO
+
+**KADA SI GA UGASIO, NODE STREAMING SERVER JE POMISLIO DA IMAS TEMPORARY ZASTOJ U KONEKCIJI**
+
+I TU CE CEKATI DOK NE SHVATI DA SE TA KONEKCIJA NECE VRATITI I SUBSCRIPTIO NCE BITI REMOVED
+
+EVO SADA RELOAD-UJ
+
+```json
+{
+  "cluster_id": "microticket",
+  "server_id": "gJdbZHGPGN7jortjoENBVc",
+  "now": "2021-04-23T14:11:51.4955567Z",
+  "offset": 0,
+  "limit": 1024,
+  "count": 1,
+  "total": 1,
+  "channels": [
+    {
+      "name": "ticket:created",
+      "msgs": 30,
+      "bytes": 2130,
+      "first_seq": 1,
+      "last_seq": 30,
+      "subscriptions": [
+        {
+          "client_id": "c343ebfa",
+          "inbox": "_INBOX.HWBBS0JJKCMQ2ECODTFL5L",
+          "ack_inbox": "_INBOX.gJdbZHGPGN7jortjoENCQu",
+          "queue_name": "orders-microservice-queue-group",
+          "is_durable": false,
+          "is_offline": false,
+          "max_inflight": 16384,
+          "ack_wait": 30,
+          "last_sent": 30,
+          "pending_count": 0,
+          "is_stalled": false
+        },
+        {
+          "client_id": "6bcbd044",
+          "inbox": "_INBOX.S8UPHTA8YEQDQCWVRYMTB3",
+          "ack_inbox": "_INBOX.gJdbZHGPGN7jortjoENCS6",
+          "queue_name": "orders-microservice-queue-group",
+          "is_durable": false,
+          "is_offline": false,
+          "max_inflight": 16384,
+          "ack_wait": 30,
+          "last_sent": 0,
+          "pending_count": 0,
+          "is_stalled": false
+        }
+      ]
+    }
+  ]
+}
+```
+
+I JESTE, REMOVED JE JER IMAS SAM ODVA OBJEKTA, U ORNJEM NIZU
+
+CEKLO SE 30 SEKUNDI DA SE T KONEKCIJA TAKORECI OZNACI KAO NEPOSTOJECA
+
+ZATO SI VIDJAO SOME MESSAGES TEMPORARRY LOST
