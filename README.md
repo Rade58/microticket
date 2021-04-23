@@ -61,4 +61,36 @@ spec:
 
 ```
 
+# MOZEMO DA ACCESS-UJEMO NATS STREAMING SERVIR NA MONITORING PORT-U I DOBICEMO ODATLE A LOT OF DIFFRENT INFORMATIONS FROM ALL SUBSCRIPTIONS WE CREATED, FROM ALL DIFFERENT CLIENT; MOZMO ACCESS-OVATI STATISTICS AND STUFF LIKE THAT
 
+OTVORI NOVI TERMINAL
+
+- `kubectl get pods`
+
+```zsh
+NAME                                  READY   STATUS    RESTARTS   AGE
+auth-depl-865bdcff84-zq5c8            1/1     Running   0          24h
+auth-mongo-depl-fff5dcdd9-lhwz7       1/1     Running   0          24h
+client-depl-68d8f8cbd5-wpcl5          1/1     Running   0          24h
+nats-depl-f878fb4f9-k6fgq             1/1     Running   0          24h
+tickets-depl-6b9c6b485c-lsvgq         1/1     Running   0          24h
+tickets-mongo-depl-8456f7b84c-8bbzl   1/1     Running   0          24h
+```
+
+- `kubectl port-forward nats-depl-f878fb4f9-k6fgq 8222:8222`
+
+**TI SADA MOZES OTVORITI BROWSER I UKUCATI**
+
+`http://localhost:8222`
+
+I TU CE TI BITI MONITORING
+
+IMACES OVE LINKOVE-OVE, ODNOSNO ROUTEOVE: `varz`, `connz`, `routez`, `gatewayz`, `leafz`, `subsz`, `help`,
+
+NA KOJIMA MOES VIDETI RAZNI DATA, RAZNI INFO; TO JE MONITORING INFO O NATS SERVERU
+
+**MEDJUTIM NE ZANIMA ME NI JEDAN OD NABROJANIH LINKOVA, PISTOJI I `/streaming`, KOJI NIJE LISTED**
+
+DAKLE IDEM NA
+
+`http://localhost:8222/streaming`
