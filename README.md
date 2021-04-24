@@ -150,5 +150,105 @@ MENI QUEUED GROUPS SMETAJU ZA OVAJ EXAMPLE, MISLIM DA MOZES SHVATITI ZASTO, ZATO
 - `cat nats_test_project/src/listener.ts`
 
 ```ts
+import nats, { Message } from "node-nats-streaming";
+import { randomBytes } from "crypto";
+
+console.clear();
+
+const stan = nats.connect("microticket", randomBytes(4).toString("hex"), {
+  url: "http://localhost:4222",
+});
+
+stan.on("connect", () => {
+  console.log("Listener connected to nats");
+
+  stan.on("close", () => {
+    console.log("NATS connection closed!");
+    process.exit();
+  });
+
+  const options = stan
+    .subscriptionOptions()
+    // DA NEKAKO KAZES NATS STREAMING SERVERU DA ZELIMO DA
+    // REDELIVER-UJEMO, ILI GER-UJEMO messageS ,ODNOSNO EVENTS KOJI SU SE DELIVER-OVALI
+    // IN THE PAST, DODAJEMO JOS JEDNU OPCIJU TO THE LIST OF OPTIONS
+    // A MOZES DA SAZNAS KOJA JE TO OPCIJA TAKO STO CES KLIKNUTI
+    // SA CTRL + ALT + CLICK NA subscriptionOptions
+    // IZABRAO SAM OVU OPCIJU
+    .setDeliverAllAvailable() // DAKLE CHAIN-OVAO SAM OVU OPCIJU
+    //
+    .setManualAckMode(true);
+
+  const subscription = stan.subscribe(
+    "ticket:created",
+    // DAKLE UKLANJAM QUEUE GROUPS
+    // "orders-microservice-queue-group",
+    options
+  );
+
+  subscription.on("message", (msg: Message) => {
+    const data = msg.getData();
+
+    if (typeof data === "string") {
+      const dataObject = JSON.parse(data);
+    }
+
+    console.log(`Received event #${msg.getSequence()}, with data: ${data}`);
+
+    msg.ack();
+  });
+});
+
+process.on("SIGINT", () => {
+  stan.close();
+});
+process.on("SIGTERM", () => {
+  stan.close();
+});
 
 ```
+
+**CIM SAVE-UJES (CIME CE ts-node-dev RESTARTOVATI, ODNONO PONOVO RUNN-OVATI FILE AGAINST NODE EXECUTABLE, **STO ZNACI DA KOA DA JE UNISTIO JEDNOG LISTENER, PA POKRETANJEM FILE NAPRAVIO NOVOG, ODNOSNO NOVI SUBSCRIPTION**) VIDECES DA CE SE U TERMINALU LISTNERA STAMPATI SVI EVENT-OVI, KOJE SAM PUBLISH-OVAO DO NATAS SERVERA, DAKLE NATS STRAMING SERVER JE UZEO SVE EVENT-OVE IZ HISTORY-JA, KOJE JE TAMO STAVIO TOKOM SVOG RADA, A KOD MENE JE RADIO DVA DNA, DVA DANA SAM SE S NJIM IGRAO SALJUCI MU EVENTOVE**
+
+```zsh
+Received event #1, with data: {"id":"123","title":"concert","price":20}
+Received event #2, with data: {"id":"123","title":"concert","price":20}
+Received event #3, with data: {"id":"123","title":"concert","price":20}
+Received event #4, with data: {"id":"123","title":"concert","price":20}
+Received event #5, with data: {"id":"123","title":"concert","price":20}
+Received event #6, with data: {"id":"123","title":"concert","price":20}
+Received event #7, with data: {"id":"123","title":"concert","price":20}
+Received event #8, with data: {"id":"123","title":"concert","price":20}
+Received event #9, with data: {"id":"123","title":"concert","price":20}
+Received event #10, with data: {"id":"123","title":"concert","price":20}
+Received event #11, with data: {"id":"123","title":"concert","price":20}
+Received event #12, with data: {"id":"123","title":"concert","price":20}
+Received event #13, with data: {"id":"123","title":"concert","price":20}
+Received event #14, with data: {"id":"123","title":"concert","price":20}
+Received event #15, with data: {"id":"123","title":"concert","price":20}
+Received event #16, with data: {"id":"123","title":"concert","price":20}
+Received event #17, with data: {"id":"123","title":"concert","price":20}
+Received event #18, with data: {"id":"123","title":"concert","price":20}
+Received event #19, with data: {"id":"123","title":"concert","price":20}
+Received event #20, with data: {"id":"123","title":"concert","price":20}
+Received event #21, with data: {"id":"123","title":"concert","price":20}
+Received event #22, with data: {"id":"123","title":"concert","price":20}
+Received event #23, with data: {"id":"123","title":"concert","price":20}
+Received event #24, with data: {"id":"123","title":"concert","price":20}
+Received event #25, with data: {"id":"123","title":"concert","price":20}
+Received event #26, with data: {"id":"123","title":"concert","price":20}
+Received event #27, with data: {"id":"123","title":"concert","price":20}
+Received event #28, with data: {"id":"123","title":"concert","price":20}
+Received event #29, with data: {"id":"123","title":"concert","price":20}
+Received event #30, with data: {"id":"123","title":"concert","price":20}
+Received event #31, with data: {"id":"123","title":"concert","price":20}
+Received event #32, with data: {"id":"123","title":"concert","price":20}
+Received event #33, with data: {"id":"123","title":"concert","price":20}
+Received event #34, with data: {"id":"123","title":"concert","price":20}
+Received event #35, with data: {"id":"123","title":"concert","price":20}
+Received event #36, with data: {"id":"123","title":"concert","price":20}
+Received event #37, with data: {"id":"123","title":"concert","price":20}
+Received event #38, with data: {"id":"123","title":"concert","price":20}
+```
+
+
