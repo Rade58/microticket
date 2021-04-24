@@ -17,19 +17,18 @@ stan.on("connect", () => {
 
   const options = stan
     .subscriptionOptions()
-    // DA NEKAKO KAZES NATS STREAMING SERVERU DA ZELIMO DA
-    // REDELIVER-UJEMO, ILI GER-UJEMO messageS ,ODNOSNO EVENTS KOJI SU SE DELIVER-OVALI
-    // IN THE PAST, DODAJEMO JOS JEDNU OPCIJU TO THE LIST OF OPTIONS
-    // A MOZES DA SAZNAS KOJA JE TO OPCIJA TAKO STO CES KLIKNUTI
-    // SA CTRL + ALT + CLICK NA subscriptionOptions
-    // IZABRAO SAM OVU OPCIJU
-    .setDeliverAllAvailable() // DAKLE CHAIN-OVAO SAM OVU OPCIJU
-    //
-    .setManualAckMode(true);
+    .setManualAckMode(true)
+    // DAKLE UZ OVO
+    .setDeliverAllAvailable()
+    // PODESAVAM I OVO
+    // DODAJEM STRING KOJI CE SLUITI KAO NAME ILI IDENTIFIER
+    // ZA SUBSCRIPTION
+    // OBICNO TREBAS DA MU DAS SAME NAME, KAKO TI SE ZOVE OVERAL MICROSERVICE
+    // NA PRIMER STAVIO BI "orders-service" ILI "accounting-service"
+    .setDurableName("some-microservice");
 
   const subscription = stan.subscribe(
     "ticket:created",
-    // DAKLE UKLANJAM QUEUE GROUPS
     // "orders-microservice-queue-group",
     options
   );

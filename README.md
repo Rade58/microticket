@@ -1,4 +1,4 @@
-# EVENT REEDELIVERY
+# EVENT REDELIVERY; DURABLE SUBSCRIPTIONS
 
 DAKLE KADA PUBLISHER SALJE EVENT DO NEKOG KANALA (NA PRIMER "acount:deposit" KANALA), TAJ EVENT CE NATS STREAMING SERVER STORE-OVATI U TOM KANALU KOD SEBE
 
@@ -141,6 +141,8 @@ I JEDDNOG LISTENERA KOJI DOBIJA EVENTE OD NATS-A
 ***
 ***
 
+# EVENT REDELIVERY
+
 **SADA KADA SMO SVE POKRENULI HJDE DA VIDIMO KAKO CEMO DA CUSTOMIZE-UJEMO SUBSCRIPTION, DA KADA SE POKRENE DA MU USTVARI NATS STREAMING SERVER IZ EVENT HISTORY-JA POSALJE SVE EVENT-OVE KOJI SU SE DESILI AT SOME POINT IN TIME**
 
 MEDJUTIM MORACES DA TURN-OFF-UJES [QUEUED GROUPS](https://github.com/Rade58/microticket/tree/6_0_7_QUEUE_GROUPS#queue-groups) (AKO SI ZABORAVI, SA NJIMA PODESAVAS DA EVENT DOLAZI DO SAMO JEDNOG LISTENERA AT THE TIME, JER SA QUEUE GROUPAMA, STVR JE OVAKVA: NATS POSALJES JEDAN EVENT I ON STIGNE DO JEDNOG LISTENERA I ON GA PROCESS-UJE A DRUGI NE I TAKO SE VALJDA NASUMICNO BIRA DA JEDNO MDOCE KOD JEDNOG, AP DRUGI EVENT MOZDA DODJE KOD ISTOG, PA TRECI PUT PROESS-UJE GA DRUGI I TAKO)
@@ -251,4 +253,94 @@ Received event #37, with data: {"id":"123","title":"concert","price":20}
 Received event #38, with data: {"id":"123","title":"concert","price":20}
 ```
 
+**I SADA AKO RESTARTUJES I DALJE CE SE STAMPATI SVI OVI EVENTOVI**
+
+I AKO ODLUCIS DA OTVORIS NOVI TERMIANL I PKRENES NOVOG LISTENERA STAMAPCE SE SVI EVENTOVI I KOD NJEGA, DAKE I NJEMU CE SVI EVENTOVI BITI POSLATI
+
+DAKLE OVO JE ZAISTA HANDI AKO MICROSERVICE GOES DOWN
+
+DOBICE SVE EVENTOVE, KOJI SU BILI EMMITED
+
+## ALI TU POSTOJI DOWNSIDE
+
+STA AKO TI APLIKACIJA RUNN-UJE MONTS ILI YEARS, I NEKI SERVICE TI SAMO NAKRATO GOES DOWN, I VRATI SE
+
+**PA OPET BI DOBIO SVE EVENTS**
+
+PA MOZE DOBITI HILJADE, MA STA HISLJADE, MILIONE EVENTOVA, KOJI SU SAVED UP
+
+DAKLE IN  LONG TERM NIJE SUPEE FEASIBLE
+
+TAKO DA SE USUALLY NE KORISTI `.setDeliverAllAvailable()` OPTION, VEC SE ONA KORISTI SA JEDNOM DRUGOM OPCIJOM
+
+# DURAABLE SUBSCRIPTION
+
+OVO JE COMPLEMENTARY OPTION, POMENUTOJ IDEJI REDELIVERING-A SVIH EVENTS KOJI SU SE DESILI IN THE PAST
+
+OVAJ SUBSCRIPTIO NCE SE DESITI KADA KREIRAMO **IDENTIFIKATORA ZA SUBSCRIPTION**
+
+DA PRVO VIDIMO KAKO SE TO RADI
+
+- `code nats_test_project/src/listener.ts`
+
+```ts
+import nats, { Message } from "node-nats-streaming";
+import { randomBytes } from "crypto";
+
+console.clear();
+
+const stan = nats.connect("microticket", randomBytes(4).toString("hex"), {
+  url: "http://localhost:4222",
+});
+
+stan.on("connect", () => {
+  console.log("Listener connected to nats");
+
+  stan.on("close", () => {
+    console.log("NATS connection closed!");
+    process.exit();
+  });
+
+  const options = stan
+    .subscriptionOptions()
+    .setManualAckMode(true)
+    // DAKLE UZ OVO
+    .setDeliverAllAvailable()
+    // PODESAVAM I OVO
+    // DODAJEM STRING KOJI CE SLUITI KAO NAME ILI IDENTIFIER
+    // ZA SUBSCRIPTION
+    // OBICNO TREBAS DA MU DAS SAME NAME, KAKO TI SE ZOVE OVERAL MICROSERVICE
+    // NA PRIMER STAVIO BI "orders-service" ILI "accounting-service"
+    .setDurableName("some-microservice");
+
+  const subscription = stan.subscribe(
+    "ticket:created",
+    // "orders-microservice-queue-group",
+    options
+  );
+
+  subscription.on("message", (msg: Message) => {
+    const data = msg.getData();
+
+    if (typeof data === "string") {
+      const dataObject = JSON.parse(data);
+    }
+
+    console.log(`Received event #${msg.getSequence()}, with data: ${data}`);
+
+    msg.ack();
+  });
+});
+
+process.on("SIGINT", () => {
+  stan.close();
+});
+process.on("SIGTERM", () => {
+  stan.close();
+});
+```
+
+## ALI STA JE USTAVRI DURABLE SUBSCRIPTION?
+
+PA MORAS DA POSMATRAS SCENARIO
 
