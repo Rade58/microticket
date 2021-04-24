@@ -1,4 +1,4 @@
-import nats, { Message } from "node-nats-streaming";
+import nats, { Message, Stan } from "node-nats-streaming";
 import { randomBytes } from "crypto";
 
 console.clear();
@@ -49,3 +49,17 @@ process.on("SIGINT", () => {
 process.on("SIGTERM", () => {
   stan.close();
 });
+
+abstract class Listener {
+  /**
+   * @description OVO TREBA DA JE PRE INITIALLIZED, STAN CLIENT (STO ZNACI DA BISMO VEC TREBAL IDA BUDEMO
+   * CONNECCTED TO NATS STREAMING SERVER) (DOBIJENO SA nats.connect)
+   * */
+  private stanClient: Stan;
+
+  constructor(stanClient: Stan) {
+    this.stanClient = stanClient;
+
+    Object.setPrototypeOf(this, Listener.prototype);
+  }
+}
