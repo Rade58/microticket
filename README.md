@@ -18,13 +18,5 @@ U ISTOM FILE-U GDE JE `nats_test_project/src/listener.ts` ,PRAVICU POMENUTI ABST
 
 
 
-// ... (NECU POKAIVATI ONO STO SAM RANIJE DEFINISAO)
-
-
-
-
-
-
-
 
 ```
