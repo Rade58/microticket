@@ -1,13 +1,6 @@
 import nats from "node-nats-streaming";
 
-// EVO OVDE MOZES POZVATI console.clear
 console.clear();
-// I TO CE POCIITI ONE LOGS KOJI NASTANU
-// OD TOOLS SA KOJIM RUNN-UJES SCRIPT
-// U OVOM SLUCAJU TO JE ts-node-dev
-//
-//
-//
 
 const stan = nats.connect("microticket", "abc", {
   url: "http://localhost:4222",
@@ -21,21 +14,13 @@ stan.on("connect", () => {
     title: "concert",
     price: 20,
   });
-  //
 
+  // IZ KOJG SE PUBLISH-UJE EVENT U SPECIFICIRANI KANAL
+  // ODMAH PO KONEKTU
+  // ALI KAO SE SECAS MI SMO TO TAKO PODESILI DA
+  // BI EVENTE SLAO RESTARTINGOM SAMO SCRIPTA KOJI POKRECE OVAJ FILE
+  // OVO JE SAMO DAKLE ZA TESTIRANJE
   stan.publish("ticket:created", data, () => {
     console.log("Event published");
   });
 });
-//
-//
-//
-//
-//
-
-//
-//
-//
-
-//
-//
