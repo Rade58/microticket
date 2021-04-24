@@ -20,11 +20,11 @@ U SUSTIN ISA NJIMA TYPE-UJEM SVE ONO STO CE MORATI IMATI ONA KLASA KOJA JE EXTEN
 
 EVO KOJE CU STVARI TYPE-OVATI ZA TU KLASU
 
-`channelName` --> `string` (ali imace dve tacke izmedju, medjutim to ne mogu da type-ujem)
+`channelName` (**ABSTRACT PROPERTY**) --> `string` (ali imace dve tacke izmedju, medjutim to ne mogu da type-ujem) (IME KANALA SE JOS NAZIVA Isubject-OM, LI MRZO ME DA PAMTI TERMIN subject)
 
-`onMessage` --> `(event: EventData ) => void`
+`onMessage` (**ABSTRACT METHOD**) --> `(event: EventData ) => void`
 
-`stanClient` --> `Stan`
+`stanClient` --> `Stan` (BICE PRE INITIALIZED)
 
 `queueGroupName` -> `string`
 
