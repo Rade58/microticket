@@ -360,6 +360,100 @@ I KADA SE PROCESS-UJU TI EVENT-OVI, NAKON AKNOLEDGEMENT-A CE IH NATS ZABELEZITI 
 
 ALI TAKODJE MI POMAZU DA NE REPROCESS-UJEM ALREADY PROCESSED EVENTS
 
-I BITNO JE RECI DA DURABLE SUBSCRIPTIONS NE RADE BEZ OPCIJE setDeliverAllAvailable
+I BITNO JE RECI DA DURABLE SUBSCRIPTIONS NE RADE BEZ OPCIJE setDeliverAllAvailable (**ONA JE BITN ZA KADA IMAS PRVI SERVICE KOJI KORISTI TAJ DURABLE NAME**)
 
-A ZAKLJUCI SAM ZASTO JE TO TAKO, **A POGLEDAJ I OSTATAK VIDEO-A 14-21**
+## ALI QUEUE GROUP MORA BITI PODESEN A BI TI OVO MOGAO TESTIRATI
+
+TI SADA PODESI NOVI QUEUE GROUP
+
+- `code nats_test_project/src/listener.ts`
+
+```ts
+import nats, { Message } from "node-nats-streaming";
+import { randomBytes } from "crypto";
+
+console.clear();
+
+const stan = nats.connect("microticket", randomBytes(4).toString("hex"), {
+  url: "http://localhost:4222",
+});
+
+stan.on("connect", () => {
+  console.log("Listener connected to nats");
+
+  stan.on("close", () => {
+    console.log("NATS connection closed!");
+    process.exit();
+  });
+
+  const options = stan
+    .subscriptionOptions()
+    .setManualAckMode(true)
+
+    .setDeliverAllAvailable()
+
+    .setDurableName("some-microservice");
+
+  const subscription = stan.subscribe(
+    "ticket:created",
+    // EVO PODESIO SAM NOVI UEUE GROUP
+    "novi-queue-group",
+    options
+  );
+
+  subscription.on("message", (msg: Message) => {
+    const data = msg.getData();
+
+    if (typeof data === "string") {
+      const dataObject = JSON.parse(data);
+    }
+
+    console.log(`Received event #${msg.getSequence()}, with data: ${data}`);
+
+    msg.ack();
+  });
+});
+
+process.on("SIGINT", () => {
+  stan.close();
+});
+process.on("SIGTERM", () => {
+  stan.close();
+});
+```
+
+## SADA ZELIM DA TESTIRAM DURABLE SUBSCRIPTIONS, ALI MORAM VRATITI QUEUE GROUP DA BI SE UKLANJALI PROCESSED EVENTS
+
+RESTARTUJ JEDINI SUBSCRIPTION KOJI IMAS
+
+PA VIDIM OPET SVE EVENTS EVER HAPPENED (IMA IH OKO 38)
+
+**PA ZATO STO SU SE ONI DESILI DOK TI DURABLE SUBSCRIPTION NIJE BIO PODESEN, A OPCIJA .setDeliverAllAvailable() UPRAVO TO RADI ZA ONE EVENTS KOJI NIZU ZABELEZENI POVEZNI SA DURABLE NAME-OM**
+
+**DAKLE SVAKI NOVI, NAKNADNO EVENT KOJI JE POSLAT BICE ZABELEZEN POVEZAN SA DURABLE NAME-OM**
+
+ONDA CU POCETI PUBLISHING (RESTARTINGOM PUBLISHING SCRIPT-A)
+
+URADIO SAM TO NEKIH 10 PUTA
+
+**TI EVENTOVI SU UREDNO ECHOED DO LISTNERA, JEDINOG KOJEG IMAM**
+
+***
+
+SADA DOLAZI BITNA STVAR
+
+OVIH 10 EVENTOVA KOJI SU NAKNADNO NAPRAVLJENI SU ZAISTA PROCESSED
+
+**ZATO AKO STARTUJEM NOVI LISTENER**
+
+OTVARAM NOVI TERMINAL
+
+- `cd nats_test_project`
+
+- `yarn listen`
+
+**U TERMINALU TREBALO BI DA SE STAMPA ONIH 38 EVENTOVA, ALI ONI KOJI SU NAKNADNO PRAVLJENI, ONIH 10 KOJI SU PROCESSED NISU TU**
+
+**ZATO STO SU ALREADY PROCESSED**
+
+***
