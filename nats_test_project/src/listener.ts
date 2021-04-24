@@ -68,9 +68,22 @@ abstract class Listener {
    */
   abstract channelName: string;
 
+  /**
+   * @description SLUZI DA SE POSTIGNE UKLANJANJE EVENTA KOJI JE PROOCESSED
+   */
+  abstract queueGroupName: string;
+
+  /**
+   * @description BROJ MILI SEKUNDI NAKON KOJIH CE STREAMING SERVER PRESTATI
+   * DA SALJE NON PROCESSED EVENT
+   */
+  protected ackWait: number = 5 * 1000;
+
   constructor(stanClient: Stan) {
     this.stanClient = stanClient;
 
     Object.setPrototypeOf(this, Listener.prototype);
   }
+
+  subscriptionOptions() {}
 }
