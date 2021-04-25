@@ -116,6 +116,9 @@ stan.on("connect", () => {
 
   const ticketCretedPublisher = new TicketCreatedPublisher(stan);
 
+  // OVDE CES IMATI SAV TYPECRIPT TYPECHECKING
+  // DAKLE AKO POGRESIS NEKI DATA PROPERTI TYPESCRIPT CE YELL-OVATI NA TEBE
+  // ISTO TAKO SA CTRL + SPACE, TI ZNAS TACNO STA DA PROSLEDIS 
   ticketCretedPublisher.publish({
     id: "sfsfsf",
     price: 69,
