@@ -184,5 +184,10 @@ class TicketCreatedListener extends Listener {
     Object.setPrototypeOf(this, TicketCreatedListener.prototype);
   }
 
-  onMessage(parsedData: any, msg: Message) {}
+  onMessage(parsedData: any, msg: Message) {
+    // DAKLE SIGURNO CES OVDE KADA NESTO URADIS
+    // NA PRIMER STORE-UJES NESTO U DATBASE, DA POZOVES
+    // msg.ack() KAKO BI OBZANIO NATS STREAMING SERVERU DA JE
+    // EVENT PROCESSED, KKO SE NE BI SLAO OPET TAJ EVNT DO LISTENERA
+  }
 }
