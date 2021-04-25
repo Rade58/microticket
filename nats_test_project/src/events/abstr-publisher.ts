@@ -23,18 +23,49 @@ export abstract class Publisher<T extends Event> {
     Object.setPrototypeOf(this, Publisher.prototype);
   }
 
+  // EVO SADA SAM ZADAO DA METODA BUDE USTVARI async
   /**
    *
    * @param data To be published
+   * @returns Promise<any>
    */
   publish(data: T["data"]) {
     const jsonData = JSON.stringify(data);
 
-    this.stanClient.publish(this.channelName, jsonData, () => {
-      console.log(`
-        Event Published
-        Channel: ${this.channelName}
-      `);
+    // DEFINISEM PROMISE ,A U NJEMU POZIVAM
+    // stan.publish
+    // ALI IPAK DA NE RIZIKUJEM SA this
+    // STAN CU CUVATI U VARIJABLOJ
+    const stan = this.stanClient;
+    // ALI I channelName
+    const channelName = this.channelName;
+
+    // AKO SE RESOLVE-UJE BICE RESOLVED NI SA CIM
+    return new Promise<void>((res, rej) => {
+      stan.publish(
+        channelName,
+        jsonData,
+        /**
+         *
+         * @param error Error | undefined
+         */
+        (error) => {
+          // REJECTUJEM PROMISE AKO POSTOJI ERROR
+          // TAKODJE RETURNUJEM
+          if (error) {
+            return rej(error);
+          }
+
+          console.log(`
+            Event Published
+            Channel: ${this.channelName}
+          `);
+
+          // OVDE MOZES DA RESOLVE-UJES
+
+          res();
+        }
+      );
     });
   }
 }
