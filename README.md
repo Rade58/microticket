@@ -120,7 +120,7 @@ stan.on("connect", () => {
   // DAKLE AKO POGRESIS NEKI DATA PROPERTI TYPESCRIPT CE YELL-OVATI NA TEBE
   // ISTO TAKO SA CTRL + SPACE, TI ZNAS TACNO STA DA PROSLEDIS 
   ticketCretedPublisher.publish({
-    id: "sfsfsf",
+    id: "aw6dg76df",
     price: 69,
     title: "Stavros concerto",
   });
