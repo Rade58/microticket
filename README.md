@@ -136,6 +136,8 @@ export abstract class Listener {
 
 - `touch nats_test_project/src/events/tickets-created-listener.ts`
 
+STO CE OBICNO I IMATI, JER CES TI DAKLE NA OVAJ NACIN TOKOM DEVELOPMENTA, STALNO KORISTITI ABSTRACTNU KLASU DA STALNO EXTEND-UJES, KAKO BI NAPRAVIO U POSEBNOM FILE-U, SVOJU KLASU, KOJU CES DA KORISTIS
+
 ```ts
 import { Stan, Message } from "node-nats-streaming";
 import { Listener } from "./abstr-listener";
