@@ -128,3 +128,6 @@ stan.on("connect", () => {
 
 ```
 
+## MOZEMO SADA OVO TESTIRATI
+
+JEDAN TERMINAL
