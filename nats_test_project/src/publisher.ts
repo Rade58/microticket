@@ -1,5 +1,8 @@
 import nats from "node-nats-streaming";
 
+// UVOZIMO SADA NASU KLASU CUSTOM PUBLISERA
+import { TicketCreatedPublisher } from "./events/ticket-created-publisher";
+
 console.clear();
 
 const stan = nats.connect("microticket", "abc", {
@@ -9,31 +12,26 @@ const stan = nats.connect("microticket", "abc", {
 stan.on("connect", () => {
   console.log("Publisher connected to NATS");
 
-  const data = JSON.stringify({
+  // OVO SADA NE RADIMO OVAKO
+
+  /* const data = JSON.stringify({
     id: "123",
     title: "concert",
     price: 20,
   });
 
-  // IZ KOJG SE PUBLISH-UJE EVENT U SPECIFICIRANI KANAL
-  // ODMAH PO KONEKTU
-  // ALI KAO SE SECAS MI SMO TO TAKO PODESILI DA
-  // BI EVENTE SLAO RESTARTINGOM SAMO SCRIPTA KOJI POKRECE OVAJ FILE
-  // OVO JE SAMO DAKLE ZA TESTIRANJE
+
   stan.publish("ticket:created", data, () => {
     console.log("Event published");
+  }); */
+
+  // VEC OVAKO
+
+  const ticketCretedPublisher = new TicketCreatedPublisher(stan);
+
+  ticketCretedPublisher.publish({
+    id: "sfsfsf",
+    price: 69,
+    title: "Stavros concerto",
   });
 });
-//
-//
-//
-//
-//
-//
-//
-
-//
-
-//
-
-//

@@ -27,7 +27,7 @@ export abstract class Publisher<T extends Event> {
    *
    * @param data To be published
    */
-  publih(data: T["data"]) {
+  publish(data: T["data"]) {
     const jsonData = JSON.stringify(data);
 
     this.stanClient.publish(this.channelName, jsonData, () => {
