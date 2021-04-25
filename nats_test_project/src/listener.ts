@@ -77,6 +77,13 @@ abstract class Listener {
   abstract queueGroupName: string;
 
   /**
+   * @description
+   * @param parsedData any
+   * @param msg nats.Message
+   */
+  abstract onMessage(parsedData: any, msg: Message): void;
+
+  /**
    * @description BROJ MILI SEKUNDI NAKON KOJIH CE STREAMING SERVER PRESTATI
    * DA SALJE NON PROCESSED EVENT
    */
@@ -135,17 +142,29 @@ abstract class Listener {
           queueGroup: ${this.queueGroupName}
         `
       );
+
+      const parsedData = this.parseMessage(msg);
+
+      // ZASTO PASS-UJEM IN I msg
+      // PA ZA SVAKI SLUCAJ, AKO BUDES TREBAO NESTO DODATNO SA
+      // TOG OBJEKAT
+      // NE KAZEM DA CE TI TREBATI, ALI NEKA JE
+      this.onMessage(parsedData, msg);
     });
   }
 
   /**
-   *
-   * @param msg @type Message
+   * @description parsed message
+   * @param msg nats.Message
    */
-  onMessage(msg: Message) {}
+  parseMessage(msg: Message) {
+    const data = msg.getData();
 
-  /**
-   * @description parse message
-   */
-  parseMessage() {}
+    return typeof data === "string"
+      ? // DAKLE JSON SE DOBIJA IZ MESSAGE-A
+        JSON.parse(data)
+      : // BUFER JE ISTO MOGUCNOST
+        // ALI NECES NIKAD DOBITI BUFFER ALI, OVAKO SE PARSUJE BUFER
+        JSON.parse(data.toString("utf-8"));
+  }
 }
