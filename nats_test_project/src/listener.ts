@@ -53,6 +53,9 @@ process.on("SIGTERM", () => {
   stan.close();
 });
 
+//
+// EVO KREIRM ABSTRACT CLASS-U Listener
+
 abstract class Listener {
   /**
    * @description OVO TREBA DA JE PRE INITIALLIZED, STAN CLIENT (STO ZNACI DA BISMO VEC TREBAL IDA BUDEMO
@@ -85,6 +88,10 @@ abstract class Listener {
     Object.setPrototypeOf(this, Listener.prototype);
   }
 
+  /**
+   *
+   * @description Sets option
+   */
   subscriptionOptions() {
     return (
       this.stanClient
@@ -110,4 +117,35 @@ abstract class Listener {
         .setAckWait(this.ackWait)
     );
   }
+
+  /**
+   * @description SETTING UP SUBSCRIPTION
+   */
+  listen() {
+    const subscription = this.stanClient.subscribe(
+      this.channelName,
+      this.queueGroupName,
+      this.subscriptionOptions()
+    );
+
+    subscription.on("message", (msg: Message) => {
+      console.log(
+        `Mesage received:
+          subject: ${this.channelName}
+          queueGroup: ${this.queueGroupName}
+        `
+      );
+    });
+  }
+
+  /**
+   *
+   * @param msg @type Message
+   */
+  onMessage(msg: Message) {}
+
+  /**
+   * @description parse message
+   */
+  parseMessage() {}
 }
