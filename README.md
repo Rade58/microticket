@@ -167,7 +167,7 @@ abstract class Listener {
       // ZASTO PASS-UJEM IN I msg
       // PA ZA SVAKI SLUCAJ, AKO BUDES TREBAO NESTO DODATNO SA
       // TOG OBJEKAT
-      // NE KAZEM DA CE TI TREBATI, ALI NEKA JE
+      // MISLI MDA CE TI TU TREBATI DA POZOVES msg.ack INSIDE onMessage
       this.onMessage(parsedData, msg);
     });
   }
