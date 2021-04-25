@@ -130,4 +130,32 @@ stan.on("connect", () => {
 
 ## MOZEMO SADA OVO TESTIRATI
 
-JEDAN TERMINAL
+PRVI TERMINAL
+
+- `kubectl get pods`
+
+```zsh
+NAME                                  READY   STATUS    RESTARTS   AGE
+auth-depl-865bdcff84-zq5c8            1/1     Running   0          2d1h
+auth-mongo-depl-fff5dcdd9-lhwz7       1/1     Running   0          2d1h
+client-depl-68d8f8cbd5-wpcl5          1/1     Running   0          2d1h
+nats-depl-f878fb4f9-k6fgq             1/1     Running   0          2d1h
+tickets-depl-6b9c6b485c-lsvgq         1/1     Running   0          2d1h
+tickets-mongo-depl-8456f7b84c-8bbzl   1/1     Running   0          2d1h
+```
+
+- `kubectl port-forward nats-depl-f878fb4f9-k6fgq 4222:4222`
+
+DRUGI TERMINAL:
+
+- `cd nats_test_project`
+
+- `yarn run publish`
+
+TRECI TERMINAL:
+
+- `cd nats_test_project`
+
+- `yarn listen`
+
+IZGLEDA DA SVE FUNKCIONISE
