@@ -85,5 +85,29 @@ abstract class Listener {
     Object.setPrototypeOf(this, Listener.prototype);
   }
 
-  subscriptionOptions() {}
+  subscriptionOptions() {
+    return (
+      this.stanClient
+        .subscriptionOptions()
+        /**
+         * @description ako je listener down na duze bice mu poslati zaostali events
+         */
+        .setDeliverAllAvailable()
+        /**
+         * @description ali mu nece biti poslati already processed events
+         * dali smo isti name kao queued group name
+         */
+        .setDurableName(this.queueGroupName)
+        /**
+         * @description morace se pozivati msg.ack da se potvrdi u listneru da je event processed
+         * sto se naravno govori nats streaming serveru da ne bi slao processed event opet
+         */
+        .setManualAckMode(true)
+        /**
+         * @description na acknoledgment ce se nats streaming server cekati
+         * specificirani broj milisekundi
+         */
+        .setAckWait(this.ackWait)
+    );
+  }
 }
