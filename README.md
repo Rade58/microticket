@@ -1,5 +1,21 @@
 # TYPING EVENT DATA WITH TYPESCRIPT; TYPING CHNNEL NAMES WITH TYPESCRIPT
 
+***
+***
+
+digresija:
+
+OVO JE MOGUCE URADITI
+
+```ts
+interface foo {bar: "stavros"}
+
+const baz: foo['bar'] = "stavros"
+```
+
+***
+***
+
 IDEJA JE DA TYPE-UJES KLASU KOJA EXTENDUJE ABSTRACTNU KLASU Listener
 
 ALI IDEJA JE DA TYPE-UJES CHANNEL NAME (ILI KAKO GA JOS NAZIVAJU subject)
