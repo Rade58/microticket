@@ -1,6 +1,19 @@
 import { Stan, Message } from "node-nats-streaming";
 
-export abstract class Listener {
+// ***** OVO SAM DODAO
+// GRADIS OVAJ INTERFACE U KOJEM SU TI SAMO BITNI FIELD-OVI
+// ALI NE I NJIHOVI TYPE-OVI
+interface EventI {
+  channelName: any;
+  data: any;
+}
+
+// NAPRAVICU GENERIC KOJI EXTEND-UJE GORNJI INTERFACE
+
+export abstract class Listener<T extends EventI> {
+  // KORISTICU FIELD-OVE GENERICA DA TYPE-UJEM channelName PROPERTI
+  // I parsedData PARAMETAR onMessage METODE
+
   /**
    * @description OVO TREBA DA JE PRE INITIALLIZED, STAN CLIENT (STO ZNACI DA BISMO VEC TREBAL IDA BUDEMO
    * CONNECCTED TO NATS STREAMING SERVER) (DOBIJENO SA nats.connect)
@@ -13,7 +26,7 @@ export abstract class Listener {
    * i subject, ali izbrao sa mda se zove kako se zove
    * TO TI JE ONO STO JE U FORMATU    ticket:created   NA PRIMER
    */
-  abstract channelName: string;
+  abstract channelName: T["channelName"];
 
   /**
    * @description SLUZI DA SE POSTIGNE UKLANJANJE EVENTA KOJI JE PROOCESSED
@@ -25,7 +38,7 @@ export abstract class Listener {
    * @param parsedData any
    * @param msg nats.Message
    */
-  abstract onMessage(parsedData: any, msg: Message): void;
+  abstract onMessage(parsedData: T["data"], msg: Message): void;
 
   /**
    * @description BROJ MILI SEKUNDI NAKON KOJIH CE STREAMING SERVER PRESTATI
@@ -89,10 +102,6 @@ export abstract class Listener {
 
       const parsedData = this.parseMessage(msg);
 
-      // ZASTO PASS-UJEM IN I msg
-      // PA ZA SVAKI SLUCAJ, AKO BUDES TREBAO NESTO DODATNO SA
-      // TOG OBJEKAT
-      // NE KAZEM DA CE TI TREBATI, ALI NEKA JE
       this.onMessage(parsedData, msg);
     });
   }
@@ -105,10 +114,7 @@ export abstract class Listener {
     const data = msg.getData();
 
     return typeof data === "string"
-      ? // DAKLE JSON SE DOBIJA IZ MESSAGE-A
-        JSON.parse(data)
-      : // BUFER JE ISTO MOGUCNOST
-        // ALI NECES NIKAD DOBITI BUFFER ALI, OVAKO SE PARSUJE BUFER
-        JSON.parse(data.toString("utf-8"));
+      ? JSON.parse(data)
+      : JSON.parse(data.toString("utf-8"));
   }
 }
