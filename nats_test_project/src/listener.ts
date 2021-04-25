@@ -97,7 +97,7 @@ abstract class Listener {
 
   /**
    *
-   * @description Sets option
+   * @description Sets subscription options
    */
   subscriptionOptions() {
     return (
@@ -167,4 +167,22 @@ abstract class Listener {
         // ALI NECES NIKAD DOBITI BUFFER ALI, OVAKO SE PARSUJE BUFER
         JSON.parse(data.toString("utf-8"));
   }
+}
+
+// TicketCreatedListener
+
+class TicketCreatedListener extends Listener {
+  public channelName: string;
+  public queueGroupName: string;
+
+  constructor(stanClient: Stan) {
+    super(stanClient);
+
+    this.channelName = "ticket:created";
+    this.queueGroupName = "payments-service";
+
+    Object.setPrototypeOf(this, TicketCreatedListener.prototype);
+  }
+
+  onMessage(parsedData: any, msg: Message) {}
 }
