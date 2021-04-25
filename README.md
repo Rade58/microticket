@@ -150,3 +150,60 @@ process.on("SIGTERM", () => {
 
 # SADA MOZEMO DA TESTIRAMO OVO
 
+DAKLEE NECU TI OBJASNJAVATI KAKO SAM EXPOSE-OVAO NATS STREMING SERVER, I KAKO SAM PALIO LISTENERA I PUBLISHERA, JER SAM TO URADIO NEBROJENO PUTA U NEKIM PREDHODNIM BRANCHEVIMA, SAMO CU TI POKAZATI KOMANDE I TERMINALE
+
+TERMINAL 1: (**EXPOSING NATS**)
+
+- `kubectl get pods`
+
+```zsh
+NAME                                  READY   STATUS    RESTARTS   AGE
+auth-depl-865bdcff84-zq5c8            1/1     Running   0          3d
+auth-mongo-depl-fff5dcdd9-lhwz7       1/1     Running   0          3d
+client-depl-68d8f8cbd5-wpcl5          1/1     Running   0          3d
+nats-depl-f878fb4f9-k6fgq             1/1     Running   0          3d
+tickets-depl-6b9c6b485c-lsvgq         1/1     Running   0          3d
+tickets-mongo-depl-8456f7b84c-8bbzl   1/1     Running   0          3d
+
+```
+
+- `kubectl port-forward nats-depl-f878fb4f9-k6fgq 4222:4222`
+
+
+TERMINAL 2: (**RUNNING LISTENER ON MY LOCAL MACHINE**)
+
+- `cd nats_test_project`
+
+- `yarn listen`
+
+**OVO KADA POKRENES TREBALO BI DA NATS POSALJE SVE ONE EVENT-OVE KOJI SU SE IKADA DESILI ZA KANAL `"ticket:created"`**
+
+**TO JE ZATO STO SMO RANIJE SLALI NA TAJ KANAL TOKOM UCENJA**
+
+OVO CE BITI OUTPUT, KOJI NE PRIKAZUJEM U ELOSTI JER MA DOSTA EVENTOVA
+
+```zsh
+# ...
+# ...
+Event data! { id: '123', title: 'concert', price: 20 }
+Mesage received:
+          subject: ticket:created
+          queueGroup: payments-service
+        
+Event data! { id: '123', title: 'concert', price: 20 }
+Mesage received:
+          subject: ticket:created
+          queueGroup: payments-service
+```
+
+**BITNO JE SAM ODA SAM JA DEEFINISAO DA SO OVO GORE STAMA KROZ `onMessage` METODU, MOJE KLASE** (ALI TO JE I DRUGO STMAPANJE KOJE SAM DEFINISAO U SAMOM message HANDLERU PRI DEFINISANJU ABSTRACT KLASE)
+
+TERMINAL 3: (**RUNNING PUBLISHER ON MY LOCL MACHINE**)
+
+- `cd nats_test_project`
+
+- `yarn run publish`
+
+**OVO CE DAKLE UCINITI I DA SE ODMAH POSALJE EVENT, ZATO STO SAM TAK ODEFINISAO U `nats_test_project/src/publisher.ts`**
+
+A RESAVINGOM OVOG FAJLA RESTARTUJEM EXECUTABLE STO ZNACI DA TAKO OPET MOGU SLATI EVENT NA TAJ NACIN
