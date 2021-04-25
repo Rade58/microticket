@@ -5,7 +5,7 @@ import { TicketCreatedEventI } from "./ticket-created-event";
 // ALI CE TREBA TI I ENUM
 import { ChannelNamesEnum as CNE } from "./channel-names";
 
-export class TicketCreated extends Publisher<TicketCreatedEventI> {
+export class TicketCreatedPublisher extends Publisher<TicketCreatedEventI> {
   /**
    * @description channel name (also known as subject)
    */
@@ -16,7 +16,7 @@ export class TicketCreated extends Publisher<TicketCreatedEventI> {
 
     this.channelName = CNE.ticket_created;
 
-    Object.setPrototypeOf(this, TicketCreated.prototype);
+    Object.setPrototypeOf(this, TicketCreatedPublisher.prototype);
   }
 
   // METODU publish VEC NASLEDJUJES IZ ASTRCTNE KLASE
