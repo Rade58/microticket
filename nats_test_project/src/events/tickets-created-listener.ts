@@ -16,7 +16,6 @@ export class TicketCreatedListener extends Listener {
 
   onMessage(parsedData: any, msg: Message) {
     console.log("Event data!", parsedData);
-
     msg.ack();
   }
 }
