@@ -150,12 +150,12 @@ DRUGI TERMINAL:
 
 - `cd nats_test_project`
 
-- `yarn run publish`
+- `yarn listen`
 
 TRECI TERMINAL:
 
 - `cd nats_test_project`
 
-- `yarn listen`
+- `yarn run publish`
 
-IZGLEDA DA SVE FUNKCIONISE
+IZGLEDA DA SVE FUNKCIONISE, I PVI PUT I KADA SAM RESTARTOVAO PUBLISHER SCRIPT
