@@ -1,12 +1,3 @@
-# CUSTOM PUBLISHER
-
-NAPRAVICU I Publisher BASE CLASS, ODNOSNO Publisher ABSTRACT CLASS, SIMILAR TO Listener CLASS, KOJI SAM VEC NAPRAVIO
-
-NARAVNO, UZ SLICAN TYPESCRIPT SUPPORT, KOJI SAM URADIO I U Listener KLASI
-
-- `touch nats_test_project/src/events/abstr-publisher.ts`
-
-```ts
 import { Stan } from "node-nats-streaming";
 
 interface Event {
@@ -47,4 +38,3 @@ export abstract class Publisher<T extends Event> {
     });
   }
 }
-```
