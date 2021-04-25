@@ -1,59 +1,8 @@
 import nats, { Message, Stan } from "node-nats-streaming";
 import { randomBytes } from "crypto";
 
-// OVAJ CODE MOZES KORISTITI KAO PODSETNIK I REFERENCU
-// DOK GRADIS ABSTRACT CLASSU Listener NA DNU FILE-A
-
 console.clear();
 
-const stan = nats.connect("microticket", randomBytes(4).toString("hex"), {
-  url: "http://localhost:4222",
-});
-
-stan.on("connect", () => {
-  console.log("Listener connected to nats");
-
-  stan.on("close", () => {
-    console.log("NATS connection closed!");
-    process.exit();
-  });
-
-  const options = stan
-    .subscriptionOptions()
-    .setManualAckMode(true)
-
-    .setDeliverAllAvailable()
-
-    .setDurableName("some-microservice");
-
-  const subscription = stan.subscribe(
-    "ticket:created",
-
-    "novi-queue-group",
-    options
-  );
-
-  subscription.on("message", (msg: Message) => {
-    const data = msg.getData();
-
-    if (typeof data === "string") {
-      const dataObject = JSON.parse(data);
-    }
-
-    console.log(`Received event #${msg.getSequence()}, with data: ${data}`);
-
-    msg.ack();
-  });
-});
-
-process.on("SIGINT", () => {
-  stan.close();
-});
-process.on("SIGTERM", () => {
-  stan.close();
-});
-
-//
 // EVO KREIRM ABSTRACT CLASS-U Listener
 
 abstract class Listener {
@@ -185,20 +134,76 @@ class TicketCreatedListener extends Listener {
   }
 
   onMessage(parsedData: any, msg: Message) {
-    // DAKLE SIGURNO CES OVDE KADA NESTO URADIS
-    // NA PRIMER STORE-UJES NESTO U DATBASE, DA POZOVES
-    // msg.ack() KAKO BI OBZANIO NATS STREAMING SERVERU DA JE
-    // EVENT PROCESSED, KKO SE NE BI SLAO OPET TAJ EVNT DO LISTENERA
-
-    // ZA SADA CONSOLE LOG-UJEM OSOME DATA
-
     console.log("Event data!", parsedData);
 
-    // DAKLE AKO SVE PRODJE CORRECTLY, ZOVE SE
     msg.ack();
-
-    // AKO NE PRODJE CORRECTLY msg.ack NEBI TREBAL ODA SE IZVRSI
-    // NARAVNO TU LOGIKU CES IMPLEMENTIRATI
-    // KADA BUDEMO KREIRALI NEKI KONKRETNIJI PRIMER
   }
 }
+
+// ...
+// OVO JE OK, KORITICU GA KAO JEDINI ARGUMENT PRI INSTATICIZIRANJU
+// MOJE KLASE, JER TAKO I TREBA
+const stan = nats.connect("microticket", randomBytes(4).toString("hex"), {
+  url: "http://localhost:4222",
+});
+
+// OVAJ CONNECT JE I DALJE POTREBAN
+stan.on("connect", () => {
+  console.log("Listener connected to nats");
+
+  // I OVALOGIKA KOJA JE TU ZBOG PREVAZILAZENJANJ CONCURRENCY PROBLEMA
+  //  I DALJE TREBA DA OSTANE
+  stan.on("close", () => {
+    console.log("NATS connection closed!");
+    process.exit();
+  });
+
+  // DAKLE NISTA OD OVOGA MI VISE NE TREBA
+
+  /* const options = stan
+    .subscriptionOptions()
+    .setManualAckMode(true)
+
+    .setDeliverAllAvailable()
+
+    .setDurableName("some-microservice");
+
+  const subscription = stan.subscribe(
+    "ticket:created",
+
+    "novi-queue-group",
+    options
+  ); */
+  /*
+  subscription.on("message", (msg: Message) => {
+    const data = msg.getData();
+
+    if (typeof data === "string") {
+      const dataObject = JSON.parse(data);
+    }
+
+    console.log(`Received event #${msg.getSequence()}, with data: ${data}`);
+
+    msg.ack();
+  }) */
+
+  // EVO OVDE INSTATIZIRAM MOJU KLASU, IAKO JE NISI MORAO
+  // DA JE CUVAS U VARIJABLOJ
+  const ticketCreatedListener = new TicketCreatedListener(stan);
+  //
+
+  // SVA LOGIKA SUBSCRIPTION JE U METODI listen KOJA JE NA
+  // INSTANCI
+  ticketCreatedListener.listen(); // DAKLE OVO SI MOGAO CHAIN-OVATI GORE
+  // JER CES INSTANCU KORISTITI SAMO DA POZOVES .listen
+});
+
+// OVO JE OPET ONA LOGIKA SA KOJOM PREVAZILAZIM CONCURRENCY ISSUES I TO OSTAJE
+process.on("SIGINT", () => {
+  stan.close();
+});
+process.on("SIGTERM", () => {
+  stan.close();
+});
+
+//

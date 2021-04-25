@@ -13,9 +13,17 @@ ONE PROPERTIJE I METODE KOJE SAM TAMO DEFINISAO KAO ABSTRACR, AK OJE ONDA MORS D
 - `code nats_test_project/src/listener.ts`
 
 ```ts
-// ...
-// ...
+import nats, { Message, Stan } from "node-nats-streaming";
+import { randomBytes } from "crypto";
 
+
+console.clear();
+
+// ... OVDE SAM STAVIO ABSTRACT Listener CLASS
+// ALI NECU TI JE OVDE POKAZIVATI, JER ZAUZIMA MNOGO MESTA
+
+// ...
+// ...
 
 // TicketCreatedListener
 
@@ -61,5 +69,84 @@ KORISTICU TOG CLIENT, ALI IMAM SADA DOSTA CODE-A KOJI VISE NE TREBA ZA KOJI CE B
 - `code nats_test_project/src/listener.ts`
 
 ```ts
+import nats, { Message, Stan } from "node-nats-streaming";
+import { randomBytes } from "crypto";
 
+
+console.clear();
+
+// ... OVDE JE DCLARED abtract Listener CLASS (ALI NE 
+// ... PRIKAZUJEM TI JE JER ZAUZIMA DOSTA PROSTORA)
+
+// ... OVDE SAM KREIRAO TicketCreatedListener KLASU, ALI NE
+// ... PRIKAZUJEM TI JE JER ZAUZIMA MNOGO PROSTORA
+
+// ...
+// OVO JE OK, KORITICU GA KAO JEDINI ARGUMENT PRI INSTATICIZIRANJU
+// MOJE KLASE, JER TAKO I TREBA
+const stan = nats.connect("microticket", randomBytes(4).toString("hex"), {
+  url: "http://localhost:4222",
+});
+
+// OVAJ CONNECT JE I DALJE POTREBAN
+stan.on("connect", () => {
+  console.log("Listener connected to nats");
+
+  // I OVALOGIKA KOJA JE TU ZBOG PREVAZILAZENJANJ CONCURRENCY PROBLEMA
+  //  I DALJE TREBA DA OSTANE
+  stan.on("close", () => {
+    console.log("NATS connection closed!");
+    process.exit();
+  });
+
+  // DAKLE NISTA OD OVOGA MI VISE NE TREBA
+
+  /* const options = stan
+    .subscriptionOptions()
+    .setManualAckMode(true)
+
+    .setDeliverAllAvailable()
+
+    .setDurableName("some-microservice");
+
+  const subscription = stan.subscribe(
+    "ticket:created",
+
+    "novi-queue-group",
+    options
+  ); */
+  /*
+  subscription.on("message", (msg: Message) => {
+    const data = msg.getData();
+
+    if (typeof data === "string") {
+      const dataObject = JSON.parse(data);
+    }
+
+    console.log(`Received event #${msg.getSequence()}, with data: ${data}`);
+
+    msg.ack();
+  }) */
+
+  // EVO OVDE INSTATIZIRAM MOJU KLASU, IAKO JE NISI MORAO
+  // DA JE CUVAS U VARIJABLOJ
+  const ticketCreatedListener = new TicketCreatedListener(stan);
+  //
+
+  // SVA LOGIKA SUBSCRIPTION JE U METODI listen KOJA JE NA
+  // INSTANCI
+  ticketCreatedListener.listen(); // DAKLE OVO SI MOGAO CHAIN-OVATI GORE
+  // JER CES INSTANCU KORISTITI SAMO DA POZOVES .listen
+});
+
+// OVO JE OPET ONA LOGIKA SA KOJOM PREVAZILAZIM CONCURRENCY ISSUES I TO OSTAJE
+process.on("SIGINT", () => {
+  stan.close();
+});
+process.on("SIGTERM", () => {
+  stan.close();
+});
 ```
+
+# SADA MOZEMO DA TESTIRAMO OVO
+
