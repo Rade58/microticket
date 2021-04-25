@@ -14,15 +14,21 @@ stan.on("connect", async () => {
   const ticketCretedPublisher = new TicketCreatedPublisher(stan);
 
   // A OVO MOGU AWAIT-OVATI
+  // A SVE MOZE BITI U    try    catch    BLOKU
+  // AKO ZELIS DA CAPTURE-UJES ERROR
 
-  await ticketCretedPublisher.publish({
-    id: "sfsfsf",
-    price: 69,
-    title: "Stavros concerto",
-  });
+  try {
+    await ticketCretedPublisher.publish({
+      id: "sfsfsf",
+      price: 69,
+      title: "Stavros concerto",
+    });
 
-  // I OVDE STMAPAM DA JE EVENT USPESNO POSLAT
-  // AKO PUBLISHING NIJE SUCCESSFUL, NI JEDAN CODE OVDE
-  // NE BI TREBALO DA SE IZVRSI
-  console.log("Event is successfully published");
+    // I OVDE STMAPAM DA JE EVENT USPESNO POSLAT
+    // AKO PUBLISHING NIJE SUCCESSFUL, NI JEDAN CODE OVDE
+    // NE BI TREBALO DA SE IZVRSI
+    console.log("Event is successfully published");
+  } catch (err) {
+    console.error(err);
+  }
 });
