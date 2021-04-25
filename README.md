@@ -17,8 +17,37 @@ ONE PROPERTIJE I METODE KOJE SAM TAMO DEFINISAO KAO ABSTRACR, AK OJE ONDA MORS D
 // ...
 
 
+// TicketCreatedListener
 
+class TicketCreatedListener extends Listener {
+  public channelName: string;
+  public queueGroupName: string;
 
+  constructor(stanClient: Stan) {
+    super(stanClient);
 
+    this.channelName = "ticket:created";
+    this.queueGroupName = "payments-service";
 
+    Object.setPrototypeOf(this, TicketCreatedListener.prototype);
+  }
+
+  onMessage(parsedData: any, msg: Message) {
+    // DAKLE SIGURNO CES OVDE KADA NESTO URADIS
+    // NA PRIMER STORE-UJES NESTO U DATBASE, DA POZOVES
+    // msg.ack() KAKO BI OBZANIO NATS STREAMING SERVERU DA JE
+    // EVENT PROCESSED, KKO SE NE BI SLAO OPET TAJ EVNT DO LISTENERA
+
+    // ZA SADA CONSOLE LOG-UJEM OSOME DATA
+
+    console.log("Event data!", parsedData);
+
+    // DAKLE AKO SVE PRODJE CORRECTLY, ZOVE SE
+    msg.ack();
+
+    // AKO NE PRODJE CORRECTLY msg.ack NEBI TREBAL ODA SE IZVRSI
+    // NARAVNO TU LOGIKU CES IMPLEMENTIRATI
+    // KADA BUDEMO KREIRALI NEKI KONKRETNIJI PRIMER
+  }
+}
 ```
