@@ -27,3 +27,6 @@ export enum ChannelNamesEnum {
 // DA SE OVDE VRATIOS OVO UPDATE-UJES
 
 ```
+
+
+# ENUM TYPE COUPLING WITH DATA INTERFACE
