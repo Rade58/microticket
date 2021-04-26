@@ -1,6 +1,5 @@
 import { app } from "./app";
 import mongoose from "mongoose";
-// EVO UVOZIM POMENUTU INSTANCU
 import { natsWrapper } from "./events/nats-wrapper";
 
 const start = async () => {
@@ -13,13 +12,21 @@ const start = async () => {
   }
 
   try {
-    // OVDE CU DEFINISATI CONNECTING
-    // CLIENT ID JE MORE OR LESS SOME RANDOM VALUE
     await natsWrapper.connect("microticket", "tickets-stavros-12345", {
-      // I ZDAJEM URL
       url: "http://nats-srv:4222",
     });
-    //
+
+    // EVO OVO JE DOBRO MESTO ZA DEFINISANJE GRACEFUL SHUTDOWN-A
+    const sigTerm_sigInt_callback = () => {
+      natsWrapper.client.close();
+    };
+    process.on("SIGINT", sigTerm_sigInt_callback);
+    process.on("SIGTERM", sigTerm_sigInt_callback);
+
+    natsWrapper.client.on("close", () => {
+      process.exit();
+    });
+    //  -----------------------------------------------------
 
     await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
