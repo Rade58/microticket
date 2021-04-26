@@ -2,8 +2,61 @@
 
 **OVO CE BITI DUGACAK BRANCH I RECI CU DOSTA STVARI**
 
-GLEDACU DA OVDE BUDEM SAZET A TI SE ZA DETALJNIJE OBJASNJENJE VRATI I POGLEDAJ VIDEO-E ; **ALI IPAK MISLIM DA CU TI PRENETI NAJVAZNIJE STVARI**
+GLEDACU DA OVDE BUDEM SAZET, A TI SE **`ZA DETALJNIJE OBJASNJENJE VRATI I POGLEDAJ VIDEO-E: ` `16-03 16-04`
 
+**ALI IPAK MISLIM DA CU TI PRENETI NAJVAZNIJE STVARI U SAZETOM FORMATU**
+
+## VEROVATNO MISLIS DA SE MOZES ODAMAH KONEKTOVATI NA NATS STREAMING SERVER; ODNOSNO VEROVATNO MISLIS DA BI MOGAO ODMAH POZVATI `stan.connect`, I DA JE LOGICNO MESTO DA AWAIT-UJES TAJ PROCES TAMO GDE SE I KONEKTUJES NA DATABASE SA MONGOOSE-OM; `E PA NIJE TAKO`
+
+JEDNO JE SIGURNO; CONNECTING TI HOCES OBAVLJATI OVDE:
+
+- `cat tickets/src/index.ts`
+
+```ts
+import { app } from "./app";
+import mongoose from "mongoose";
+
+const start = async () => {
+  if (!process.env.JWT_KEY) {
+    throw new Error("JWT_KEY env variable undefined");
+  }
+
+  if (!process.env.MONGO_URI) {
+    throw new Error("MONGO_URI env variable undefined");
+  }
+
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+    });
+
+    // ---------------------------------
+    // EVO OVDE BI NAPRAVIO CONNECTING
+    // ---------------------------------
+
+    console.log("Connected to DB (tickets-mongo)");
+  } catch (err) {
+    console.log("Failed to connect to DB");
+    console.log(err);
+  }
+
+  const PORT = 3000;
+  app.listen(PORT, () => {
+    console.log(`listening on http://localhost:${PORT} INSIDE tickets POD`);
+  });
+};
+
+start();
+
+```
+
+ALI TO NE MOGU TEK TAKO ODRADITI
+
+SA KONEKTINGOM NA MONGO UZ POMOC MONGOOSE-A JE TO MOGUCE ODRADDITI JER JE DOSTA STVARI ABTRACTED OUT
+
+**E PA TO STO JE ZA MONGOOSE ABSTRACTED OUT, TI CES MORATI ZA CONNECTING TO NATS STREAMING SERVER DEFINISATI**
 
 
 

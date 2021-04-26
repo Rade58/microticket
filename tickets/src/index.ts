@@ -17,6 +17,10 @@ const start = async () => {
       useCreateIndex: true,
     });
 
+    // ---------------------------------
+    // EVO OVDE BI NAPRAVIO CONNECTING
+    // ---------------------------------
+
     console.log("Connected to DB (tickets-mongo)");
   } catch (err) {
     console.log("Failed to connect to DB");
