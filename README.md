@@ -240,6 +240,80 @@ spec:
 
 EVO POGLEDEJ `cat skaffold.yaml` (TAMO SAM GA PODESIO UNDER `projectId`)
 
+# URL NA KOJI KONEKTUJES CLIENTA, JESTE NAME CLUSTER IP SERVICE-A, RELATED TO NATS STREMING SERVER
+
+A PORT JE ONAJ PORT KOJI SI PODESIO U (`infra/k8s/nats-depl.yaml`) KAO client PORT
+
+- `kubectl get services`
+
+```zsh
+NAME                TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)             AGE
+auth-mongo-srv      ClusterIP   10.68.15.85   <none>        27017/TCP           13d
+auth-srv            ClusterIP   10.68.9.8     <none>        3000/TCP            13d
+client-srv          ClusterIP   10.68.2.151   <none>        3000/TCP            13d
+kubernetes          ClusterIP   10.68.0.1     <none>        443/TCP             30d
+nats-srv            ClusterIP   10.68.3.138   <none>        4222/TCP,8222/TCP   4d6h
+tickets-mongo-srv   ClusterIP   10.68.6.247   <none>        27017/TCP           7d22h
+tickets-srv         ClusterIP   10.68.12.30   <none>        3000/TCP            7d22h
+```
+
+A MOGAO SI PROCITATI NAME CLUSTER IP I FROM CONFIG FILE (TAM OSI GA I PODESIO): `infra/k8s/nats-depl.yaml`
+
+OVO JE URL KOJ ISAM KONSTRUISAO: **`http://nats-srv:4222`**
+
+# SADA CU DA UPOTREBIM INSTANCU `NatsWrapper` KLASE, KAKO BI SE KONEKTOVAO NA NATS STREAMING SERVER
+
+- `code tickets/src/index.ts`
+
+```ts
+import { app } from "./app";
+import mongoose from "mongoose";
+// EVO UVOZIM POMENUTU INSTANCU
+import { natsWrapper } from "./events/nats-wrapper";
+
+const start = async () => {
+  if (!process.env.JWT_KEY) {
+    throw new Error("JWT_KEY env variable undefined");
+  }
+
+  if (!process.env.MONGO_URI) {
+    throw new Error("MONGO_URI env variable undefined");
+  }
+
+  try {
+    // OVDE CU DEFINISATI CONNECTING
+    // CLIENT ID JE MORE OR LESS SOME RANDOM VALUE
+    await natsWrapper.connect("microticket", "microticket-12345", {
+      // I ZDAJEM URL
+      url: "http://nats-srv:4222",
+    });
+    //
+
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+    });
+
+    console.log("Connected to DB (tickets-mongo)");
+  } catch (err) {
+    console.log("Failed to connect to DB");
+    console.log(err);
+  }
+
+  const PORT = 3000;
+  app.listen(PORT, () => {
+    console.log(`listening on http://localhost:${PORT} INSIDE tickets POD`);
+  });
+};
+
+start();
+```
+
+# MOZEMO DA POKRENEMO SKAFFOLD KAKO BI VIDELI DA LI CE SE USPENO CONNECTOVATI TO NATS
+
+- `skaffold dev`
+
 ***
 ***
 ***

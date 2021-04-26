@@ -1,5 +1,7 @@
 import { app } from "./app";
 import mongoose from "mongoose";
+// EVO UVOZIM POMENUTU INSTANCU
+import { natsWrapper } from "./events/nats-wrapper";
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
@@ -11,15 +13,19 @@ const start = async () => {
   }
 
   try {
+    // OVDE CU DEFINISATI CONNECTING
+    // CLIENT ID JE MORE OR LESS SOME RANDOM VALUE
+    await natsWrapper.connect("microticket", "microticket-12345", {
+      // I ZDAJEM URL
+      url: "http://nats-srv:4222",
+    });
+    //
+
     await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
     });
-
-    // ---------------------------------
-    // EVO OVDE BI NAPRAVIO CONNECTING
-    // ---------------------------------
 
     console.log("Connected to DB (tickets-mongo)");
   } catch (err) {
