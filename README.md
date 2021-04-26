@@ -41,6 +41,7 @@ export class TicketCreatedPublisher extends Publisher<TicketCreatedEventI> {
 
 // NISTA TI NE TREBA OVDE VISE
 // SECAS SE DA TI JE publish VEC POTPUNO DEFINISANO
+// I ONO RETURN-UJE PROMISE, TAKO DA GA MOZES KORISTITI SA await
 // ONA NIJE ABSTRACT METODA
 // ABTRACT PROPERTI JE JEDINO BIO channelName
 ```
