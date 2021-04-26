@@ -256,6 +256,26 @@ export abstract class Publisher<T extends EventI> {
 
 SADA JE SVE OK
 
-# SADA ZELIM DA ADODAM JOJ CHANNEL NAME-OVA KOJE CU KORISTITI ZA MOJ OVERALL PROJEKAT, A ZELIM DA DODAM I PAR NOVIH INTERFACE-OVA ZA EVENTOVE
+# SADA ZELIM DA DODAM JOS CHANNEL NAME-OVA KOJE CU KORISTITI ZA MOJ OVERALL PROJEKAT, A ZELIM DA DODAM I PAR NOVIH INTERFACE-OVA ZA EVENTOVE
 
+TREBA CE MI I "ticket:updated", TAKO DA CU I TO DA DODAM
+
+- `code common/src/events/channel-names.ts`
+
+```ts
+/**
+ * @description Channel Names Enum   (ALSO KNOWN AS SUBJECTS)
+ * @description BITNO JE DA VREDNOSTI IMAJU ":"
+ */
+export enum ChannelNamesEnum {
+  ticket_created = "ticket:created",
+  // DODAO SAM OVO
+  ticket_updated = "ticket:updated",
+}
+
+```
+
+**SADA CU DA NAPRAVIM TYPE ZA EVENT, GDE RADIM ONAJ TYPE COUPLING, GDE COUPLE-UJEM CHANNEL NAME SA EVENT DATA-OM**
+
+- `touch common/src/events/ticket-updated-event.ts`
 
