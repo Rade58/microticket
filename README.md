@@ -84,6 +84,11 @@ const start = async () => {
     process.on("SIGTERM", sigTerm_sigInt_callback);
 
     natsWrapper.client.on("close", () => {
+
+      // OVDE ZELIM DA STAMPAM NESTO SAMO
+      // ZATO STO OVO ZELIM JEDNOM DA TESTIRAM
+      console.log("Connection to NATS Streaming server closed")
+
       process.exit();
     });
     //  -----------------------------------------------------
@@ -109,9 +114,30 @@ const start = async () => {
 start();
 ```
 
+**MOZES SADA DA RESTARTUJE SKAFFOLD**
 
+- `skaffold dev`
 
+ZELIM DA TESTIRAM OVAJ GRACEFUL SHUTOWN; **A TO MOGU PROSTO URADITI DELETING-OM POD-A U KOJEM JE NATS STREAMING SERVER**
 
+- `kubectl get pods`
 
+```zsh
+NAME                                  READY   STATUS    RESTARTS   AGE
+auth-depl-7c986d45d9-5mvh6            1/1     Running   0          3m43s
+auth-mongo-depl-5c78b6dbf7-l7hbq      1/1     Running   0          3m43s
+client-depl-9b4c8bf94-mvc9x           1/1     Running   0          3m43s
+nats-depl-df8968775-wbwqt             1/1     Running   0          3m42s
+tickets-depl-58d78c5c56-8gwxl         1/1     Running   0          3m41s
+tickets-mongo-depl-65cfdd4b79-r9c4x   1/1     Running   0          3m41s
+```
 
+- `kubectl delete pod nats-depl-df8968775-wbwqt`
 
+OVO SAM ODMAH VIDEO U SKAFFOLD-OVOM TERMINALU
+
+```zsh
+[tickets] Connection to NATS Streaming server closed
+```
+
+**NARAVNO, UBRZO POD SE PONOVO AUTOMTSKI NPRAVIO, I VIDEO SAM ONU PORUKU O USPESNOM CONNECTINGU TO NATS**

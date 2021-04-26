@@ -24,6 +24,7 @@ const start = async () => {
     process.on("SIGTERM", sigTerm_sigInt_callback);
 
     natsWrapper.client.on("close", () => {
+      console.log("Connection to NATS Streaming server closed");
       process.exit();
     });
     //  -----------------------------------------------------
