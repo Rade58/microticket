@@ -314,6 +314,21 @@ start();
 
 - `skaffold dev`
 
+I EVO IMAO SI OVAJ LOG FROM POD ELATED TO tickets MICROSERVICE, KADA JE SKAFFOLD ODRADIO SVOJE
+
+```zsh
+# ...
+# ...
+[tickets] 
+[tickets]           Connected to Nats Streaming Server
+[tickets]           clientId: microticket-12345
+[tickets]         
+[tickets] Connected to DB (tickets-mongo)
+[tickets] listening on http://localhost:3000 INSIDE tickets POD
+```
+
+**DAKLE USPESNO KONEKCIJ NA NATS STREAMING SERVER JE USPESNA**
+
 ***
 ***
 ***
