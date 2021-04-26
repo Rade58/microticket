@@ -343,3 +343,17 @@ export * from "./events/event-interfaces/ticket-created-event";
 export * from "./events/event-interfaces/ticket-updated-event";
 
 ```
+
+# SADA CEMO DA REBUILD-UJEMO, I REPUBLISH-UJEMO NAS PACKAGE
+
+ON CE TAKO DOBITI I NOVU VERZIJU
+
+- `cd common`
+
+- `npm run pub` (SAM SE PODSETI SE STA SVE OVAJ SCCRIPT RADI)
+
+# SADA MOZEMO DA UPDATE-UJEMO VERZIJI, ODNOSNO DA REINSTALIRAMO, NAS COMMON MODULE, U TRENITNO JEDINOM MICROSERVICE-U, KOJI GA KORISTI
+
+- `cd tickets`
+
+- `yarn add @ramicktick/common --latest`
