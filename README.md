@@ -37,3 +37,13 @@ export class TicketCreatedPublisher extends Publisher<TicketCreatedEventI> {
 // ONA NIJE ABSTRACT METODA
 // ABTRACT PROPERTI JE JEDINO BIO channelName
 ```
+
+# ZELIM DA REDEFINISEM GETTER-A IZ `NatsWrapper` KLASE, KAKO IPAK TAJ GETTER NE BI RETURN-OVAO `undefined`, JER POSTOJI I TA MOGUCNOST
+
+**USTVARI AKO JE CLIENT, USTVARI undefined; THROW-OVCEMO ERROR**
+
+- `code tickets/src/events/nats-wrapper.ts`
+
+```ts
+
+```
