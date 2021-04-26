@@ -45,6 +45,3 @@ export class TicketCreatedPublisher extends Publisher<TicketCreatedEventI> {
 // ONA NIJE ABSTRACT METODA
 // ABTRACT PROPERTI JE JEDINO BIO channelName
 ```
-
-
-
