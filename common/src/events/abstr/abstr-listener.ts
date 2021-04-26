@@ -1,6 +1,6 @@
 import { Stan, Message } from "node-nats-streaming";
 // UVEZAO OVO
-import { ChannelNamesEnum as CNE } from "./channel-names";
+import { ChannelNamesEnum as CNE } from "../channel-names";
 
 interface EventI {
   // I UMESTO OVOGA

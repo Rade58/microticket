@@ -298,3 +298,24 @@ export interface TicketUpdatedEventI {
 ```
 
 DODAJ I userId FIELD I U `common/src/events/ticket-created-event.ts`
+
+# ISTO TAKO MENI SE NE SVIDJA FOLDER STRUKTURA UOPSTE
+
+TREBALO BI DA ZADAM FOLDER U KOJEM CU DEFINISATI EVENT INTERFACES, ISTO TAKO FOLDER ZA ABSTRACT KLASE
+
+MISLIM DA JE LAKSE TAKO
+
+- `mkdir common/src/events/abstr`
+
+U POMENUTI FOLDER STAVITI ABSTRACT KLASE
+
+TAKO DA SADA IMAM
+
+`common/src/events/abstr/abstr-listener.ts` I `common/src/events/abstr/abstr-publisher.ts`
+
+- `mkdir common/src/events/event-interfaces`
+
+U POMENUTI FOLDER CU STAVITI, SVE EVENT INTERFACE-OVE
+
+TAKO DA SADA TAMO IMAM `common/src/events/event-interfaces/ticket-created-event.ts` I `common/src/events/event-interfaces/ticket-updated-event.ts`
+

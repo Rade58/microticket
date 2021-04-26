@@ -1,6 +1,6 @@
 import { Stan } from "node-nats-streaming";
 // UVOZIM OVO
-import { ChannelNamesEnum as CNE } from "./channel-names";
+import { ChannelNamesEnum as CNE } from "../channel-names";
 
 interface EventI {
   // UMESTO OVOGA

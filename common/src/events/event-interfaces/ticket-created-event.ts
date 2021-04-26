@@ -1,4 +1,4 @@
-import { ChannelNamesEnum as CNE } from "./channel-names";
+import { ChannelNamesEnum as CNE } from "../channel-names";
 
 export interface TicketCreatedEventI {
   channelName: CNE.ticket_created;
@@ -6,5 +6,6 @@ export interface TicketCreatedEventI {
     id: string;
     title: string;
     price: number;
+    userId: string;
   };
 }
