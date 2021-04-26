@@ -38,11 +38,6 @@ class NatsWrapper {
     });
   }
 
-  // EVO OVDE, UMESTO OVOG
-  /* get client(): Stan | undefined {
-    return this._client;
-  } */
-  // BOLJE DA URDIM OVAKO
   /**
    * client GETTER
    */
