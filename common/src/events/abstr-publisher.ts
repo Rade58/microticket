@@ -1,11 +1,19 @@
 import { Stan } from "node-nats-streaming";
+// UVOZIM OVO
+import { ChannelNamesEnum as CNE } from "./channel-names";
 
-interface Event {
-  channelName: any;
+interface EventI {
+  // UMESTO OVOGA
+  // channelName: any;
+  // OVO
+  channelName: CNE;
+  //
   data: any;
 }
 
-export abstract class Publisher<T extends Event> {
+// DALJE NISTA NECU MENJATI
+
+export abstract class Publisher<T extends EventI> {
   /**
    * @description NAME OF THE CHANNEL YOU ARE PUBLISHING TO
    */
@@ -23,7 +31,6 @@ export abstract class Publisher<T extends Event> {
     Object.setPrototypeOf(this, Publisher.prototype);
   }
 
-  // EVO SADA SAM ZADAO DA METODA BUDE USTVARI async
   /**
    *
    * @param data To be published
@@ -31,16 +38,9 @@ export abstract class Publisher<T extends Event> {
    */
   publish(data: T["data"]) {
     const jsonData = JSON.stringify(data);
-
-    // DEFINISEM PROMISE ,A U NJEMU POZIVAM
-    // stan.publish
-    // ALI IPAK DA NE RIZIKUJEM SA this
-    // STAN CU CUVATI U VARIJABLOJ
     const stan = this.stanClient;
-    // ALI I channelName
     const channelName = this.channelName;
 
-    // AKO SE RESOLVE-UJE BICE RESOLVED NI SA CIM
     return new Promise<void>((res, rej) => {
       stan.publish(
         channelName,
@@ -50,8 +50,6 @@ export abstract class Publisher<T extends Event> {
          * @param error Error | undefined
          */
         (error) => {
-          // REJECTUJEM PROMISE AKO POSTOJI ERROR
-          // TAKODJE RETURNUJEM
           if (error) {
             return rej(error);
           }
@@ -60,8 +58,6 @@ export abstract class Publisher<T extends Event> {
             Event Published
             Channel: ${this.channelName}
           `);
-
-          // OVDE MOZES DA RESOLVE-UJES
 
           res();
         }

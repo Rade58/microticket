@@ -1,19 +1,19 @@
 import { Stan, Message } from "node-nats-streaming";
+// UVEZAO OVO
+import { ChannelNamesEnum as CNE } from "./channel-names";
 
-// ***** OVO SAM DODAO
-// GRADIS OVAJ INTERFACE U KOJEM SU TI SAMO BITNI FIELD-OVI
-// ALI NE I NJIHOVI TYPE-OVI
 interface EventI {
-  channelName: any;
+  // I UMESTO OVOGA
+  // channelName: any;
+  // STAVIO OVO
+  channelName: CNE;
+  //
   data: any;
 }
 
-// NAPRAVICU GENERIC KOJI EXTEND-UJE GORNJI INTERFACE
+// DALJE SVE OSTAJE ISTO, NISTA NECU DIRATI
 
 export abstract class Listener<T extends EventI> {
-  // KORISTICU FIELD-OVE GENERICA DA TYPE-UJEM channelName PROPERTI
-  // I parsedData PARAMETAR onMessage METODE
-
   /**
    * @description OVO TREBA DA JE PRE INITIALLIZED, STAN CLIENT (STO ZNACI DA BISMO VEC TREBAL IDA BUDEMO
    * CONNECCTED TO NATS STREAMING SERVER) (DOBIJENO SA nats.connect)
