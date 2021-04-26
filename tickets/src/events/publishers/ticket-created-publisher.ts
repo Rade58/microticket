@@ -9,6 +9,12 @@ import {
 export class TicketCreatedPublisher extends Publisher<TicketCreatedEventI> {
   public channelName: CNE.ticket_created;
 
+  // TAKODJE KONSTRUKTORA NISI NI MORAO DEFINISATI
+  // MOGAO SI GORE ASSIGNOVATI ODMAH VREDNOST DO channelName
+  // I NE BI MORAO DEFINISATI CONSTRUKTORA
+  // TO TI TYPESCRIOT DOZVOLJAVA, ODNOSNO DOZVOLJAVA TI SHORTHAND
+  // SINTAKSU
+
   constructor(stan: Stan) {
     super(stan);
 
