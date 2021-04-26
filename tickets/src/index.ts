@@ -15,7 +15,7 @@ const start = async () => {
   try {
     // OVDE CU DEFINISATI CONNECTING
     // CLIENT ID JE MORE OR LESS SOME RANDOM VALUE
-    await natsWrapper.connect("microticket", "microticket-12345", {
+    await natsWrapper.connect("microticket", "tickets-stavros-12345", {
       // I ZDAJEM URL
       url: "http://nats-srv:4222",
     });

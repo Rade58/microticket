@@ -283,7 +283,7 @@ const start = async () => {
   try {
     // OVDE CU DEFINISATI CONNECTING
     // CLIENT ID JE MORE OR LESS SOME RANDOM VALUE
-    await natsWrapper.connect("microticket", "microticket-12345", {
+    await natsWrapper.connect("microticket", "tickets-stavros-12345", {
       // I ZDAJEM URL
       url: "http://nats-srv:4222",
     });
@@ -321,7 +321,7 @@ I EVO IMAO SI OVAJ LOG FROM POD ELATED TO tickets MICROSERVICE, KADA JE SKAFFOLD
 # ...
 [tickets] 
 [tickets]           Connected to Nats Streaming Server
-[tickets]           clientId: microticket-12345
+[tickets]           clientId: tickets-stavros-12345
 [tickets]         
 [tickets] Connected to DB (tickets-mongo)
 [tickets] listening on http://localhost:3000 INSIDE tickets POD
