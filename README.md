@@ -143,3 +143,17 @@ OVO SAM ODMAH VIDEO U SKAFFOLD-OVOM TERMINALU
 DAKLE PROCESS JE USPENO KILLED (I POSTIGNUT JE GRACEFULL SHUTDOWN, ODNOSNO DISCONECTING CLIENT FROM NATS STREAMING SERVER, PRE NEGO STO JE PROCESS EXIT-OVAO)
 
 **NARAVNO, UBRZO POD SE PONOVO AUTOMTSKI NPRAVIO, ODNSNO RESTARTOVAO CONTAINER, I VIDEO SAM ONU PORUKU O USPESNOM CONNECTINGU TO NATS**
+
+A MOZES VIDETI I OVDE DA JE POD NATS-A, JEDNO MRESTARTOVAO
+
+- `kubectl get pods`
+
+```zsh
+NAME                                  READY   STATUS    RESTARTS   AGE
+auth-depl-7c986d45d9-5mvh6            1/1     Running   0          9m14s
+auth-mongo-depl-5c78b6dbf7-l7hbq      1/1     Running   0          9m14s
+client-depl-9b4c8bf94-mvc9x           1/1     Running   0          9m14s
+nats-depl-df8968775-jnbxw             1/1     Running   0          4m10s
+tickets-depl-58d78c5c56-8gwxl         1/1     Running   1          9m12s
+tickets-mongo-depl-65cfdd4b79-r9c4x   1/1     Running   0          9m12s
+```
