@@ -84,7 +84,7 @@ IMACU I CODE KOJI CE SE TAMO MOGUCE IZVRSITI AKO CLOOSE-UJEMO CONNECTION TO THE 
 
 A PIRINITILIZED CLIENT NAM TREBA I U HANDLERIMA NASEG MICROSERVICE-A, TAKO DA CEMO GA I TAMO KORISTITI, TKO DA CEMO GA I TAMO UVOZITI
 
-# JA CU NPRAVITI ``nats-wrapper.ts`` FILE, A U NJEMU CU DA KREIRAM `NatsWrapper` KLASU ;A ONO STO CU IZ FILE-A EXPORT-OVATI JE INSTANCA TE KLASE
+# JA CU NPRAVITI `nats-wrapper.ts` FILE, A U NJEMU CU DA KREIRAM `NatsWrapper` KLASU ;A ONO STO CU IZ FILE-A EXPORT-OVATI JE INSTANCA TE KLASE
 
 KLASA CE IMATI STAN, ODNOSNO NATS CLIENTA NA SEBI
 
@@ -108,7 +108,77 @@ SADA MOZEMO DA PRAVIMO KLASU
 
 ```
 
+# CONNECTING FUNKCIJI SE, IZMEDJU OSTALIH ARGUMENATA DODAJE, I CLUSTER ID
 
+GDE DA PRONADJEM TAJ ID?
+
+PA ZADAO SI GS U `nats-depl.yaml`
+
+- `cat tickets/src/events/nats-wrapper.ts`
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nats-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nats
+  template:
+    metadata:
+      labels:
+        app: nats
+    spec:
+      containers:
+      - name: nats
+        image: nats-streaming:0.17.0
+        args: [
+          #
+          '-p',
+          '4222',
+          #
+          '-m',
+          '8222',
+          #
+          '-hbi',
+          '5s',
+          #
+          '-hbt',
+          '5s',
+          #
+          '-hbf',
+          '2',
+          #
+          '-SD',
+          #
+          # EVO OVO TI JE CLUSTER ID
+          # KADA SAM OVO PODESAVO NISAM TI REKAO DA JE TO TO
+          '-cid',
+          'microticket'
+        ]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nats-srv
+spec:
+  selector:
+    app: nats
+  ports:
+    - name: client
+      protocol: TCP
+      port: 4222
+      targetPort: 4222
+    - name: monitoring
+      protocol: TCP
+      port: 8222
+```
+
+**JA SAM ISTOIMENI ID PODESAVAO KADA SAM PODESAVAO I SKAFFOLD**
+
+EVO POGLEDEJ `cat skaffold.yaml` (TAMO SAM GA PODESIO UNDER `projectId`)
 
 ***
 ***

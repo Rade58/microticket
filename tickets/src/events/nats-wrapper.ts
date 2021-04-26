@@ -9,7 +9,7 @@ class NatsWrapper {
 
   /**
    *
-   * @param clusterId cluster id (specifi) (you can find it in skaffold.yaml) (you setted it)
+   * @param clusterId cluster id (specifi) (you can find it in nats-depl.yaml) (you setted it as `"-cid"`)
    * @param clientId make up one
    * @param clientOpts ClientOpts (but you are interested in "url" filed only)
    */

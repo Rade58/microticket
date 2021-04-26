@@ -14,10 +14,7 @@ spec:
     spec:
       containers:
       - name: nats
-        # OVO CE BITI BITNO (MISLI MDA MORAM OVU VERZIJU)
         image: nats-streaming:0.17.0
-        # SET KOMANDI KKOJI CE SE EXECUTE-OVATI KADA SE BUILD-UJE NAS IMAGE
-        # MOGU IH NACI NA STRANICI
         args: [
           #
           '-p',
@@ -37,6 +34,8 @@ spec:
           #
           '-SD',
           #
+          # EVO OVO TI JE CLUSTER ID
+          # KADA SAM OVO PODESAVO NISAM TI REKAO DA JE TO TO
           '-cid',
           'microticket'
         ]
@@ -49,7 +48,6 @@ spec:
   selector:
     app: nats
   ports:
-    # DODACU DVA PORT-A
     - name: client
       protocol: TCP
       port: 4222
