@@ -27,3 +27,5 @@ tickets-mongo-depl-8456f7b84c-8bbzl   1/1     Running   0          3d22h
 ```
 
 - `kubectl delete pod `
+
+OVO CE DELETOVATI POD A DEPLOYMENT CE AUTOMATSKI DETECT-OVATI DA JE POD DELETED; I STARTUP-OVACE NOVI VERSION, KOJI MOZES ODMAH VIDETI KADA KUCAS `kubectl get pods`
