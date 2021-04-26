@@ -1,9 +1,12 @@
 import { Router, Request, Response } from "express";
 import { body } from "express-validator";
 import { requireAuth, validateRequest } from "@ramicktick/common";
-
-// UVOZIM MODEL
 import { Ticket } from "../models/ticket.model";
+
+// EVO UVOZIM, PRVO MOJ UCUSTOM PUBLISHER KLASU
+import { TicketCreatedPublisher } from "../events/publishers/ticket-created-publisher";
+// UVOZIM I NATS WRAPPER-A, S KOJEG CU UZETI NATS CLIENT-A
+import { natsWrapper } from "../events/nats-wrapper";
 //
 
 const router = Router();
@@ -22,20 +25,25 @@ router.post(
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    // UZIMA DATA SA BODy-JA
     const { title, price } = req.body;
-    // UZIMAM USER ID
     const userId = (req.currentUser as {
       id: string;
       email: string;
       iat: number;
     }).id;
-    // OVAJ GORNJI TYPING SAM URADIO SAMO ZATO STO JE TYPESCRIPT
-    // YELL-OVAO NA MENE
-    // ALI NEM SANSE DA JE currentUser, USTVARI null, JER
-    // requireAuth MIDDLEWARE BRINE O TOME
 
     const ticket = await Ticket.create({ title, price, userId });
+
+    // OVDE JE TICKET CREATED
+    // I MOZEMO OVDE DA PUBLISH-UJEMO EVENT NA SLEDECI NACIN
+    await new TicketCreatedPublisher(natsWrapper.client).publish({
+      // BITNO JE DA OVAKO DODELJUJEM VREDNOSTI, JER GARANTUJEM DA SAM DAT UZEO
+      // SA DOKUMENTA KOJI JE KREIRAN
+      id: ticket.id,
+      title: ticket.title,
+      price: ticket.price,
+      userId: ticket.userId,
+    });
 
     return res.status(201).send(ticket);
   }

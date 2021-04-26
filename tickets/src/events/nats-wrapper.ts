@@ -14,48 +14,45 @@ class NatsWrapper {
    * @param clientOpts ClientOpts (but you are interested in "url" filed only)
    */
   connect(clusterId: string, clientId: string, clientOpts: ClientOpts) {
-    // DAKLE U OVOJ FUNKCIJI PRVO CEMO DA KONEKTUJEMO
-    // STAN CLIENTA
-    // TAKODJE GA DODELJUJEMO _client PROPERTIJU INSTANCE
     this._client = connect(clusterId, clientId, clientOpts);
 
-    // OVO CU DODELITI VARIJABLOJ JER CU TO KORISTITI
-    // U PROMISE-OVOM CALLBACK-U
     const _client = this._client;
-    // PROMISE RETURNUJM  IZ OVE METODE
 
     return new Promise<void>((res, rej) => {
-      // OVAJ HANDLER CE SE IZVRSITI NAKON USPESNE KONEKCIJE
       _client.on("connect", () => {
         console.log(`
           Connected to Nats Streaming Server
           clientId: ${clientId}
         `);
-        // I RESOLVE-UJEM
+
         res();
       });
 
-      // DEFINISEM I HANDLER KOJI CE SE IZFRSITI AKO SE DESI
-      // FAILING TO CONNECT
       _client.on("error", () => {
         console.log(
           `client ${clientId} Failed to connect to Nats Streaming Server`
         );
-        // U OVOOM SLUCJU REJECTUJEMO PROMISE
+
         rej();
       });
     });
   }
 
-  // TREBACE NAM I GETTER ZA CLIENT
-  // JER TO CEMO UPOTREBLJAVATI KADA BUDEMO
-  // KORISTILI OVOG CLIENTA U HANDLERIMA, KADA BUDEMO
-  // INSTATICIZIRALI CUSTOM LISTENERA ILI PUBLISHERA
+  // EVO OVDE, UMESTO OVOG
+  /* get client(): Stan | undefined {
+    return this._client;
+  } */
+  // BOLJE DA URDIM OVAKO
+  /**
+   * client GETTER
+   */
+  get client(): Stan {
+    if (!this._client) {
+      throw new Error("Can't access NATS Streaming Server before connecting.");
+    }
 
-  get client(): Stan | undefined {
     return this._client;
   }
 }
 
-// KAO STO VIDIS IZVOZIS INSTANCU OVE KLASE
 export const natsWrapper = new NatsWrapper();
