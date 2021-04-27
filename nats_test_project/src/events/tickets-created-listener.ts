@@ -33,7 +33,7 @@ export class TicketCreatedListener extends Listener<TicketCreatedEventI> {
     this.channelName = CNE.ticket_created;
     //
 
-    this.queueGroupName = "payments-service";
+    this.queueGroupName = "some-queue-group";
 
     Object.setPrototypeOf(this, TicketCreatedListener.prototype);
   }
