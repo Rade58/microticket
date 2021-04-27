@@ -9,6 +9,11 @@ import {
 import { body } from "express-validator";
 
 import { Ticket } from "../models/ticket.model";
+// UVOZIM CUSTOM PUBLISHER-A
+import { TicketUpdatedPublisher } from "../events/publishers/ticket-updated-publisher";
+// UVOZIM I STAN CLIENT-A ,ODNONO WRAPPER INSTANCU
+import { natsWrapper } from "../events/nats-wrapper";
+//
 
 const router = Router();
 
@@ -50,13 +55,23 @@ router.put(
       throw new NotAuthorizedError();
     }
 
-    // EVO ODLUCIO SAM DA KORISTIM OVU METODU
-
     ticket = await Ticket.findOneAndUpdate(
       { _id: id },
       { price: data.price, title: data.title },
       { new: true, useFindAndModify: true }
     ).exec();
+
+    // EVO OVDE MOGU DA IZVRSIM SLANJE EVENTA
+
+    if (ticket) {
+      await new TicketUpdatedPublisher(natsWrapper.client).publish({
+        id: ticket.id,
+        title: ticket.title,
+        price: ticket.price,
+        userId: ticket.userId,
+      });
+    }
+    // -------------------------------------
 
     res.status(201).send(ticket);
   }
