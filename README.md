@@ -67,3 +67,19 @@ EVO KAKO CE ICI TAJ PROCES MOCKINGA
 ***
 
 U NASEM SLUCAJU FILE KOJI ZELIMO DA FAKE-UJEMO JE `tickets/src/events/nats-wrapper.ts`
+
+ZATO KREIRAMO `__mocks__` FOLDER OVDE:
+
+- `mkdir tickets/src/events/__mocks__`
+
+KRIRAMO ISTOIMENI FILE INSIDE MOCKS FOLDER
+
+- `touch tickets/src/events/__mocks__/nats-wrapper.ts`
+
+SAD MOZES DA WRITE-UJES FAKE IMPLEMENTATION
+
+```ts
+
+```
+
+
