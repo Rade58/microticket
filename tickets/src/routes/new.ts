@@ -3,11 +3,8 @@ import { body } from "express-validator";
 import { requireAuth, validateRequest } from "@ramicktick/common";
 import { Ticket } from "../models/ticket.model";
 
-// EVO UVOZIM, PRVO MOJ UCUSTOM PUBLISHER KLASU
 import { TicketCreatedPublisher } from "../events/publishers/ticket-created-publisher";
-// UVOZIM I NATS WRAPPER-A, S KOJEG CU UZETI NATS CLIENT-A
 import { natsWrapper } from "../events/nats-wrapper";
-//
 
 const router = Router();
 
@@ -34,16 +31,23 @@ router.post(
 
     const ticket = await Ticket.create({ title, price, userId });
 
-    // OVDE JE TICKET CREATED
-    // I MOZEMO OVDE DA PUBLISH-UJEMO EVENT NA SLEDECI NACIN
+    // EVO OVDE SI DEFINISAO PUBLISHING EVENTA
+    // I POSTO publish RETURN-UJE PROMISE
+    // KOJI JE RESOLVED KADA SE USPENO POSALJE EVENT
+    // ONDA JE MOGUCE TO AWAIT-OVATI
     await new TicketCreatedPublisher(natsWrapper.client).publish({
-      // BITNO JE DA OVAKO DODELJUJEM VREDNOSTI, JER GARANTUJEM DA SAM DAT UZEO
-      // SA DOKUMENTA KOJI JE KREIRAN
       id: ticket.id,
       title: ticket.title,
       price: ticket.price,
       userId: ticket.userId,
     });
+    // -----------------------------------------------------
+    // DAKLE OVAJ RED BUKVALNO CEKA DA SE USPESNO
+    // PUBLISH-UJE EVENT
+    // U SLUCAJU DA SE TO NE DOGODI
+    // OVDE CE BITI THROWN ERROR (A NEMA STA DA GA CATCH-UJE)
+    // USTVARI ERROR CE BITI CATCHED BY ERROR HANDLER KOJEG SAM PODESIO
+    // NA NIVOU CELOG EXPRESS APP-A
 
     return res.status(201).send(ticket);
   }

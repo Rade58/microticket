@@ -9,11 +9,8 @@ import {
 import { body } from "express-validator";
 
 import { Ticket } from "../models/ticket.model";
-// UVOZIM CUSTOM PUBLISHER-A
 import { TicketUpdatedPublisher } from "../events/publishers/ticket-updated-publisher";
-// UVOZIM I STAN CLIENT-A ,ODNONO WRAPPER INSTANCU
 import { natsWrapper } from "../events/nats-wrapper";
-//
 
 const router = Router();
 
@@ -61,9 +58,8 @@ router.put(
       { new: true, useFindAndModify: true }
     ).exec();
 
-    // EVO OVDE MOGU DA IZVRSIM SLANJE EVENTA
-
     if (ticket) {
+      // EVO I OVDE J ISTI SLUCAJ I OVDE SAM AWAIT-OVAO
       await new TicketUpdatedPublisher(natsWrapper.client).publish({
         id: ticket.id,
         title: ticket.title,

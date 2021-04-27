@@ -1,35 +1,76 @@
-# CUSTOM PUBLISHER: `TicketUpdatedPublisher`
+# `await`ING EVENT PUBLISHING
 
-KREIRALI SMO PUBLISHER KLASU CIJU INSTANCU KORISTIM ODA DEFINISEMO PUBLISHING EVENTA U SLUCAJU TICKET CREATION-A
+TI SI OVO URADIO KOD OBA DOSADASNJA PUBLISHINGA IZ tickets MICROSERVICE-A
 
-SADA CEMO SLICNO DA URADIMO I ZA TICET UPDATING
+EVO POGLEDAJ STA SI URADIO KOD TICKET CREATING-A
 
-- `touch tickets/src/events/publishers/ticket-updated-publisher.ts`
+- `cat tickets/src/routes/new.ts`
 
 ```ts
-import { Stan } from "node-nats-streaming";
-import {
-  Publisher,
-  TicketUpdatedEventI,
-  ChannelNamesEnum as CNE,
-} from "@ramicktick/common";
+import { Router, Request, Response } from "express";
+import { body } from "express-validator";
+import { requireAuth, validateRequest } from "@ramicktick/common";
+import { Ticket } from "../models/ticket.model";
 
-export class TicketUpdatedPublisher extends Publisher<TicketUpdatedEventI> {
-  channelName: CNE.ticket_updated;
+import { TicketCreatedPublisher } from "../events/publishers/ticket-created-publisher";
+import { natsWrapper } from "../events/nats-wrapper";
 
-  constructor(stan: Stan) {
-    super(stan);
+const router = Router();
 
-    this.channelName = CNE.ticket_updated;
+router.post(
+  "/api/tickets",
+  requireAuth,
+  [
+    body("title")
+      .isString()
+      .isLength({ max: 30, min: 6 })
+      .not()
+      .isEmpty()
+      .withMessage("title is required"),
+    body("price").isFloat({ gt: 0 }),
+  ],
+  validateRequest,
+  async (req: Request, res: Response) => {
+    const { title, price } = req.body;
+    const userId = (req.currentUser as {
+      id: string;
+      email: string;
+      iat: number;
+    }).id;
 
-    Object.setPrototypeOf(this, TicketUpdatedPublisher.prototype);
+    const ticket = await Ticket.create({ title, price, userId });
+
+    // EVO OVDE SI DEFINISAO PUBLISHING EVENTA
+    // I POSTO publish RETURN-UJE PROMISE
+    // KOJI JE RESOLVED KADA SE USPENO POSALJE EVENT
+    // ONDA JE MOGUCE TO AWAIT-OVATI
+    await new TicketCreatedPublisher(natsWrapper.client).publish({
+      id: ticket.id,
+      title: ticket.title,
+      price: ticket.price,
+      userId: ticket.userId,
+    });
+    // -----------------------------------------------------
+    // DAKLE OVAJ RED BUKVALNO CEKA DA SE USPESNO
+    // PUBLISH-UJE EVENT
+    // U SLUCAJU DA SE TO NE DOGODI
+    // OVDE CE BITI THROWN ERROR (A NEMA STA DA GA CATCH-UJE)
+    // USTVARI ERROR CE BITI CATCHED BY ERROR HANDLER KOJEG SAM PODESIO
+    // NA NIVOU CELOG EXPRESS APP-A
+
+    return res.status(201).send(ticket);
   }
-}
+);
+
+export { router as createTicketRouter };
+
 ```
 
-## SADA DA PUBLISH-UJEM EVENT
+EVO STA SI URADIO KOD TICKET UPDATING-A
 
-- `code tickets/src/routes/update.ts`
+I TU JE ISTI SLUCAJ
+
+- `cat tickets/src/routes/update.ts`
 
 ```ts
 import { Router, Request, Response } from "express";
@@ -43,11 +84,8 @@ import {
 import { body } from "express-validator";
 
 import { Ticket } from "../models/ticket.model";
-// UVOZIM CUSTOM PUBLISHER-A
 import { TicketUpdatedPublisher } from "../events/publishers/ticket-updated-publisher";
-// UVOZIM I STAN CLIENT-A ,ODNONO WRAPPER INSTANCU
 import { natsWrapper } from "../events/nats-wrapper";
-//
 
 const router = Router();
 
@@ -95,9 +133,8 @@ router.put(
       { new: true, useFindAndModify: true }
     ).exec();
 
-    // EVO OVDE MOGU DA IZVRSIM SLANJE EVENTA
-
     if (ticket) {
+      // EVO I OVDE J ISTI SLUCAJ I OVDE SAM AWAIT-OVAO
       await new TicketUpdatedPublisher(natsWrapper.client).publish({
         id: ticket.id,
         title: ticket.title,
@@ -114,48 +151,3 @@ router.put(
 export { router as updateOneTicketRouter };
 ```
 
-## MI TRENUTNO NEMAMO NISTA STO LISTEN-UJE NA EVENT FROM `"ticket:updated"` KNALA
-
-IMAMO U ONOM LOKALNOM TEST PROJEKTU LISTENERA, ALI ON SLUSA NA KANALU `"ticket:created"`
-
-MEDJUTIM MI SMO DEFINISALI KROZ Publisher CLASS (U OKVIRU publish METODE) DA SE IPAK STMAPA NESTO NA USPESAN PUBLISHING
-
-**STO ZNACI DA BI SMO TAJ LOG MOGLI DA VIDIMO U SKAFFOLD TERMINALU**
-
-POKRENI SKAFFOLD, IONAKO TO MORAS AKO VECN SI, DA BI TI SE SYNC-OVALE PROMENE, JER SI PISAO CODE U CODEBASE-U
-
-- `skaffold dev`
-
-**SADA MOZES DA ODES U INSOMNIU I NAPRAVIS REQUEST ZA UPDATING TICKET-A**
-
-KREIRAJ PRVO TICKET KOJI CES ONDA UPDATE-OVATI
-
-**EVO UPDATE-OVACU TICKET**
-
-`"PUT"` `https://microticket.com/api/tickets/6087f3f35d094f00197710c2`
-
-BODY:
-
-```json
-{
-  "title": "Karnivool",
-	"price": 169
-}
-```
-
-REQUEST JE BIO USPESAN
-
-**ALI ZELI MDA VIDIM LOGS U SKAFFOLD TERMINALU**
-
-```zsh
-[tickets] 
-[tickets]             Event Published
-[tickets]             Channel: ticket:updated
-[tickets] 
-```
-
-DAKLE ZAISTA JE USPESNO PUBLIHED POMENUTII EVENT
-
-## U SLEDECEM BRANCH-U OSVRNUCU SE NA PAR AWKWARD STVARI NA KOJE MORAM VODITI RACUNA U SLUCAJU PUBLISHING EVENT-OVA
-
-JEDNA STVAR CE SE ODNOSITI NA AWAITING PUBLISHING
