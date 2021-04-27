@@ -9,12 +9,8 @@ import { Router, Request, Response } from "express";
 import { body } from "express-validator";
 import { requireAuth, validateRequest } from "@ramicktick/common";
 import { Ticket } from "../models/ticket.model";
-
-// EVO UVOZIM, PRVO MOJ UCUSTOM PUBLISHER KLASU
 import { TicketCreatedPublisher } from "../events/publishers/ticket-created-publisher";
-// UVOZIM I NATS WRAPPER-A, S KOJEG CU UZETI NATS CLIENT-A
 import { natsWrapper } from "../events/nats-wrapper";
-//
 
 const router = Router();
 
@@ -41,11 +37,8 @@ router.post(
 
     const ticket = await Ticket.create({ title, price, userId });
 
-    // OVDE JE TICKET CREATED
-    // I MOZEMO OVDE DA PUBLISH-UJEMO EVENT NA SLEDECI NACIN
     await new TicketCreatedPublisher(natsWrapper.client).publish({
-      // BITNO JE DA OVAKO DODELJUJEM VREDNOSTI, JER GARANTUJEM DA SAM DAT UZEO
-      // SA DOKUMENTA KOJI JE KREIRAN
+      
       id: ticket.id,
       title: ticket.title,
       price: ticket.price,
