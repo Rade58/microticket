@@ -123,10 +123,37 @@ I MORAMO DA RUNN-UJEMO GORNJI FILE na nasem lokalnom racunaru
 
 ## SADA MOZES U INSOMNI DA PRAVIS NOVI REQUEST ZA KREIRANJE TICKETA
 
+`"POST"` `https://microticket.com/api/tickets/`
 
+JSON TO BE SENT:
+
+```json
+https://microticket.com/api/tickets/
+```
+
+USPESNO SAM POSLAO REQUEST
 
 **KADA KADA SI TO URADIO, TO JE TAKODJE TREBALO DA PUBLISH-UJE EVENT DO NATS**
 
 A NATS JE ECHO-EVAO EVENT DO LISTENERA
 
 ZATO POGLEDAJ TERMINAL GDE SI POKRENUO LISTENERA I VIDI STA SE STAMPALO
+
+LISTENER TERMINAL:
+
+```zsh
+Mesage received:
+          subject: ticket:created
+          queueGroup: some-queue-group
+        
+Event data! {
+  id: '6087dcf54b278d001951956a',
+  title: 'Mastodon',
+  price: 69,
+  userId: '608089c4eedc6e0018ea6301'
+}
+```
+
+DAKLE EVENT JE ZAISTA USPESNO PUBLISHED
+
+I USPESNO LISTENED
