@@ -37,6 +37,9 @@ router.post(
 
     const ticket = await Ticket.create({ title, price, userId });
 
+    // EVO VIDIS OVO SAM JA DEFINISAO U PROSLOM BRANCH-U
+    // I OVIM SAM DEFINISAO PUBLISH-OVANJE
+    // EVENT-A SA DATOM CREATED Ticket DOKUMENTA
     await new TicketCreatedPublisher(natsWrapper.client).publish({
       
       id: ticket.id,
@@ -80,9 +83,12 @@ stan.on("connect", () => {
     process.exit();
   });
 
+  // OVO SAM JA ABSTRACT-OVO OUT OVAKO
   const ticketCreatedListener = new TicketCreatedListener(stan);
-
   ticketCreatedListener.listen();
+  // UGLAVNOM, STAMPACE SE DATA EVENTA KADA ON DODJE
+  // DAKLE USPESN OCES MOCI DA TESTIRAS
+
 });
 
 process.on("SIGINT", () => {
@@ -92,3 +98,35 @@ process.on("SIGTERM", () => {
   stan.close();
 });
 ```
+
+DA ALI MORAMO PRIVREMENO NA EXPOSE-UJEMO NATS STREAMING SERVER TO THE OUTSIDE WORLD JER, JER GORNJI FILE, MI RUNN-UJEM
+
+- `kubectl get pods`
+
+```zsh
+NAME                                  READY   STATUS    RESTARTS   AGE
+auth-depl-7c986d45d9-5mvh6            1/1     Running   0          11h
+auth-mongo-depl-5c78b6dbf7-l7hbq      1/1     Running   0          11h
+client-depl-9b4c8bf94-mvc9x           1/1     Running   0          11h
+nats-depl-df8968775-jnbxw             1/1     Running   0          11h
+tickets-depl-58d78c5c56-8gwxl         1/1     Running   1          11h
+tickets-mongo-depl-65cfdd4b79-r9c4x   1/1     Running   0          11h
+```
+
+- `kubectl port-forward nats-depl-df8968775-jnbxw 4222:4222`
+
+I MORAMO DA RUNN-UJEMO GORNJI FILE na nasem lokalnom racunaru
+
+- `cd nats_test_project`
+
+- `yarn listen`
+
+## SADA MOZES U INSOMNI DA PRAVIS NOVI REQUEST ZA KREIRANJE TICKETA
+
+
+
+**KADA KADA SI TO URADIO, TO JE TAKODJE TREBALO DA PUBLISH-UJE EVENT DO NATS**
+
+A NATS JE ECHO-EVAO EVENT DO LISTENERA
+
+ZATO POGLEDAJ TERMINAL GDE SI POKRENUO LISTENERA I VIDI STA SE STAMPALO
