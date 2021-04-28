@@ -5,11 +5,7 @@ import mongoose from "mongoose";
 import { sign } from "jsonwebtoken";
 // import crypto from "crypto";
 
-// EVO OVDE MOGU DA DEFINISEM MOCK
 jest.mock("../events/nats-wrapper");
-// DAKLE PATH JE RELATIVAN NA OVAJ FILE GDE SADA PISEM
-// ISTO TAKO KADA PISES U INDIVIDUAL TEST FILE-OVIMA
-// PISES PATH RELATIVAN NA NJIH
 
 let mongo: any;
 
@@ -26,6 +22,10 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+  // EVO OVO DEFINISEM
+  jest.clearAllMocks();
+  //
+
   const collections = await mongoose.connection.db.collections();
 
   for (const collection of collections) {

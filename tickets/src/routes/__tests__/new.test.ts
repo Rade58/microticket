@@ -2,11 +2,7 @@ import request from "supertest";
 import { app } from "../../app";
 import { Ticket } from "../../models/ticket.model";
 
-// EVO UVOZIM POMENUTI FILE, NARAVNO RELATIVNO TO THIS FILE
-// DAKLE TI UVEZIS PRVI FILE, ALI OCEKUJES DA CE BITI UVEZENO
-// ONO IZ MOCKED ONE-A
 import { natsWrapper } from "../../events/nats-wrapper";
-// JA CU TO STMAPTI DA BI PROVERIO
 
 it("has a route handler listening on /api/tickets for post requests", async () => {
   const response = await request(app).post("/api/tickets").send({});
@@ -108,16 +104,13 @@ it("it creates ticket with valid inputs", async () => {
 });
 
 it("publishes an event", async () => {
-  // PRVO CEMO KREIRATI NOVI TICKET
   request(app)
     .post("/api/tickets")
     .set("Cookie", global.getCookie())
     .send({ title: "nebula", price: 69 })
     .expect(201);
 
-  // A STAMPACEMO ONAJ IMPORT
-  // DA TI POKAZEM DA CE SE STAMPATI MOCK MODUL
-  // UMESTO THE REAL ONE
   console.log(natsWrapper);
-  //
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
 });

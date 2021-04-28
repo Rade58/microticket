@@ -3,13 +3,11 @@ import { app } from "../../app";
 
 import { Types } from "mongoose";
 
-// EVO OVDE SMO NAPRAVILI TAJ IMPORT INTERCEPTION
-// I DAKLE SERVEOVACE SE MOCK
-// jest.mock("../../events/nats-wrapper");
-
-// ...
-// NECCU TI POKAZIVATI TESTOV KOJE SAM RANIJE PRAVIO
-// TO SADA NIJE NI TEMA ZA RAZGOVOR
+// UVOZIMO ONU FUNKCIJU
+// A UMESTO KOJE SE SERVIRA MOCK
+import { natsWrapper } from "../../events/nats-wrapper";
+// VEC SAM MNOGO PUTA REKAO RANIJE ASTO SE UVOZI REAL THING I ZASTO JE OVDE TO INTERCEPTED
+// I SERVIRAN JE MOCK
 
 const titleCreate = "Stavros ey";
 const priceCreate = 602;
@@ -149,4 +147,34 @@ it("updates the ticket, and returns 201", async () => {
   // ASSERTION ABOUT FIELDS
   expect(response3.body.title).toEqual(response3.body.title);
   expect(response3.body.price).toEqual(response3.body.price);
+});
+
+it("event to be published", async () => {
+  const response = await createTicketResponse();
+  const { id } = response.body;
+
+  // UPDATE-UJEMO
+  await request(app)
+    .put(`/api/tickets/${id}`)
+    .set("Cookie", global.getCookie())
+    .send({
+      title,
+      price,
+    })
+    .expect(201);
+
+  // KAO STO SAM TI REKAO RANIJE, A SADA TE PODSECAM
+  // GORNJI UPDATING BI TREBAO DA POZOVE I FUNKCIJU
+  // ZA KOJU CEMO MI DA NAPRAVIM SLDECE ASSERTION O TOME DA LI JE ONA POZVANA
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
+
+  // NAPRAVICU I NEKE ASSERTIONE O TOME KOLIKO JE PUTA
+  // BILA CALLED
+  // ZAPAMTI, POSTO JE OVO JEDAN TEST
+  // I ONAJ RESET NIJE MOGAO DA SE DOGODI OVDE
+
+  expect(natsWrapper.client.publish).toHaveBeenCalledTimes(2);
+  // TAKO DA BI BROJ POIVA TREBAL ODA BUDE 2
+  //
 });
