@@ -1,14 +1,15 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
-import request from "supertest";
-
-import { app } from "../app";
-
-// UVEZAO SAM sign METHOD
+// import request from "supertest";
+// import { app } from "../app";
 import { sign } from "jsonwebtoken";
-// UVOZIM I
-import crypto from "crypto";
-//
+// import crypto from "crypto";
+
+// EVO OVDE MOGU DA DEFINISEM MOCK
+jest.mock("../events/nats-wrapper");
+// DAKLE PATH JE RELATIVAN NA OVAJ FILE GDE SADA PISEM
+// ISTO TAKO KADA PISES U INDIVIDUAL TEST FILE-OVIMA
+// PISES PATH RELATIVAN NA NJIH
 
 let mongo: any;
 

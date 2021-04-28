@@ -3,10 +3,6 @@ import { app } from "../../app";
 
 import { Types } from "mongoose";
 
-// DODAJEM OVO
-jest.mock("../../events/nats-wrapper");
-// ...
-
 it("returns 404 if the ticket is not found", async () => {
   // UZ POMOC OVOGA KRIRAM ID
   const someRandomId = new Types.ObjectId().toHexString();

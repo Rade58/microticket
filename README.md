@@ -466,29 +466,41 @@ JA SAM OVO URADIO SAMO ZA TESTING HANDLERA, KOJI KREIRAA NOVI TICKET, I TESTING 
 
 A AUTOR WORKSHOP JE ODLUCIO I DA ZA OSTALE HANDLERE DEFINISE ISTO
 
-- `code tickets/src/routes/__tests__/index.test.ts`
+**MEDJUTIM T OSE NE MORA RADITI OD FILE-A DO FILE-A**
+
+DA ZAISTA TO JE TEDIOUS, POGOTOVU AKO IMAS MNOGO TEST FILE-OVA
+
+ZATO RADIMO SLEDECE
+
+# TEST-SUITE WIDE MOCKS
+
+TI SI AKLE MOGAO DEFINISATI TAJ MOCK, ODNONO INTERCEPTING IMPORTA, I U SAMOM setup.ts FILE-U JEST-A
+
+- `code tickets/src/test/setup.ts`
 
 ```ts
-import request from "supertest";
-import { app } from "../../app";
+import { MongoMemoryServer } from "mongodb-memory-server";
+import mongoose from "mongoose";
+// import request from "supertest";
+// import { app } from "../app";
+import { sign } from "jsonwebtoken";
+// import crypto from "crypto";
 
-// DODAO OVO
-jest.mock("../../events/nats-wrapper")
-// 
+// EVO OVDE MOGU DA DEFINISEM MOCK
+jest.mock("../events/nats-wrapper");
+// DAKLE PATH JE RELATIVAN NA OVAJ FILE GDE SADA PISEM
+// ISTO TAKO KADA PISES U INDIVIDUAL TEST FILE-OVIMA
+// PISES PATH RELATIVAN NA NJIH
+
+
 // ...
-
+// ...
+// OSTALU KONFIGURACIJU TI NECIU PREDSTAVLJTI JE R NIJE 
+// RELEVANTNO NA ONO O CEMU SADA PRICAMO
 ```
 
-- `code tickets/src/routes/__tests__/show.test.ts`
+MOZES UKLONITI POMENUTI INTERCEPTING (`jest.mock` POZIVE), KOJE SI DEFINISAO PO INDIVIDUAL TESTOVIMA, INSIDE `tickets/src/routes/__tests__` FOLDERA
 
-```ts
-import request from "supertest";
-import { app } from "../../app";
 
-import { Types } from "mongoose";
 
-// DODAO OVO
-jest.mock("../../events/nats-wrapper");
-// 
-// ...
-```
+

@@ -5,7 +5,7 @@ import { Types } from "mongoose";
 
 // EVO OVDE SMO NAPRAVILI TAJ IMPORT INTERCEPTION
 // I DAKLE SERVEOVACE SE MOCK
-jest.mock("../../events/nats-wrapper");
+// jest.mock("../../events/nats-wrapper");
 
 // ...
 // NECCU TI POKAZIVATI TESTOV KOJE SAM RANIJE PRAVIO

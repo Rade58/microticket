@@ -3,10 +3,10 @@ import { app } from "../../app";
 import { Ticket } from "../../models/ticket.model";
 
 // PISEMO SLEDECE
-jest.mock(
+/* jest.mock(
   // SPECIFICIRAMO PATH DO NORMALNOG FILE-A
   "../../events/nats-wrapper"
-);
+); */
 // KADA GODE EXECUTE-UJES TESTS JEST CE VIDETI KOJI FILE POKUSAVAS
 // DA MOCK-UJES
 // UMESTO IMORTINGA REAL FILE, JEST CE DA IMPORT-UJE ONAJ

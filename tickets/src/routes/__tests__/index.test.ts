@@ -1,10 +1,6 @@
 import request from "supertest";
 import { app } from "../../app";
 
-// DODAO OVO
-jest.mock("../../events/nats-wrapper")
-// ...
-
 const createTicket = async () => {
   return request(app)
     .post("/api/tickets/")
