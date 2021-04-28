@@ -237,4 +237,8 @@ const start = async () => {
 start();
 ```
 
+POKRENI SADA SKAFFOLD
 
+- `skaffold dev`
+
+**I FROM THE LOGS MOGU DA VIDIM DA SE I DALJE MOJ tickets MICROSERVICE, USPESNO KONEKTUJE NA NATS STREAMING SERVER**
