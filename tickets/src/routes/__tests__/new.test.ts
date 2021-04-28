@@ -2,15 +2,11 @@ import request from "supertest";
 import { app } from "../../app";
 import { Ticket } from "../../models/ticket.model";
 
-// PISEMO SLEDECE
-/* jest.mock(
-  // SPECIFICIRAMO PATH DO NORMALNOG FILE-A
-  "../../events/nats-wrapper"
-); */
-// KADA GODE EXECUTE-UJES TESTS JEST CE VIDETI KOJI FILE POKUSAVAS
-// DA MOCK-UJES
-// UMESTO IMORTINGA REAL FILE, JEST CE DA IMPORT-UJE ONAJ
-// MODUL, ISTOIMENOG FILE-A IZ __mocks__ FOLDERA
+// EVO UVOZIM POMENUTI FILE, NARAVNO RELATIVNO TO THIS FILE
+// DAKLE TI UVEZIS PRVI FILE, ALI OCEKUJES DA CE BITI UVEZENO
+// ONO IZ MOCKED ONE-A
+import { natsWrapper } from "../../events/nats-wrapper";
+// JA CU TO STMAPTI DA BI PROVERIO
 
 it("has a route handler listening on /api/tickets for post requests", async () => {
   const response = await request(app).post("/api/tickets").send({});
@@ -109,4 +105,19 @@ it("it creates ticket with valid inputs", async () => {
 
   expect(tickets[0].price).toEqual(408);
   expect(tickets[0].title).toEqual("Some event");
+});
+
+it("publishes an event", async () => {
+  // PRVO CEMO KREIRATI NOVI TICKET
+  request(app)
+    .post("/api/tickets")
+    .set("Cookie", global.getCookie())
+    .send({ title: "nebula", price: 69 })
+    .expect(201);
+
+  // A STAMPACEMO ONAJ IMPORT
+  // DA TI POKAZEM DA CE SE STAMPATI MOCK MODUL
+  // UMESTO THE REAL ONE
+  console.log(natsWrapper);
+  //
 });

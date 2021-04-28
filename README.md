@@ -164,3 +164,82 @@ HAJDE PRVO DA VIDIMO DA LI NASI TESTOVI I DALJE PROLAZE
 - `cd tickets` `yarn test`
 
 PROLAZE TESTOVI (OPET TI NAPOMINJEM NA ONAJ PROBLEM RUNNINGA TESTING SUITE, SA TYPESCRIPTOM (FAIL-OVACE ALLI TI U TOM SLUCAJ URESTARTUJ TESTING))
+
+## MI SADA MOZEMO PISATI ACTUAL ASSERTION KAKO BISMO SE UVERILI DA JE GORNJA FAKE FUNKCIJA, ZIASTA INVOKED, ILI ASSERTION SA KOJIM ARGUMENTIMA JE ONA IZVRSENA
+
+PRVO CEMO IZVRSITI NEE ASSERTION VEZANE ZA HANDLER, KOJI SLUZI ZA MAKING NEW TICKET-A
+
+**ALI MI CEMO U TEST FILE UVESTI ONU STVAR KOJU MOCK-UJEMO**
+
+I OVO CE TI BITI CUDNO, USTVARI TI MISLIS ZASTO MI TO RADIMO?
+
+PA D BISMO TU STVAR TESTIRALI, U OVOM SLUCJU, TREBACE NAM UPRAVO TA STVAR
+
+**ODNOSNO KORISTICEMO IMPORT DA UVEZEMO REAL STVAR, ALI POSTO SI TI DEFINISAO ONAJ INTERCEPTING IMPORTA, BICE UVEZENA USTVARI FAKE STVAR**
+
+MI TO MOZEMO I ISPITATI
+
+- `code tickets/src/routes/__tests__/new.test.ts`
+
+```ts
+import request from "supertest";
+import { app } from "../../app";
+import { Ticket } from "../../models/ticket.model";
+
+// EVO UVOZIM POMENUTI FILE, NARAVNO RELATIVNO TO THIS FILE
+// DAKLE TI UVEZIS PRVI FILE, ALI OCEKUJES DA CE BITI UVEZENO
+// ONO IZ MOCKED ONE-A
+import { natsWrapper } from "../../events/nats-wrapper";
+// JA CU TO STMAPTI DA BI PROVERIO
+
+// ...
+// ... 
+
+it("publishes an event", async () => {
+  // PRVO CEMO KREIRATI NOVI TICKET
+  request(app)
+    .post("/api/tickets")
+    .set("Cookie", global.getCookie())
+    .send({ title: "nebula", price: 69 })
+    .expect(201);
+
+  // A STAMPACEMO ONAJ IMPORT
+  // DA TI POKAZEM DA CE SE STAMPATI MOCK MODUL
+  // UMESTO THE REAL ONE
+  console.log(natsWrapper);
+  //
+});
+```
+
+
+EVO VIDIS, KAKO SADA  IZGLEDA TAJ MOCK OBJEKAT
+
+```zsh
+console.log
+      {
+        client: {
+          publish: [Function: mockConstructor] {
+            _isMockFunction: true,
+            getMockImplementation: [Function (anonymous)],
+            mock: [Getter/Setter],
+            mockClear: [Function (anonymous)],
+            mockReset: [Function (anonymous)],
+            mockRestore: [Function (anonymous)],
+            mockReturnValueOnce: [Function (anonymous)],
+            mockResolvedValueOnce: [Function (anonymous)],
+            mockRejectedValueOnce: [Function (anonymous)],
+            mockReturnValue: [Function (anonymous)],
+            mockResolvedValue: [Function (anonymous)],
+            mockRejectedValue: [Function (anonymous)],
+            mockImplementationOnce: [Function (anonymous)],
+            mockImplementation: [Function (anonymous)],
+            mockReturnThis: [Function (anonymous)],
+            mockName: [Function (anonymous)],
+            getMockName: [Function (anonymous)]
+          }
+        }
+      }
+
+```
+
+
