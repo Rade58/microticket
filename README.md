@@ -242,3 +242,12 @@ POKRENI SADA SKAFFOLD
 - `skaffold dev`
 
 **I FROM THE LOGS MOGU DA VIDIM DA SE I DALJE MOJ tickets MICROSERVICE, USPESNO KONEKTUJE NA NATS STREAMING SERVER**
+
+A EVO TI I LOGS KOJI TO GOVORE (JA SAM ZADAO TAJ LOG KADA SAM DEFINISO natsWrapper-A)
+
+```zsh
+[tickets] 
+[tickets]           Connected to Nats Streaming Server
+[tickets]           clientId: tickets-depl-584859b97b-m6v85
+[tickets]  
+```
