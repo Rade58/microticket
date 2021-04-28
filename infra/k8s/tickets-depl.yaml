@@ -16,6 +16,12 @@ spec:
         - name: tickets
           image: eu.gcr.io/microticket/tickets
           env:
+            # ---------- EVO OVO DODAJEM -------------------
+            - name: NATS_URL
+              value: 'http://nats-srv:4222'
+            - name: NATS_CLUSTER_ID
+              value: microticket
+            # ----------------------------------------------
             - name: MONGO_URI
               value: 'mongodb://tickets-mongo-srv:27017/tickets'
             - name: JWT_KEY
