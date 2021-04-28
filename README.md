@@ -92,3 +92,136 @@ A DA IH IMAS TRI SVAKI BI IMAO RANDOM GENERATED DEO U SVOM NAME-U `tickets-depl-
 
 # TAKO DA BI BILO LEPO DA FIGURE-UJES NACIN, PO KOJEM CES ZA NATS CLIENT ID, KORISTI ISTI NAME, KAO STO IMA POD, U KOJEM JE MICROSERVICE
 
+ISTO TO MOGU PODESITI KROZ DEPLOYMENT KONFIGURACIJU
+
+- `code infra/k8s/tickets-depl.yaml`
+
+ISTO TO PODESAVAM KAO ENV VARIABLE, ALI ZA VALUE TE ENV VARIABLE, MORAM RECI KUBERNETESU DA PROVIDE-UJE NAME OF THE POD, KOJI JE RANDOMLY GENERATED
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # OVO JE VAZNO, VIDECES I ZASTO
+  name: tickets-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tickets
+  template:
+    metadata:
+      labels:
+        app: tickets
+    spec:
+      containers:
+        - name: tickets
+          image: eu.gcr.io/microticket/tickets
+          env:
+            # ---------- EVO OVO DODAJEM -------------------
+            # I UMESTO DA PODSEM value KAO KOD DRUGIH VARIJABLI
+            # JA PISEM      valueFrom
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            # ----------------------------------------------
+            - name: NATS_URL
+              value: 'http://nats-srv:4222'
+            - name: NATS_CLUSTER_ID
+              value: microticket
+            - name: MONGO_URI
+              value: 'mongodb://tickets-mongo-srv:27017/tickets'
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tickets-srv
+spec:
+  selector:
+    app: tickets
+  type: ClusterIP
+  ports:
+    - name: tickets
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+```
+
+REFERENCIRAO SAM `metadata.name`
+
+SADA SVAKI PUDA KDA SE KREIRA POD ZA RUNNING ticets MICROSERVICE-A, KUBERNATES CE POGLEDATI U IME POD-A I PROVIDE-OVACE GAA KAO ENVIROMENT VARIABLE INSIDE OF OUR CONTAINER
+
+A VARIJABLI SAM DAO IME `NATS_CLIENT_ID`
+
+# MOZEM OSADA DA U CODEBASE-U, IZSKORISTIMO POMENUTE VARIJABLE
+
+- `code `
+
+```ts
+import { app } from "./app";
+import mongoose from "mongoose";
+import { natsWrapper } from "./events/nats-wrapper";
+
+const start = async () => {
+  if (!process.env.JWT_KEY) {
+    throw new Error("JWT_KEY env variable undefined");
+  }
+
+  if (!process.env.MONGO_URI) {
+    throw new Error("MONGO_URI env variable undefined");
+  }
+
+  try {
+    // EVO UMESTO OVOGA
+    /* await natsWrapper.connect("microticket", "tickets-stavros-12345", {
+      url: "http://nats-srv:4222",
+    }); */
+    // DEFINISEM OVO ------------------------
+    await natsWrapper.connect(
+      process.env.NATS_CLUSTER_ID as string,
+      process.env.NATS_CLIENT_ID as string,
+      {
+        url: process.env.NATS_URL,
+      }
+    );
+    // --------------------------------------
+
+    const sigTerm_sigInt_callback = () => {
+      natsWrapper.client.close();
+    };
+    process.on("SIGINT", sigTerm_sigInt_callback);
+    process.on("SIGTERM", sigTerm_sigInt_callback);
+
+    natsWrapper.client.on("close", () => {
+      console.log("Connection to NATS Streaming server closed");
+      process.exit();
+    });
+
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+    });
+
+    console.log("Connected to DB (tickets-mongo)");
+  } catch (err) {
+    console.log("Failed to connect to DB");
+    console.log(err);
+  }
+
+  const PORT = 3000;
+  app.listen(PORT, () => {
+    console.log(`listening on http://localhost:${PORT} INSIDE tickets POD`);
+  });
+};
+
+start();
+```
+
+

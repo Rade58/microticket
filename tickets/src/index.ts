@@ -12,11 +12,20 @@ const start = async () => {
   }
 
   try {
-    await natsWrapper.connect("microticket", "tickets-stavros-12345", {
+    // EVO UMESTO OVOGA
+    /* await natsWrapper.connect("microticket", "tickets-stavros-12345", {
       url: "http://nats-srv:4222",
-    });
+    }); */
+    // DEFINISEM OVO ------------------------
+    await natsWrapper.connect(
+      process.env.NATS_CLUSTER_ID as string,
+      process.env.NATS_CLIENT_ID as string,
+      {
+        url: process.env.NATS_URL,
+      }
+    );
+    // --------------------------------------
 
-    // EVO OVO JE DOBRO MESTO ZA DEFINISANJE GRACEFUL SHUTDOWN-A
     const sigTerm_sigInt_callback = () => {
       natsWrapper.client.close();
     };
@@ -27,7 +36,6 @@ const start = async () => {
       console.log("Connection to NATS Streaming server closed");
       process.exit();
     });
-    //  -----------------------------------------------------
 
     await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
@@ -48,5 +56,3 @@ const start = async () => {
 };
 
 start();
-
-//
