@@ -1,7 +1,16 @@
 import request from "supertest";
 import { app } from "../../app";
-// UVOZIM MODEL
 import { Ticket } from "../../models/ticket.model";
+
+// PISEMO SLEDECE
+jest.mock(
+  // SPECIFICIRAMO PATH DO NORMALNOG FILE-A
+  "../../events/nats-wrapper"
+);
+// KADA GODE EXECUTE-UJES TESTS JEST CE VIDETI KOJI FILE POKUSAVAS
+// DA MOCK-UJES
+// UMESTO IMORTINGA REAL FILE, JEST CE DA IMPORT-UJE ONAJ
+// MODUL, ISTOIMENOG FILE-A IZ __mocks__ FOLDERA
 
 it("has a route handler listening on /api/tickets for post requests", async () => {
   const response = await request(app).post("/api/tickets").send({});
@@ -77,17 +86,11 @@ it("it returns an error if invalid 'price' is provided", async () => {
   expect(response3.status).toEqual(400);
 });
 
-// ----------------------------------------------------------
-// SADA PISEMO OVAJ TEST
-// REKLI SMO DA CEMO PROVERAVATI SAMI MODEL
 it("it creates ticket with valid inputs", async () => {
   let tickets = await Ticket.find({});
-  // OCEKUJEMO ARRAY
-  // A POSTO SE SVE IZ IN MEMORY DATBASE-A BRISE (TAK OSAM PODESIO auth/src/test/setup.ts)
-  // BETVEEN TESTS, ASSET-UJEM DA CU IMATI EMPTY ARRAY
+
   expect(tickets.length).toEqual(0);
 
-  // SADA MOEMO DA PRAVIMO REQUEST
   const response = await request(app)
     .post("/api/tickets")
     .set("Cookie", global.getCookie())
@@ -100,14 +103,10 @@ it("it creates ticket with valid inputs", async () => {
 
   expect(response.status).toEqual(201);
 
-  // A SADA MOZEMO DA INSPECTUJEMO TICKETS
-  // AKO SMO NAPRAVILI TICKET TREBA DA BUDE 1 U Ticket
-  // KOLEKCIJI
   tickets = await Ticket.find({});
 
   expect(tickets.length).toEqual(1);
 
-  // MOZEMO PRAVITI ASSERTIONS I U VEZI FIELD-OVA
   expect(tickets[0].price).toEqual(408);
   expect(tickets[0].title).toEqual("Some event");
 });
