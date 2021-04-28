@@ -408,3 +408,11 @@ export const natsWrapper = {
 };
 
 ```
+
+PROBACU DA RUNN-UJEM TEST SAMO ZA `new.tst.ts` FILE
+
+- `cd tickets`
+
+- `yarn test`
+
+- `p` ENTER `new` ENTER
