@@ -57,8 +57,8 @@ publish(data: T["data"]) {
         // EVO GA I CALLBACK CIJE SI TI POZIVANJE U MOCK-U
         // DEFINISAO
 
-        // error TADA NISI NI PROSLEDIO
-        // I OVO SE TADA NIJE ZAVRSILO
+        // error TADA NISI NI PROSLEDIO (TI TO I NERADIS VEC MOGUCI FAILIRE PRI PUBLISHINGU)
+        // I OVO SE TADA NIJE IZVRSILO
         if (error) {
           return rej(error);
         }
@@ -103,7 +103,58 @@ MOCK FUNCTION JESTE ESSENTIALLY A FAKE FUNKCIJA, ALI DOZVOLJAVA DAA PODESAVAM EX
 
 ODNOSNO DOZVOLJAVA MI DA PRAVIM ASSERTIONS
 
-N PRIMER MOGU PRAVITI EXPECTATION DA LI CE SE FUNKCIJE EXECUTOVATI, ILI PRAVITI EXPECTATIO NSA KOJIM CE SE ARGUMENTIMA IZVRSITI
+N PRIMER MOGU PRAVITI EXPECTATION DA LI CE SE FUNKCIJE EXECUTOVATI, ILI PRAVITI EXPECTATION SA KOJIM CE SE PARTICULAR ARGUMENTIMA IZVRSITI FUNKCIJA
 
+- `code tickets/src/events/__mocks__/nats-wrapper.ts`
 
+```ts
+export const natsWrapper = {
+  client: {
+    // EVO, UMESTO OVE FAKE FUNKCIJE
+    /* publish(channelName: string, data: any, callback: () => void): void {
+      callback();
+    }, */
+    // JA MOGU DA POZOVEM OVO MOCK FUNKCIJU
+    publish: jest.fn(),
+  },
+};
+```
 
+**TO JE FUNKCIJA THAT CAN BE CALLED FROM ANYTHING INSIDE OF OUR APPLICATION**
+
+**TA FUNKCIJA INTERNALY, KEEP-OVACE TRACK O TOME DA LI JE POZVANA, KOJI SU JOJ ARGUMENTS PROVIDED PRILIKOM CALL-A, I DRUGO,; SVE U CILJU DA MOGU DEFINISATI EXPECATAIONS AROUND IT**
+
+# ALI TI I DALJE MORAS IMATI ONAJ FAKE DEO KOJI SI DEFINISAO; I ZATO MORAS KORISTITI I `.mockImplementation` METODU
+
+TI NISI PASS-OVAO NISTA INSIDE jest.fn()
+
+TEBI CE ZBOG TOGA TESTOVI FAIL-OVATI JER KAO STO ZNAS TREBAJU TI SVI ONI PARAMETRI ZA client.publish FUNKCIJU; A NAJVAZNIJI JE CALLBACK PARMAETAR
+
+- `code tickets/src/events/__mocks__/nats-wrapper.ts`
+
+UPRAVO CES ZATO KORISTITI `.mockImplementation()`
+
+```ts
+export const natsWrapper = {
+  client: {
+    /* publish(channelName: string, data: any, callback: () => void): void {
+      callback();
+    }, */
+
+    // DAKLE PASS-UJEMO IN POMENUTU FAKE FUNKCIJU
+    // KROZ METOFU mockImplementation
+    publish: jest
+      .fn()
+      .mockImplementation(
+        (channelName: string, data: any, callback: () => void): void => {
+          //
+          //
+          //
+          // I DALJE DAKLE OVDE MORAMO
+          // PZVATI callback
+          callback();
+        }
+      ),
+  },
+};
+```
