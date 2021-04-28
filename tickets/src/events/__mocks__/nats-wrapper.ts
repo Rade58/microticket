@@ -1,10 +1,3 @@
-// POSTO REAL IMPLEMENTATION RETURN-UJE INSTANCU
-// TO JEST OBJEKAT SA client GETTEROM
-// I connect METODOM, JA BI TO TREBALO DA MOCK-UJEM
-
 export const natsWrapper = {
-  // client: ,
-  // connect: ,
+  client: "",
 };
-
-// VRATICEMO SE UBRZO NA PISANJE FAKE IMPLEMENTACIJE
