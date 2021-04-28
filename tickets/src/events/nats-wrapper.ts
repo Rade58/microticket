@@ -39,7 +39,7 @@ class NatsWrapper {
   }
 
   /**
-   * client GETTER
+   * NATS client GETTER
    */
   get client(): Stan {
     if (!this._client) {

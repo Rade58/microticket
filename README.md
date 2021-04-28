@@ -159,3 +159,80 @@ console.error
 JER JE POTREBNO DA IZVOZIMO INSTANCU, KOJA IMA `client` GETTER-A
 
 A TAJ GETTER TREBA DA VRACA INITIALIZED (CONNECTED) NATS CLIENT-A 
+
+# WRITING IMPLEMENTATION FOR THE MOCK
+
+RANIJE SAM SAM OIZ MOCK FILE-A RETURN-OVAO OBJEKAT, KOJI JE EMPTY
+
+SADA TREBA DA NAPISEMO IMPLEMENTACIJ U DA TAJ OBJEKAT IMA ONO STO IMA I REAL OBJECT, KOJI SE IZVOZI IS NORMAL FILE-A
+
+**DA BISMO NAPISALI FAKE IMPLEMMENTATION, MORAMO DOBRO POGLEDATI FILE ZA KOJI PISEMO MOCK**
+
+OVO JE REAL FILE
+
+- `cat tickets/src/events/nats-wrapper.ts`
+
+ZANIMA NAS I STA DONJA KLASA USTVARI RADI
+
+ZANIMA NAS DAKLE STA MOZE IMATI NA SEBI INSTANCC KOJU IZVOZIMO IZ TOG FILE-A
+
+**TACNIJE ZANIMAJU NAS SMO ONI PART-OVI KOJI SU NEOPHODNI DA TEST PRODJE**
+
+```ts
+import { Stan, connect, ClientOpts } from "node-nats-streaming";
+
+class NatsWrapper {
+  /**
+   * @description CAN BE UNDEFINED BECAUSE IT IS GOING TO BE INITIALIZED
+   * FROM METHOD OF THE NatsWrapper CLASS ("connect" METHOD)
+   */
+  private _client?: Stan;
+
+  /**
+   *
+   * @param clusterId cluster id (specifi) (you can find it in nats-depl.yaml) (you setted it as `"-cid"`)
+   * @param clientId make up one
+   * @param clientOpts ClientOpts (but you are interested in "url" filed only)
+   */
+  connect(clusterId: string, clientId: string, clientOpts: ClientOpts) {
+    this._client = connect(clusterId, clientId, clientOpts);
+
+    const _client = this._client;
+
+    return new Promise<void>((res, rej) => {
+      _client.on("connect", () => {
+        console.log(`
+          Connected to Nats Streaming Server
+          clientId: ${clientId}
+        `);
+
+        res();
+      });
+
+      _client.on("error", () => {
+        console.log(
+          `client ${clientId} Failed to connect to Nats Streaming Server`
+        );
+
+        rej();
+      });
+    });
+  }
+
+  /**
+   * NATS client GETTER
+   */
+  get client(): Stan {
+    if (!this._client) {
+      throw new Error("Can't access NATS Streaming Server before connecting.");
+    }
+
+    return this._client;
+  }
+}
+
+export const natsWrapper = new NatsWrapper();
+```
+
+MI GORNJU INSTACU, TACNIJE SAMO `_client` (KOJI JE PRIVATE, I ZATO IMAMO GETTER-A), `KORISTIMO KAD INSTATICIZIRAMO NASEG CUSTOM PUBLISHER-A` SA KOJIM SALJEMO EVENT 
+
