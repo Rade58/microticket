@@ -310,7 +310,7 @@ interface EventI {
 
 // ONO STO NAS ZANIMA JE `publish` METODA SLEDECE KLASE
 // POGLEDAJ NJEN CODE
-
+// NALAZO SE NA DNU KLASE
 
 export abstract class Publisher<T extends EventI> {
   /**
@@ -329,6 +329,8 @@ export abstract class Publisher<T extends EventI> {
 
     Object.setPrototypeOf(this, Publisher.prototype);
   }
+
+  // EVO U PITANJU JE OVA METODA
 
   /**
    *
@@ -366,3 +368,20 @@ export abstract class Publisher<T extends EventI> {
 }
 
 ```
+
+IZ SVEGA STO SAM VIDEO MOGU ZAKLJUCITI STA MOJ MOCK TREBA DA IMA
+
+ON USTVARI TREBA BITI OVAKAV:
+
+```ts
+{
+  client: {
+    publish (data: any) => Promise<void>
+  }
+
+}
+```
+
+**ALI BITNA JE I SAMA publish METODA I CINJENICA DA SE TAMO PRIMENJUJE JEDNA DRUGA `publish` METODA, KOJA JE METODA STAN VLIENTA, JER KAO STO VIDIS GORE USTVARIR SE POZIVA `this._client.publish`**
+
+NJOJ SE KA OARGUMENTI DODAJU `channelName`, ZATIM `DATA KOJI SE PUBLISH-UJE`, I ZADAJE SE `CALLBACK` KOJI SE IZVRSAVA , BILO DA JE PUBLISHING USPEO ILI NIJE
