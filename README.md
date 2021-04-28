@@ -369,19 +369,42 @@ export abstract class Publisher<T extends EventI> {
 
 ```
 
-IZ SVEGA STO SAM VIDEO MOGU ZAKLJUCITI STA MOJ MOCK TREBA DA IMA
-
-ON USTVARI TREBA BITI OVAKAV:
+DKLE IZ GORE PRILOZENOG VIDIM DA INSTANCA `Stan`-A ,ODNOSNO NTS CLIENTA TREBA DA IMA `publish` METODU, KOJA IZGLEDA OVAKO
 
 ```ts
 {
   client: {
-    publish (data: any) => Promise<void>
+    publish (
+      channelName: string,
+      data: any,
+      (err) => void
+    ) => void
   }
 
 }
 ```
 
-**ALI BITNA JE I SAMA publish METODA I CINJENICA DA SE TAMO PRIMENJUJE JEDNA DRUGA `publish` METODA, KOJA JE METODA STAN VLIENTA, JER KAO STO VIDIS GORE USTVARIR SE POZIVA `this._client.publish`**
+NJOJ SE KAO ARGUMENTI DODAJU `channelName`, ZATIM `DATA KOJI SE PUBLISH-UJE`, I ZADAJE SE `CALLBACK` KOJI SE IZVRSAVA , BILO DA JE PUBLISHING USPEO ILI NIJE
 
-NJOJ SE KA OARGUMENTI DODAJU `channelName`, ZATIM `DATA KOJI SE PUBLISH-UJE`, I ZADAJE SE `CALLBACK` KOJI SE IZVRSAVA , BILO DA JE PUBLISHING USPEO ILI NIJE
+**OVDE JE SADA MOZDA BITNO ZAKLJUCITI KADA SE POZIVA TAJ CALLBACK**
+
+PA ONDA KADA SE DESI USPESAN PUBLISHING ILI SE NE DESI
+
+**MI CEMO U MOCKU SAMO POZVATI TAJ CALLBACK U SAMOJ PUBLISH FUNKCIJI**
+
+## NA OSNOVU SVE DOSAO SAM DO TOGA DA MI MICK IZGLEDA OVAKO
+
+- `code tickets/src/events/__mocks__/nats-wrapper.ts`
+
+```ts
+export const natsWrapper = {
+  client: {
+    // DODAO SAM publish FUNKCIJU
+    publish(channelName: string, data: any, callback: () => void): void {
+      // EVO POZVALI SMO callback
+      callback();
+    },
+  },
+};
+
+```
