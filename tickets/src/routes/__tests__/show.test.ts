@@ -1,8 +1,11 @@
 import request from "supertest";
 import { app } from "../../app";
 
-//UVOZIM IZ mongoose-A
 import { Types } from "mongoose";
+
+// DODAJEM OVO
+jest.mock("../../events/nats-wrapper");
+// ...
 
 it("returns 404 if the ticket is not found", async () => {
   // UZ POMOC OVOGA KRIRAM ID

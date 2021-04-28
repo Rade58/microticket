@@ -461,3 +461,34 @@ POKRENUT MI JE TEST SUITE, SMO CU KUCATI ONU RGEX STVAR
 ## CISTO DA TE PODSETIM DA U SVAKOM TESTU U KOJEM ZELIS DA SE MOCK KORISTI INSTAD OF ORIGINAL FILE, TI MORAS POZVATI `jest.mock`
 
 SAMO TE PODSECAM
+
+JA SAM OVO URADIO SAMO ZA TESTING HANDLERA, KOJI KREIRAA NOVI TICKET, I TESTING HANDLERA KOJI UPDAT-UJE TICKET
+
+A AUTOR WORKSHOP JE ODLUCIO I DA ZA OSTALE HANDLERE DEFINISE ISTO
+
+- `code tickets/src/routes/__tests__/index.test.ts`
+
+```ts
+import request from "supertest";
+import { app } from "../../app";
+
+// DODAO OVO
+jest.mock("../../events/nats-wrapper")
+// 
+// ...
+
+```
+
+- `code tickets/src/routes/__tests__/show.test.ts`
+
+```ts
+import request from "supertest";
+import { app } from "../../app";
+
+import { Types } from "mongoose";
+
+// DODAO OVO
+jest.mock("../../events/nats-wrapper");
+// 
+// ...
+```

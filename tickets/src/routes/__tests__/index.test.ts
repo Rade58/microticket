@@ -1,7 +1,10 @@
 import request from "supertest";
 import { app } from "../../app";
 
-// NAPRAVICU HELPERA ZA KRIRANJE TICKETA
+// DODAO OVO
+jest.mock("../../events/nats-wrapper")
+// ...
+
 const createTicket = async () => {
   return request(app)
     .post("/api/tickets/")
