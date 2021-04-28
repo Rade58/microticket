@@ -11,6 +11,19 @@ const start = async () => {
     throw new Error("MONGO_URI env variable undefined");
   }
 
+  // NARAVNO, PROVERAVAMO SVE VARIJABLE
+  if (!process.env.NATS_CLUSTER_ID) {
+    throw new Error("NATS_CLUSTER_ID env variable is undefined");
+  }
+  if (!process.env.NATS_CLIENT_ID) {
+    throw new Error("NATS_CLIENT_ID env variable is undefined");
+  }
+  if (!process.env.NATS_URL) {
+    throw new Error("NATS_URL env variable is undefined");
+  }
+
+  //
+
   try {
     // EVO UMESTO OVOGA
     /* await natsWrapper.connect("microticket", "tickets-stavros-12345", {
