@@ -250,4 +250,119 @@ EVO INSTANCA KOJA TREBA DA BUDE RETURNED, TREBA DA BUDE OVAKVA
 
 PA VEC SAM TI REKAO, TO JE SAMO `client`
 
-ZATO MI IZ MOCK FILE-A MORAMO IZVESTI OBJEKAT, KOJ ICE IMATI SAMO client aPROPERTI, CIA CE VREDNOST BITI `Stan` INSTANCA, ODNOSNO NATS CLIENT
+ZATO MI IZ MOCK FILE-A MORAMO IZVESTI OBJEKAT, KOJ ICE IMATI SAMO client PROPERTI, CIA CE VREDNOST BITI `Stan` INSTANCA, ODNOSNO NATS CLIENT
+
+- `code tickets/src/events/__mocks__/nats-wrapper.ts`
+
+```ts
+export const natsWrapper = {
+  client: ""  
+};
+
+```
+
+**ALI MI MORAMO DA RAZMISLJAMO SADA NA KOJI NACIN PARCE CODE-A, KOJEJE U HANDLLERU, USTVARI KORISTI, UPRAVO POMENUTOG CLIENTA**
+
+DAKLE TREBA DA VIDIMO I NASU CUSTOM PUBLISHER KLASU
+
+ALI NECEMO MNOGO OTKRITI IZ TOGA
+
+- `cat tickets/src/events/publishers/ticket-created-publisher.ts`
+
+```ts
+import { Stan } from "node-nats-streaming";
+
+import {
+  Publisher,
+  TicketCreatedEventI,
+  ChannelNamesEnum as CNE,
+} from "@ramicktick/common";
+
+export class TicketCreatedPublisher extends Publisher<TicketCreatedEventI> {
+  public channelName: CNE.ticket_created;
+
+  constructor(stan: Stan) {
+    super(stan);
+
+    this.channelName = CNE.ticket_created;
+
+    Object.setPrototypeOf(this, TicketCreatedPublisher.prototype);
+  }
+}
+```
+
+NISMO MNOGO OTKRILI JE ONO STO KORISTI CLIENTA, UPRAVO `publish` FUNKCIJA, CIJU IMPLEMENTACIJU SMO NAPISALI U ABTRAKT KLASI, KOJA JE DAO NASEG COMMON PAKETA
+
+MOZEMO TU ABSTRKATNU KLASU, GORE KADA KLIKNEMO SA `Ctrl + Alt + Click` NA `Publisher` ABSTRACT KLASU, ALI NI TU NECEMO MOCI MNOGO STOSTA DA VIDIMO, JER CE NAM BITI OTVORED CODE TYPESCRIPT DECLARATION FILE-A
+
+ZATOCEMO POGLEDATI FILE, TMO GDE SMO GA KREIRALI, A TO JE common MODULE
+
+- `cat common/src/events/abstr/abstr-publisher.ts`
+
+```ts
+import { Stan } from "node-nats-streaming";
+import { ChannelNamesEnum as CNE } from "../channel-names";
+
+interface EventI {
+  channelName: CNE;
+  data: any;
+}
+
+// ONO STO NAS ZANIMA JE `publish` METODA SLEDECE KLASE
+// POGLEDAJ NJEN CODE
+
+
+export abstract class Publisher<T extends EventI> {
+  /**
+   * @description NAME OF THE CHANNEL YOU ARE PUBLISHING TO
+   */
+  abstract channelName: T["channelName"];
+
+  /**
+   * @description OVO TREBA DA JE PRE INITIALLIZED, STAN CLIENT (STO ZNACI DA BISMO VEC TREBAL IDA BUDEMO
+   * CONNECCTED TO NATS STREAMING SERVER) (DOBIJENO SA nats.connect)
+   */
+  private stanClient: Stan;
+
+  constructor(stanClient: Stan) {
+    this.stanClient = stanClient;
+
+    Object.setPrototypeOf(this, Publisher.prototype);
+  }
+
+  /**
+   *
+   * @param data To be published
+   * @returns Promise<any>
+   */
+  publish(data: T["data"]) {
+    const jsonData = JSON.stringify(data);
+    const stan = this.stanClient;
+    const channelName = this.channelName;
+
+    return new Promise<void>((res, rej) => {
+      stan.publish(
+        channelName,
+        jsonData,
+        /**
+         *
+         * @param error Error | undefined
+         */
+        (error) => {
+          if (error) {
+            return rej(error);
+          }
+
+          console.log(`
+            Event Published
+            Channel: ${this.channelName}
+          `);
+
+          res();
+        }
+      );
+    });
+  }
+}
+
+```
