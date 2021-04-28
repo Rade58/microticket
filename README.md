@@ -501,6 +501,10 @@ jest.mock("../events/nats-wrapper");
 
 MOZES UKLONITI POMENUTI INTERCEPTING (`jest.mock` POZIVE), KOJE SI DEFINISAO PO INDIVIDUAL TESTOVIMA, INSIDE `tickets/src/routes/__tests__` FOLDERA
 
+**POKRENI SADA TESTOVE**
 
+- `cd tickets`
 
+- `yarn test`
 
+SVI TESTOVI PROLAZE
