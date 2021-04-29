@@ -252,5 +252,32 @@ spec:
               servicePort: 3000
 ```
 
+# MOZEMO SADA DA RUNN-UJEMO SKAFFOLD
+
+NARAVNO NODE PROCESS U orders MICROSERVICE-U BI TREBALO DA THROW-UJ ERROR, JER IMAMO DOSTA IMPORTA U MICROSERVICE-U ,ZA MODULE KOJI NISU DEFINISANI
+
+**NARAVNO, NE OCEKUJEM NIKAKVE ERRORE OKO BUILDINGA CONTAINERA I OSTALIH KUBERNETES STVARI**
+
+- `skaffold dev`
+
+MOZES ODMAH DA POKRENES `kubectl get pods` I VIDECES DA JE SVE TERMINATED, JER SI POKRENUO SKAFFOLD
+
+ALI AKO SACEKAS DA SKAFFOLD ODRADI SVOJE, MOZEMO NACI POD-OVE, ZA NOVE STVARI KOJE SMO ZELELI U NASEM CLUSTERU
+
+- `kubectl get pods`
+
+```zsh
+NAME                                  READY   STATUS    RESTARTS   AGE
+auth-depl-696b6948b4-dn658            1/1     Running   0          2m52s
+auth-mongo-depl-68fbcc475b-zjg6j      1/1     Running   0          2m52s
+client-depl-55bc5b996f-pwqvn          1/1     Running   0          2m52s
+nats-depl-cd7f7fb9d-wlfk7             1/1     Running   0          2m51s
+orders-depl-69dbc6bf7b-42wc4          1/1     Running   0          2m51s
+orders-mongo-depl-6bb8cf964b-tdt8l    1/1     Running   0          2m50s
+tickets-depl-ff44f76bf-74jbg          1/1     Running   0          2m49s
+tickets-mongo-depl-597c555dd4-4bbwg   1/1     Running   0          2m49s
+```
+
+EVO VIDIM OVE PODS: `orders-depl-69dbc6bf7b-42wc4 `, `orders-mongo-depl-6bb8cf964b-tdt8l`
 
 
