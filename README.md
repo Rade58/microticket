@@ -159,3 +159,52 @@ spec:
       targetPort: 27017
 ```
 
+# PODESAVAMO ST ZALIMO DA SYNC-UJEMO OD FILE-OVA VEZANO ZA SKAFFOLD
+
+- `code skaffold.yaml`
+
+```yaml
+apiVersion: skaffold/v2beta12
+kind: Config
+deploy:
+  kubectl:
+    manifests:
+      - ./infra/k8s/*
+build:
+  googleCloudBuild:
+    projectId: microticket
+  artifacts:
+    - image: eu.gcr.io/microticket/auth
+      context: auth
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.{ts,js}'
+            dest: .
+    - image: eu.gcr.io/microticket/client
+      context: client
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '**/*.{tsx,ts,js}'
+            dest: .
+    - image: eu.gcr.io/microticket/tickets
+      context: tickets
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.{ts,js}'
+            dest: .
+    # EVO OVO SAM DODAO
+    - image: eu.gcr.io/microticket/orders
+      context: orders
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.{ts,js}'
+            dest: .
+```
