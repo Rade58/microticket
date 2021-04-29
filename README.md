@@ -16,16 +16,36 @@ STVARI KOJE CU URADITI DA SETT-UJEM UP orders MICROSERVICE
 
 # DAKLE KREIRAM `orders` FOLDER I KOPIRACU MNOGE STVARI IZ `tickets` MICROSERVICE-A
 
-- `mkdir orders`
+- `mkdir -p orders/src/events`
+
+**SADA CU DA KOPIRAM**
 
 EVO STA NAKON KOPIRANJA IMAM U MOM orders MICROSERVICE-U
 
 - `ls -a orders/`
 
 ```zsh
-Dockerfile  .dockerignore  package.json  tsconfig.json  yarn.lock
+Dockerfile  .dockerignore  package.json  src  tsconfig.json  yarn.lock
+```
+
+- `ls orders/src`
+
+```zsh
+app.ts  events  index.ts
+```
+
+- `ls orders/src/events`
+
+```zsh
+nats-wrapper.ts
 ```
 
 SADA U POMENUTIM FILE-OVIMA, GDE GOD SI PISAO `"tickets"` ODREDNICU, PISI `"orders"` (SIGURAN SAM DA JE TO PRVO **`"name"`** FIELD U `package.json`) (**USTVARI TO JE JDINO MESTO U KOJEM TREBAS TO PROMENITI**)
 
+ZA SADA TO JE SVE STA SAM KOPIRAO, A EVENTUALLY MI CEMO KOPIRATI JOS NEKE STVARI
 
+# INSTALIRACEMO SADA DEPENDANCIES
+
+- `cd orders`
+
+- `yarn`
