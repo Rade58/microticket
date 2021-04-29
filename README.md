@@ -8,11 +8,13 @@ STVARI KOJE CU URADITI DA SETT-UJEM UP orders MICROSERVICE
 
 3. BUILDING IMAGE-A OD orders MICROSERVICE-A (OPCIONO, SAMO AKO CLUSTER RUNN-UJES LOKALNO N LOCAL MACHINE-I, A MI TO NE RADIMO, VEC NAM JE CLUSTER NA GOOGLE CLOUD-U)
 
-4. KREIRANJE KUBERNATES DEPLOYMENT FILE-A
+4. KREIRANJE KUBERNATES DEPLOYMENT FILE-A ZA orders MICROSERVICE
 
-5. SETTING UP SYNC OPCIJE U SKAFFOLD-U
+5. KREIRANJE KUBERNATES DEPLOYMENT FILE, ZA NOVU MONGODB INSTANCU, SA KOOM CE PRICATI orders
 
-6. PODESAVANJE ROUTING RULES U INGRESS NGINX KONFIGURACIJI 
+6. SETTING UP SYNC OPCIJE U SKAFFOLD-U
+
+7. PODESAVANJE ROUTING RULES U INGRESS NGINX KONFIGURACIJI 
 
 # DAKLE KREIRAM `orders` FOLDER I KOPIRACU MNOGE STVARI IZ `tickets` MICROSERVICE-A
 
@@ -116,3 +118,44 @@ spec:
       targetPort: 3000
 
 ```
+
+# KREIRAM KUBERNETES DEPLOYMENT I CLUSTER IP CONFIGS ZA NOVU INSTANCU MONGODB-JA
+
+- `touch infra/k8s/orders-mongo-depl.yaml`
+
+I OVO KOPIRAM FROM tickets-mongo-depl; NARAVNO PRAVIM NEOPHODNE IZMENE
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-mongo-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orders-mongo
+  template:
+    metadata:
+      labels:
+        app: orders-mongo
+    spec:
+      containers:
+      - name: orders-mongo
+        image: mongo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orders-mongo-srv
+spec:
+  selector:
+    app: orders-mongo
+  type: ClusterIP
+  ports:
+    - name: db
+      protocol: TCP
+      port: 27017
+      targetPort: 27017
+```
+
