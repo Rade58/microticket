@@ -14,9 +14,18 @@ STVARI KOJE CU URADITI DA SETT-UJEM UP orders MICROSERVICE
 
 6. PODESAVANJE ROUTING RULES U INGRESS NGINX KONFIGURACIJI 
 
-# DAKLE KOPIRACU MNOGE STVARI IZ `tickets` MICROSERVICE-A
+# DAKLE KREIRAM `orders` FOLDER I KOPIRACU MNOGE STVARI IZ `tickets` MICROSERVICE-A
 
 - `mkdir orders`
 
+EVO STA NAKON KOPIRANJA IMAM U MOM orders MICROSERVICE-U
+
+- `ls -a orders/`
+
+```zsh
+Dockerfile  .dockerignore  package.json  tsconfig.json  yarn.lock
+```
+
+SADA U POMENUTIM FILE-OVIMA, GDE GOD SI PISAO `"tickets"` ODREDNICU, PISI `"orders"` (SIGURAN SAM DA JE TO PRVO **`"name"`** FIELD U `package.json`)
 
 

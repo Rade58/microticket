@@ -43,3 +43,6 @@ tickets/node_modules
 
 # subproject
 nats_test_project/node_modules
+
+# orders
+orders/node_modules
