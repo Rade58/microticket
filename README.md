@@ -280,4 +280,21 @@ tickets-mongo-depl-597c555dd4-4bbwg   1/1     Running   0          2m49s
 
 EVO VIDIM OVE PODS: `orders-depl-69dbc6bf7b-42wc4 `, `orders-mongo-depl-6bb8cf964b-tdt8l`
 
+**STO SE TICE SAMIH LOGG-OVA U SKAFFOLD TERMINALU, ZA order MICROSERVICE VIDIMO OVO**
 
+```zsh
+[orders] 
+[orders] > orders@1.0.0 start /app
+[orders] > ts-node-dev src/index.ts
+[orders] 
+[orders] [INFO] 19:14:27 ts-node-dev ver. 1.1.6 (using ts-node ver. 9.1.1, typescript ver. 4.2.4)
+[orders] Compilation error in /app/src/app.ts
+[orders] [ERROR] 19:14:36 ⨯ Unable to compile TypeScript:
+[orders] src/app.ts(6,36): error TS2307: Cannot find module './routes/new' or its corresponding type declarations.
+[orders] src/app.ts(8,40): error TS2307: Cannot find module './routes/show' or its corresponding type declarations.
+[orders] src/app.ts(9,37): error TS2307: Cannot find module './routes/' or its corresponding type declarations.
+[orders] src/app.ts(11,39): error TS2307: Cannot find module './routes/update' or its corresponding type declarations.
+[orders]
+```
+
+DAKLE VIDIMO ERRORS KOJI SE ODNOSE NA MISSING MODULE
