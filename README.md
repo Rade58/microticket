@@ -26,6 +26,6 @@ EVO STA NAKON KOPIRANJA IMAM U MOM orders MICROSERVICE-U
 Dockerfile  .dockerignore  package.json  tsconfig.json  yarn.lock
 ```
 
-SADA U POMENUTIM FILE-OVIMA, GDE GOD SI PISAO `"tickets"` ODREDNICU, PISI `"orders"` (SIGURAN SAM DA JE TO PRVO **`"name"`** FIELD U `package.json`)
+SADA U POMENUTIM FILE-OVIMA, GDE GOD SI PISAO `"tickets"` ODREDNICU, PISI `"orders"` (SIGURAN SAM DA JE TO PRVO **`"name"`** FIELD U `package.json`) (**USTVARI TO JE JDINO MESTO U KOJEM TREBAS TO PROMENITI**)
 
 
