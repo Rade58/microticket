@@ -4,32 +4,51 @@ import { Schema, model, Document, Model } from "mongoose";
 const { ObjectId, Date: MongooseDate } = Schema.Types;
 //
 
-const orderSchema = new Schema({
-  userId: {
-    type: ObjectId,
-    required: true,
-  },
-  status: {
-    type: String,
-    enum: ["pending", "expired", "paid"],
-    required: true,
-  },
-  expiresAt: {
-    type: MongooseDate,
-    // NECE BITI REQUIRED, JER OVO NECE POSTOJATI
-    // ZA STATUS "paid"
-    // JER KAD BUDE PID, TREBALO BI DA BUDE MOGUCE DA SE PODESI DA BUDE null ILI undefined
-  },
+const orderSchema = new Schema(
+  {
+    userId: {
+      type: ObjectId,
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ["pending", "expired", "paid"],
+      required: true,
+    },
+    expiresAt: {
+      type: MongooseDate,
+      // NECE BITI REQUIRED, JER OVO NECE POSTOJATI
+      // ZA STATUS "paid"
+      // JER KAD BUDE PID, TREBALO BI DA BUDE MOGUCE DA SE PODESI DA BUDE null ILI undefined
+    },
 
-  // OVDE CE BITI TAJ ref KA DOKUMENTU IZ DRUGE KOLEKCIJE
-  // ALI NECU TI JOS TO POKAZIVATI
-  // DOK NE NEAPRAVIM SCHEMA-U I MODEL ZA Ticket
-  // MOGAO SAM TO ODMAH URADITI ALI NECU
-  ticket: {
-    type: ObjectId,
-    required: true,
+    // OVDE CE BITI TAJ ref KA DOKUMENTU IZ DRUGE KOLEKCIJE
+    // ALI NECU TI JOS TO POKAZIVATI
+    // DOK NE NEAPRAVIM SCHEMA-U I MODEL ZA Ticket
+    // MOGAO SAM TO ODMAH URADITI ALI NECU
+    ticket: {
+      type: ObjectId,
+      required: true,
+    },
   },
-});
+  {
+    toJSON: {
+      /**
+       *
+       * @param doc
+       * @param ret object to be returned later as json
+       * @param options
+       */
+      transform(doc, ret, options) {
+        ret.id = ret._id;
+        delete ret._id;
+        // __v   NECEMO DELET-OVATI
+        // PREDPOSTAVLJAM ZBOG CONCURRENCY STVARI
+        // KOJE CU DA IMPLEMENTIRAM KORISCENJEM __v
+      },
+    },
+  }
+);
 
 enum StatusEnum {
   pending = "pending",
