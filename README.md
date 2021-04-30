@@ -76,4 +76,15 @@ export { app };
 
 - `skaffold dev`
 
+OVO SU SADA LOGS KOJE CES VIDETI IZ orders MICROSERVICE-A
 
+```zsh
+[orders] 
+[orders]           Connected to Nats Streaming Server
+[orders]           clientId: orders-depl-5cc5df8bc-8pcnn
+[orders]         
+[orders] Connected to DB (orders-mongo)
+[orders] listening on http://localhost:3000 INSIDE tickets POD
+```
+
+DAKLE orders MICROSERVICE FUNKCIONISE

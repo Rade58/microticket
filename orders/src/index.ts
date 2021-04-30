@@ -56,7 +56,7 @@ const start = async () => {
       useCreateIndex: true,
     });
 
-    console.log("Connected to DB (tickets-mongo)");
+    console.log("Connected to DB (orders-mongo)");
   } catch (err) {
     console.log("Failed to connect to DB");
     console.log(err);
