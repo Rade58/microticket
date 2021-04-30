@@ -5,6 +5,11 @@ import { requireAuth, validateRequest } from "@ramicktick/common";
 // UZIMAM bofy MIDDLEWARE SA express-validator-A
 import { body } from "express-validator";
 
+// UZECU UTILITY FROM MONGOOSE KOJI CE USTVARI RECI
+// DA LI JE NEKI ID VALIDAN MONGO-V ID
+import { Types as MongooseTypes } from "mongoose";
+//
+
 const router = Router();
 
 // ZADAJEM MIDDLEWARES
@@ -16,7 +21,14 @@ router.get(
       .isString()
       .not()
       .isEmpty()
-      .isHexadecimal()
+      // EVO OVO JE VALIDACIJA O TOME DA LI SE RADI
+      // O ID-JU DOKUMMENTA IZ MONGO-A
+      // PRAVIM OCUSTOM VALIDACIJU
+      .custom((input: string) => {
+        // OVO CE BITI BOOLEAN
+        return MongooseTypes.ObjectId.isValid(input);
+      })
+      //
       .withMessage("'ticketId' is invalid or not provided"),
   ],
   validateRequest,
@@ -26,6 +38,8 @@ router.get(
 
     // IIZDVAJAM STVARI SA BODY-JA
     const { ticketId } = req.body;
+    // OVDE CU SADA STATI DA BI TI OBJASNIO
+    // ONO U VEZI MICROSERVICE COUPLING-A
 
     res.send({});
   }
