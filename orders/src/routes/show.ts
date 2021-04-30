@@ -2,7 +2,7 @@ import { Router } from "express";
 
 const router = Router();
 
-router.get("/api/orders/:id", async (req, res) => {
+router.get("/api/orders/:orderId", async (req, res) => {
   //
   res.send({});
 });
