@@ -72,6 +72,8 @@ app.use(errorHandler);
 export { app };
 ```
 
+**SADDA KADA POKRENEMO SKAFFOLD, NODE PROCESS U orders MICROSERVICE-U, NE BI VISE TREBALO DA THROW-UJE ERRORS, VEZANE ZA INVALIND IMPORTS**
 
+- `skaffold dev`
 
 
