@@ -1,8 +1,12 @@
-import { Schema, model, Document, Model, Types } from "mongoose";
+import { Schema, model, Document, Model } from "mongoose";
+
+// RESTRUKTURIRAM NEKE TYPE-OVE ZA SCHEMA-U
+const { ObjectId, Date: MongooseDate } = Schema.Types;
+//
 
 const orderSchema = new Schema({
   userId: {
-    type: Types.ObjectId,
+    type: ObjectId,
     required: true,
   },
   status: {
@@ -11,15 +15,18 @@ const orderSchema = new Schema({
     required: true,
   },
   expiresAt: {
-    type: Date,
-    required: true,
+    type: MongooseDate,
+    // NECE BITI REQUIRED, JER OVO NECE POSTOJATI
+    // ZA STATUS "paid"
+    // JER KAD BUDE PID, TREBALO BI DA BUDE MOGUCE DA SE PODESI DA BUDE null ILI undefined
   },
 
-  // OVDE CE BITI TAJ REF KA DOKUMENTU IZ DRUGE KOLEKCIJE
+  // OVDE CE BITI TAJ ref KA DOKUMENTU IZ DRUGE KOLEKCIJE
   // ALI NECU TI JOS TO POKAZIVATI
-  // DOK NE NEAPRAVIM SCHEMA-U I MODEL ZA Tickets
+  // DOK NE NEAPRAVIM SCHEMA-U I MODEL ZA Ticket
+  // MOGAO SAM TO ODMAH URADITI ALI NECU
   ticket: {
-    type: Types.ObjectId,
+    type: ObjectId,
     required: true,
   },
 });
