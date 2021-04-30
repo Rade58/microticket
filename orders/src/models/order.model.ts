@@ -1,8 +1,15 @@
 import { Schema, model, Document, Model } from "mongoose";
-
-// RESTRUKTURIRAM NEKE TYPE-OVE ZA SCHEMA-U
-const { ObjectId, Date: MongooseDate } = Schema.Types;
+// UVOZIM OVO
+import { TicketFields } from "./ticket.model";
 //
+
+// ONO STO CEMO DODATI JESTE      ref    ZA    ticket    FIELD
+//
+// I PROSIRICEMO TYPESCRIPT DEFINICIJU, KKO BISMO TYPE-OVALI
+// ticket FIELD, JER KADA SE UPOTREBI populate, NAKON QUERYINGA
+// MOCI CES DA LAKO VIDIS TE FIEL-OVE
+
+const { ObjectId, Date: MongooseDate } = Schema.Types;
 
 const orderSchema = new Schema(
   {
@@ -17,17 +24,11 @@ const orderSchema = new Schema(
     },
     expiresAt: {
       type: MongooseDate,
-      // NECE BITI REQUIRED, JER OVO NECE POSTOJATI
-      // ZA STATUS "paid"
-      // JER KAD BUDE PID, TREBALO BI DA BUDE MOGUCE DA SE PODESI DA BUDE null ILI undefined
     },
-
-    // OVDE CE BITI TAJ ref KA DOKUMENTU IZ DRUGE KOLEKCIJE
-    // ALI NECU TI JOS TO POKAZIVATI
-    // DOK NE NEAPRAVIM SCHEMA-U I MODEL ZA Ticket
-    // MOGAO SAM TO ODMAH URADITI ALI NECU
     ticket: {
       type: ObjectId,
+      // OVO DEFINISEM DA JE REFERENCA ZA Ticket DOCUMENT
+      ref: "Ticket",
       required: true,
     },
   },
@@ -42,9 +43,6 @@ const orderSchema = new Schema(
       transform(doc, ret, options) {
         ret.id = ret._id;
         delete ret._id;
-        // __v   NECEMO DELET-OVATI
-        // PREDPOSTAVLJAM ZBOG CONCURRENCY STVARI
-        // KOJE CU DA IMPLEMENTIRAM KORISCENJEM __v
       },
     },
   }
@@ -63,10 +61,9 @@ interface OrderFields {
   userId: string;
   status: StatusEnum;
   expiresAt: string;
-  //  POSTO CE OVO REPREZENTOVTI ASSOCIATION, ONDA
-  // CU OVDE KASNIJE PODESITI INTERFACE, KOJI CU UVESTI
-  // IZ FILE-A ZA TICKET-OV MODEL
-  // ticket: TicketFields;
+  // ---- EVO DEFINISEM OVO ----
+  ticket: TicketFields;
+  // ---------------------------
 }
 
 /**
