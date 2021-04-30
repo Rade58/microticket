@@ -2,10 +2,16 @@
 
 DAKLE AGAINST THESE HANDLERS SLACE SE REQUEST-OVI FROM OUR FRONT END PART OF APPLICATION
 
-`"GET"` `/api/orders` (SVE ACTIVE ORDERS, KOJE JE NAPRAVIO SPECIFIC USER)
+`"GET"` `/api/orders` (USER GLEDA SVE SVOJE ACTIVE ORDERS)
 
-`"GET"` `/api/orders/:id` (DETALJI SPECIFIC ORDERA)
+`"GET"` `/api/orders/:id` (USER GLEDA DETALJE SPECIFIC ORDER-A)
 
-`"POST"` `/api/orders` BODY: `{ticketId: string;}` (KREIRANJE ORDERA ZA PURCHASE SPECIFIC TICKET-A)
+`"POST"` `/api/orders` BODY: `{ticketId: string;}` (USER KREIRA ORDER ZA PURCHASE SPECIFIC TICKET-A)
 
-`"DELETE"` `/api/orders/:id` (CANCELOVANJE ORDER-A)
+`"DELETE"` `/api/orders/:id` (USER CANCEL-UJE SVOJ SPECIFIC ORDER-A)
+
+DA KREIRAM I FSJLOVE ZA HANDLERE
+
+- `mkdir orders/src/routes`
+
+- `touch orders/src/routes/{index,show,new,delete}.ts`
