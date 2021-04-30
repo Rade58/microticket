@@ -1,13 +1,13 @@
 import { Schema, model, Document, Model } from "mongoose";
-// UVOZIM OVO
 import { TicketFields } from "./ticket.model";
-//
 
-// ONO STO CEMO DODATI JESTE      ref    ZA    ticket    FIELD
-//
-// I PROSIRICEMO TYPESCRIPT DEFINICIJU, KKO BISMO TYPE-OVALI
-// ticket FIELD, JER KADA SE UPOTREBI populate, NAKON QUERYINGA
-// MOCI CES DA LAKO VIDIS TE FIEL-OVE
+// ZELIM DA DAKLE DA REDEFINISEM MALO ENUM
+// EVO PREBACIO SAM GA OVDE
+enum StatusEnum {
+  pending = "pending",
+  expired = "expired",
+  paid = "paid",
+}
 
 const { ObjectId, Date: MongooseDate } = Schema.Types;
 
@@ -19,7 +19,11 @@ const orderSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "expired", "paid"],
+      // UMESTO HARDCODING-A,
+      // enum: ["pending", "expired", "paid"],
+      // SIGURNIJE JE OVAKO URADITI
+
+      enum: [StatusEnum.pending, StatusEnum.expired, StatusEnum.paid],
       required: true,
     },
     expiresAt: {
@@ -27,7 +31,6 @@ const orderSchema = new Schema(
     },
     ticket: {
       type: ObjectId,
-      // OVO DEFINISEM DA JE REFERENCA ZA Ticket DOCUMENT
       ref: "Ticket",
       required: true,
     },
@@ -48,12 +51,6 @@ const orderSchema = new Schema(
   }
 );
 
-enum StatusEnum {
-  pending = "pending",
-  expired = "expired",
-  paid = "paid",
-}
-
 /**
  * @description this fields are inputs for the document creation
  */
@@ -61,9 +58,7 @@ interface OrderFields {
   userId: string;
   status: StatusEnum;
   expiresAt: string;
-  // ---- EVO DEFINISEM OVO ----
   ticket: TicketFields;
-  // ---------------------------
 }
 
 /**
