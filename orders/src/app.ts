@@ -2,14 +2,12 @@ import express from "express";
 import "express-async-errors";
 import { json } from "body-parser";
 import cookieSession from "cookie-session";
-
-import { createTicketRouter } from "./routes/new";
-
-import { getOneTicketByIdRouter } from "./routes/show";
-import { getAllTicketsRouter } from "./routes/";
-// UZEO OVO
-import { updateOneTicketRouter } from "./routes/update";
-//
+// -------- EVO OVO DODAJEM --------
+import { listAllOrdersRouter } from "./routes/";
+import { deatailsOfOneOrderRouter } from "./routes/show";
+import { createNewOrderRouter } from "./routes/new";
+import { deleteSingleOrderRouter } from "./routes/delete";
+// ---------------------------------
 
 import { errorHandler, NotFoundError, currentUser } from "@ramicktick/common";
 
@@ -29,12 +27,12 @@ app.use(
 
 app.use(currentUser);
 
-app.use(createTicketRouter);
-app.use(getOneTicketByIdRouter);
-app.use(getAllTicketsRouter);
-// DODAO OVO
-app.use(updateOneTicketRouter);
-//
+// ---- POVEZUJEM, POMENUTE ROUTERE ----
+app.use(listAllOrdersRouter);
+app.use(deatailsOfOneOrderRouter);
+app.use(createNewOrderRouter);
+app.use(deleteSingleOrderRouter);
+// -------------------------------------
 
 app.all("*", async (req, res, next) => {
   throw new NotFoundError();
