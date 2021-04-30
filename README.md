@@ -34,5 +34,14 @@ TO CEMO SADA ODRADITI, A UZ TO CEMO DEFINISATI I NESTED SCHEMAS
 
 SAMO TI TO NAPOMINJEM, AKO SI ZABORAVIO
 
-# KREIRAMO Order MODEL I KREIRAMO Ticket MODEL
+# PRE NEGO STO TI POKAZEM TU ASSOTIATION STVAR, KREIRAMO Order MODEL I KREIRAMO Ticket MODEL
 
+- `mkdir orders/src/models`
+
+- `touch orders/src/models/{order.model,ticket.model}.ts`
+
+- `code orders/src/models/order.model.ts`
+
+```ts
+
+```

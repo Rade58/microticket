@@ -40,13 +40,13 @@ interface TicketFields {
 }
 
 /**
- * @description interface for thing, among others I can search on obtaind document
+ * @description interface for things, among others I can search on obtained document
  */
 interface TicketDocumentI extends Document, TicketFields {
   //
 }
 /**
- * @description interface for additional things on the model
+ * @description interface for additional things on the model (MOSTLY METHODS TO BE USED ON THE MODEL)
  */
 interface TicketModelI extends Model<TicketDocumentI> {
   // NECU NISTA DODAVATI, ALI OVDE BI TYPE-OVAO STATICKE METODE KOJE
