@@ -2,7 +2,7 @@ import { Schema, model, Document, Model } from "mongoose";
 import { TicketFields } from "./ticket.model";
 
 // UVOZIMO OVO
-import { OrderStatusEnum } from "@ramicktick/common";
+import { OrderStatusEnum as OSE } from "@ramicktick/common";
 
 // OVO NE VALJE I NE KORISTIOM O OVO
 // A I NISAM PREDVIDEO SVE VREDNOSTI U OVOM ENUMU
@@ -24,8 +24,9 @@ const orderSchema = new Schema(
       // OVO UKLANJAM
       // enum: [StatusEnum.pending, StatusEnum.expired, StatusEnum.paid],
       // DA BI DEFINISAO OVAKO
-
-      //
+      enum: [OSE.created, OSE.cancelld, OSE.awaiting_payment, OSE.complete],
+      // I JOS OSTAJE DOLE DA U TYPESCRIPT DEFINICIJU, DODAM
+      // ENUM KAO TYPE ZA status FIELD
 
       required: true,
     },
@@ -59,7 +60,9 @@ const orderSchema = new Schema(
  */
 interface OrderFields {
   userId: string;
-  status: StatusEnum;
+  // EVO OVDE ZADAJEM, POMENUTI ENUM
+  status: OSE;
+  //
   expiresAt: string;
   ticket: TicketFields;
 }
