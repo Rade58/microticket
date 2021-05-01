@@ -97,11 +97,13 @@ A SADA CU DA NASTAVIM SA DEFINISANJEM HANDLER-A
 ```ts
 import { Router, Request, Response } from "express";
 // TREBACE NAM I ONAJ ENUM ZA status FIELD
+// ALI CE NAM TREBATI I ERROR ZA BAD REQUEST
 import {
   requireAuth,
   validateRequest,
   NotFoundError,
   OrderStatusEnum as OSE,
+  BadRequestError
 } from "@ramicktick/common";
 import { body } from "express-validator";
 import { Types as MongooseTypes } from "mongoose";
@@ -164,7 +166,8 @@ router.get(
     // NJEGOV NACIN JE BOLJI JER MOZE ODMAH DA THROW-UJE ERROR
     // OVAKO
     if (existingOrder) {
-      throw new Error("order is already reserved");
+      // I THROW-UJEMO BadRequestError
+      throw new BadRequestError("order is already reserved");
     }
     // DALJE CU NASTAVITI KASNIJE
 
