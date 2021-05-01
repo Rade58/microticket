@@ -2,4 +2,8 @@
 
 PRVI TEST KOJI CU NAPISATI TICACE SE TOGA DA LI TICKET ZA KOJI
 
+- `touch orders/src/routes/__test__/new.test.ts`
 
+```ts
+
+```

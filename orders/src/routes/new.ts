@@ -17,7 +17,7 @@ const EXPIRATION_PERIOD_SECONDS = 15 * 60; // EVO OVO SADA IMA
 
 const router = Router();
 
-router.get(
+router.post(
   "/api/orders",
   requireAuth,
   [
@@ -34,9 +34,13 @@ router.get(
   async (req: Request, res: Response) => {
     const { ticketId } = req.body;
 
+    console.log("TICKET ID -->", ticketId);
+
     const userId = req?.currentUser?.id;
 
-    const ticket = await Ticket.findById(ticketId).exec();
+    const ticket = await Ticket.findOne({ _id: ticketId }).exec();
+
+    console.log({ ticket });
 
     if (!ticket) {
       throw new NotFoundError();
