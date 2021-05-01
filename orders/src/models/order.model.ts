@@ -24,7 +24,7 @@ const orderSchema = new Schema(
       // OVO UKLANJAM
       // enum: [StatusEnum.pending, StatusEnum.expired, StatusEnum.paid],
       // DA BI DEFINISAO OVAKO
-      enum: [OSE.created, OSE.cancelld, OSE.awaiting_payment, OSE.complete],
+      enum: Object.values(OCE),
       // I JOS OSTAJE DOLE DA U TYPESCRIPT DEFINICIJU, DODAM
       // ENUM KAO TYPE ZA status FIELD
 
