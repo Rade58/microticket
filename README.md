@@ -19,7 +19,7 @@ import { Ticket } from "../models/ticket.model";
 
 const router = Router();
 
-router.get(
+router.post(
   "/api/orders",
   requireAuth,
   [
@@ -112,7 +112,7 @@ import { Ticket } from "../models/ticket.model";
 
 const router = Router();
 
-router.get(
+router.post(
   "/api/orders",
   requireAuth,
   [
@@ -331,7 +331,7 @@ import { Ticket } from "../models/ticket.model";
 
 const router = Router();
 
-router.get(
+router.post(
   "/api/orders",
   requireAuth,
   [
@@ -417,7 +417,7 @@ import { Ticket } from "../models/ticket.model";
 
 const router = Router();
 
-router.get(
+router.post(
   "/api/orders",
   requireAuth,
   [
@@ -501,7 +501,7 @@ const EXPIRATION_PERIOD_SECONDS = 15 * 60; // EVO OVO SADA IMA
 
 const router = Router();
 
-router.get(
+router.post(
   "/api/orders",
   requireAuth,
   [
@@ -586,7 +586,7 @@ const EXPIRATION_PERIOD_SECONDS = 15 * 60; // EVO OVO SADA IMA
 
 const router = Router();
 
-router.get(
+router.post(
   "/api/orders",
   requireAuth,
   [

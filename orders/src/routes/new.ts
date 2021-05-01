@@ -17,7 +17,7 @@ const EXPIRATION_PERIOD_SECONDS = 15 * 60; // EVO OVO SADA IMA
 
 const router = Router();
 
-router.get(
+router.post(
   "/api/orders",
   requireAuth,
   [
