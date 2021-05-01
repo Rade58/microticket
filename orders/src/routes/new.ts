@@ -34,13 +34,13 @@ router.post(
   async (req: Request, res: Response) => {
     const { ticketId } = req.body;
 
-    console.log("TICKET ID -->", ticketId);
-
     const userId = req?.currentUser?.id;
+    // console.log("TICKET ID -->", ticketId);
+    // console.log("USER ID -->", userId);
 
     const ticket = await Ticket.findOne({ _id: ticketId }).exec();
 
-    console.log({ ticket });
+    // console.log({ ticket });
 
     if (!ticket) {
       throw new NotFoundError();
