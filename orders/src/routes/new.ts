@@ -11,6 +11,10 @@ import { Types as MongooseTypes } from "mongoose";
 // import { Order } from "../models/order.model";
 import { Ticket } from "../models/ticket.model";
 
+// EVO DEFINISEM COTANTU
+const EXPIRATION_PERIOD_SECONDS = 15 * 60; // EVO OVO SADA IMA
+//                                          15 min U SEKUNDAMA
+
 const router = Router();
 
 router.get(
@@ -48,12 +52,15 @@ router.get(
       );
     }
 
-    // ---- SADA MORAM NAPRAVITI expirationDate
-    const expirationDate = new Date(new Date().getTime() + 15 * 60 * 1000);
-    // MOZES SE IGRATI U KONZOLI SA OVIM GORE DA VIDIS KAKO SAM DOSAO DO OVOGA
-    // OVO GORE JE MOGL ODA SE RADI KROS date.setSeconds(ate.getSeconds + 15 * 60)
-    // ALI ME MRZI DA KORISTIM RAZNE METODE NA DATE-U
+    // ---- UMESTO OVOGA
+    // const expirationDate = new Date(new Date().getTime() + 15 * 60 * 1000);
+    //  -----   OVO
+    const expirationDate = new Date(
+      new Date().getTime() + EXPIRATION_PERIOD_SECONDS * 1000
+    );
+
     // --------------------------------------------------
+    // DALJE NASTAVLJAM KASNIJE
 
     // - MORAMO DA CALCULATE-UJEMO EXPIRATION DATE ZA ORDER (NA PRIMER 15 min)
 
