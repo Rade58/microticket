@@ -645,3 +645,5 @@ router.get(
 
 export { router as createNewOrderRouter };
 ```
+
+JA JOS NE ZNAM DA LI CE OVO RADITI ZATO CU U SLEDECEM BRANCH-U POCETI DA PISEM AUTOMATED TESTS
