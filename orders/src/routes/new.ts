@@ -48,7 +48,7 @@ router.get(
 
     // AUTOR WORKSHOPA JE OVO ODRADIO DRUGACIJE OD MENE
 
-    const order = await Order.findOne({
+    const existingOrder = await Order.findOne({
       ticket: ticketId,
       status: {
         // ON JE ZA STATUSOM QUERY-EOVAO OVAKO
@@ -63,7 +63,7 @@ router.get(
 
     // NJEGOV NACIN JE BOLJI JER MOZE ODMAH DA THROW-UJE ERROR
     // OVAKO
-    if (order) {
+    if (existingOrder) {
       throw new Error("order is already reserved");
     }
     // DALJE CU NASTAVITI KASNIJE
