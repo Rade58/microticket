@@ -117,4 +117,53 @@ global.getOtherCookie = (payload: { id: string; email: string }) => {
 };
 ```
 
+## PREKOPIRACEMO IZ `tickets` MICROSERVICE-A I ONO STO SMO DEFINISALI AROUND MOCKS
 
+- `mkdir orders/src/events/__mocks__`
+
+- `touch orders/src/events/__mocks__/nats-wrapper.ts`
+
+```ts
+export const natsWrapper = {
+  client: {
+    /* publish(channelName: string, data: any, callback: () => void): void {
+      callback();
+    }, */
+
+    // DAKLE PASS-UJEMO IN POMENUTU FAKE FUNKCIJU
+    // KROZ METOFU mockImplementation
+    publish: jest
+      .fn()
+      .mockImplementation(
+        (channelName: string, data: any, callback: () => void): void => {
+          //
+          //
+          //
+          // I DALJE DAKLE OVDE MORAMO
+          // PZVATI callback
+          callback();
+        }
+      ),
+  },
+};
+```
+
+# TRENUTNO NEMAM NI JEDAN TEST, ALI MOGU DA PROBAM DA RUNN-UJEM TEST SUITE, KAKO BI VIDEO DA LI FUNKCIONISE
+
+- `cd orders`
+
+- `yarn test`
+
+IZGLEDA DA TEST SUITE FUNKCIONISE
+
+```zsh
+No tests found, exiting with code 0
+
+Watch Usage
+ › Press f to run only failed tests.
+ › Press o to only run tests related to changed files.
+ › Press p to filter by a filename regex pattern.
+ › Press t to filter by a test name regex pattern.
+ › Press q to quit watch mode.
+ › Press Enter to trigger a test run.
+```
