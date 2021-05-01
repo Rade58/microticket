@@ -8,7 +8,7 @@ import {
 } from "@ramicktick/common";
 import { body } from "express-validator";
 import { Types as MongooseTypes } from "mongoose";
-import { Order } from "../models/order.model";
+// import { Order } from "../models/order.model";
 import { Ticket } from "../models/ticket.model";
 
 const router = Router();
@@ -40,27 +40,24 @@ router.get(
       throw new NotFoundError();
     }
 
-    // UMESTO OVOGA
-    /* const existingOrder = await Order.findOne({
-      ticket: ticketId,
-      status: {
-        $in: [OSE.created, OSE.awaiting_payment, OSE.complete],
-      },
-    }).exec(); */
-    // OVO
     const ticketIsReserved = await ticket.isReserved();
 
-    // I UMESTO OVOGA
-    // if (existingOrder) {
-    // OVO
     if (ticketIsReserved) {
       throw new BadRequestError(
         "can't make an order, ticket is already reserved"
       );
     }
-    // DALJE CU NASTAVITI KASNIJE
+
+    // ---- SADA MORAM NAPRAVITI expirationDate
+    const expirationDate = new Date(new Date().getTime() + 15 * 60 * 1000);
+    // MOZES SE IGRATI U KONZOLI SA OVIM GORE DA VIDIS KAKO SAM DOSAO DO OVOGA
+    // OVO GORE JE MOGL ODA SE RADI KROS date.setSeconds(ate.getSeconds + 15 * 60)
+    // ALI ME MRZI DA KORISTIM RAZNE METODE NA DATE-U
+    // --------------------------------------------------
 
     // - MORAMO DA CALCULATE-UJEMO EXPIRATION DATE ZA ORDER (NA PRIMER 15 min)
+
+    // DALJE CU NASTAVITI UBRZO
 
     // - ONDA MOEMO DA NAPRAVIMO, NOVI Order DOKUMENT
 
