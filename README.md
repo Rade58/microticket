@@ -167,7 +167,7 @@ router.get(
     // OVAKO
     if (existingOrder) {
       // I THROW-UJEMO BadRequestError
-      throw new BadRequestError("order is already reserved");
+      throw new BadRequestError("can't make an order, ticket is already reserved");
     }
     // DALJE CU NASTAVITI KASNIJE
 
