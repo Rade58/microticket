@@ -1,4 +1,12 @@
 import { Schema, model, Document, Model } from "mongoose";
+// TREBACE I ONAJ STATUS ENUM
+import { OrderStatusEnum as OSE } from "@ramicktick/common";
+//
+// UVOZIM Order MODEL
+import { Order } from "./order.model";
+
+// DOLE ISPOD DEFINICIJE SAME SCHEMA-E CU DA PRVO TYPE-UJEM METODU
+// PA CU DA JE DEFINISEM
 
 const ticketSchema = new Schema(
   {
@@ -9,16 +17,8 @@ const ticketSchema = new Schema(
     price: {
       type: Number,
       required: true,
-      // AUTOR WORKSHOPA JE OVDE ODLUCIO DA ZADA VALIDACIJU
-      // DA NE SME BITI ISPOD NULE
       min: 0,
-      // A MISSLI MDA JE TO ZABORAVIO DA URADI U tickets MICROSERVICE-U
     },
-    // OVO DAKLE OVDE NE TREBA
-    /* userId: {
-      type: String,
-      required: true,
-    }, */
   },
   {
     toJSON: {
@@ -27,21 +27,12 @@ const ticketSchema = new Schema(
        */
       transform(doc, ret, options) {
         ret.id = ret._id;
-
         delete ret._id;
-
-        // NECEMO DELETOVATI ret.__v
-        // delete ret.__v;
-        // JA MISLI MDA TI VEC NASLUCUJES DA JE TO JER CE
-        // __v UCESTVOVATI U RESAVANJU CONCURRENCY PROBLEMA
-        // STO CU TI POKAZATI KADA ZA TO DODJE VREME
       },
     },
   }
 );
 
-// OVO I DALJE EXPORT-UJEM I TO NECEMO NISTA MANJATI
-// I DALJE VISE NISTA NECU RADITI IU OVOM FILE-U
 /**
  * @description this fields are inputs for the document creation
  */
@@ -55,21 +46,51 @@ export interface TicketFields {
  * @description interface for things, among others I can search on obtained document
  */
 interface TicketDocumentI extends Document, TicketFields {
-  //
+  // METODU MOGU DA TYPE-UJEM OVDE
+  // EVO OVDE PRVO TYPE-UJEM POMENUTU METODU, KOJA CE SE MOCI NA SCHEME
+  // DEFINISATI KROZ methods, I KOJU CE ONDA MOCI MODEL KORISTITI
+  isReserved: () => Promise<boolean>; // PROMISE JER CE METODA BITI DEFINISANA KAO async
 }
 /**
  * @description interface for additional things on the model (MOSTLY METHODS TO BE USED ON THE MODEL)
  */
 interface TicketModelI extends Model<TicketDocumentI> {
-  // NECU NISTA DODAVATI, ALI OVDE BI TYPE-OVAO STATICKE METODE KOJE
-  // SAMO TI OSTAVLJAM OVO KAO TEMPLATE DEFINISANJA
-  __nothing: (input: string) => void; //stavio samo jer moram nesto da dodam, ali ovu metodu necu sigurno definisati
+  // ONLY HERE BECAUSE INTERFACE CAN'T BE EMPTY
+  __nothing: () => void;
 }
 
-// BUILDING STATIC METHODS ON MODEL ( JUST SHOVING NOT GOING TO USE IT )
+// BUILDING STATIC METHODS ON MODEL ( JUST SHOVING) (can be arrow)
 // ticketSchema.statics.__nothing = async function (input) {/**/};
+// BUILDING  METHODS ON document ( JUST SHOVING) (can't be arrow)
+// ticketSchema.methods.__nothing = async function (input) {/**/};
 // pre HOOK
 // ticketSchema.pre("save", async function (next) {/**/});
+
+// DEFINISEM METODU  isReserved
+// METODA NE SME BITI ARROW, JER CU INSIDE, KORITITI
+// this KEYWORD
+
+ticketSchema.methods.isReserved = async function (): Promise<boolean> {
+  // ONU LOGIKU O PROVERI DA LI JE TICKET RESERVED KORISTIMO OVDE
+
+  // ALI PRVO MORAMO UZETI ticketId SA Ticket DOKUMENT-A
+  const ticketId = this.id;
+
+  const existingOrder = await Order.findOne({
+    ticket: ticketId, // OVDE SI MOGAO STAVITI I SAMO ticket: this
+    status: {
+      $in: [OSE.created, OSE.awaiting_payment, OSE.complete],
+    },
+  });
+
+  // SAMO STO SADA KORISTIMO BOOLEAN-E
+
+  if (existingOrder) {
+    return true;
+  }
+
+  return false;
+};
 
 /**
  * @description Ticket model
