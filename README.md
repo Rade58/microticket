@@ -53,7 +53,7 @@ const ticketSchema = new Schema(
   }
 );
 
-// OVO I DALJE EXPORT-UJEM I TO NECEMO NISTA MANJATI
+// OVO I DALJE EXPORT-UJEM I TO NECEMO NISTA MANJATI (JER GA KORISTIMO U FILE-U ZA Order)
 // I DALJE VISE NISTA NECU RADITI IU OVOM FILE-U
 /**
  * @description this fields are inputs for the document creation
