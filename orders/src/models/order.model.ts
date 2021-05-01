@@ -16,7 +16,7 @@ const { ObjectId, Date: MongooseDate } = Schema.Types;
 const orderSchema = new Schema(
   {
     userId: {
-      type: ObjectId,
+      type: String,
       required: true,
     },
     status: {
