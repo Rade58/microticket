@@ -120,3 +120,6 @@ export * from "./events/types/order-status-enum";
 
 - `yarn add @ramicktick/common --latest`
 
+# KORISTICEMO, SADA, POMENUTI ENUM U NASEM `orders` MICROSERVICE-U
+
+
