@@ -47,6 +47,29 @@ DEFINISACU 4 RAZLICITE VREDNOSTI U ENUMU, A DODACU I KOMENTARE KOJI CE OPISIVATI
 ***
 
 ```ts
+export enum OrderStatusEnum {
+  /**
+   * @description when the order has been created, but ticket
+   * trying to be ordered, is not reserved
+   */
+  created = "created",
+  /**
+   * @description ticket, that is being tried to be reserved, has already
+   * been reserved, or user cancelled the order,
+   * or payment info was wrong
+   * or order expired before payment
+   */
+  cancelld = "cancelled",
+  /**
+   * @description ticket is successfully reserved
+   */
+  awaiting_payment = "awaiting:payment",
+
+  /**
+   * @description user has provided payment info successfully
+   */
+  complete = "complete",
+}
 
 ```
 
@@ -55,3 +78,5 @@ DEFINISACU 4 RAZLICITE VREDNOSTI U ENUMU, A DODACU I KOMENTARE KOJI CE OPISIVATI
 ZATO IMAMO created; MI CEMO MISLITI DA SMO NAPRAVILI ORDER PREMA TICKETU, ALI NE ZNAMO FOR SURE
 
 **TU POSTOJI PITANJE IZMDJU DVE STVARI, AVAILABILITY TICKETA, I RESERVATION, JER NESTO MOZE JEDINO BITI RESERVED, AKO JE AVAILABLE** (MOZZDA C MI OBVO BITI JASNIJE KADA BUDEM GLEDAO IMPLEMENTACIJU SVEGA)
+
+`cancelled` PRESDSTAVLJA NEKI CATCH ALL, KAO DA CAPTURE-UJE NEKLIKO DIFFERENT CASES OF FAILIURE (**MOGLI SMO TO SEPARET-EOVATI U NEKOLIKO DIFFERENT STATUS-A, ALI NECEMO TO URADITI, MEDJUTIM ZBOG NALAITIKE, O TOME ZASTO ORDER FAIL-UJE TO BE PROCESSED BILO BI DOBRO, ALI NAMA JE cancelled SASVIM DOVOLJNO**)
