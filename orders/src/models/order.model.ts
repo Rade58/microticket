@@ -1,14 +1,16 @@
 import { Schema, model, Document, Model } from "mongoose";
 import { TicketFields } from "./ticket.model";
 
-// ZELIM DA DAKLE DA REDEFINISEM MALO ENUM
-// EVO PREBACIO SAM GA OVDE
-enum StatusEnum {
+// UVOZIMO OVO
+import { OrderStatusEnum } from "@ramicktick/common";
+
+// OVO NE VALJE I NE KORISTIOM O OVO
+// A I NISAM PREDVIDEO SVE VREDNOSTI U OVOM ENUMU
+/* enum StatusEnum {
   pending = "pending",
   expired = "expired",
   paid = "paid",
-}
-
+} */
 const { ObjectId, Date: MongooseDate } = Schema.Types;
 
 const orderSchema = new Schema(
@@ -19,11 +21,12 @@ const orderSchema = new Schema(
     },
     status: {
       type: String,
-      // UMESTO HARDCODING-A,
-      // enum: ["pending", "expired", "paid"],
-      // SIGURNIJE JE OVAKO URADITI
+      // OVO UKLANJAM
+      // enum: [StatusEnum.pending, StatusEnum.expired, StatusEnum.paid],
+      // DA BI DEFINISAO OVAKO
 
-      enum: [StatusEnum.pending, StatusEnum.expired, StatusEnum.paid],
+      //
+
       required: true,
     },
     expiresAt: {

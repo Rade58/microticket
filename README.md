@@ -122,4 +122,9 @@ export * from "./events/types/order-status-enum";
 
 # KORISTICEMO, SADA, POMENUTI ENUM U NASEM `orders` MICROSERVICE-U
 
+- `code orders/src/models/order.model.ts`
+
+```ts
+
+```
 
