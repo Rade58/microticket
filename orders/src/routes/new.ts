@@ -1,5 +1,4 @@
 import { Router, Request, Response } from "express";
-// AL ITREBACE NAM I ONAJ ENUM ZA status FIELD
 import {
   requireAuth,
   validateRequest,
@@ -41,31 +40,20 @@ router.get(
       throw new NotFoundError();
     }
 
-    // - PRE NEGO STO KREIRAM ORDER, MORAMO SE UVERITI DA
-    // TICKET NIJE VEC RESERVED (A TO CEMO TAK OSTO CEMO
-    // SEARCH-OVATI Orders KOLEKCIJU, PREMA TICKET ID-JU)
-
-    // ALI DAKLE MI TRAZIMO PREMA status-U KOJI NE SME BITI cancelled
-
-    // AUTOR WORKSHOPA JE OVO ODRADIO DRUGACIJE OD MENE
-
-    const existingOrder = await Order.findOne({
+    // UMESTO OVOGA
+    /* const existingOrder = await Order.findOne({
       ticket: ticketId,
       status: {
-        // ON JE ZA STATUSOM QUERY-EOVAO OVAKO
         $in: [OSE.created, OSE.awaiting_payment, OSE.complete],
-        // JA SAM TO ZELEO OVAKO DA URADIM
-        /* $not: [
-          OSE.cancelld
-        ] */
-        // ALI MISLIM DA JE NJEGOV NACIN BOLJI
       },
-    }).exec();
+    }).exec(); */
+    // OVO
+    const ticketIsReserved = await ticket.isReserved();
 
-    // NJEGOV NACIN JE BOLJI JER MOZE ODMAH DA THROW-UJE ERROR
-    // OVAKO
-    if (existingOrder) {
-      // I THROW-UJEMO BadRequestError
+    // I UMESTO OVOGA
+    // if (existingOrder) {
+    // OVO
+    if (ticketIsReserved) {
       throw new BadRequestError(
         "can't make an order, ticket is already reserved"
       );
