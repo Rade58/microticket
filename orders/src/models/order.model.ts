@@ -24,7 +24,10 @@ const orderSchema = new Schema(
       // OVO UKLANJAM
       // enum: [StatusEnum.pending, StatusEnum.expired, StatusEnum.paid],
       // DA BI DEFINISAO OVAKO
-      enum: Object.values(OCE),
+      enum: Object.values(OSE),
+      // MOGU DA PROVIDE-UJEM I DEFAULT VALUE
+      default: OSE.created,
+
       // I JOS OSTAJE DOLE DA U TYPESCRIPT DEFINICIJU, DODAM
       // ENUM KAO TYPE ZA status FIELD
 
