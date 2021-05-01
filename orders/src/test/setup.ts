@@ -1,16 +1,3 @@
-# TEST SUITE SETUP FOR `orders` MICROSERVICE
-
-I OVDE CU DOSTA KOPIRATI STVARI IZ tickets MICROSERVICE-A
-
-- `mkdir orders/src/test`
-
-- `mkdir orders/src/routes/__test__`
-
-NA PRIMER IZ tickts MICROSERVICE-A SAM KOPIRAO SVE IZ `src/test/setup` FILE-A
-
-- `touch orders/src/test/setup.ts`
-
-```ts
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 // import request from "supertest";
@@ -115,6 +102,3 @@ global.getOtherCookie = (payload: { id: string; email: string }) => {
 
   return [`express:sess=${buf.toString("base64")}`];
 };
-```
-
-
