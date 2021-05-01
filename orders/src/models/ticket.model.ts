@@ -9,11 +9,16 @@ const ticketSchema = new Schema(
     price: {
       type: Number,
       required: true,
+      // AUTOR WORKSHOPA JE OVDE ODLUCIO DA ZADA VALIDACIJU
+      // DA NE SME BITI ISPOD NULE
+      min: 0,
+      // A MISSLI MDA JE TO ZABORAVIO DA URADI U tickets MICROSERVICE-U
     },
-    userId: {
+    // OVO DAKLE OVDE NE TREBA
+    /* userId: {
       type: String,
       required: true,
-    },
+    }, */
   },
   {
     toJSON: {
@@ -24,13 +29,19 @@ const ticketSchema = new Schema(
         ret.id = ret._id;
 
         delete ret._id;
-        delete ret.__v;
+
+        // NECEMO DELETOVATI ret.__v
+        // delete ret.__v;
+        // JA MISLI MDA TI VEC NASLUCUJES DA JE TO JER CE
+        // __v UCESTVOVATI U RESAVANJU CONCURRENCY PROBLEMA
+        // STO CU TI POKAZATI KADA ZA TO DODJE VREME
       },
     },
   }
 );
 
-// SAMO STO SADA EXPORT-UJEMO OVAJ INTERFACE
+// OVO I DALJE EXPORT-UJEM I TO NECEMO NISTA MANJATI
+// I DALJE VISE NISTA NECU RADITI IU OVOM FILE-U
 /**
  * @description this fields are inputs for the document creation
  */
