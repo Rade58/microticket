@@ -80,3 +80,43 @@ ZATO IMAMO created; MI CEMO MISLITI DA SMO NAPRAVILI ORDER PREMA TICKETU, ALI NE
 **TU POSTOJI PITANJE IZMDJU DVE STVARI, AVAILABILITY TICKETA, I RESERVATION, JER NESTO MOZE JEDINO BITI RESERVED, AKO JE AVAILABLE** (MOZZDA C MI OBVO BITI JASNIJE KADA BUDEM GLEDAO IMPLEMENTACIJU SVEGA)
 
 `cancelled` PRESDSTAVLJA NEKI CATCH ALL, KAO DA CAPTURE-UJE NEKLIKO DIFFERENT CASES OF FAILIURE (**MOGLI SMO TO SEPARET-EOVATI U NEKOLIKO DIFFERENT STATUS-A, ALI NECEMO TO URADITI, MEDJUTIM ZBOG NALAITIKE, O TOME ZASTO ORDER FAIL-UJE TO BE PROCESSED BILO BI DOBRO, ALI NAMA JE cancelled SASVIM DOVOLJNO**)
+
+# DA SADA IZVEZEMO, NAS `OrderStatusEnum`, IZ NASEG PACKAGE-A
+
+- `code `
+
+```ts
+export * from "./errors/bad-request-error";
+export * from "./errors/custom-error";
+export * from "./errors/database-connection-error";
+export * from "./errors/not-authorized-error";
+export * from "./errors/not-found-error";
+export * from "./errors/request-validation-error";
+export * from "./middlewares/current-user";
+export * from "./middlewares/error-handler";
+export * from "./middlewares/require-auth";
+export * from "./middlewares/validate-request";
+
+export * from "./events/abstr/abstr-listener";
+export * from "./events/abstr/abstr-publisher";
+export * from "./events/channel-names";
+export * from "./events/event-interfaces/ticket-created-event";
+export * from "./events/event-interfaces/ticket-updated-event";
+
+// DODAO OVO
+export * from "./events/types/order-status-enum";
+
+```
+
+# SADA CEMO A REPUBLISH-UJEMO MODUL
+
+- `cd common`
+
+- `npm run pub`
+
+# SADA CEMO DA INSTALIRAMO (UPDATE-UJEMO),NAS MODUL, PONOVO U NASEM `orders` MICROSERVICE-U
+
+- `cd orders`
+
+- `yarn add @ramicktick/common --latest`
+
