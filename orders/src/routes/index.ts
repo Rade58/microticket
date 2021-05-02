@@ -1,48 +1,27 @@
 import { Router, Request, Response } from "express";
-// UVOZIM OVE MIDDLEWARE-OVE
-import { requireAuth, validateRequest } from "@ramicktick/common";
-//
-// UZIMAM bofy MIDDLEWARE SA express-validator-A
-import { body } from "express-validator";
-
-// UZECU UTILITY FROM MONGOOSE KOJI CE USTVARI RECI
-// DA LI JE NEKI ID VALIDAN MONGO-V ID
-import { Types as MongooseTypes } from "mongoose";
-//
+import { requireAuth } from "@ramicktick/common";
+import { Order } from "../models/order.model";
 
 const router = Router();
 
-// ZADAJEM MIDDLEWARES
-router.get(
-  "/api/orders",
-  requireAuth,
-  [
-    body("ticketId")
-      .isString()
-      .not()
-      .isEmpty()
-      // EVO OVO JE VALIDACIJA O TOME DA LI SE RADI
-      // O ID-JU DOKUMMENTA IZ MONGO-A
-      // PRAVIM OCUSTOM VALIDACIJU
-      .custom((input: string) => {
-        // OVO CE BITI BOOLEAN
-        return MongooseTypes.ObjectId.isValid(input);
-      })
-      //
-      .withMessage("'ticketId' is invalid or not provided"),
-  ],
-  validateRequest,
-  async (req: Request, res: Response) => {
-    // AKO NE POSTOJI AUTHENTICATED USER, MIDDLEWARE CE ODRADITI SVOJE
-    // THROW-OVACE ERROR DO ERROR HANDLING MIDDLEWARE-A
+router.get("/api/orders", requireAuth, async (req: Request, res: Response) => {
+  // DAKLE requreAuth JE TAJ MIDDLEWARE KOJI PROVERAVA DA
+  // LI JE currentUser NA REQUEST-U
 
-    // IIZDVAJAM STVARI SA BODY-JA
-    const { ticketId } = req.body;
-    // OVDE CU SADA STATI DA BI TI OBJASNIO
-    // ONO U VEZI MICROSERVICE COUPLING-A
+  // A DRUGI MIDDLEWARE KOJI INSERT-UJE USERA, STAVIO SAM NA NIVOU
+  // CELOG APP-A (currentUser MIDDLEWARE)
 
-    res.send({});
-  }
-);
+  // SADA QUERY-UJEM OZA SVE ORDERS, ALI PREKO USER ID-JA
+  // NE OBRACAJ PAZNJU NA ?.  TO SAM MORAO STAVITI ZBOG TYPESCRIPTA
+  // JER HANDLER SE ZBOG MIDDLEWARE-A NE BI NI IZVRSIO DA NEMA USER-A
+
+  // DEFINISEM I populate ZA ticket FILELD
+
+  const orders = await Order.find({ userId: req?.currentUser?.id })
+    .populate("ticket")
+    .exec();
+
+  res.status(200).send(orders);
+});
 
 export { router as listAllOrdersRouter };

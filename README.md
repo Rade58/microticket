@@ -1,38 +1,42 @@
-# `.todo()`
+# BUILDING THE REST OF THE HANDLERS FOR `orders` MICROSERVICE
 
-U PROSLOM BRANCHU SMO NAPISALI NEKE TESTOVE ZA PORDER CREATION HANDLER-A (`orders/src/routes/__test__/new.test.ts`), **MEDJUTIM OSTAO JE JOS JEDAN TEST DA SE URADI**
+***
 
-**ALI TAJ TEST JOS NECU RADITI JER NISAM IMPLEMNIRAO EVENT LOGIKU, ODNOSNO NISAM PUBLISH-OVAO NIKAKAV EVENT IZ `orders/src/routes/new.ts` HANDLERA**
+**SAMO DA TI KAZEM DA CU OVDE UPOTREBITI I populate METODU, DA BI POPULATE-OVAO ONAJ FIELD, KOJI JE REFERENCA DRUGOG DOKUMENTA IZ DATNBASE-A**
 
-E PA DA NE BI ZABORAVIO, DA MORAM URADITI TAJ TEST NAKON IMPLEMENTACIJE LOGIKE, **JA MOGU U OKVIRU JEST-A NAPRAVITI PODSETNIK ZA TJ TEST**
+***
 
-TO RADIM OVAKO
+NAPRAVIO SAM `tickets/src/routes/new.ts`, A SADA CU DA NAPRAVIM I DRUGE HANDLER-E
 
-- `code orders/src/routes/__test__/new.test.ts`
+- `code orders/src/routes/index.ts`
 
 ```ts
-// ...
-// ...
+import { Router, Request, Response } from "express";
+import { requireAuth } from "@ramicktick/common";
+import { Order } from "../models/order.model";
 
-it.todo("publishes event to order:created channel");
+const router = Router();
+
+router.get("/api/orders", requireAuth, async (req: Request, res: Response) => {
+  // DAKLE requreAuth JE TAJ MIDDLEWARE KOJI PROVERAVA DA
+  // LI JE currentUser NA REQUEST-U
+
+  // A DRUGI MIDDLEWARE KOJI INSERT-UJE USERA, STAVIO SAM NA NIVOU
+  // CELOG APP-A (currentUser MIDDLEWARE)
+
+  // SADA QUERY-UJEM OZA SVE ORDERS, ALI PREKO USER ID-JA
+  // NE OBRACAJ PAZNJU NA ?.  TO SAM MORAO STAVITI ZBOG TYPESCRIPTA
+  // JER HANDLER SE ZBOG MIDDLEWARE-A NE BI NI IZVRSIO DA NEMA USER-A
+
+  // DEFINISEM I populate ZA ticket FILELD
+
+  const orders = await Order.find({ userId: req?.currentUser?.id })
+    .populate("ticket")
+    .exec();
+
+  res.status(200).send(orders);
+});
+
+export { router as listAllOrdersRouter };
+
 ```
-
-- `cd orders`
-
-- `yarn test`
-
-U TEST UITE-U CE SE SADA IZMEDJU OSTALOG POKAZIVATI OVAJ MESSAGE, PRI RUNNINGU
-
-```zsh
-# ...
-  ✎ todo publishes event to order:created channel
-
-Test Suites: 1 passed, 1 total
-Tests:       1 todo, 3 passed, 4 total
-
-# ...
-```
-
-**TAKO DA IMAS PODSETNIK KOJI TEST TREBAS NAPISATI U BUDUCNOSTI**
-
-A TO JE I SYNTAX HIGHLIGHTED, JER TODO JE PREDSTAVLJEN SA NEKIM PURPLE FONTOM
