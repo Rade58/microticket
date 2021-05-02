@@ -52,11 +52,18 @@ it("returns 200 if order is obtained by id", async () => {
 
   // GETTING ORDER BY ID
 
-  await request(app)
+  const response = await request(app)
     .get(`/api/orders/${orderIds[0]}`)
     .set("Cookie", cookie)
     .send()
     .expect(200);
+
+  // PROVERICEMO TAKODJE DA LI JE POPULATED ticket FIELD
+  // NAMERNO SAM TO URADIO NA NACIN KAKAV JE DOLE, CISTO
+  // DA PROBVAM RAZLICITE METODE, OVOG PUTA AM PTOBAO
+  // toBeTruthy
+
+  expect(response.body.ticket.price).toBeTruthy();
 });
 
 it("it returns 404 if there is no order for provided id", async () => {

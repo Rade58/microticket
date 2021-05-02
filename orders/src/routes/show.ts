@@ -24,7 +24,9 @@ router.get(
     }
 
     // POKUSAVAMO DA UZMEMO ORDER
-    const order = await Order.findOne({ _id: orderId });
+    const order = await Order.findOne({ _id: orderId })
+      .populate("ticket")
+      .exec();
 
     if (!order) {
       throw new NotFoundError();
