@@ -107,7 +107,7 @@ it("returns 200, returns full array of orders for the user ", async () => {
   expect(response2.body.length).toEqual(10);
 
   // MOGU DA NAPRAVIM EXPECTATIONS U VEZI VREDNOSTI
-
+  // SA OVIM PROVERAVAS CAK DA LI TI JE populate FUNKCIONISALO
   expect(response1.body[0].ticket.id).toEqual(ticketIds[0]);
 });
 ```
