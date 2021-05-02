@@ -64,11 +64,24 @@ router.post(
       status: OSE.created,
     });
 
+    // OVO SU NEKE MOJE PROVERE KOJA SAM RADIO POKRETAJUCI TEST
+    console.log(
+      "EXPIRES AT",
+      { date: order.expiresAt },
+      JSON.stringify(order.expiresAt, null, 2),
+      new Date(order.expiresAt).toISOString()
+    );
+    // JER SAM IMA ODILEMU KAKO DA GA FORMIRAM PRE PUBLISHINGA
+
     // --------------------------------------------------
     // - OSTAJE DA PUBLISH-UJEMO EVENT
     await new OrderCreatedPublisher(natsWrapper.client).publish({
       id: order.id,
-      expiresAt: order.expiresAt,
+      // TYPESCRIPT YELL-UJE NA MENE KADA AM URADIO OVAKO NESTO
+      // expiresAt: order.expiresAt.toISOString(),
+      // AL ISAM OVO MOGAO URADITI
+      expiresAt: new Date(order.expiresAt).toISOString(),
+      //
       userId: order.userId,
       status: order.status,
       ticket: {
