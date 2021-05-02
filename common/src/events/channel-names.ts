@@ -4,6 +4,5 @@
  */
 export enum ChannelNamesEnum {
   ticket_created = "ticket:created",
-  // DODAO SAM OVO
   ticket_updated = "ticket:updated",
 }
