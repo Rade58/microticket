@@ -6,6 +6,14 @@ import { OrderStatusEnum as OSE } from "@ramicktick/common";
 
 const { ObjectId } = Types;
 
+// ...
+// ...
+
+import { natsWrapper } from "../../events/nats-wrapper";
+
+// ...
+// ...
+
 // HELPERI
 const createOrders = async (
   ticketIds: number[],
@@ -114,4 +122,21 @@ it("returns 400 if order id is not valid mongodb id", async () => {
     .set("Cookie", global.getCookie())
     .send()
     .expect(400);
+});
+
+it("publishes order:cancelled event", async () => {
+  const cookie = global.getCookie();
+
+  const ticketIds = await createTickets(8);
+
+  const orderIds = await createOrders(ticketIds, 6, cookie);
+
+  await request(app)
+    .patch(`/api/orders/${orderIds[0]}`)
+    .set("Cookie", cookie)
+    .send();
+
+  // ------------
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
 });
