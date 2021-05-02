@@ -23,6 +23,7 @@ router.get("/api/orders", requireAuth, async (req: Request, res: Response) => {
 
   // A DRUGI MIDDLEWARE KOJI INSERT-UJE USERA, STAVIO SAM NA NIVOU
   // CELOG APP-A (currentUser MIDDLEWARE)
+  // 
 
   // SADA QUERY-UJEM OZA SVE ORDERS, ALI PREKO USER ID-JA
   // NE OBRACAJ PAZNJU NA ?.  TO SAM MORAO STAVITI ZBOG TYPESCRIPTA
