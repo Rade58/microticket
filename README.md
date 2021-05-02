@@ -57,14 +57,13 @@ router.patch(
           id: order.ticket.id,
         },
       });
-    // I TO JE SVE STA SAM TREBAO DEFINISATI
     }
+    // I TO JE SVE STA SAM TREBAO DEFINISATI
 
     res.status(200).send(order);
   }
 );
 
 export { router as deleteSingleOrderRouter };
-
 ```
 
