@@ -45,12 +45,14 @@ router.patch(
       .exec();
 
     // PUBLISH-UJEM EVENT
-    await new OrderCancelledPublisher(natsWrapper.client).publish({
-      id: order.id,
-      ticket: {
-        id: order.ticket.id,
-      },
-    });
+    if (order) {
+      await new OrderCancelledPublisher(natsWrapper.client).publish({
+        id: order.id,
+        ticket: {
+          id: order.ticket.id,
+        },
+      });
+    }
     // I TO JE SVE STA SAM TREBAO DEFINISATI
 
     res.status(200).send(order);

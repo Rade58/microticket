@@ -1,5 +1,5 @@
 import { Schema, model, Document, Model } from "mongoose";
-import { TicketFields } from "./ticket.model";
+import { TicketDocumentI } from "./ticket.model";
 
 // UVOZIMO OVO
 import { OrderStatusEnum as OSE } from "@ramicktick/common";
@@ -67,7 +67,7 @@ interface OrderFields {
   status: OSE;
   //
   expiresAt: string;
-  ticket: TicketFields;
+  ticket: TicketDocumentI;
 }
 
 /**

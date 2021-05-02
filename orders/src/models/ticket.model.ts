@@ -36,7 +36,7 @@ const ticketSchema = new Schema(
 /**
  * @description this fields are inputs for the document creation
  */
-export interface TicketFields {
+interface TicketFields {
   title: string;
   price: number;
   userId: string;
@@ -45,7 +45,7 @@ export interface TicketFields {
 /**
  * @description interface for things, among others I can search on obtained document
  */
-interface TicketDocumentI extends Document, TicketFields {
+export interface TicketDocumentI extends Document, TicketFields {
   // METODU MOGU DA TYPE-UJEM OVDE
   // EVO OVDE PRVO TYPE-UJEM POMENUTU METODU, KOJA CE SE MOCI NA SCHEME
   // DEFINISATI KROZ methods, I KOJU CE ONDA MOCI MODEL KORISTITI
