@@ -49,8 +49,9 @@ router.delete(
     )
       .populate("ticket")
       .exec();
-
-    res.status(201).send(order);
+    // 204 JE STATUS KADA JE NESTO DELETED
+    // JA SAM GA STAVIO IAKO MI NISTA NE DELETE-UJEMO
+    res.status(204).send(order);
   }
 );
 
@@ -63,3 +64,12 @@ IMALO BI VISE SMISLA DA JE TO `"PUT"` ILI `"PATCH"`
 
 ALI NEMA VEZE, JA CU IPAK OSTAVITI DA JE TO `"DELETE"`
 
+TI NA SVOJIM PROJEKTIMA DEFINISI DA TO BUDE `"PATCH"`
+
+# SADA CEMO DA PISEMO TESTS ZA GORNJI HANDLER
+
+- `touch orders/src/routes/__test__/delete.test.ts`
+
+```ts
+
+```
