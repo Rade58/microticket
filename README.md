@@ -1,70 +1,93 @@
-# IMPLEMENTING PUBLISHERS FOR `"order:created"` AND `"order:cancelled"`
+# PUBLISHING TO `"order:created"` CHANNEL
 
-**PRVO CEMO DA UPDATE-UJEMO NAS MODULE, KOJI SMO REPUBLISH-OVALI U PROSLOM BRANCH-U ,JER ON SADA IMA DVA NOVA INTERFACE-A ZA EVENTS**
-
-- `cd orders`
-
-- `yarn add @ramicktick/common --latest`
-
-## PRAVIMO SADA FILE-OVE ZA PUBLISHERE
-
-- `mkdir orders/src/events/publishers`
-
-- `touch orders/src/events/publishers/order-created-publisher.ts`
-
-- `touch orders/src/events/publishers/order-cancelled-publisher.ts`
-
-# DEFINISACU PRVO CUSTOM PUBLISHER-A ZA `"order:created"`
-
-- `code orders/src/events/publishers/order-created-publisher.ts`
+- `code orders/src/routes/new.ts`
 
 ```ts
+import { Router, Request, Response } from "express";
 import {
-  Publisher,
-  OrderCreatedEventI,
-  ChannelNamesEnum as CNE,
+  requireAuth,
+  validateRequest,
+  NotFoundError,
+  OrderStatusEnum as OSE,
+  BadRequestError,
 } from "@ramicktick/common";
-import { Stan } from "node-nats-streaming";
+import { body } from "express-validator";
+import { Types as MongooseTypes } from "mongoose";
+// UVOZIMO WRAPPERA ZA NATS CLIENT
+import { natsWrapper } from "../events/nats-wrapper";
+//
 
-export class OrderCreatedPublisher extends Publisher<OrderCreatedEventI> {
-  public channelName: CNE.order_created;
+import { Order } from "../models/order.model";
+import { Ticket } from "../models/ticket.model";
 
-  constructor(stanClient: Stan) {
-    super(stanClient);
+// UVOZIMO NASEG CUSTOM PUBLISHER-A
+import { OrderCreatedPublisher } from "../events/publishers/order-created-publisher";
+//
 
-    this.channelName = CNE.order_created;
+const EXPIRATION_PERIOD_SECONDS = 15 * 60;
 
-    Object.setPrototypeOf(this, OrderCreatedPublisher.prototype);
+const router = Router();
+
+router.post(
+  "/api/orders",
+  requireAuth,
+  [
+    body("ticketId")
+      .isString()
+      .not()
+      .isEmpty()
+      .custom((input: string) => {
+        return MongooseTypes.ObjectId.isValid(input);
+      })
+      .withMessage("'ticketId' is invalid or not provided"),
+  ],
+  validateRequest,
+  async (req: Request, res: Response) => {
+    const { ticketId } = req.body;
+    const userId = req?.currentUser?.id;
+    const ticket = await Ticket.findOne({ _id: ticketId }).exec();
+
+    if (!ticket) {
+      throw new NotFoundError();
+    }
+
+    const ticketIsReserved = await ticket.isReserved();
+
+    if (ticketIsReserved) {
+      throw new BadRequestError(
+        "can't make an order, ticket is already reserved"
+      );
+    }
+
+    const expirationDate = new Date(
+      new Date().getTime() + EXPIRATION_PERIOD_SECONDS * 1000
+    );
+
+    const order = await Order.create({
+      ticket: ticket.id,
+      userId: userId as string,
+      expiresAt: expirationDate,
+      status: OSE.created,
+    });
+
+    // --------------------------------------------------
+    // - OSTAJE DA PUBLISH-UJEMO EVENT
+    await new OrderCreatedPublisher(natsWrapper.client).publish({
+      id: order.id,
+      expiresAt: order.expiresAt,
+      userId: order.userId,
+      status: order.status,
+      ticket: {
+        id: ticket.id,
+        price: ticket.price,
+      },
+    });
+
+    // --------------------------------------------
+
+    res.status(201).send(order);
   }
+);
 
-  // METODA publish JE DEFINISANA NA SAMOJ ABSTRACT KLASI
-  // ZATO NE MORAMO DA JE PONOVO DEFINISEMO
-}
-
-```
-
-# DEFINISACU I CUSTOM PUBLISHER-A ZA `"order:cancelled"`
-
-- `code orders/src/events/publishers/order-created-publisher.ts`
-
-```ts
-import {
-  Publisher,
-  OrderCancelledEventI,
-  ChannelNamesEnum as CNE,
-} from "@ramicktick/common";
-import { Stan } from "node-nats-streaming";
-
-export class OrderCancelledPublisher extends Publisher<OrderCancelledEventI> {
-  public channelName: CNE.order_cancelled;
-
-  constructor(stanClient: Stan) {
-    super(stanClient);
-
-    this.channelName = CNE.order_cancelled;
-
-    Object.setPrototypeOf(this, OrderCancelledPublisher.prototype);
-  }
-}
-
+export { router as createNewOrderRouter };
 ```

@@ -8,12 +8,18 @@ import {
 } from "@ramicktick/common";
 import { body } from "express-validator";
 import { Types as MongooseTypes } from "mongoose";
+// UVOZIMO WRAPPERA ZA NATS CLIENT
+import { natsWrapper } from "../events/nats-wrapper";
+//
+
 import { Order } from "../models/order.model";
 import { Ticket } from "../models/ticket.model";
 
-// EVO DEFINISEM COTANTU
-const EXPIRATION_PERIOD_SECONDS = 15 * 60; // EVO OVO SADA IMA
-//                                          15 min U SEKUNDAMA
+// UVOZIMO NASEG CUSTOM PUBLISHER-A
+import { OrderCreatedPublisher } from "../events/publishers/order-created-publisher";
+//
+
+const EXPIRATION_PERIOD_SECONDS = 15 * 60;
 
 const router = Router();
 
@@ -33,14 +39,8 @@ router.post(
   validateRequest,
   async (req: Request, res: Response) => {
     const { ticketId } = req.body;
-
     const userId = req?.currentUser?.id;
-    // console.log("TICKET ID -->", ticketId);
-    // console.log("USER ID -->", userId);
-
     const ticket = await Ticket.findOne({ _id: ticketId }).exec();
-
-    // console.log({ ticket });
 
     if (!ticket) {
       throw new NotFoundError();
@@ -58,7 +58,6 @@ router.post(
       new Date().getTime() + EXPIRATION_PERIOD_SECONDS * 1000
     );
 
-    // KREIRAMO DOKUMENT
     const order = await Order.create({
       ticket: ticket.id,
       userId: userId as string,
@@ -67,13 +66,20 @@ router.post(
     });
 
     // --------------------------------------------------
+    // - OSTAJE DA PUBLISH-UJEMO EVENT
+    await new OrderCreatedPublisher(natsWrapper.client).publish({
+      id: order.id,
+      expiresAt: order.expiresAt,
+      userId: order.userId,
+      status: order.status,
+      ticket: {
+        id: ticket.id,
+        price: ticket.price,
+      },
+    });
 
-    // - OSTAJE DA PUBLISH-UJEMO EVENT (ALI TO TEK NAKON STO UPDATE-UJEMO COMMON MODULE
-    // DAKLE MORAMO KREIRATI USTOM EVENT KLASU) (I NAKON STO KREIRAMO CUSTOM PUBLISHERA)
+    // --------------------------------------------
 
-    // ------
-
-    // SADA MOZEMO DA SEND-UJEMO ORDER BACK
     res.status(201).send(order);
   }
 );
