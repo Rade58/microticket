@@ -96,3 +96,5 @@ it("publishes order:cancelled event", async () => {
 - `cd orders`
 
 - `yarn test`
+
+**TESTS HAVE PASSED**
