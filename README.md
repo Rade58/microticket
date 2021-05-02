@@ -13,6 +13,10 @@ import {
   NotFoundError,
   NotAuthorizedError,
 } from "@ramicktick/common";
+// PORED SVEGA ZELI MI DA PROVERIM DA LI JE orderId VALID
+// ZATO SAM UVEZAO OVAJ HELPER
+import { isValidObjectId } from "mongoose";
+//
 import { Order } from "../models/order.model";
 
 const router = Router();
@@ -22,6 +26,11 @@ router.get(
   requireAuth,
   async (req: Request, res: Response) => {
     const { orderId } = req.params;
+
+    // PROVERAVAMO DA LI JE VALID MONGODB ID
+    if (!isValidObjectId(orderId)) {
+      throw new Error("Invalid mongodb id");
+    }
 
     // POKUSAVAMO DA UZMEMO ORDER
     const order = await Order.findOne({ _id: orderId });
@@ -42,7 +51,6 @@ router.get(
 );
 
 export { router as deatailsOfOneOrderRouter };
-
 ```
 
 ## EVO NAPISAO SAM I TESTOVE
@@ -143,10 +151,19 @@ it("returns 401 if user is asking for order, not belonging to him", async () => 
     .expect(401);
 });
 
+it("returns 400 if order id is not valid mongodb id", async () => {
+  await request(app)
+    // STAVICU OVDE NAVALIDAN ID
+    .get("/api/orders/124ab")
+    // OTHER USER IS TRYING TO OBTAIN AN ORDER OF ANOTHER USER
+    .set("Cookie", global.getCookie())
+    .send()
+    .expect(400);
+});
 ```
 
 - `cd orders`
 
 - `yarn test` `p` `Enter` show `Enter`
 
-**I PROSLA SU SVA TRI TESTA**
+**I PROSLA SU SVA CETIRI TESTA**

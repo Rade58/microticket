@@ -4,6 +4,10 @@ import {
   NotFoundError,
   NotAuthorizedError,
 } from "@ramicktick/common";
+// PORED SVEGA ZELI MI DA PROVERIM DA LI JE orderId VALID
+// ZATO SAM UVEZAO OVAJ HELPER
+import { isValidObjectId } from "mongoose";
+//
 import { Order } from "../models/order.model";
 
 const router = Router();
@@ -13,6 +17,11 @@ router.get(
   requireAuth,
   async (req: Request, res: Response) => {
     const { orderId } = req.params;
+
+    // PROVERAVAMO DA LI JE VALID MONGODB ID
+    if (!isValidObjectId(orderId)) {
+      throw new Error("Invalid mongodb id");
+    }
 
     // POKUSAVAMO DA UZMEMO ORDER
     const order = await Order.findOne({ _id: orderId });

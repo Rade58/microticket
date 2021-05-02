@@ -90,3 +90,13 @@ it("returns 401 if user is asking for order, not belonging to him", async () => 
     .send()
     .expect(401);
 });
+
+it("returns 400 if order id is not valid mongodb id", async () => {
+  await request(app)
+    // STAVICU OVDE NAVALIDAN ID
+    .get("/api/orders/124ab")
+    // OTHER USER IS TRYING TO OBTAIN AN ORDER OF ANOTHER USER
+    .set("Cookie", global.getCookie())
+    .send()
+    .expect(400);
+});
