@@ -62,9 +62,12 @@ it("returns 200, returns full array of orders for the user ", async () => {
   // CREATING ORDERS FOR ONE USER (8 ORDERS)
   await createOrders(ticketIds, 8, cookie1);
 
-  // CREATING ORDERS FOR SECOND USER
-  await createOrders(ticketIds.reverse(), 10, cookie2);
+  ticketIds.reverse(); // OVO RADIM SAMO ZBOG USTEDE VREMENA (OVO TRJNO MNJA NIZ)
 
+  // CREATING ORDERS FOR SECOND USER
+  await createOrders(ticketIds, 10, cookie2);
+
+  ticketIds.reverse();
   //
 
   // --------------------------------
@@ -93,4 +96,8 @@ it("returns 200, returns full array of orders for the user ", async () => {
   expect(response2.status).toEqual(200);
 
   expect(response2.body.length).toEqual(10);
+
+  // MOGU DA NAPRAVIM EXPECTATIONS U VEZI VREDNOSTI
+
+  expect(response1.body[0].ticket.id).toEqual(ticketIds[0]);
 });
