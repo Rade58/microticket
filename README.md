@@ -111,3 +111,5 @@ it("returns 200, returns full array of orders for the user ", async () => {
 - `yarn test`
 
 SVI TESTOVI SU MI PROSLI
+
+MRZI ME DA DAJEM DODATNA OBJASNJENJ, MISLIM DA JE IZ TESTOVA SVE JASNO
