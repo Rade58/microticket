@@ -8,13 +8,12 @@ import {
 } from "@ramicktick/common";
 import { body } from "express-validator";
 import { Types as MongooseTypes } from "mongoose";
-// UVOZIMO WRAPPERA ZA NATS CLIENT
-import { natsWrapper } from "../events/nats-wrapper";
-//
-
 import { Order } from "../models/order.model";
 import { Ticket } from "../models/ticket.model";
 
+// UVOZIMO WRAPPERA ZA NATS CLIENT
+import { natsWrapper } from "../events/nats-wrapper";
+//
 // UVOZIMO NASEG CUSTOM PUBLISHER-A
 import { OrderCreatedPublisher } from "../events/publishers/order-created-publisher";
 //
