@@ -68,3 +68,7 @@ it("returns 400 if ticket is reserved", async () => {
     })
     .expect(400);
 });
+
+//
+
+it.todo("publishes event to order:created channel");
