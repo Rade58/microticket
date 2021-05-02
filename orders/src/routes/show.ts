@@ -1,5 +1,9 @@
 import { Router, Request, Response } from "express";
-import { requireAuth, NotFoundError } from "@ramicktick/common";
+import {
+  requireAuth,
+  NotFoundError,
+  NotAuthorizedError,
+} from "@ramicktick/common";
 import { Order } from "../models/order.model";
 
 const router = Router();
@@ -16,6 +20,13 @@ router.get(
     if (!order) {
       throw new NotFoundError();
     }
+
+    // AKO USER NIJE AUTHORIZED
+    if (order.userId !== req?.currentUser?.id) {
+      throw new NotAuthorizedError();
+    }
+
+    console.log(order);
 
     res.status(200).send(order);
   }

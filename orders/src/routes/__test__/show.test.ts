@@ -1,5 +1,9 @@
 import request from "supertest";
+import { Types } from "mongoose";
 import { app } from "../../app";
+import { Ticket } from "../../models/ticket.model";
+
+const { ObjectId } = Types;
 
 // HELPERI
 const createOrders = async (
@@ -53,4 +57,36 @@ it("returns 200 if order is obtained by id", async () => {
     .set("Cookie", cookie)
     .send()
     .expect(200);
+});
+
+it("it returns 404 if there is no order for provided id", async () => {
+  await request(app)
+    .get(`/api/orders/${ObjectId()}`)
+    .set("Cookie", global.getCookie())
+    .send()
+    .expect(404);
+});
+
+it("returns 401 if user is asking for order, not belonging to him", async () => {
+  // USER ONE
+  const cookie1 = global.getCookie();
+  // USER TWO
+  const cookie2 = global.getOtherCookie({
+    email: "stavroscool@stavros.com",
+    id: "adasfsfsdsdg",
+  });
+
+  // CREATING TICKETS
+
+  const ticketIds = await createTickets(1);
+
+  // CREATING ORDERS
+  const orderIds = await createOrders(ticketIds, 1, cookie1);
+
+  await request(app)
+    .get(`/api/orders/${orderIds[0]}`)
+    // OTHER USER IS TRYING TO OBTAIN AN ORDER OF ANOTHER USER
+    .set("Cookie", cookie2)
+    .send()
+    .expect(401);
 });
