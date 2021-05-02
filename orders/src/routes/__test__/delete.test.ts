@@ -101,7 +101,7 @@ it("returns 401 if user is wanting to cancel order, not belonging to him", async
 
   await request(app)
     .patch(`/api/orders/${orderIds[0]}`)
-    // OTHER USER IS TRYING TO OBTAIN AN ORDER OF ANOTHER USER
+    // OTHER USER IS TRYING TO CANCEL AN ORDER OF ANOTHER USER
     .set("Cookie", cookie2)
     .send()
     .expect(401);
@@ -111,7 +111,6 @@ it("returns 400 if order id is not valid mongodb id", async () => {
   await request(app)
     // STAVICU OVDE NAVALIDAN ID
     .patch("/api/orders/124ab")
-    // OTHER USER IS TRYING TO OBTAIN AN ORDER OF ANOTHER USER
     .set("Cookie", global.getCookie())
     .send()
     .expect(400);
