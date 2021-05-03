@@ -10,7 +10,7 @@ export enum OrderStatusEnum {
    * or payment info was wrong
    * or order expired before payment
    */
-  cancelld = "cancelled",
+  cancelled = "cancelled",
   /**
    * @description ticket is successfully reserved
    */

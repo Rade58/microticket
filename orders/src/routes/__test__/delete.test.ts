@@ -72,7 +72,7 @@ it("returns 201 if order is cancelled, and making sure that status field is real
   expect(response.body.ticket.price).toBeTruthy();
 
   // PROVEVAM status
-  expect(response.body.status).toEqual(OSE.cancelld);
+  expect(response.body.status).toEqual(OSE.cancelled);
 
   // JOS BOLJA POTVRDA DA JE status, SADA cancelled
   const response2 = await request(app)
@@ -80,7 +80,7 @@ it("returns 201 if order is cancelled, and making sure that status field is real
     .set("Cookie", cookie)
     .send();
 
-  expect(response2.body.status).toEqual(OSE.cancelld);
+  expect(response2.body.status).toEqual(OSE.cancelled);
 });
 
 it("it returns 404 if there is no order for provided id", async () => {

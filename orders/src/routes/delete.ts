@@ -26,7 +26,9 @@ router.patch(
       throw new BadRequestError("order id is invalid mongodb object id");
     }
 
-    let order = await Order.findOne({ _id: orderId }).exec();
+    const order = await Order.findOne({ _id: orderId })
+      // .populate("ticket")
+      .exec();
 
     if (!order) {
       throw new NotFoundError();
@@ -36,24 +38,28 @@ router.patch(
       throw new NotAuthorizedError();
     }
 
-    order = await Order.findOneAndUpdate(
+    // UMESTO OVOGA
+    /* order = await Order.findOneAndUpdate(
       { _id: orderId },
       { status: OSE.cancelld },
       { new: true, useFindAndModify: true }
     )
       .populate("ticket")
-      .exec();
+      .exec(); */
+    // DEFINISEM OVO
+    order.set("status", OSE.cancelled);
 
-    // PUBLISH-UJEM EVENT
-    if (order) {
-      await new OrderCancelledPublisher(natsWrapper.client).publish({
-        id: order.id,
-        ticket: {
-          id: order.ticket.id,
-        },
-      });
-    }
-    // I TO JE SVE STA SAM TREBAO DEFINISATI
+    // I DEFINISEM OVO
+    await order.save();
+    // I OVO
+    await order.populate("ticket").execPopulate();
+
+    await new OrderCancelledPublisher(natsWrapper.client).publish({
+      id: order.id,
+      ticket: {
+        id: order.ticket.id,
+      },
+    });
 
     res.status(200).send(order);
   }

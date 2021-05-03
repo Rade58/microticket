@@ -52,27 +52,25 @@ router.put(
       throw new NotAuthorizedError();
     }
 
+    // UMESTO OVOGA
     /* ticket = await Ticket.findOneAndUpdate(
       { _id: id },
       { price: data.price, title: data.title },
       { new: true, useFindAndModify: true }
     ).exec(); */
 
+    // DEFINISEM OVO
     ticket.set("ticket", data.title);
     ticket.set("price", data.price);
-
+    // I OVO
     await ticket.save();
 
-    if (ticket) {
-      // EVO I OVDE J ISTI SLUCAJ I OVDE SAM AWAIT-OVAO
-      await new TicketUpdatedPublisher(natsWrapper.client).publish({
-        id: ticket.id,
-        title: ticket.title,
-        price: ticket.price,
-        userId: ticket.userId,
-      });
-    }
-    // -------------------------------------
+    await new TicketUpdatedPublisher(natsWrapper.client).publish({
+      id: ticket.id,
+      title: ticket.title,
+      price: ticket.price,
+      userId: ticket.userId,
+    });
 
     res.status(201).send(ticket);
   }
