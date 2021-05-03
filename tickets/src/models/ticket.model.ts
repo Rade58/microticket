@@ -27,6 +27,9 @@ const ticketSchema = new Schema(
         // delete ret.__v;
       },
     },
+    // OPTIMISTIC CONCURRENCY
+    optimisticConcurrency: true,
+    versionKey: "version",
   }
 );
 
