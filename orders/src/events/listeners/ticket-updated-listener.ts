@@ -5,9 +5,6 @@ import {
 } from "@ramicktick/common";
 import { Message, Stan } from "node-nats-streaming";
 import { Ticket } from "../../models/ticket.model";
-
-// MOZEMO KORISTITI ISTI QUEUE GROUP NAME
-// JER OVDE JE REC O POTPUNO DRUGOM KANALU
 import { orders_microservice } from "../queue_groups";
 
 export class TicketUpdatedListener extends Listener<TicketUpdatedEventI> {
@@ -26,16 +23,14 @@ export class TicketUpdatedListener extends Listener<TicketUpdatedEventI> {
   async onMessage(parsedData: TicketUpdatedEventI["data"], msg: Message) {
     const { id, price, title, userId } = parsedData;
 
-    // PRVO CEMO POKUSATI DA PRONADJEMO TICKET
     const ticket = await Ticket.findOne({ _id: id });
-
-    console.log({ ticket });
 
     if (!ticket) {
       throw new Error("ticket not found");
     }
 
-    await Ticket.findOneAndUpdate(
+    // UMESTO OVOGA
+    /* await Ticket.findOneAndUpdate(
       { _id: id },
       {
         title,
@@ -43,7 +38,14 @@ export class TicketUpdatedListener extends Listener<TicketUpdatedEventI> {
         userId,
       },
       { new: true, useFindAndModify: true }
-    ).exec();
+    ).exec(); */
+    // OVO
+    ticket.set("title", title);
+    ticket.set("price", price);
+    ticket.set("userId", userId);
+
+    // I OVO
+    await ticket.save();
 
     msg.ack();
   }
