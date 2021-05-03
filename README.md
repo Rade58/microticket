@@ -118,7 +118,9 @@ export class TicketCreatedListener extends Listener<TicketCreatedEventI> {
     const { id, title, price, userId } = parsedData;
 
     await Ticket.create({
-      id,
+      // OVDE PRIMECUJEM JEDAN PROBLEM
+      // PA ZAR SE id NE GENERISE SAM
+      id, //v OVO JE UPRAVO PROBLEM O KOJEM CEMO GOVORITI U SLEDECEM BRANCH-U
       title,
       price,
       userId,
