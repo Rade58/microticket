@@ -7,6 +7,10 @@ import { Message, Stan } from "node-nats-streaming";
 
 import { Ticket } from "../../models/ticket.model";
 
+//
+import { orders_microservice } from "../queue_groups";
+//
+
 export class TicketCreatedListener extends Listener<TicketCreatedEventI> {
   channelName: CNE.ticket_created;
   queueGroupName: string;
@@ -15,7 +19,8 @@ export class TicketCreatedListener extends Listener<TicketCreatedEventI> {
     super(natsClient);
 
     this.channelName = CNE.ticket_created;
-    this.queueGroupName = "orders-microservice";
+    // EVO DEFINISAO OVAKO
+    this.queueGroupName = orders_microservice;
 
     Object.setPrototypeOf(this, TicketCreatedListener.prototype);
   }
@@ -23,16 +28,12 @@ export class TicketCreatedListener extends Listener<TicketCreatedEventI> {
   async onMessage(parsedData: TicketCreatedEventI["data"], msg: Message) {
     const { id, title, price, userId } = parsedData;
 
-    //
-    // OVDE DAKLE DEFINISES STORING TICKET-A U DATBASE orders MICROSERVIC-E
     await Ticket.create({
       id,
       title,
       price,
       userId,
     });
-
-    // A OVDE MORAM DEFINISATI ACKNOLADGE
 
     msg.ack();
   }
