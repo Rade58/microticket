@@ -1,6 +1,10 @@
 import { app } from "./app";
 import mongoose from "mongoose";
 import { natsWrapper } from "./events/nats-wrapper";
+// UVOZIMO NASE CUSTOM LISTENER KLASE
+import { TicketCreatedListener } from "./events/listeners/ticket-created-listener";
+import { TicketUpdatedListener } from "./events/listeners/ticket-updated-listener";
+//
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
@@ -11,7 +15,6 @@ const start = async () => {
     throw new Error("MONGO_URI env variable undefined");
   }
 
-  // NARAVNO, PROVERAVAMO SVE VARIJABLE
   if (!process.env.NATS_CLUSTER_ID) {
     throw new Error("NATS_CLUSTER_ID env variable is undefined");
   }
@@ -22,14 +25,7 @@ const start = async () => {
     throw new Error("NATS_URL env variable is undefined");
   }
 
-  //
-
   try {
-    // EVO UMESTO OVOGA
-    /* await natsWrapper.connect("microticket", "tickets-stavros-12345", {
-      url: "http://nats-srv:4222",
-    }); */
-    // DEFINISEM OVO ------------------------
     await natsWrapper.connect(
       process.env.NATS_CLUSTER_ID as string,
       process.env.NATS_CLIENT_ID as string,
@@ -49,6 +45,12 @@ const start = async () => {
       console.log("Connection to NATS Streaming server closed");
       process.exit();
     });
+
+    // DAKLE OVDE, NAKON SVE ONE INCILIZACIJE NATS CLIENTA
+    // MOGU DEFINISATI LISTENING
+    new TicketCreatedListener(natsWrapper.client).listen();
+    new TicketUpdatedListener(natsWrapper.client).listen();
+    //
 
     await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
