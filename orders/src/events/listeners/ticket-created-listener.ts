@@ -1,10 +1,3 @@
-# BUILDING LISTENER FOR `"ticket:created"`
-
-- `mkdir orders/src/events/listeners`
-
-- `touch orders/src/events/listeners/ticket-created-listener.ts`
-
-```ts
 import {
   Listener,
   TicketCreatedEventI,
@@ -40,6 +33,3 @@ export class TicketCreatedListener extends Listener<TicketCreatedEventI> {
     });
   }
 }
-```
-
-
