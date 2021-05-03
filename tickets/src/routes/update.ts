@@ -42,7 +42,7 @@ router.put(
       data["price"] = price;
     }
 
-    let ticket = await Ticket.findById(id).exec();
+    const ticket = await Ticket.findById(id).exec();
 
     if (!ticket) {
       throw new NotFoundError();
@@ -52,11 +52,16 @@ router.put(
       throw new NotAuthorizedError();
     }
 
-    ticket = await Ticket.findOneAndUpdate(
+    /* ticket = await Ticket.findOneAndUpdate(
       { _id: id },
       { price: data.price, title: data.title },
       { new: true, useFindAndModify: true }
-    ).exec();
+    ).exec(); */
+
+    ticket.set("ticket", data.title);
+    ticket.set("price", data.price);
+
+    await ticket.save();
 
     if (ticket) {
       // EVO I OVDE J ISTI SLUCAJ I OVDE SAM AWAIT-OVAO
