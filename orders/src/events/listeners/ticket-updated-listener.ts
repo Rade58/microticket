@@ -1,8 +1,3 @@
-# BUILDING LISTENER FOR `"ticket:updated"`
-
-- `touch orders/src/events/listeners/ticket-updated-listener.ts`
-
-```ts
 import {
   Listener,
   ChannelNamesEnum as CNE,
@@ -44,8 +39,3 @@ export class TicketUpdatedListener extends Listener<TicketUpdatedEventI> {
     msg.ack();
   }
 }
-```
-
-# JA NISAM OVDE ZAVRSIO S DEVELOPINGOM `TicketCreatedListener` I `TicketUpadatedListener`
-
-JA CU SE OPET VRATITI NA NJIH KAKO BI DEFINISALI ONO STO CE RESAVATI CONCURRENCY PROBLEMS
