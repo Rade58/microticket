@@ -31,14 +31,21 @@ export class TicketUpdatedListener extends Listener<TicketUpdatedEventI> {
   async onMessage(parsedData: TicketUpdatedEventI["data"], msg: Message) {
     const { id, price, title, userId } = parsedData;
 
+    // PRVO CEMO POKUSATI DA PRONADJEMO TICKET
+    const ticket = await Ticket.findOne({ _id: id });
+
+    if (ticket) {
+      throw new Error("thicket not found");
+    }
+
     await Ticket.findOneAndUpdate(
       { _id: id },
       {
-        _id: id,
         title,
         price,
         userId,
-      }
+      },
+      { new: true, useFindAndModify: true }
     ).exec();
 
     msg.ack();
