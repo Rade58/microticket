@@ -79,3 +79,9 @@ const start = async () => {
 
 start();
 ```
+
+## POKRENUCEMO SKAFFOLD KAKO BI SVE CHANGES APPLY-OVALI NA POD U CLUSTERU, U KOJEM RUNN-UJE orders MICROSERVICE
+
+- `skaffold dev`
+
+VIDIM DA JE SVE PROSLO OK
