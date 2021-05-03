@@ -1,8 +1,8 @@
-# BUILDING LISTENER FOR `"ticket:created"`
+# `id` AND DATA REPLICATION
 
-- `mkdir orders/src/events/listeners`
+POGLEDAJ KAKO SI TI DEFINISAO KREIRANJE DATABASE DOKUMANTA U OVOM SLUCAJU
 
-- `touch orders/src/events/listeners/ticket-created-listener.ts`
+- `cat orders/src/events/listeners/ticket-created-listener.ts`
 
 ```ts
 import {
@@ -14,6 +14,8 @@ import { Message, Stan } from "node-nats-streaming";
 
 import { Ticket } from "../../models/ticket.model";
 
+import { orders_microservice } from "../queue_groups";
+
 export class TicketCreatedListener extends Listener<TicketCreatedEventI> {
   channelName: CNE.ticket_created;
   queueGroupName: string;
@@ -22,7 +24,7 @@ export class TicketCreatedListener extends Listener<TicketCreatedEventI> {
     super(natsClient);
 
     this.channelName = CNE.ticket_created;
-    this.queueGroupName = "orders-microservice";
+    this.queueGroupName = orders_microservice;
 
     Object.setPrototypeOf(this, TicketCreatedListener.prototype);
   }
@@ -30,59 +32,130 @@ export class TicketCreatedListener extends Listener<TicketCreatedEventI> {
   async onMessage(parsedData: TicketCreatedEventI["data"], msg: Message) {
     const { id, title, price, userId } = parsedData;
 
-    //
-    // OVDE DAKLE DEFINISES STORING TICKET-A U DATBASE orders MICROSERVIC-E
-    // DAKLE PRAVIMO DATA REPLICATION, JER SAVE-UJEMO TICKET U LOKALNOJ MONGODB INSTANCI orders MICROSERVICE
-    // RANIJE SMO GOVORILI O DATA REPLICATIONSU
+    // TI BI DOBIO ERROR ZBOG OVAKVOG ZADAVANJA ID-JA
     await Ticket.create({
-      id,
+      id, // OVO NE MOES OVAKO DA URADIS, JER TO JER ZADAVANJE ID-JA JE
+      // A BIT MORE COMPLICATED THAN THAT
       title,
       price,
       userId,
     });
 
-    // A OVDE MORAM DEFINISATI ACKNOLADGE
-
     msg.ack();
   }
 }
+
 ```
 
-## REMINDER ON QUEUE GROUP
+**TVOJ INTENTION JE DOBAR; TI ZAISTA ZELIS DA PODESIS ISTI ID ZA REPLICATED DOKUMENT**
 
-DAKLE ,U SLUCAJU DA SI SCALE-OVAO MICROSERVICE HORIZONTALNO, IMAS DVE INSTANCE MICROSERVICE-A KOJE SLUSAJU NA JEDNU QUEUE GROUPU
+NAIME TI IMAS JEDNU INSTANCU MONGO-A TIED TO `tickets` MICROSERVICE, I JEDNU INSTANCU MONGO-A TIED TO `orders` MICROSERVICE
 
-ILI, U SLUCAJU DA IMAS POTPUNO ODVOJENE MICROSERVICE-E KOJI SLLUSAJU NA ISTU QUEUE GROUP-U
+**`LOSE BI BILO` KADA BI TI U `orders` MICROSERVICE-U STORE-OVO Ticket DOKUMENT, SA RAZLICITIM id-JEM, OD ONOG ORIGINALNOG, SA KOJIM JE Ticket DOKUMENT STORED U `tickets` MICROSERVICE-U**
 
-TADA
+# ALI KAKO DA EKSPLICITNO DEFINISEMO id KADA STORE-UJEMO DOKUMENT
 
-**EVENT CE BITI POSLAT SAMO JEDNOM LISTENERU, OD SVIH, KOJI SLUSAJU NA QUEUE GROUP-E U ODREDJENOM KANALU**
+**KADA CREATE-UJES DOKUMENT, AKO ZELIS DA BUDE CRETED UNDER ID, KOJI SI MU TI DODELIO, MORACES DA ZADAS UNDERSCORE `_id` ,A NE id, JER U SUPROTNOM CE `id` BITI IGNORED KAO FIELD, I ZADACE SE RANDOM _id ZA, POMENUTI NEWLY CRETED DOKUMENT**
 
-**POGOTOVO,  USLUCAJU HORIZONTALNOG SCALING-A, KADA IMAS VISE INSTANCI JEDNOG MICROSERVICE-A, OVO CE OSIGURATI DA SE EVENT SALJE SAMO JEDNOJ OD INSTANCI MICROSERVICE-A**
+MORACEMO DA NAPRAVIMO I SETTING U Ticket MODELU (**NA KRAJU SE ISPOSTAVILO DA NE TREBAS NISTA RADITI U Tickets MODELU ,A DAO SAM TI DOLE I OBJASNJENJE U KOMENTARIMA**)
 
-## REMINDER ON `msg.ack`
-
-**ACKNOWLEDGMENT**
-
-DA EVENT-A, NATS NE POKUSAVA DA REDELEVER-UJE DO DRUGOG LISTENERA, JER SAM MU DAO SIGNAL DA JE EVENT PROCESSED
-
-JER AKO NEMA SIGNALA NAZAD, AKO JE MICROSERVICE CRASH-OVAO, ILI TIMEOUT-OVAO, NATS CE POKUSATI REDELIVERING, NAKON ODREDJENOG VRMENA (KOJE SAM ISTO DEFINISAO KROZ ABSTRACR CLASS Listener)
-
-OVO MU NA MANUELAN NACIN DAJE DO ZNAJA DA NE REDELIVER-UJE ALREADY PROCESSED EVENT
-
-I TAJ MANUELNI NACI NSAM JA ZAHTEVAO (POGLEDAJ [ABSTRACT Listener CLASS](common/src/events/abstr/abstr-listener.ts))
-
-# BOLJE JE NE HARDCODE-OVATI QUEUE GROU NAME, JER MOZE LAKO DOCI DO GRESKE
-
-- `mkdir orders/src/events/queue_groups`
-
-- `touch orders/src/events/queue_groups/index.ts`
+- `code orders/src/models/ticket.model.ts`
 
 ```ts
-export const orders_microservice = "order-microservice";
+import { Schema, model, Document, Model } from "mongoose";
+import { OrderStatusEnum as OSE } from "@ramicktick/common";
+
+import { Order } from "./order.model";
+
+// DOLE SAM POKUSAO DA PROSIRIM TYPESCRIPT INTERFACE INTERFACE
+// STAVLJAJUCI id FIELD
+// ALI TI TO I NE TREBAS RADITI
+// USTVARI DOBIO SAM TYPESCRIPT ERROR U TOM SLUCAJU
+
+const ticketSchema = new Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+  },
+  {
+    toJSON: {
+      /**
+       * @param ret object to be returned later as json
+       */
+      transform(doc, ret, options) {
+        ret.id = ret._id;
+        delete ret._id;
+      },
+    },
+  }
+);
+
+/**
+ * @description this fields are inputs for the document creation
+ */
+interface TicketFields {
+  // EVO OVDE SAM DODAO id FIELD I IAMO ERROR, I UKLONIO SAM GA
+  title: string;
+  price: number;
+  userId: string;
+}
+
+/**
+ * @description interface for things, among others I can search on obtained document
+ */
+export interface TicketDocumentI extends Document, TicketFields {
+  isReserved: () => Promise<boolean>; // PROMISE JER CE METODA BITI DEFINISANA KAO async
+}
+/**
+ * @description interface for additional things on the model (MOSTLY METHODS TO BE USED ON THE MODEL)
+ */
+interface TicketModelI extends Model<TicketDocumentI> {
+  // ONLY HERE BECAUSE INTERFACE CAN'T BE EMPTY
+  __nothing: () => void;
+}
+
+// TEKST OD RANIJE: NE OBRACAJ PAZNJU
+// BUILDING STATIC METHODS ON MODEL ( JUST SHOVING) (can be arrow)
+// ticketSchema.statics.__nothing = async function (input) {/**/};
+// BUILDING  METHODS ON document ( JUST SHOVING) (can't be arrow)
+// ticketSchema.methods.__nothing = async function (input) {/**/};
+// pre HOOK
+// ticketSchema.pre("save", async function (next) {/**/});
+
+ticketSchema.methods.isReserved = async function (): Promise<boolean> {
+  const ticketId = this.id;
+
+  const order = await Order.findOne({
+    ticket: ticketId,
+    status: {
+      $in: [OSE.created, OSE.awaiting_payment, OSE.complete],
+    },
+  });
+
+  if (order) {
+    return true;
+  }
+
+  return false;
+};
+
+/**
+ * @description Ticket model
+ */
+const Ticket = model<TicketDocumentI, TicketModelI>("Ticket", ticketSchema);
+
+export { Ticket };
+
 ```
 
-I SADA CU D KORISTIM GORNJU KONSTANTU
+# DAKLE TREBAO SAM SAMO DA KRIRAM DOKUMENT, ZADAVAJUCI MU _id,KAKO BI ON ZAISTA BIO KRIRAN SA TIM `_id`-JEM
 
 - `code orders/src/events/listeners/ticket-created-listener.ts`
 
@@ -96,9 +169,7 @@ import { Message, Stan } from "node-nats-streaming";
 
 import { Ticket } from "../../models/ticket.model";
 
-//
 import { orders_microservice } from "../queue_groups";
-//
 
 export class TicketCreatedListener extends Listener<TicketCreatedEventI> {
   channelName: CNE.ticket_created;
@@ -108,7 +179,6 @@ export class TicketCreatedListener extends Listener<TicketCreatedEventI> {
     super(natsClient);
 
     this.channelName = CNE.ticket_created;
-    // EVO DEFINISAO OVAKO
     this.queueGroupName = orders_microservice;
 
     Object.setPrototypeOf(this, TicketCreatedListener.prototype);
@@ -118,9 +188,7 @@ export class TicketCreatedListener extends Listener<TicketCreatedEventI> {
     const { id, title, price, userId } = parsedData;
 
     await Ticket.create({
-      // OVDE PRIMECUJEM JEDAN PROBLEM
-      // PA ZAR SE id NE GENERISE SAM
-      id, //v OVO JE UPRAVO PROBLEM O KOJEM CEMO GOVORITI U SLEDECEM BRANCH-U
+      _id: id, // EVO, OVO JE SADA OK
       title,
       price,
       userId,
@@ -129,17 +197,4 @@ export class TicketCreatedListener extends Listener<TicketCreatedEventI> {
     msg.ack();
   }
 }
-
 ```
-
-# TEBI SADA OVA IMPLEMTACIJA CUSTOM LISTENER KALSE IZGLEDA STRAIGHT FORWARD
-
-MISLIS DA SADA SAMO POZOVES .listen() I TO JE TO
-
-E PA POSTOJI MNOGO ISSUES O KOJIMO MORAMO GOVORITI
-
-PREDPOSTAVLJAM DA SU TO ISSUES AROUND CONCURRENCY
-
-I DA CEMO MORATI DEFINISATI STORING EVENTOVA, DEFINISUCI I MNEKEKO version
-
-**STO ZNACI DA CU IPAK MORATI DA MODIIFIKUJEM GORNJI CODE**

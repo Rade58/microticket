@@ -1,16 +1,7 @@
 import { Schema, model, Document, Model } from "mongoose";
 import { TicketDocumentI } from "./ticket.model";
-
-// UVOZIMO OVO
 import { OrderStatusEnum as OSE } from "@ramicktick/common";
 
-// OVO NE VALJE I NE KORISTIOM O OVO
-// A I NISAM PREDVIDEO SVE VREDNOSTI U OVOM ENUMU
-/* enum StatusEnum {
-  pending = "pending",
-  expired = "expired",
-  paid = "paid",
-} */
 const { ObjectId, Date: MongooseDate } = Schema.Types;
 
 const orderSchema = new Schema(
@@ -21,16 +12,8 @@ const orderSchema = new Schema(
     },
     status: {
       type: String,
-      // OVO UKLANJAM
-      // enum: [StatusEnum.pending, StatusEnum.expired, StatusEnum.paid],
-      // DA BI DEFINISAO OVAKO
       enum: Object.values(OSE),
-      // MOGU DA PROVIDE-UJEM I DEFAULT VALUE
       default: OSE.created,
-
-      // I JOS OSTAJE DOLE DA U TYPESCRIPT DEFINICIJU, DODAM
-      // ENUM KAO TYPE ZA status FIELD
-
       required: true,
     },
     expiresAt: {
