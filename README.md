@@ -80,8 +80,53 @@ const start = async () => {
 start();
 ```
 
-## POKRENUCEMO SKAFFOLD KAKO BI SVE CHANGES APPLY-OVALI NA POD U CLUSTERU, U KOJEM RUNN-UJE orders MICROSERVICE
+# POKRENUCEMO SKAFFOLD KAKO BI SVE CHANGES APPLY-OVALI NA POD U CLUSTERU, U KOJEM RUNN-UJE orders MICROSERVICE
 
 - `skaffold dev`
 
 VIDIM DA JE SVE PROSLO OK
+
+# SADA MOZEMO POKRENUTI JEDAN MANUA TESTING U INSOMNII
+
+TAKO STO CEMO HITT-OVATI TICKET CREATION HANDLER, A POSLE TOGA I TICKET UPDATING HANDLER
+
+ISTO TAKO MORAS SE POSTARATI DA BUDES SIGNED IN (ZANS KOJI ROUTE DA HITT-UJES ZA TO)
+
+`"POST"` `https://microticket.com/api/tickets/`
+
+BODY:
+
+```json
+{
+	"title": "Mastodon",
+	"price": 69
+}
+```
+
+USPESNO JE POSLAT REQUEST, I DOBIO SAM DATA
+
+```json
+{
+  "title": "Mastodon",
+  "price": 69,
+  "userId": "608089c4eedc6e0018ea6301",
+  "id": "60900ff41a1c27001828b56d"
+}
+```
+
+**ALI VAZNIJE JE OVO STO SE STAMAPLO U SKAFFOLD-OVOM TERMINALU**
+
+```zsh
+[orders] Mesage received:
+[orders]           subject: ticket:created
+[orders]           queueGroup: order-microservice
+[orders]         
+[tickets] 
+[tickets]             Event Published
+[tickets]             Channel: ticket:created
+[tickets]   
+```
+
+KAO STO VIDIS EVENT JE USPESNO PUBLIHED IZ tickets MICROSERVICE-A
+
+A USPESNO JE RECEIVED U `orders` MICROSERVICE-U
