@@ -31,5 +31,9 @@ export class TicketCreatedListener extends Listener<TicketCreatedEventI> {
       price,
       userId,
     });
+
+    // A OVDE MORAM DEFINISATI ACKNOLADGE
+
+    msg.ack();
   }
 }
