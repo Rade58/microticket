@@ -29,8 +29,10 @@ export class TicketUpdatedListener extends Listener<TicketUpdatedEventI> {
     // PRVO CEMO POKUSATI DA PRONADJEMO TICKET
     const ticket = await Ticket.findOne({ _id: id });
 
-    if (ticket) {
-      throw new Error("thicket not found");
+    console.log({ ticket });
+
+    if (!ticket) {
+      throw new Error("ticket not found");
     }
 
     await Ticket.findOneAndUpdate(

@@ -129,8 +129,48 @@ USPESNO JE POSLAT REQUEST, I DOBIO SAM DATA
 [tickets]   
 ```
 
-KAO STO VIDIS EVENT JE USPESNO PUBLIHED IZ tickets MICROSERVICE-A
+KAO STO VIDIS EVENT JE USPESNO PUBLIHED IZ `tickets` MICROSERVICE-A
 
 A USPESNO JE RECEIVED U `orders` MICROSERVICE-U
 
 ## SADA CEMO TESTIRATI RECEIVING EVENTA IZ "`ticket:updated`" KANALA
+
+KORISTICEMO ID GORNJEG TICKETA KAO ROUTE
+
+`"PUT"` `https://microticket.com/api/tickets/60900ff41a1c27001828b56d`
+
+BODY:
+
+```json
+{
+	"title": "Mastodon",
+	"price": 200069
+}
+```
+
+USPESNO JE POSLAT REQUEST, I DOBIO SAM DATA
+
+```json
+{
+  "title": "Mastodon",
+  "price": 200069,
+  "userId": "608089c4eedc6e0018ea6301",
+  "id": "60900ff41a1c27001828b56d"
+}
+```
+
+**ALI VAZNIJE JE OVO STO SE STAMAPLO U SKAFFOLD-OVOM TERMINALU**
+
+```zsh
+[orders] Mesage received:
+[orders]           subject: ticket:updated
+[orders]           queueGroup: order-microservice
+[orders]         
+[tickets]             Event Published
+[tickets]             Channel: ticket:updated
+[tickets]           
+```
+
+KAO STO VIDIS EVENT JE USPESNO PUBLIHED IZ `tickets` MICROSERVICE-A
+
+A USPESNO JE RECEIVED U `orders` MICROSERVICE-U
