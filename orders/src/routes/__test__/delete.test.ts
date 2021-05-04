@@ -171,13 +171,13 @@ it("'version' field is on Ticket document and Order document; and it is being in
   }
 
   const ticket = await Ticket.findOne({ _id: ticketIds[0] });
+
+  // SAD PROVERAVAMO version I ZA Ticket DOKUMENT
   if (ticket) {
     expect(ticket.version).toBeDefined();
     expect(ticket.version).toEqual(0);
-  }
 
-  /* if (ticket) {
-    ticket.set("price", 69);
+    ticket.set("price", 208);
 
     await ticket.save();
 
@@ -188,6 +188,5 @@ it("'version' field is on Ticket document and Order document; and it is being in
     await ticket.save();
 
     expect(ticket.version).toEqual(2);
-
-  } */
+  }
 });

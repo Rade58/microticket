@@ -416,6 +416,7 @@ const ticketSchema = new Schema(
       transform(doc, ret, options) {
         ret.id = ret._id;
         delete ret._id;
+         delete ret.__v;
       },
     },
     // DODAO SAM OPCIJE
@@ -579,9 +580,58 @@ export { Order };
 - `code orders/src/routes/__test__/delete.test.ts`
 
 ```ts
+it("'version' field is on Ticket document and Order document; and it is being incremented when upating document", async () => {
+  const cookie = global.getCookie();
 
+  const ticketIds = await createTickets(1);
+
+  const orderIds = await createOrders(ticketIds, 1, cookie);
+
+  // CANCELLING
+
+  const response = await request(app)
+    .patch(`/api/orders/${orderIds[0]}`)
+    .set("Cookie", cookie)
+    .send();
+
+  expect(response.body.version).toBeDefined();
+  // 1 ZATO TO JE PRI KREIRANJU BILO 0, A UPDATINGOM JE POSTALO 1
+  expect(response.body.version).toEqual(1);
+
+  const order = await Order.findOne({ _id: orderIds[0] });
+
+  if (order) {
+    order.set("status", OSE.awaiting_payment);
+    await order.save();
+
+    // OVD BI TEBAL ODA BUDE 2
+    expect(order.version).toEqual(2);
+  }
+
+  const ticket = await Ticket.findOne({ _id: ticketIds[0] });
+
+  // SAD PROVERAVAMO version I ZA Ticket DOKUMENT
+  if (ticket) {
+    expect(ticket.version).toBeDefined();
+    expect(ticket.version).toEqual(0);
+
+    ticket.set("price", 208);
+
+    await ticket.save();
+
+    expect(ticket.version).toEqual(1);
+
+    ticket.set("title", "Tool is the band");
+
+    await ticket.save();
+
+    expect(ticket.version).toEqual(2);
+  }
+});
 ```
 
+- `cd orders`
 
+- `yarn test` p `Enter` delete `Enter`
 
-
+I TEST JE PROSAO
