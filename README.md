@@ -326,3 +326,58 @@ export { Ticket };
 
 PROBACU OVO SADA ODMAH DA TESTIRAM U INSOMNII
 
+**DAKLE PRAVIM REQUEST ZA KREIRANJE NOVOG TICKET-A**
+
+`"POST"` `https://microticket.com/api/tickets/`
+
+BODY:
+
+```json
+{
+	"title": "Mastodon",
+	"price": 6969
+}
+```
+
+DATA:
+
+**KAO STO VIDIS, NAJVAZNIJE DA IMAS SADA FIELD `version`**
+
+```json
+{
+  "title": "Mastodon",
+  "price": 6969,
+  "userId": "608089c4eedc6e0018ea6301",
+  "version": 0,
+  "id": "6091217e386dc20019c7dfcc"
+}
+```
+
+**SADA PROBAJ DA UPDATE-UJES OVAJ ISTI TICKET, NEKOLIKO PUTA**
+
+`"PUT"` `https://microticket.com/api/tickets/6091217e386dc20019c7dfcc`
+
+BODY:
+
+```json
+{
+	"title": "Mastodont",
+	"price": 666
+}
+```
+
+DATA:
+
+**KAO STO VIDIS `version` FIELD JE INCRMENTED**
+
+```json
+{
+  "title": "Mastodont",
+  "price": 666,
+  "userId": "608089c4eedc6e0018ea6301",
+  "version": 1,
+  "id": "6091217e386dc20019c7dfcc"
+}
+```
+
+**I OPET SAM SE IGRAO, PA SAM UPDATE-OVAO, NEKOLIKO PUTA, ISTI TICKET, I `version` JE TOKOM TOGA BIVAO INCREMENTIRAN**
