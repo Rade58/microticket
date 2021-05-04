@@ -4,6 +4,8 @@ import { OrderStatusEnum as OSE } from "@ramicktick/common";
 
 const { ObjectId, Date: MongooseDate } = Schema.Types;
 
+// EVO POGLEDAJ OPTIONS ARGUMENT SCHEMA-E, UPRAVO
+// SE TU PODESAVAJU POMENUTE STVARI
 const orderSchema = new Schema(
   {
     userId: {
@@ -36,8 +38,12 @@ const orderSchema = new Schema(
       transform(doc, ret, options) {
         ret.id = ret._id;
         delete ret._id;
+        delete ret.__v;
       },
     },
+    // DODAO I OVO
+    optimisticConcurrency: true,
+    versionKey: "version",
   }
 );
 
@@ -45,10 +51,11 @@ const orderSchema = new Schema(
  * @description this fields are inputs for the document creation
  */
 interface OrderFields {
-  userId: string;
-  // EVO OVDE ZADAJEM, POMENUTI ENUM
-  status: OSE;
+  // DODAO I OVO
+  version: number;
   //
+  userId: string;
+  status: OSE;
   expiresAt: string;
   ticket: TicketDocumentI;
 }

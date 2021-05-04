@@ -29,7 +29,10 @@ const ticketSchema = new Schema(
         delete ret.__v;
       },
     },
-    // EVO I TO JE SVE STA SAM TREBAO DA DEFINISEM
+    // EVO DEFINISAO SAM POMENUTE OPCIJE
+    // ONO STO JOS TREBAS DEFINISATI JESTE TYPESCRIPT
+    // TYPING ZA version FIELD, POSTO CE I ON BITI
+    // SADA NA DOKUMNTU KOJI QUERY-UJES
     optimisticConcurrency: true,
     versionKey: "version",
   }
@@ -39,6 +42,9 @@ const ticketSchema = new Schema(
  * @description this fields are inputs for the document creation
  */
 interface TicketFields {
+  // EVO DODAO SAM version
+  version: number;
+  //
   title: string;
   price: number;
   userId: string;

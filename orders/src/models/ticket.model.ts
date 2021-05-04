@@ -3,10 +3,7 @@ import { OrderStatusEnum as OSE } from "@ramicktick/common";
 
 import { Order } from "./order.model";
 
-// DOLE SAM POKUSAO DA PROSIRIM TYPESCRIPT INTERFACE INTERFACE
-// STAVLJAJUCI id FIELD
-// ALI TI TO I NE TREBAS RADITI
-// USTVARI DOBIO SAM TYPESCRIPT ERROR U TOM SLUCAJU
+// DAKLE DOLE U OPTIONSIMAASCHEMA-E SAM DOADO, DV POMENUT OPCIJE
 
 const ticketSchema = new Schema(
   {
@@ -30,6 +27,9 @@ const ticketSchema = new Schema(
         delete ret._id;
       },
     },
+    // DODAO SAM OPCIJE
+    optimisticConcurrency: true,
+    versionKey: "version",
   }
 );
 
@@ -37,7 +37,9 @@ const ticketSchema = new Schema(
  * @description this fields are inputs for the document creation
  */
 interface TicketFields {
-  // EVO OVDE SAM DODAO id FIELD I IAMO ERROR, I UKLONIO SAM GA
+  // DODAJEM I OVO
+  version: number;
+  //
   title: string;
   price: number;
   userId: string;
@@ -57,7 +59,7 @@ interface TicketModelI extends Model<TicketDocumentI> {
   __nothing: () => void;
 }
 
-// TEKST OD RANIJE: NE OBRACAJ PAZNJU
+// TEKST OD RANIJE
 // BUILDING STATIC METHODS ON MODEL ( JUST SHOVING) (can be arrow)
 // ticketSchema.statics.__nothing = async function (input) {/**/};
 // BUILDING  METHODS ON document ( JUST SHOVING) (can't be arrow)
