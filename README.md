@@ -331,6 +331,54 @@ DATA:
 
 **I OPET SAM SE IGRAO, PA SAM UPDATE-OVAO, NEKOLIKO PUTA, ISTI TICKET, I `version` JE TOKOM TOGA BIVAO INCREMENTIRAN**
 
+## ALI HAJDE DA ODRADIM KONKRETAN UNIT TESST ZA HANDLER `` ,U KOJEM CU NAPRAVITI ASSERTION, DA `version` FIELD POSTOJI I DA SE INCREMENTIRA KADA UPDATE-UJEM DOKUMENT
+
+- `code tickets/src/routes/__tests__/update.test.ts`
+
+```ts
+// ...
+// ...
+
+it("'version' field is on Ticket document, and it is being incremented when upating document", async () => {
+  const cookie = global.getCookie();
+
+  // CREATING TICKET
+  const response = await createTicketResponse();
+
+  const { id } = response.body;
+
+  // UPDATING TICKET FIRST TIME
+  const response2 = await request(app)
+    .put(`/api/tickets/${id}`)
+    .set("Cookie", cookie)
+    .send({
+      title: "Grendel is home",
+      price: 66,
+    });
+
+  expect(response2.body.version).toBeDefined();
+  // TREBALO BI DA BUDE 1, JER KADA JE KREIRAN DOKUMENT IMA FIELD
+  // version S VREDNOSU 0
+  // A SAD BI TO TREBAL ODA BUDE INCREMENTED
+  expect(response2.body.version).toEqual(1);
+
+  // UPDATING TICKET SECOND TIME
+  const response3 = await request(app)
+    .put(`/api/tickets/${id}`)
+    .set("Cookie", cookie)
+    .send({
+      title: "Grendel is home",
+      price: 66,
+    });
+
+  expect(response3.body.version).toEqual(2);
+});
+```
+
+- `cd tickets`
+
+- `yarn test` p `Enter` update `Enter`
+
 ## SADA DA PODESIM `optimisticConcurrency: true`, `versionKey: "version"` NA SCHEMA-MA I U `orders` MICROSERVICE-U
 
 - `code orders/src/models/ticket.model.ts`
