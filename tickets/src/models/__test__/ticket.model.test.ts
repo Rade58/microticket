@@ -7,7 +7,7 @@ const VersionError = Error.VersionError;
 
 const { ObjectId } = Types;
 
-it("optimistic concurrency control is working", async () => {
+it("optimistic concurrency control is working", async (done) => {
   // KREIRAM DOKUMENT
   const ticket = await Ticket.create({
     title: "something",
@@ -65,6 +65,8 @@ it("optimistic concurrency control is working", async () => {
       // SADA MOZEMO DA PRVIMO EXPECTATION U POGLEDU TIPA ERROR, KOJ ICE SE DESITI
 
       expect(err).toBeInstanceOf(VersionError);
+
+      done();
     }
   }
 });
