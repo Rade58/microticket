@@ -382,6 +382,8 @@ it("'version' field is on Ticket document, and it is being incremented when upat
 
 - `yarn test` p `Enter` update `Enter`
 
+TEST JE ZAISTA PROSAO
+
 ## SADA DA PODESIM `optimisticConcurrency: true`, `versionKey: "version"` NA SCHEMA-MA I U `orders` MICROSERVICE-U
 
 - `code orders/src/models/ticket.model.ts`
