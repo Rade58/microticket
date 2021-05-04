@@ -659,14 +659,83 @@ JOS NISAM SIGURAN DA LI TO TREBA DA THROW-UJE ERROOR, ILI DA SE UPDATE NE DOGODI
 
 - `touch tickets/src/models/__test__/ticket.model.test.ts`
 
+```ts
+import { Ticket } from "../ticket.model";
+import { Types, Error } from "mongoose";
 
+// OVAJ ERROR BI TREBALO DA BUDE THROWN, AKO SE DESI
+// PROBLEM VEZAN ZA CONCURRENCY
+const VersionError = Error.VersionError;
 
-digresija 2:
+const { ObjectId } = Types;
 
-**U OVOM BRANCH-U, JA SAM POPRILICNO TESTIRAO MODELE, ODNOSNO QUERY-ING U DATABASE, ALI SAM JA TO SVE OBAVLJAO U ONIM TEST FILE-OVIMA KOJE SAM, VEC IMAO, A KOJI SU NAMENJENI TESTIRANJU HANDLER-A**, TO SAM RADIO U CLILJ USTEDE VREMENA, `A CAK JE BILO I VEOM CONVINIENT DA TO URADIM`
+it("optimistic concurrency control is working", async () => {
+  // KREIRAM DOKUMENT
+  const ticket = await Ticket.create({
+    title: "something",
+    price: 69,
+    userId: ObjectId(),
+  });
 
-MEDJUTIM NEKA JE PRAKSA DA SE NAPRAVI `__test__` U FOLDERU GDE SU MONGOOSE MODELI PA DA SE TAMO TESTIRA, VEZANO
+  // ZELIM DA QUERY-UJEM ISTI DOKUMENT DVA PUTA
+  // A ZASO?
+  // PA SIMULIRAM DVA PARALALNA PROCES-A
+  // KOJI SU SLUCAJNO U ISTO VREME UZELI OVAJ DOKUMENT
+  // KAD KAZEM PROCESS-A, MISLIM NA PRIMER
+  // NA DVE INSTANCE ISTOG MICROSERVICE-A
+  const sameTicket1 = await Ticket.findById(ticket.id);
+  const sameTicket2 = await Ticket.findById(ticket.id);
+  // OBE OVE POJAVE DOKUMENTA IMAJU `version` FIELD,
+  // KOJI IMA VALUE NULA (`0`)
 
-MEDJUTIM JA NE VIDIM DA JE NESTO BILO PROBLEMATICNO TO STO SAM JA ODLUCIO DA TESTIRAM MODELE U TEESTOVIMA KOJE SAM NAMENIO ZA TESTIRANJE ROUTE HANDLER-A
+  // ZELIM DA UPDATE-UJEM DOKUMENT, ALI KORISCENJEM PRVE INSTANCE,
+  // ILI PRVE POJAVE ISTOG DOKUMENTA
+  if (sameTicket1) {
+    sameTicket1.set("price", 58);
 
-DA SE SAD VRATIM NA TEMU OVOG BRANCH-A
+    // MOZMO DA SAVE-UJEMO STO JE KRUCIJALNO
+    await sameTicket1.save();
+
+    // I U OVOM TRENUTKU version OVOG DOKUMENTA, BI TREBLO
+    // DA BUDE 1
+    expect(sameTicket1.version).toEqual(1);
+  }
+
+  if (sameTicket2) {
+    // I OVO JE MOZDA NAJVANIJA STVAR KOJU MOZES DA PRIMETIS
+    // PA ONA DRUGA POJAVA DOKUMENTA I DALJE IMA version, SA
+    // VREDNOSCU NULA
+    expect(sameTicket2.version).toEqual(0);
+
+    // SADA ZELIMO DA UPDATE-UJEMO DRUGU INSTANCU ISTOG TICKET-A
+    // **** I AKO JE SVE KAKO TREBA ****
+    // ****  OVO BI TREBALO DA FAIL-UJE ****
+    // TREBALO BI DA THROW-UJE  mongoose.Error.VersionError
+
+    // POZIVAM set CIME INICIRAM UPDATE, ALI GA JOS NE EXECUTE-UJEM
+    // JER ZA TO JE ODGOVORAN save
+    sameTicket2.set("title", "Stavros the Mighty");
+    try {
+      // SAM POZIV save-A BI TREBAO DA THROW-UJE ERROR
+      // JER TI IMAS DOKUMENT U DATBASE-U KOJI VEC IMA version:1
+      // A DOKUMENT KOJI UPDATE-UJES IMA version: 0
+
+      // DAKLE IMAS INCONSISTANCY U POGLEDU version FIELD-A
+
+      await sameTicket2.save();
+    } catch (err) {
+      // SADA MOZEMO DA PRVIMO EXPECTATION U POGLEDU TIPA ERROR, KOJ ICE SE DESITI
+
+      expect(err).toBeInstanceOf(VersionError);
+    }
+  }
+});
+```
+
+SADA MOZES DA POKRENES TEST
+
+- `cd tickets`
+
+- `yarn test` p `Enter` model `Enter`
+
+**TEST JE ZISTA PROSAO**
