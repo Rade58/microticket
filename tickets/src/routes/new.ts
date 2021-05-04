@@ -18,7 +18,7 @@ router.post(
       .not()
       .isEmpty()
       .withMessage("title is required"),
-    body("price").isFloat({ gt: 0 }),
+    body("price").isFloat({ gt: 0 }).withMessage("can't set negative number"),
   ],
   validateRequest,
   async (req: Request, res: Response) => {

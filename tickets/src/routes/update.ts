@@ -60,8 +60,12 @@ router.put(
     ).exec(); */
 
     // DEFINISEM OVO
-    ticket.set("ticket", data.title);
-    ticket.set("price", data.price);
+    if (data["title"]) {
+      ticket.set("ticket", data.title);
+    }
+    if (data["price"]) {
+      ticket.set("price", data.price);
+    }
     // I OVO
     await ticket.save();
 

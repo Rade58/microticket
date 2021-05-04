@@ -89,12 +89,15 @@ router.put(
     ).exec(); */
 
     // DEFINISEM OVO
-    ticket.set("ticket", data.title);
-    ticket.set("price", data.price);
+    if (data["title"]) {
+      ticket.set("ticket", data.title);
+    }
+    if (data["price"]) {
+      ticket.set("price", data.price);
+    }
     // I OVO
     await ticket.save();
 
-    
     await new TicketUpdatedPublisher(natsWrapper.client).publish({
       id: ticket.id,
       title: ticket.title,
@@ -102,13 +105,11 @@ router.put(
       userId: ticket.userId,
     });
 
-
     res.status(201).send(ticket);
   }
 );
 
 export { router as updateOneTicketRouter };
-
 ```
 
 - `code orders/src/routes/delete.ts`
