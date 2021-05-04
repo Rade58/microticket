@@ -345,6 +345,9 @@ it("'version' field is on Ticket document, and it is being incremented when upat
   // CREATING TICKET
   const response = await createTicketResponse();
 
+  expect(response.body.version).toBeDefined();
+  expect(response.body.version).toEqual(0);
+
   const { id } = response.body;
 
   // UPDATING TICKET FIRST TIME
@@ -367,8 +370,8 @@ it("'version' field is on Ticket document, and it is being incremented when upat
     .put(`/api/tickets/${id}`)
     .set("Cookie", cookie)
     .send({
-      title: "Grendel is home",
-      price: 66,
+      title: "Gandalf the purple",
+      price: 69,
     });
 
   expect(response3.body.version).toEqual(2);
