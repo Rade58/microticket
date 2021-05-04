@@ -61,7 +61,7 @@ router.put(
 
     // DEFINISEM OVO
     if (data["title"]) {
-      ticket.set("ticket", data.title);
+      ticket.set("title", data.title);
     }
     if (data["price"]) {
       ticket.set("price", data.price);
