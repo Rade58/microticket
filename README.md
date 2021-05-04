@@ -669,7 +669,7 @@ const VersionError = Error.VersionError;
 
 const { ObjectId } = Types;
 
-it("optimistic concurrency control is working", async () => {
+it("optimistic concurrency control is working", async (done) => {
   // KREIRAM DOKUMENT
   const ticket = await Ticket.create({
     title: "something",
@@ -727,6 +727,11 @@ it("optimistic concurrency control is working", async () => {
       // SADA MOZEMO DA PRVIMO EXPECTATION U POGLEDU TIPA ERROR, KOJ ICE SE DESITI
 
       expect(err).toBeInstanceOf(VersionError);
+
+      done() // OVO JE done CALLBACK, KOJI SE TREBA INVOKE-OVATI DA SE KAZE OVO JE KRAJ TESTA
+      // OBICN OSE KORISTI KADA PISES TRY CATCH, I NE
+      // ZELIS DA S ISTA ISPOD NJEG IZVRSI
+
     }
   }
 });
@@ -756,7 +761,7 @@ import { Error } from "mongoose";
 // PROBLEM VEZAN ZA CONCURRENCY
 const VersionError = Error.VersionError;
 
-it("optimistic concurrency control is working", async () => {
+it("optimistic concurrency control is working", async (done) => {
   // KREIRAM DOKUMENT
   const ticket = await Ticket.create({
     title: "something",
@@ -813,6 +818,9 @@ it("optimistic concurrency control is working", async () => {
       // SADA MOZEMO DA PRVIMO EXPECTATION U POGLEDU TIPA ERROR, KOJ ICE SE DESITI
 
       expect(err).toBeInstanceOf(VersionError);
+
+      done()
+
     }
   }
 });
@@ -833,7 +841,7 @@ const VersionError = Error.VersionError;
 
 const { ObjectId } = Types;
 
-it("optimistic concurrency control is working", async () => {
+it("optimistic concurrency control is working", async (done) => {
   const userId = ObjectId();
 
   // KREIRAM Ticket DOKUMENT
@@ -900,6 +908,9 @@ it("optimistic concurrency control is working", async () => {
       // SADA MOZEMO DA PRVIMO EXPECTATION U POGLEDU TIPA ERROR, KOJ ICE SE DESITI
 
       expect(err).toBeInstanceOf(VersionError);
+
+      done()
+
     }
   }
 });
