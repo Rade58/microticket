@@ -573,3 +573,15 @@ const Order = model<OrderDocumentI, OrderModelI>("Order", orderSchema);
 
 export { Order };
 ```
+
+## ZELIM DA TESTIRAM DA LI CE SE `version` FIELD POSTOJATI NA MONGODB DOKUMANTIMA IZ `orders` MICROSERVICE-A I DA LI CE SE INCREMENTIRATI TOKOM UPDATING-A
+
+- `code orders/src/routes/__test__/delete.test.ts`
+
+```ts
+
+```
+
+
+
+

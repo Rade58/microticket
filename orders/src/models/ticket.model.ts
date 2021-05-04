@@ -25,6 +25,7 @@ const ticketSchema = new Schema(
       transform(doc, ret, options) {
         ret.id = ret._id;
         delete ret._id;
+        delete ret.__v;
       },
     },
     // DODAO SAM OPCIJE
