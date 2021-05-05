@@ -83,3 +83,9 @@ export interface TicketUpdatedEventI {
   };
 }
 ```
+
+## REPUBLISH-UJEM `common` MODULE
+
+- `cd common`
+
+- `npm run pub`
