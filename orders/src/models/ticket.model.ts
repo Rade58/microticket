@@ -28,9 +28,11 @@ const ticketSchema = new Schema(
         delete ret.__v;
       },
     },
-    // DODAO SAM OPCIJE
-    optimisticConcurrency: true,
+    /// UKLANJAM OU OPCIJU
+    // optimisticConcurrency: true,
+    // ALI OVA OPCIJA OSTAJE
     versionKey: "version",
+    // I NISTA VISE OVDE NISAM PROMENIO
   }
 );
 
