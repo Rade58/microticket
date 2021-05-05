@@ -96,4 +96,6 @@ export interface TicketUpdatedEventI {
 
 - `cd orders` `yarn add @ramicktick/common --latest`
 
+## U SLEDECEM BRANCH-U CEMO UPDATE-OVATI CODE NASEG SAMOG PUBLISHINGA EVENT-OVA
 
+JER NE SALJEMO version FIELD, A GORE SMO TYPE-OVALI version, TAKO DA MORAMO SLATI version PRI PUBLISHING-U
