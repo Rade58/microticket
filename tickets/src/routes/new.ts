@@ -31,23 +31,15 @@ router.post(
 
     const ticket = await Ticket.create({ title, price, userId });
 
-    // EVO OVDE SI DEFINISAO PUBLISHING EVENTA
-    // I POSTO publish RETURN-UJE PROMISE
-    // KOJI JE RESOLVED KADA SE USPENO POSALJE EVENT
-    // ONDA JE MOGUCE TO AWAIT-OVATI
     await new TicketCreatedPublisher(natsWrapper.client).publish({
       id: ticket.id,
+      // EVO DODAO SAM I version FIELD
+      version: ticket.version,
+      //
       title: ticket.title,
       price: ticket.price,
       userId: ticket.userId,
     });
-    // -----------------------------------------------------
-    // DAKLE OVAJ RED BUKVALNO CEKA DA SE USPESNO
-    // PUBLISH-UJE EVENT
-    // U SLUCAJU DA SE TO NE DOGODI
-    // OVDE CE BITI THROWN ERROR (A NEMA STA DA GA CATCH-UJE)
-    // USTVARI ERROR CE BITI CATCHED BY ERROR HANDLER KOJEG SAM PODESIO
-    // NA NIVOU CELOG EXPRESS APP-A
 
     return res.status(201).send(ticket);
   }

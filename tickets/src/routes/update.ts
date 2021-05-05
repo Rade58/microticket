@@ -52,25 +52,18 @@ router.put(
       throw new NotAuthorizedError();
     }
 
-    // UMESTO OVOGA
-    /* ticket = await Ticket.findOneAndUpdate(
-      { _id: id },
-      { price: data.price, title: data.title },
-      { new: true, useFindAndModify: true }
-    ).exec(); */
-
-    // DEFINISEM OVO
     if (data["title"]) {
       ticket.set("title", data.title);
     }
     if (data["price"]) {
       ticket.set("price", data.price);
     }
-    // I OVO
+
     await ticket.save();
 
     await new TicketUpdatedPublisher(natsWrapper.client).publish({
       id: ticket.id,
+      version: ticket.version,
       title: ticket.title,
       price: ticket.price,
       userId: ticket.userId,

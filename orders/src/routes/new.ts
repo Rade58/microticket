@@ -10,13 +10,8 @@ import { body } from "express-validator";
 import { Types as MongooseTypes } from "mongoose";
 import { Order } from "../models/order.model";
 import { Ticket } from "../models/ticket.model";
-
-// UVOZIMO WRAPPERA ZA NATS CLIENT
 import { natsWrapper } from "../events/nats-wrapper";
-//
-// UVOZIMO NASEG CUSTOM PUBLISHER-A
 import { OrderCreatedPublisher } from "../events/publishers/order-created-publisher";
-//
 
 const EXPIRATION_PERIOD_SECONDS = 15 * 60;
 
@@ -64,24 +59,19 @@ router.post(
       status: OSE.created,
     });
 
-    // OVO SU NEKE MOJE PROVERE KOJA SAM RADIO POKRETAJUCI TEST
-    console.log(
+    /* console.log(
       "EXPIRES AT",
       { date: order.expiresAt },
       JSON.stringify(order.expiresAt, null, 2),
       new Date(order.expiresAt).toISOString()
-    );
-    // JER SAM IMA ODILEMU KAKO DA GA FORMIRAM PRE PUBLISHINGA
+    ); */
 
-    // --------------------------------------------------
-    // - OSTAJE DA PUBLISH-UJEMO EVENT
     await new OrderCreatedPublisher(natsWrapper.client).publish({
       id: order.id,
-      // TYPESCRIPT YELL-UJE NA MENE KADA AM URADIO OVAKO NESTO
-      // expiresAt: order.expiresAt.toISOString(),
-      // AL ISAM OVO MOGAO URADITI
-      expiresAt: new Date(order.expiresAt).toISOString(),
+      // DODAJEM OVO
+      version: order.version,
       //
+      expiresAt: new Date(order.expiresAt).toISOString(),
       userId: order.userId,
       status: order.status,
       ticket: {
@@ -89,8 +79,6 @@ router.post(
         price: ticket.price,
       },
     });
-
-    // --------------------------------------------
 
     res.status(201).send(order);
   }
