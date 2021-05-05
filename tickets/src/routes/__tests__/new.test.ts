@@ -103,14 +103,13 @@ it("it creates ticket with valid inputs", async () => {
   expect(tickets[0].title).toEqual("Some event");
 });
 
-it("publishes an event", async () => {
+it("publishes an event to 'ticket:created' channel", async () => {
   request(app)
     .post("/api/tickets")
     .set("Cookie", global.getCookie())
-    .send({ title: "nebula", price: 69 })
+    .send({ title: "nebula hava", price: 66 })
     .expect(201);
 
-  console.log(natsWrapper);
-
+  //
   expect(natsWrapper.client.publish).toHaveBeenCalled();
 });

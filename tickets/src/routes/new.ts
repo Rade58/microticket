@@ -31,6 +31,18 @@ router.post(
 
     const ticket = await Ticket.create({ title, price, userId });
 
+    console.log("-------------------------------------");
+    console.log("-------------------------------------");
+    console.log("-------------------------------------");
+    console.log("-------------------------------------");
+    console.log(ticket.version);
+    console.log("-------------------------------------");
+    console.log("-------------------------------------");
+    console.log("-------------------------------------");
+    console.log("-------------------------------------");
+    console.log("-------------------------------------");
+    console.log("-------------------------------------");
+
     await new TicketCreatedPublisher(natsWrapper.client).publish({
       id: ticket.id,
       // EVO DODAO SAM I version FIELD

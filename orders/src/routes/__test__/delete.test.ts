@@ -157,7 +157,7 @@ it("'version' field is on Ticket document and Order document; and it is being in
     .send();
 
   expect(response.body.version).toBeDefined();
-  // 1 ZATO TO JE PRI KREIRANJU BILO 0, A UPDATINGOM JE POSTALO 1
+
   expect(response.body.version).toEqual(1);
 
   const order = await Order.findOne({ _id: orderIds[0] });
@@ -172,7 +172,6 @@ it("'version' field is on Ticket document and Order document; and it is being in
 
   const ticket = await Ticket.findOne({ _id: ticketIds[0] });
 
-  // SAD PROVERAVAMO version I ZA Ticket DOKUMENT
   if (ticket) {
     expect(ticket.version).toBeDefined();
     expect(ticket.version).toEqual(0);
@@ -181,12 +180,12 @@ it("'version' field is on Ticket document and Order document; and it is being in
 
     await ticket.save();
 
-    expect(ticket.version).toEqual(1);
+    expect(ticket.version).toEqual(0);
 
     ticket.set("title", "Tool is the band");
 
     await ticket.save();
 
-    expect(ticket.version).toEqual(2);
+    expect(ticket.version).toEqual(0);
   }
 });
