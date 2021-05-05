@@ -5,6 +5,9 @@ export interface OrderCreatedEventI {
   channelName: CNE.order_created;
   data: {
     id: string;
+    //
+    version: number;
+    //
     expiresAt: string;
     status: OrderStatusEnum;
     userId: string;
