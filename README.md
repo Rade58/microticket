@@ -89,3 +89,11 @@ export interface TicketUpdatedEventI {
 - `cd common`
 
 - `npm run pub`
+
+## UPDATE-UJEMO NAS MODULL U NASIM MICROSERVICE-OVIMA
+
+- `cd tickets` `yarn add @ramicktick/common --latest`
+
+- `cd orders` `yarn add @ramicktick/common --latest`
+
+
