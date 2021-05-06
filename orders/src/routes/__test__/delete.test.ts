@@ -180,12 +180,12 @@ it("'version' field is on Ticket document and Order document; and it is being in
 
     await ticket.save();
 
-    expect(ticket.version).toEqual(0);
+    expect(ticket.version).toEqual(1);
 
     ticket.set("title", "Tool is the band");
 
     await ticket.save();
 
-    expect(ticket.version).toEqual(0);
+    expect(ticket.version).toEqual(2);
   }
 });
