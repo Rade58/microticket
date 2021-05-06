@@ -3,7 +3,10 @@ import { OrderStatusEnum as OSE } from "@ramicktick/common";
 
 import { Order } from "./order.model";
 
-// DAKLE DOLE U OPTIONSIMAASCHEMA-E SAM DOADO, DV POMENUT OPCIJE
+// PRVO STA CES URADITI JESTE TYPING TE METODE
+// NA INTERFACE-U, KOJI DESCRIBE-UJES MODEL
+
+// A ONDA I DEFINICIJU SAME METODE, U statics OBJEKTU SCHEMA-E
 
 const ticketSchema = new Schema(
   {
@@ -49,17 +52,33 @@ interface TicketFields {
 export interface TicketDocumentI extends Document, TicketFields {
   isReserved: () => Promise<boolean>; // PROMISE JER CE METODA BITI DEFINISANA KAO async
 }
+
+// EVO NA OVOM OBJEKTU DEFINISEM METODU
+
 /**
  * @description interface for additional things on the model (MOSTLY METHODS TO BE USED ON THE MODEL)
  */
 interface TicketModelI extends Model<TicketDocumentI> {
-  // ONLY HERE BECAUSE INTERFACE CAN'T BE EMPTY
-  __nothing: () => void;
+  // EVO OVO JE TA METODA
+  findOneByEvent(event: {
+    id: string;
+    version: number;
+  }): Promise<TicketDocumentI | null>;
 }
 
-// TEKST OD RANIJE
-// BUILDING STATIC METHODS ON MODEL ( JUST SHOVING) (can be arrow)
-// ticketSchema.statics.__nothing = async function (input) {/**/};
+// PRAVIM METODU
+ticketSchema.statics.findOneByEvent = async function (event: {
+  id: string;
+  version: number;
+}) {
+  const { id, version } = event;
+
+  const ticket = await this.findOne({ _id: id, version: version - 1 });
+
+  return ticket;
+};
+
+// TEKST OD RANIJE (NE OBRACAJ PAZNJU)
 // BUILDING  METHODS ON document ( JUST SHOVING) (can't be arrow)
 // ticketSchema.methods.__nothing = async function (input) {/**/};
 // pre HOOK

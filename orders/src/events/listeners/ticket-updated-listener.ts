@@ -21,37 +21,24 @@ export class TicketUpdatedListener extends Listener<TicketUpdatedEventI> {
   }
 
   async onMessage(parsedData: TicketUpdatedEventI["data"], msg: Message) {
-    // OVDE PORED OSTALIH STVARI TREBAMO DA RESTRUKTURIRAMO I
-    //            version
+    // NE TREBAS SVE DA RESTRUKTURIRAS VISE
+    const { /*id,*/ price, title /*, userId, version */ } = parsedData;
 
-    const { id, price, title, userId, version } = parsedData;
+    // SADA UMESTO OVOGA
+    // const ticket = await Ticket.findOne({ _id: id, version: version - 1 });
+    // PISEMO OVO
 
-    // SADA DOKUMENT QUERY-UJEMO, KORISTECI I version
-    // AL ISTIM STO REPLICATED DOKUMENT TREBA DA IMA
-    // version MANJI ZA 1, OD ONOG, KOJI JE
-    // DOSAO SA EVENTOM
-    const ticket = await Ticket.findOne({ _id: id, version: version - 1 });
+    const ticket = await Ticket.findOneByEvent(parsedData);
 
-    // NARAVNO, AKO SE TICKET NE PRONADJE THROW-UJEMO ERROR
-    // STO SMO I RANIJE DEFINISALI
     if (!ticket) {
       throw new Error("ticket not found");
     }
-
-    // SAMO DA TI KAZEM
-    // DA SI OVO
-    // ticket.set("title", title);
-    // ticket.set("price", price);
-    // ticket.set("userId", userId);
-    // MOGAO I OVAKO NAPISATI
 
     ticket.set({
       title,
       price,
     });
 
-    // A KADA SE OVO DESI, version NUMBER REPLICATED TICKET-A
-    // BICE INCREMENTED ZA 1
     await ticket.save();
 
     msg.ack();

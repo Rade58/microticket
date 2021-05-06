@@ -1,8 +1,126 @@
-# `version` LOGIC, INSIDE `onMessage`
+# ABSTRACTION OUT QUERY, U KOJEM UCESTVUJE `version` U `onMessage` HANDLER-U
 
-STO SE TICE EVENTA `"ticket:created"`, U TOM SLUCAJU NEMEMO NIKAKV VEC REPLICATED DOKUMENT U DATBASE-U, INSIDE `orders` MICROSERVICE
+OVO CEMO URADITI TAKO STO CEMO URADITI HELPER NA SAMOM Ticket MODELU U `orders` MICROSERVICE-U
 
-ALI MOZEM ODEFINISATI TU LOGIKU PROVERE `version`-A, KAD SE LISTEN-UJE NA EVENT IZ KANALA `"ticket:updated"`
+U SUSTINI MI PRAVIMO METODU U OKVIRU `statics`; KAO STO ZNAS TAKO KREIRAMO METODE, KOJE SE MOGU KORISTITI NA SAMOM MODELU
+
+JA CU NAPRAVITI METODU `findOneByEvent`
+
+- `code orders/src/models/ticket.model.ts`
+
+```ts
+import { Schema, model, Document, Model } from "mongoose";
+import { OrderStatusEnum as OSE } from "@ramicktick/common";
+
+import { Order } from "./order.model";
+
+// PRVO STA CES URADITI JESTE TYPING TE METODE
+// NA INTERFACE-U, KOJI DESCRIBE-UJES MODEL
+
+// A ONDA I DEFINICIJU SAME METODE, U statics OBJEKTU SCHEMA-E
+
+const ticketSchema = new Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+  },
+  {
+    toJSON: {
+      /**
+       * @param ret object to be returned later as json
+       */
+      transform(doc, ret, options) {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.__v;
+      },
+    },
+    optimisticConcurrency: true,
+    versionKey: "version",
+  }
+);
+
+/**
+ * @description this fields are inputs for the document creation
+ */
+interface TicketFields {
+  version: number;
+  title: string;
+  price: number;
+  userId: string;
+}
+
+/**
+ * @description interface for things, among others I can search on obtained document
+ */
+export interface TicketDocumentI extends Document, TicketFields {
+  isReserved: () => Promise<boolean>; // PROMISE JER CE METODA BITI DEFINISANA KAO async
+}
+
+// EVO NA OVOM OBJEKTU DEFINISEM METODU
+
+/**
+ * @description interface for additional things on the model (MOSTLY METHODS TO BE USED ON THE MODEL)
+ */
+interface TicketModelI extends Model<TicketDocumentI> {
+  // EVO OVO JE TA METODA
+  findOneByEvent(event: {
+    id: string;
+    version: number;
+  }): Promise<TicketDocumentI | null>;
+}
+
+// PRAVIM METODU
+ticketSchema.statics.findOneByEvent = async function (event: {
+  id: string;
+  version: number;
+}) {
+  const { id, version } = event;
+
+  const ticket = await this.findOne({ _id: id, version: version - 1 });
+
+  return ticket;
+};
+
+// TEKST OD RANIJE (NE OBRACAJ PAZNJU)
+// BUILDING  METHODS ON document ( JUST SHOVING) (can't be arrow)
+// ticketSchema.methods.__nothing = async function (input) {/**/};
+// pre HOOK
+// ticketSchema.pre("save", async function (next) {/**/});
+
+ticketSchema.methods.isReserved = async function (): Promise<boolean> {
+  const ticketId = this.id;
+
+  const order = await Order.findOne({
+    ticket: ticketId,
+    status: {
+      $in: [OSE.created, OSE.awaiting_payment, OSE.complete],
+    },
+  });
+
+  if (order) {
+    return true;
+  }
+
+  return false;
+};
+
+/**
+ * @description Ticket model
+ */
+const Ticket = model<TicketDocumentI, TicketModelI>("Ticket", ticketSchema);
+
+export { Ticket };
+```
+
+## SADA MOZES DA GORNJU METODU UPOTREBIS U `onMessage` HANDLERU
 
 - `code orders/src/events/listeners/ticket-updated-listener.ts`
 
@@ -30,173 +148,30 @@ export class TicketUpdatedListener extends Listener<TicketUpdatedEventI> {
   }
 
   async onMessage(parsedData: TicketUpdatedEventI["data"], msg: Message) {
-    // OVDE PORED OSTALIH STVARI TREBAMO DA RESTRUKTURIRAMO I
-    //            version
+    // NE TREBAS SVE DA RESTRUKTURIRAS VISE
+    const { /*id,*/ price, title /*, userId, version */ } = parsedData;
 
-    const { id, price, title, userId, version } = parsedData;
+    // SADA UMESTO OVOGA
+    // const ticket = await Ticket.findOne({ _id: id, version: version - 1 });
+    // PISEMO OVO
 
-    // SADA DOKUMENT QUERY-UJEMO, KORISTECI I version
-    // AL ISTIM STO REPLICATED DOKUMENT TREBA DA IMA
-    // version MANJI ZA 1, OD ONOG, KOJI JE
-    // DOSAO SA EVENTOM
-    const ticket = await Ticket.findOne({ _id: id, version: version - 1 });
+    const ticket = await Ticket.findOneByEvent(parsedData);
+    // 
 
-    // NARAVNO, AKO SE TICKET NE PRONADJE THROW-UJEMO ERROR
-    // STO SMO I RANIJE DEFINISALI
     if (!ticket) {
       throw new Error("ticket not found");
     }
-
-    // SAMO DA TI KAZEM
-    // DA SI OVO
-    // ticket.set("title", title);
-    // ticket.set("price", price);
-    // ticket.set("userId", userId);
-    // MOGAO I OVAKO NAPISATI
 
     ticket.set({
       title,
       price,
     });
 
-    // A KADA SE OVO DESI, version NUMBER REPLICATED TICKET-A
-    // BICE INCREMENTED ZA 1
     await ticket.save();
 
     msg.ack();
   }
 }
+
 ```
 
-# MOZEMO DA REBUILD-UJEMO POD, POKRETANJEM SKAFFOLD-A 
-
-- `skaffold dev`
-
-## TESTIRACEMO THE MANUAL WAY INSIDE INSOMIA-I
-
-***
-
-digresija:
-
-NAPPOMINJEM TE DA MORAS NAPRAVITI NOVOG USERA, ILI SE PRIJAVITI, UGLAVNO MDA IMASS COOKIE U INSOMI-I (ON CE SE PONASATI KAO BROWSER U POGLEDU COOKIE-A)
-
-ISTO TAAKO U INSOMNII MORAS UNCHECK-OVATI `Prefferences` -> `Validate certificates`
-
-OVO GORE SAM TI VISE PUTA REKAO, ALI NIJE NA ODMET, PA SAM TI OPET REKAO
-
-***
-
-PRVO CEMO KREIRATI JEDAN TICKET
-
-`"POST"` `https://microticket.com/api/tickets/`
-
-BODY:
-
-```json
-{
-	"title": "Mastodon",
-	"price": 69
-}
-```
-
-DATA:
-
-```json
-{
-  "title": "Mastodon",
-  "price": 69,
-  "userId": "608089c4eedc6e0018ea6301",
-  "version": 0,
-  "id": "60941872ae0a3d001845fffe"
-}
-```
-
-UPDATE-OVACU GORNJI TICKET
-
-```json
-{
-  "title": "Mastodon",
-  "price": 666666666666,
-  "userId": "608089c4eedc6e0018ea6301",
-  "version": 1,
-  "id": "60941872ae0a3d001845fffe"
-}
-```
-
-**SADA IDE BITAN DEO**
-
-**KREIRACU JEDAN ORDER**
-
-`"POST"` ``
-
-BODY:
-
-```json
-{
-	"ticketId": "60941872ae0a3d001845fffe"
-}
-```
-
-DATA:
-
-```json
-{
-  "status": "created",
-  "ticket": "60941872ae0a3d001845fffe",
-  "userId": "608089c4eedc6e0018ea6301",
-  "expiresAt": "2021-05-06T16:45:51.273Z",
-  "version": 0,
-  "id": "609419bb3699bf00184b1722"
-}
-```
-
-**ZELIM DA UZMEM GORNJI ORDER ,A POSTO SAM DEFINISAO populete, KADA TO RADIM; TREBALO BI DA U DOBIJENOM ORDERU DOBIJEM I POPULATED TICKET FIELD**
-
-AKO `version` NA REPLICATED TICKETU BUDE `1` ZNAS DA SAM USPESNO DEFINISAO SVE VEZANO ZA EVENTOVE
-
-`"GET"` `https://microticket.com/api/orders/609419bb3699bf00184b1722`
-
-DATA:
-
-```js
-{
-  "status": "created",
-  "ticket": {
-    "title": "Mastodon",
-    "price": 666666666666,
-    // I BIO SAM U PRAVU
-    "version": 1, // version JE ZAISTA 1
-    "id": "60941872ae0a3d001845fffe"
-  },
-  "userId": "608089c4eedc6e0018ea6301",
-  "expiresAt": "2021-05-06T16:45:51.273Z",
-  "version": 0,
-  "id": "609419bb3699bf00184b1722"
-}
-```
-
-**STO ZNACI DA JE orders SERVICE USPESNO LISTEN-OVAO NA EVENT IZ KANALA `"ticket: updated"`, I DA JE REPLICATED DATA USPESNO UPDAT-OVAO I SVOJ `version`**
-
-TI MOZES DA UPDATE-UJES, OPET ISTI TICKET, PA DA VIDIS DA LI CE TAJ REPLICATED TICKET I U `orders` MICROSERVICE-U, IMATI `version`: `2`
-
-PROVERIO SAM TO, I ZAISTA JE TAKO (NE MORAM TI OVDE TO POKAZIVATI, JER ISTI JE PRINCIP KAO STO SAM GORE URADIO), ALI UGLAVNOM ONAKO JE KAK OSAM REKA ODA CE BITI
-
-***
-***
-
-ISTO TAKO U SKAFFOLD TERMINALU SI MOGAO VIDETI LOGS, KADA SE EVENT PUBLISH-OVAO U JEDNOM MICROSERVICE-U I RECEIVE-OVAO U DRUGOM MICROSERVICE-U; TO TI SAMO NAPOMINJEM, JER SAM DEFINISAO SVA TA STMPANJA U MOM CODEBSE-U
-
-***
-***
-
-U TEORIJI OVO BI TREBALO DA RESI A LOT OF CONCURRENCY ISSUES
-
-ERROR CE SE DESITI SVAKI PUT, AKO SE POKUSA PROCESSING EVENTA OUT OF ORDER, MEDJUTIM TO NE MOGU DA TESTIRAM SEM AKO NE BI IMAO NEKI SCRIPT, KOJI BI PRAVIO TONU REQUESTOVA
-
-## MEDJUTIM AUTOR WORKSHOPA NIJE BAS HAPPY SA IMPLEMENTATIONOM
-
-ON MISLI DA POSTOJI ONO OR TWO THINGS, KOJE SE MOGU IMPROVE-OVATI
-
-JEDNA OD STVARI JE ABSTRACTING OUT ONOG QUERY-ING SA version
-
-TO CU URADITI U SLEDECEM BRANCH-U
