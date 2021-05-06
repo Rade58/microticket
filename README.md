@@ -2,6 +2,12 @@
 
 PRVO CU TI RECI JESTE DA POGLEDAS VIDEO `19-17`
 
+***
+
+digresija: **POSLDNJI NASLOV JE JAKO VAXZN ZA OVAJ BRANCH**
+
+***
+
 OVO SU NEKA MOJA ZAPAZANJA
 
 ***
@@ -79,111 +85,28 @@ I SAMO JE ON IMAO PRAVO DA PRI PUBLISHINGU EVENTA, KADA JE NJGOV AT "CREATED/UPD
 
 MOJ ZAMISLJENI PROBLEM KOJI SAM TI GORE PREDSTAVIO, BIO BI RESEN KADA `moderation` MICROSERVICE NE BI INCREMENT-OVAO `version`, KADA JE PUBLISH-OVAO TO `"comment:mderated"` CHANNEL
 
-# SADA KADA OVO ZNAM, MOGU KONKRETNO DA ISPRVIM JEDNU GRESKU KOJ USAM NAPRAVIO U MOM REAL PROJECT-U
+# TI MOZDA SADA MOZES POGRESNO DA ZAKLJUCIS DA TI NE TREBA ONDA OPTIMISTIC CONCURRENCY CONTROL, ZA DAOKUMENTE U REPLICATED KOLEKCIJI
 
-NAIME, JA SAM U `orders` MICROSERVICE-U, DEFINISAO MOGUCNOST DA DOKUMENTI `Tickets` KOLEKCIJE, USTVARI KORISTI OPTIMISTIC CONCURRENCY CONTROL
+NE, TEBI TREBA OPTIMISTIC CONCURRENCY CONTROL ZA SVAKU KOLEKCIJU KOJU IMAS
 
-NJIMA TO NE TREBA, JER **KADA SE UPDATE-UJE Tickets DOKUMENT, U `orders` MICROSERVICE,U, A TICKETS NISU PRIMARNI DATA U orders MICROSERVICE-U, AK OSE POVECA `version`, POTENCIJALNO DALJE MOZE DOCI DO ISTOG PROBLEM, KOJ ISAM TI PREDSTAVIO U GORNJEM ZAMISLJENOM PRIMERU**
+BILO DA JE PRIMARN ILI NIJE
 
-SADA CU DA POPRAVIM  SCHEMA-U ZA `Tickets` MODEL DA ON NE INCREMENTIR ,`version` DOKUMENTA, AKO SE DESI `CREATE/UPDATE/DESTROY`
+**JER SAMO TIM POMERANJEM VERZIJE MOZES DA OSIGURAS, DA NAPRAVIS PRAVILNU PROVERU DA LI TI JE INCOMMING EVENT IN ORDER SA ONIM STA TENUTNO IMAS**
 
-**MEDJUTIM, OSTAVLJAM DA POSTIJI `version` PROPERI ,JER ON NIJE NI SPORAN, VEC JE SPORNO NJEGOVVO INCREMENTIARANJE NA NACIN, KOJI SAM TI OBJASNIO, I JA NE ZELI MTO INCRMENTIRANJE**
+**JER JEDNA STAR JE INCREMENTIRANJE VERSION-A, U PRIMARNOJ KOLEKCIJI, KADA TI `CREATE/UPDATE/DESTROY` DATA, A DRUGA STVAR OPTIMISTIC COMCURRENCY CONTROL**
 
-- `code orders/src/models/ticket.model.ts`
+TACNO JE D OPTIMISTIC CONCURRENCY CONTROL JESTE TO STO STOJI IZA SVAKE PROMENE version-A
 
-```ts
-import { Schema, model, Document, Model } from "mongoose";
-import { OrderStatusEnum as OSE } from "@ramicktick/common";
+ZASTO TI OVO GOVORIM?
 
-import { Order } from "./order.model";
+PA U NASEM REAL EXAMPLE-U, TI IMAS `Tickets` KOLEKCIJU VEZANU ZA `tickets` MICROSERVICE, I TO JE NJEGOVA PRIMARNA KOLEKCIJA, IZ NJEGOVOG DATBASE-A
 
-const ticketSchema = new Schema(
-  {
-    title: {
-      type: String,
-      required: true,
-    },
-    price: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-  },
-  {
-    toJSON: {
-      /**
-       * @param ret object to be returned later as json
-       */
-      transform(doc, ret, options) {
-        ret.id = ret._id;
-        delete ret._id;
-        delete ret.__v;
-      },
-    },
+I IMAS REPLICATED `Tickets` KOLEKCIJU, KOJA JE TIED TO `orders`
 
-    // UKLANJAM OU OPCIJU
-    // optimisticConcurrency: true,
-    // ALI OVA OPCIJA OSTAJE
-    versionKey: "version",
-    // I NISTA VISE OVDE NISAM PROMENIO
-  }
-);
+**AKO ISSUE-UJES `"ticket:updated"`, TAJ EVENT CE EVENTUALLY DOCI DO `orders`, I ON CE IZVUCI Ticket IZ DATABASE-A, PROVERITI DA LI JE version ZA JEDINICU MANJI OD version-A KOJI JE DOSAO NA EVENTU, AKO JE SVE UREDU, UPDATE-OVACE REPLICATED Ticket**
 
-/**
- * @description this fields are inputs for the document creation
- */
-interface TicketFields {
-  version: number;
-  title: string;
-  price: number;
-  userId: string;
-}
+**ALI NAJVAZNIJA STVAR JE DA CE REPLICATED Ticket PRI SAVINGU ISTO DOBITI NOVU VREDNOST ZA version, UVECANU ZA 1**
 
-/**
- * @description interface for things, among others I can search on obtained document
- */
-export interface TicketDocumentI extends Document, TicketFields {
-  isReserved: () => Promise<boolean>; // PROMISE JER CE METODA BITI DEFINISANA KAO async
-}
-/**
- * @description interface for additional things on the model (MOSTLY METHODS TO BE USED ON THE MODEL)
- */
-interface TicketModelI extends Model<TicketDocumentI> {
-  // ONLY HERE BECAUSE INTERFACE CAN'T BE EMPTY
-  __nothing: () => void;
-}
+I TO NE TREBA DDA BUDE SPORNO
 
-// TEKST OD RANIJE
-// BUILDING STATIC METHODS ON MODEL ( JUST SHOVING) (can be arrow)
-// ticketSchema.statics.__nothing = async function (input) {/**/};
-// BUILDING  METHODS ON document ( JUST SHOVING) (can't be arrow)
-// ticketSchema.methods.__nothing = async function (input) {/**/};
-// pre HOOK
-// ticketSchema.pre("save", async function (next) {/**/});
-
-ticketSchema.methods.isReserved = async function (): Promise<boolean> {
-  const ticketId = this.id;
-
-  const order = await Order.findOne({
-    ticket: ticketId,
-    status: {
-      $in: [OSE.created, OSE.awaiting_payment, OSE.complete],
-    },
-  });
-
-  if (order) {
-    return true;
-  }
-
-  return false;
-};
-
-/**
- * @description Ticket model
- */
-const Ticket = model<TicketDocumentI, TicketModelI>("Ticket", ticketSchema);
-
-export { Ticket };
-```
-
-**ISTO TAKO U TEST SUITE-U `orders/src/models/__test__/ticket.model.test.ts`, MOZES DA UKLONIS TEST KOJ ISE TICAO OPTIMISTIC CONCURRENCY CONTROLE-A, JER ON VISE NECE PROCI** (USTVARI MOZED DA UKLONIS CEO FILE ,JER SAM TO JEDINO TAMO I TESTIRAO)
+JEDINA SPORNA STVAR O KOJOJ SMO MI GOVORILI OVDE JESTE DA NA PRIMER MI SLUCAJNO NE PROMENIMO Ticket U order MICROSERVICE-U I ONDA ISS-UJEMO EVENT DA JE TICKET PROMENJEN, JER BISMO TADA UPALI U POTENCIJALNE PROBLEME, O KOJIMA SMO GOVORILO RANIJE TOKOM OVOG BRANCHA U ZAMISLJENOM PRIMERU
