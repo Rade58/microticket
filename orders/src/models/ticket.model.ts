@@ -27,11 +27,9 @@ const ticketSchema = new Schema(
       },
     },
 
-    // UKLANJAM OU OPCIJU
-    // optimisticConcurrency: true,
-    // ALI OVA OPCIJA OSTAJE
+    optimisticConcurrency: true,
+
     versionKey: "version",
-    // I NISTA VISE OVDE NISAM PROMENIO
   }
 );
 
