@@ -290,4 +290,12 @@ router.post(
 export { router as createNewOrderRouter };
 ```
 
+# SADA JE MOZDA DOBRO VREME A RUNN-UJE STESTOVE
 
+OVO RADIM CIDTO DA VIDIM DA LI CE MI NESTO FAIL-OVATI ILI NECE
+
+AKO TESTOVI NE FAIL-UJU GORNJI PUBLISHING JE USPEO
+
+- `cd orders` `yarn test`
+
+- `cd tickets` `yarn test`
