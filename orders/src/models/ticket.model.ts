@@ -28,11 +28,8 @@ const ticketSchema = new Schema(
         delete ret.__v;
       },
     },
-    // UKLANJAM OU OPCIJU
-    // optimisticConcurrency: true,
-    // ALI OVA OPCIJA OSTAJE
+    optimisticConcurrency: true,
     versionKey: "version",
-    // I NISTA VISE OVDE NISAM PROMENIO
   }
 );
 
@@ -40,9 +37,7 @@ const ticketSchema = new Schema(
  * @description this fields are inputs for the document creation
  */
 interface TicketFields {
-  // DODAJEM I OVO
   version: number;
-  //
   title: string;
   price: number;
   userId: string;
