@@ -3,7 +3,11 @@ import { OrderStatusEnum as OSE } from "@ramicktick/common";
 
 import { Order } from "./order.model";
 
-//DAKLE DEFINISEM pre HOOK, ZA SLUCAJ "save"
+//DAKLE DEFINISSACU DOLE pre HOOK, ZA SLUCAJ "save"
+// URADICU TO NA SMAMOM DNU PRE EXPORTA
+
+// ALI PRE TOGA UKIDAMO optimisticConcurrency
+// JER TO CE SADA RADITI, POMENUTI HOOK
 
 const ticketSchema = new Schema(
   {
@@ -28,7 +32,9 @@ const ticketSchema = new Schema(
         delete ret.__v;
       },
     },
-    optimisticConcurrency: true,
+    // EVO, COMMENT-UJEM OUT OPTIMISTIC CONCURRENCY
+    // optimisticConcurrency: true,
+    //
     versionKey: "version",
   }
 );
@@ -100,6 +106,19 @@ ticketSchema.methods.isReserved = async function (): Promise<boolean> {
 
   return false;
 };
+
+// POSTO JE REC O MIDDLEWARE-U, MORA DA SE KORISTI done CALLBACK POZIV
+/**
+ * @description OPTIMISTIC CONCURRENCY CONTROL
+ */
+ticketSchema.pre<TicketDocumentI>("save", function (done) {
+  // DAKLE MORAM DA KORISTIM NESTO OVAKO
+  this.$where = {
+    version: this.get("version") + 1,
+  };
+
+  done();
+});
 
 /**
  * @description Ticket model
