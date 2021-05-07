@@ -82,7 +82,10 @@ const setup = () => {
   // @ts-ignore
   const msg: Message = {
     // ALI OVO CE BITI JEST MOCK FUNCTION
+    // DAKLE ZELIMO DA VIDIM ODA L ICE SE OVA FUNKCIJA IZVRSITI
+    // VEC SAM TI RANIJE POKAZIVAO
     ack: jest.fn(),
+    // NA ISTI NACCIN NAM JE MOCKED I natsWrapper
   };
 
   return { parsedData, msg, listener };
@@ -105,5 +108,12 @@ it("successfully ack the message", async () => {
 
 ```
 
+# SADA MOZEMO `setup` HELPERA DA KORISTIMO U NASIM TESTOVIMA
+
+- `code orders/src/events/listeners/__test__/ticket-created-listener.test.ts`
+
+```ts
+
+```
 
 

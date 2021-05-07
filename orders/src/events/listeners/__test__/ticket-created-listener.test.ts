@@ -1,27 +1,20 @@
-// TREBA NA NAS CUSTOM LISTENER, KOJEG CEMO KREIRATI
-import { TicketCreatedListener } from "../../listeners/ticket-created-listener";
-
-// TREBACE NAM EVENT INTERFCE DA ZNAMO KOJI CEMO DATA FAKE-OVATI
 import { TicketCreatedEventI } from "@ramicktick/common";
-
-// TREBACE NAM natsWrapper, KOJ ISMO RANIJE MOCK-OVALI
-// STO ZNACI DA CEMO DOBITI FAKE natsWrapper-A
-import { natsWrapper } from "../../nats-wrapper";
-
-// HELPER IZ MOGO-A ZA PRAVLJENJE ID-JA
 import { Types } from "mongoose";
-const { ObjectId } = Types;
-
-// TREBA NAM I OVO
 import { Message } from "node-nats-streaming";
+import { TicketCreatedListener } from "../../listeners/ticket-created-listener";
+// mocked
+import { natsWrapper } from "../../nats-wrapper";
 //
 
-// PRAVIMO HELPER-A --------------------------
-const setup = () => {
-  // INSTATICIZIRAMO LSITENERA
-  const listener = new TicketCreatedListener(natsWrapper.client);
+// TREBACE NAM I Ticket DA MOZEMO PROVERITI DA LI JE
+// TICKET DOCUMENT CREATED
+import { Ticket } from "../../../models/ticket.model";
+//
 
-  // KREIRAM OFAKE DATA
+const { ObjectId } = Types;
+
+const setup = () => {
+  const listener = new TicketCreatedListener(natsWrapper.client);
   const parsedData: TicketCreatedEventI["data"] = {
     id: new ObjectId().toHexString(),
     price: 69,
@@ -30,27 +23,35 @@ const setup = () => {
     version: 0,
   };
 
-  // KREIRAMO FAKE Message INSTANCU
-  // AL IIZ NJE NAM NE TREBA NISTA OSIM ack
-  // ZATO SAM NAPRAVIO IGNORE
   // eslint-disable-next-line
   // @ts-ignore
   const msg: Message = {
-    // ALI OVO CE BITI JEST MOCK FUNCTION
     ack: jest.fn(),
   };
 
   return { parsedData, msg, listener };
 };
 
-// -------------------------------------------
-
+// EVO PISEMO PRVI TEST
 it("creates and saves a ticke in replicated Ticket collection", async () => {
-  // create the instance of the listener
-  // create fake event data
-  // create fake msg object
+  const { listener, msg, parsedData } = setup();
+
   // call onMessage function with a event data object and a msg
+
+  // U PITANJU JE async FUNKCIJA
+  // JER KAO STO ZNAS U NJOJ OBAVLJAMO I STORING TO THE DATABESE
+  // STO SMO VOLELI DA RADIM OSA await
+
+  await listener.onMessage(parsedData, msg);
+
   // write assertions to make sutre that ticket was created
+  // MORAM OPRVO DA UZMEMO TICKET ,AKO JE TICKET CREATED
+
+  const ticket = await Ticket.findOne({ price: 69 });
+
+  expect(ticket).toBeTruthy();
+
+  expect(ticket.title).toBeDefined();
 });
 
 it("successfully ack the message", async () => {
