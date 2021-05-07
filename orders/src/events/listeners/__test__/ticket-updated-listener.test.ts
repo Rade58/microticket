@@ -74,6 +74,6 @@ it("updates and saves a ticket in replicated Ticket collection and ack was calle
   expect(sameTicket).toBeTruthy();
 
   if (sameTicket) {
-    expect(SameTicket.version).toEqual(2);
+    expect(sameTicket.version).toEqual(2);
   }
 });
