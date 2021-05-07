@@ -52,6 +52,28 @@ it("updates and saves a ticket in replicated Ticket collection and ack was calle
     expect(ticket.version).toEqual(1);
   }
 
-  // ---------------
+  // MOZEMO IZMENITI MALO PARSED DATA
+  parsedData.title = "Kevin Federlajner";
+
+  // I OPET POZVATI onMessage
+
+  await listener.onMessage(parsedData, msg);
+
+  // ASSERT-UJEMO DA JE ack CALLED
   expect(msg.ack).toHaveBeenCalled();
+
+  // ALI ZATO STO SAM onMessage POZVAO DVA PUTA
+  // ASSERT-UJEM DA JE ack CALLED 2 PUTA
+
+  expect(msg.ack).toBeCalledTimes(2);
+
+  // ASSERT-UJEM DA TICKET SADA IMA vesrsion: 2
+
+  const sameTicket = await Ticket.findById(parsedData.id);
+
+  expect(sameTicket).toBeTruthy();
+
+  if (sameTicket) {
+    expect(SameTicket.version).toEqual(2);
+  }
 });
