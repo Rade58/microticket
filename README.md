@@ -198,5 +198,116 @@ it("successfully ack the message", async () => {
 - `code orders/src/events/listeners/__test__/ticket-updated-listener.test.ts`
 
 ```ts
+import { TicketUpdatedEventI } from "@ramicktick/common";
+import { Message } from "node-nats-streaming";
+import { TicketUpdatedListener } from "../ticket-updated-listener";
+import { natsWrapper } from "../../nats-wrapper";
+
+import { Ticket } from "../../../models/ticket.model";
+
+const setup = async () => {
+  // PRVO TREBA DA SE KREIRA Ticket
+  const ticket = await Ticket.create({
+    title: "Adam The Cool guy",
+    price: 420,
+  });
+
+  const listener = new TicketUpdatedListener(natsWrapper.client);
+
+  const parsedData: TicketUpdatedEventI["data"] = {
+    // OBEZBEDICU SVE ISTE VREDNOSTI KAO U CREATED DOKUMENTU
+    id: ticket.id,
+    price: ticket.price,
+    title: ticket.title,
+    userId: ticket.userId,
+    version: ticket.version,
+  };
+
+  // eslint-disable-next-line
+  // @ts-ignore
+  const msg: Message = {
+    ack: jest.fn(),
+  };
+
+  return { listener, parsedData, msg };
+};
+
+// SADA MOGU NAPISATI TEST, A KORISTICU I GORNJEG HELPER-A
+
+it("updates and saves a ticket in replicated Ticket collection and ack was called", async () => {
+  const { listener, parsedData, msg } = await setup();
+
+  console.log({ id: parsedData.id });
+
+  // SADA MOZEMO DA NAMMERNO UPDATE-UJEMO NESTO
+  // ---- NA PRIMER MOZEM ODA PROMENIMO price
+  // ********* I NE ZABORAVI DA PROMENIS version **********
+  // ********* MI GA MENJAMO JER SIMULIRAMO KAO DA JE
+  // ********* EVENT PUBLISHED, A TADA JE version UVECAN ZA 1
+
+  parsedData.price = 666;
+
+  parsedData.version = parsedData.version + 1;
+
+  // SADA MOZEMO RECI DA JE PUBLISHED EVENT SA
+  // UCECANIM     version
+
+  // I DA JE EVENTUALLY DDOSAO DO LISTENER-A
+  await listener.onMessage(parsedData, msg);
+
+  // SADA MOZEMO DA PROVERIMO DA LI JE DATA USPESNO
+  // UPDATED, ODNOSNO DA LI JE Ticket USPESNO UPDATED
+
+  const ticket = await Ticket.findById(parsedData.id);
+
+  console.log({ ticket });
+
+  expect(ticket).toBeTruthy();
+
+  if (ticket) {
+    expect(ticket.version).toEqual(1);
+  }
+
+  // MOZEMO OPET SIMULIRAATI UPDATE
+  parsedData.title = "Kevin Federlajner";
+  parsedData.version = parsedData.version + 1;
+
+  // I OPET POZVATI onMessage
+  await listener.onMessage(parsedData, msg);
+
+  // MOZEMO I OVO SADA URADITI
+  // ASSERT-UJEMO DA JE ack CALLED
+  expect(msg.ack).toHaveBeenCalled();
+
+  // ALI ZATO STO SAM onMessage POZVAO DVA PUTA
+  // ASSERT-UJEM DA JE ack CALLED 2 PUTA
+  expect(msg.ack).toBeCalledTimes(2);
+
+  // ASSERT-UJEM DA TICKET SADA IMA vesrsion: 2
+
+  const sameTicket = await Ticket.findById(parsedData.id);
+
+  expect(sameTicket).toBeTruthy();
+
+  if (sameTicket) {
+    expect(sameTicket.version).toEqual(2);
+  }
+});
 
 ```
+
+SADA MOZES POKRENUTI TEST
+
+- `cd orders`
+
+- `yarn test` p `Enter` ticket-updated `Enter`
+
+I TEST JE ZAISTA PROSAO
+
+## ALI HAJDE SADA DA NPISEMO TEST PO KOJEM SE SALJE `version`, CIJA VREDNOST JE OUT OF ORDER
+
+DAKLE TEST PO KOJEJ CE SE SLATI version, KOJI NECE BITI ZA 1 VECI OD ONOG NA POHRANJENOOM REPLICATED Ticket DOKUMENTU
+
+
+
+
