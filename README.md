@@ -345,7 +345,12 @@ it("throws Error if ticket version is out of order", async () => {
 
     expect(err).toBeDefined();
   }
-});
+
+  // NARAVNO OVDE JE JASNO DA ack NE BI TREBALO
+  // NI JEDNOM DA BUDE POZVAN
+
+  expect(msg.ack).not.toHaveBeenCalled();
+})
 ```
 
 I OVAJ TEST JE PROSAO
