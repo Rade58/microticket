@@ -192,3 +192,11 @@ it("successfully ack the message", async () => {
 - `yarn test` w `Enter` p `Enter` listener `Enter`
 
 **OBA TESTA SU PROSLA**
+
+# SADA CEMO DA NAPISEMO TEST I ZA TICKET UPDATED LISTENER-A
+
+- `code orders/src/events/listeners/__test__/ticket-updated-listener.test.ts`
+
+```ts
+
+```
