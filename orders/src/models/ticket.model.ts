@@ -114,7 +114,7 @@ ticketSchema.methods.isReserved = async function (): Promise<boolean> {
 ticketSchema.pre<TicketDocumentI>("save", function (done) {
   // DAKLE MORAM DA KORISTIM NESTO OVAKO
   this.$where = {
-    version: this.get("version") + 1,
+    version: this.get("version") - 1,
   };
 
   done();
