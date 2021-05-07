@@ -1,9 +1,14 @@
 import { TicketUpdatedEventI } from "@ramicktick/common";
 import { Message } from "node-nats-streaming";
+
+// import { Error } from "mongoose";
+
 import { TicketUpdatedListener } from "../ticket-updated-listener";
 import { natsWrapper } from "../../nats-wrapper";
 
 import { Ticket } from "../../../models/ticket.model";
+
+// const { VersionError } = Error;
 
 const setup = async () => {
   // PRVO TREBA DA SE KREIRA Ticket
@@ -91,5 +96,24 @@ it("updates and saves a ticket in replicated Ticket collection and ack was calle
 
   if (sameTicket) {
     expect(sameTicket.version).toEqual(2);
+  }
+});
+
+it("throws Error if ticket version is out of order", async () => {
+  const { listener, parsedData, msg } = await setup();
+
+  // SIMULIRAMO UPDATE
+  parsedData.title = "Nick Mullen eatin Cullen";
+
+  // ALI NE INCREMENTIRAMO VERSION, STO CE BITI UZROK ZA ERROR
+
+  // POSTO OVDE OCEKUJM ERROR, PRAVICU try catch
+
+  try {
+    await listener.onMessage(parsedData, msg);
+  } catch (err) {
+    console.log(err);
+
+    expect(err).toBeDefined();
   }
 });

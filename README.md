@@ -308,6 +308,31 @@ I TEST JE ZAISTA PROSAO
 
 DAKLE TEST PO KOJEJ CE SE SLATI version, KOJI NECE BITI ZA 1 VECI OD ONOG NA POHRANJENOOM REPLICATED Ticket DOKUMENTU
 
+- `code orders/src/events/listeners/__test__/ticket-updated-listener.test.ts`
 
+```ts
+// ...
+// ...
 
+it("throws Error if ticket version is out of order", async () => {
+  const { listener, parsedData, msg } = await setup();
 
+  // SIMULIRAMO UPDATE
+  parsedData.title = "Nick Mullen eatin Cullen";
+
+  // ALI NE INCREMENTIRAMO VERSION, STO CE BITI UZROK ZA ERROR
+
+  // POSTO OVDE OCEKUJM ERROR, PRAVICU try catch
+
+  try {
+    await listener.onMessage(parsedData, msg);
+  } catch (err) {
+    console.log(err);
+
+    expect(err).toBeDefined();
+  }
+});
+
+```
+
+I OVAJ TEST JE PROSAO
