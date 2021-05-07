@@ -116,4 +116,18 @@ it("throws Error if ticket version is out of order", async () => {
 
     expect(err).toBeDefined();
   }
+
+  // HAJDE DA PROBAM ODA INCREMENTIRAM OVERSION ZA VISE OD 1
+  // MOZDA 2
+  // I TADA OCEKUJEMO ERROR
+
+  parsedData.version = parsedData.version + 2;
+
+  try {
+    await listener.onMessage(parsedData, msg);
+  } catch (err) {
+    console.log(err);
+
+    expect(err).toBeDefined();
+  }
 });
