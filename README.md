@@ -40,7 +40,7 @@ A TAKODJE CEMO NAPRAVITI I HELPERE, JER NECEMO ZELETI STALNO DA RADIMO JEDNU TE 
 
 # SADA CEMO DA NAPRAVIMO HELPERA, KOJ ICE SE ZVATI `setup`
 
-- `code `
+- `code orders/src/events/listeners/__test__/ticket-created-listener.test.ts`
 
 ```ts
 // TREBA NA NAS CUSTOM LISTENER, KOJEG CEMO KREIRATI
@@ -104,5 +104,6 @@ it("successfully ack the message", async () => {
 });
 
 ```
+
 
 
