@@ -53,10 +53,19 @@ it("creates and saves a ticke in replicated Ticket collection", async () => {
 
   if (ticket) {
     expect(ticket.title).toBeDefined();
+    expect(ticket.price).toBeDefined();
+    expect(ticket.version).toEqual(0);
   }
 });
 
 it("successfully ack the message", async () => {
   // DO AL STEPS FROM ABOVE TEST
+
+  const { listener, msg, parsedData } = setup();
+
+  await listener.onMessage(parsedData, msg);
+
   // WRITE ASSERTIONS TO MAKE SURE ack FUNCTION IS CALLED
+
+  expect(msg.ack).toHaveBeenCalled();
 });
