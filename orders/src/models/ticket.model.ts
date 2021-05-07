@@ -3,10 +3,7 @@ import { OrderStatusEnum as OSE } from "@ramicktick/common";
 
 import { Order } from "./order.model";
 
-// PRVO STA CES URADITI JESTE TYPING TE METODE
-// NA INTERFACE-U, KOJI DESCRIBE-UJES MODEL
-
-// A ONDA I DEFINICIJU SAME METODE, U statics OBJEKTU SCHEMA-E
+//DAKLE DEFINISEM pre HOOK, ZA SLUCAJ "save"
 
 const ticketSchema = new Schema(
   {
@@ -66,7 +63,11 @@ interface TicketModelI extends Model<TicketDocumentI> {
   }): Promise<TicketDocumentI | null>;
 }
 
-// PRAVIM METODU
+/**
+ *
+ * @param event you can pass allparsedData
+ * @returns Promise<TicketDocumentI | null>
+ */
 ticketSchema.statics.findOneByEvent = async function (event: {
   id: string;
   version: number;
@@ -78,12 +79,11 @@ ticketSchema.statics.findOneByEvent = async function (event: {
   return ticket;
 };
 
-// TEKST OD RANIJE (NE OBRACAJ PAZNJU)
-// BUILDING  METHODS ON document ( JUST SHOVING) (can't be arrow)
-// ticketSchema.methods.__nothing = async function (input) {/**/};
-// pre HOOK
-// ticketSchema.pre("save", async function (next) {/**/});
-
+/**
+ *
+ * @description method on the document, to check if status is not cancelled, or that order doesn't exist
+ * @returns boolean
+ */
 ticketSchema.methods.isReserved = async function (): Promise<boolean> {
   const ticketId = this.id;
 
