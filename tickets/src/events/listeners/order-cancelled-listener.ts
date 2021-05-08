@@ -17,6 +17,7 @@ export class OrderCancelledListener extends Listener<OrderCancelledEventI> {
 
     this.channelName = CNE.order_cancelled;
     this.queueGroupName = tickets_microservice;
+    Object.setPrototypeOf(this, OrderCancelledListener.prototype);
   }
 
   async onMessage(parsedData: OrderCancelledEventI["data"], msg: Message) {
