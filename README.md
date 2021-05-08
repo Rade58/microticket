@@ -1,5 +1,17 @@
 # LISTENERS INSIDE `tickets` MICROSERVICE
 
+***
+
+digresija:
+
+OTKRIO SAM ZASTO JE AUTOR WORKSHOPA KORISTIO OVO: `Object.setPrototypeOf(this, Klasa.prototype);`
+
+**IZGLEDA DA KADA SE EXTEND-UJE ABSTRACT CLASS, I AKO SE NE STAVI, GORE POMENUTO, DA SE USTVARI METODE KOJE DEFINISES UOPSTE NE MOGU KORISTITI NA INSTANCI** (USTVARI NEMA IH NA INSTANCI IAKO SI IH DEFINISAO NA KLASI)
+
+DA SE SADA VRATIM NA TEMU OVOG BRANCH-A
+
+***
+
 NAIME POTREBNO JE DEFINISATI I LISTENERS INSIDE `tickets` MICROSERVICE
 
 ONI BI BILI ZA KANALE `"order:created"` I `"order:cancelled"`
@@ -159,6 +171,8 @@ export class OrderCreatedListener extends Listener<OrderCreatedEventI> {
 
     this.channelName = CNE.order_created;
     this.queueGroupName = tickets_microservice;
+
+    Object.setPrototypeOf(this, OrderCreatedListener.prototype);
   }
 
   async onMessage(parsedData: OrderCreatedEventI["data"], msg: Message) {
@@ -191,6 +205,8 @@ export class OrderCancelledListener extends Listener<OrderCancelledEventI> {
 
     this.channelName = CNE.order_cancelled;
     this.queueGroupName = tickets_microservice;
+
+    Object.setPrototypeOf(this, OrderCancelledListener.prototype);
   }
 
   async onMessage(parsedData: OrderCancelledEventI["data"], msg: Message) {
@@ -309,6 +325,7 @@ export class OrderCreatedListener extends Listener<OrderCreatedEventI> {
 
     this.channelName = CNE.order_created;
     this.queueGroupName = tickets_microservice;
+    Object.setPrototypeOf(this, OrderCreatedListener.prototype);
   }
 
   async onMessage(parsedData: OrderCreatedEventI["data"], msg: Message) {
@@ -368,6 +385,7 @@ export class OrderCancelledListener extends Listener<OrderCancelledEventI> {
 
     this.channelName = CNE.order_cancelled;
     this.queueGroupName = tickets_microservice;
+    Object.setPrototypeOf(this, OrderCancelledListener.prototype);
   }
 
   async onMessage(parsedData: OrderCancelledEventI["data"], msg: Message) {

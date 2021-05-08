@@ -19,6 +19,8 @@ export class OrderCreatedListener extends Listener<OrderCreatedEventI> {
 
     this.channelName = CNE.order_created;
     this.queueGroupName = tickets_microservice;
+
+    Object.setPrototypeOf(this, OrderCreatedListener.prototype);
   }
 
   async onMessage(parsedData: OrderCreatedEventI["data"], msg: Message) {
