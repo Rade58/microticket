@@ -1,7 +1,9 @@
 import { Schema, model, Document, Model } from "mongoose";
 
-// EVO POGLEDAJ OPTIONS ARGUMENT SCHEMA-E, UPRAVO
-// SE TU PODESAVAJU POMENUTE STVARI
+// EVO, U SCHEMA-I DEFINISEMO NOVI FIELD orderId
+// A POSLE TOGA JOS SAMO U TYPESCRIPT INTERFACE-U
+// ZA DOKUMENT, ISTO TYPE-UJEMO POMENUTI FIELD
+
 const ticketSchema = new Schema(
   {
     title: {
@@ -16,6 +18,11 @@ const ticketSchema = new Schema(
       type: String,
       required: true,
     },
+    // EVO GA OVDE
+    orderId: {
+      type: String,
+    },
+    // --------
   },
   {
     toJSON: {
@@ -29,25 +36,26 @@ const ticketSchema = new Schema(
         delete ret.__v;
       },
     },
-    // EVO DEFINISAO SAM POMENUTE OPCIJE
-    // ONO STO JOS TREBAS DEFINISATI JESTE TYPESCRIPT
-    // TYPING ZA version FIELD, POSTO CE I ON BITI
-    // SADA NA DOKUMNTU KOJI QUERY-UJES
     optimisticConcurrency: true,
     versionKey: "version",
   }
 );
 
+// EVO JOS OVDE DA TYPE-UJEMO orderId
+//  I TO JE SVE
+// SAM OSTO CU GA TYPE-OVATI KAO OPTIONAL FIELD
+
 /**
  * @description this fields are inputs for the document creation
  */
 interface TicketFields {
-  // EVO DODAO SAM version
   version: number;
-  //
   title: string;
   price: number;
   userId: string;
+  // EVO GA
+  orderId?: string;
+  // I NISTA VISE NISAM DEFINISAO
 }
 
 /**
