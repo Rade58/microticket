@@ -242,7 +242,7 @@ it("sets null to orderId of the ticket, and acknowledgent successfull", async ()
 
 it("throws error, if ticket isn't found", async () => {
   const { listener, parsedData, msg } = setup(new ObjectId().toHexString(), {
-    id: "ssafdsfdgfd",
+    id: new ObjectId().toHexString(),
   });
 
   try {
