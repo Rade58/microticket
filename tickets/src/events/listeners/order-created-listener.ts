@@ -46,9 +46,13 @@ export class OrderCreatedListener extends Listener<OrderCreatedEventI> {
 
     await ticket.save();
 
-    // NAKON STO JE TICKET SAVEDM, ODNOSNO UPDATED
-    // MORACEMO OPET DA GA UZMEMO
-    new TicketUpdatedPublisher();
+    // DAKLE RANIJE, NISI MOGAO UZETI stanClent SA this
+    // A SADA MZOES JER SAM JA DEFINISAO U ABSTRACT Listener-U
+    // DA JE TAJ FIELD protected
+    // ALO KAKO SAM REKAO TO TAKODJE ZNACI DA INSTACA CUSTOM LISTENERA NE MOE KORISTITI POMENUTI FIELD
+    await new TicketUpdatedPublisher(this.stanClient).publish({
+      //
+    });
 
     msg.ack();
   }
