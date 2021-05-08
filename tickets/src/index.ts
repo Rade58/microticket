@@ -2,6 +2,11 @@ import { app } from "./app";
 import mongoose from "mongoose";
 import { natsWrapper } from "./events/nats-wrapper";
 
+// UVOZIM MOJE CUSTOM LISTENERS
+import { OrderCreatedListener } from "./events/listeners/order-created-listener";
+import { OrderCancelledListener } from "./events/listeners/order-cancelled-listener";
+//
+
 const start = async () => {
   if (!process.env.JWT_KEY) {
     throw new Error("JWT_KEY env variable undefined");
@@ -11,7 +16,6 @@ const start = async () => {
     throw new Error("MONGO_URI env variable undefined");
   }
 
-  // NARAVNO, PROVERAVAMO SVE VARIJABLE
   if (!process.env.NATS_CLUSTER_ID) {
     throw new Error("NATS_CLUSTER_ID env variable is undefined");
   }
@@ -22,14 +26,7 @@ const start = async () => {
     throw new Error("NATS_URL env variable is undefined");
   }
 
-  //
-
   try {
-    // EVO UMESTO OVOGA
-    /* await natsWrapper.connect("microticket", "tickets-stavros-12345", {
-      url: "http://nats-srv:4222",
-    }); */
-    // DEFINISEM OVO ------------------------
     await natsWrapper.connect(
       process.env.NATS_CLUSTER_ID as string,
       process.env.NATS_CLIENT_ID as string,
@@ -37,7 +34,6 @@ const start = async () => {
         url: process.env.NATS_URL,
       }
     );
-    // --------------------------------------
 
     const sigTerm_sigInt_callback = () => {
       natsWrapper.client.close();
@@ -49,6 +45,11 @@ const start = async () => {
       console.log("Connection to NATS Streaming server closed");
       process.exit();
     });
+
+    // EVO, OVDE SVE OBAVLJAM STA SAM REKAO
+    new OrderCreatedListener(natsWrapper.client).listen();
+    new OrderCancelledListener(natsWrapper.client).listen();
+    // --------------------------------------
 
     await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,

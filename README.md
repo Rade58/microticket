@@ -108,3 +108,167 @@ export { Ticket };
 ```
 
 **ISTO TAKO, POSTO POMENUTI FIELD NIJE REQUIRED, NE MORAMO DA REDEFINISEMO CODE U RAOUTE HANDLERIMA, KONKRETNO PRI CREATINGU NEW TICKET-A, JER SE TAJ FIELD TADA NE KORISTI, A NEMAM NI SLUCAJ U DRUGIM HANDLERIMA DA SE UPDATE-UJE, POMENUTI FIELD**
+
+# PRATIM PRAKSU PO KOJOJ QUEUE GROUP NAME CUVAM U VARIJABLOJ, TKO DA CU TO ODMAH OVDE DA URADIM
+
+- `mkdir tickets/src/events/queue_groups`
+
+- `touch tickets/src/events/queue_groups/index.ts`
+
+```ts
+export const tickets_microservice = "tickets-microservice";
+```
+
+# SADA MOZEMO DA SE POSVETIMO KREIRANJEM LISTENERA U `tickets` MICROSERVICE-U
+
+***
+
+PRVO ZA SLUSANJE NA `"order:created"`
+
+- `mkdir tickets/src/events/listeners`
+
+- `touch tickets/src/events/listeners/order-created-listener.ts`
+
+```ts
+import {
+  Listener,
+  OrderCreatedEventI,
+  ChannelNamesEnum as CNE,
+} from "@ramicktick/common";
+import { Stan, Message } from "node-nats-streaming";
+
+import { tickets_microservice } from "../queue_groups";
+
+export class OrderCreatedListener extends Listener<OrderCreatedEventI> {
+  channelName: CNE.order_created;
+
+  queueGroupName: string;
+
+  constructor(stanClient: Stan) {
+    super(stanClient);
+
+    this.channelName = CNE.order_created;
+    this.queueGroupName = tickets_microservice;
+  }
+
+  async onMessage(parsedData: OrderCreatedEventI["data"], msg: Message) {
+    //
+  }
+}
+```
+
+***
+
+PA DEFINISEMO LISTENER ZA SLUSANJE NA `"order:cancelled"`
+
+- `touch tickets/src/events/listeners/order-cancelled-listener.ts`
+
+```ts
+import {
+  Listener,
+  OrderCancelledEventI,
+  ChannelNamesEnum as CNE,
+} from "@ramicktick/common";
+import { Stan, Message } from "node-nats-streaming";
+import { tickets_microservice } from "../queue_groups";
+
+export class OrderCancelledListener extends Listener<OrderCancelledEventI> {
+  channelName: CNE.order_cancelled;
+  queueGroupName: string;
+
+  constructor(stanClient: Stan) {
+    super(stanClient);
+
+    this.channelName = CNE.order_cancelled;
+    this.queueGroupName = tickets_microservice;
+  }
+
+  async onMessage(parsedData: OrderCancelledEventI["data"], msg: Message) {
+    //
+  }
+}
+```
+
+***
+
+POSLE CU DEFINISATI SVU LOGIKU U `onMessage` HANDLERIMA
+
+# SADA CU DA INSTATICIZIRAM POMENUTE LISTENERE, I DA IONDA IMAPLEMENTIRAM LISTENER INSTANCE, TAK OSTO CU PRIMENITI `.listen()` METODU
+
+- `code tickets/src/index.ts`
+
+```ts
+import { app } from "./app";
+import mongoose from "mongoose";
+import { natsWrapper } from "./events/nats-wrapper";
+
+// UVOZIM MOJE CUSTOM LISTENERS
+import { OrderCreatedListener } from "./events/listeners/order-created-listener";
+import { OrderCancelledListener } from "./events/listeners/order-cancelled-listener";
+//
+
+const start = async () => {
+  if (!process.env.JWT_KEY) {
+    throw new Error("JWT_KEY env variable undefined");
+  }
+
+  if (!process.env.MONGO_URI) {
+    throw new Error("MONGO_URI env variable undefined");
+  }
+
+  if (!process.env.NATS_CLUSTER_ID) {
+    throw new Error("NATS_CLUSTER_ID env variable is undefined");
+  }
+  if (!process.env.NATS_CLIENT_ID) {
+    throw new Error("NATS_CLIENT_ID env variable is undefined");
+  }
+  if (!process.env.NATS_URL) {
+    throw new Error("NATS_URL env variable is undefined");
+  }
+
+  try {
+    await natsWrapper.connect(
+      process.env.NATS_CLUSTER_ID as string,
+      process.env.NATS_CLIENT_ID as string,
+      {
+        url: process.env.NATS_URL,
+      }
+    );
+
+    const sigTerm_sigInt_callback = () => {
+      natsWrapper.client.close();
+    };
+    process.on("SIGINT", sigTerm_sigInt_callback);
+    process.on("SIGTERM", sigTerm_sigInt_callback);
+
+    natsWrapper.client.on("close", () => {
+      console.log("Connection to NATS Streaming server closed");
+      process.exit();
+    });
+
+    // EVO, OVDE SVE OBAVLJAM STA SAM REKAO
+    new OrderCreatedListener(natsWrapper.client).listen();
+    new OrderCancelledListener(natsWrapper.client).listen();
+    // --------------------------------------
+
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+    });
+
+    console.log("Connected to DB (tickets-mongo)");
+  } catch (err) {
+    console.log("Failed to connect to DB");
+    console.log(err);
+  }
+
+  const PORT = 3000;
+  app.listen(PORT, () => {
+    console.log(`listening on http://localhost:${PORT} INSIDE tickets POD`);
+  });
+};
+
+start();
+
+```

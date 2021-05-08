@@ -1,1 +1,1 @@
-export const orders_microservice = "order-microservice";
+export const orders_microservice = "orders-microservice";
