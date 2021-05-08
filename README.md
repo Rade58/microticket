@@ -6,6 +6,8 @@ SAM ODA TI KAZEM DA TI JE `natsWrapper` ALEREADY MOCKED, JER SMO TO URADILI DAVN
 
 ***
 
+# PISACEMO PRVO TESTOVE ZA `onMessage` U `OrderCreatedListener` INSTANCI
+
 - `mkdir tickets/src/events/listeners/__test__`
 
 - `touch tickets/src/events/listeners/__test__/order-created-listener.test.ts`
@@ -148,3 +150,8 @@ it("returns error if ticket doesn't exist", async () => {
 - `yarn test` p `Enter` listener `Enter`
 
 TEST HAVE PASSED
+
+# SADA CEMO PISATI TESTOVE ZA `onMessage` NA `OrderCancelledListener` INSTANCI
+
+- `touch tickets/src/events/listeners/__test__/order-cancelled-listener.test.ts`
+
