@@ -81,6 +81,8 @@ const setup = async () => {
 it("sucessfully processes event, updates a orderId field on ticket, and ack is succesfully called", async () => {
   const { listener, parsedData, msg } = await setup();
 
+  console.log({ listener, parsedData, msg });
+  console.log({ ONMESSAGE: listener.onMessage });
   // TICKET IS CREATED BY CALLING setup (SO WE ARE GOOD ON THAT)
 
   // FAKING MESSAGE INCOMMING, BY CALLING onMessage

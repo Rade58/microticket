@@ -19,6 +19,8 @@ export class OrderCreatedListener extends Listener<OrderCreatedEventI> {
 
     this.channelName = CNE.order_created;
     this.queueGroupName = tickets_microservice;
+
+    Object.setPrototypeOf(this, OrderCreatedListener.prototype);
   }
 
   async onMessage(parsedData: OrderCreatedEventI["data"], msg: Message) {
@@ -26,6 +28,7 @@ export class OrderCreatedListener extends Listener<OrderCreatedEventI> {
     // AKO GA NEMA TREBAMO THROW-OVATI ERROR
     // I AKO ON VEC IMA OREDER TIED TO IT
     // TREBAMO THROW-OVATI ERROR
+    //
 
     const { id: orderId, ticket: ticketData } = parsedData;
 
