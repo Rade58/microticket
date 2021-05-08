@@ -1,17 +1,14 @@
 import { Stan } from "node-nats-streaming";
-// UVOZIM OVO
 import { ChannelNamesEnum as CNE } from "../channel-names";
 
 interface EventI {
-  // UMESTO OVOGA
-  // channelName: any;
-  // OVO
   channelName: CNE;
-  //
   data: any;
 }
 
-// DALJE NISTA NECU MENJATI
+// U SUSTINI, SVE STO TREBAMO URADITI, JSTE DA NAPRAVIMO
+// DA client FIELD NE BUDE VISE private
+// VEC protected
 
 export abstract class Publisher<T extends EventI> {
   /**
@@ -23,7 +20,8 @@ export abstract class Publisher<T extends EventI> {
    * @description OVO TREBA DA JE PRE INITIALLIZED, STAN CLIENT (STO ZNACI DA BISMO VEC TREBAL IDA BUDEMO
    * CONNECCTED TO NATS STREAMING SERVER) (DOBIJENO SA nats.connect)
    */
-  private stanClient: Stan;
+
+  protected stanClient: Stan;
 
   constructor(stanClient: Stan) {
     this.stanClient = stanClient;

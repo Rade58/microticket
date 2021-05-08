@@ -1,24 +1,23 @@
 import { Stan, Message } from "node-nats-streaming";
-// UVEZAO OVO
 import { ChannelNamesEnum as CNE } from "../channel-names";
 
 interface EventI {
-  // I UMESTO OVOGA
-  // channelName: any;
-  // STAVIO OVO
   channelName: CNE;
-  //
   data: any;
 }
 
-// DALJE SVE OSTAJE ISTO, NISTA NECU DIRATI
+// DAKLE SAMO CU UCINITI DA stnClient VVISE NE BUDE private
+// VEC protected FIELD
 
 export abstract class Listener<T extends EventI> {
   /**
    * @description OVO TREBA DA JE PRE INITIALLIZED, STAN CLIENT (STO ZNACI DA BISMO VEC TREBAL IDA BUDEMO
    * CONNECCTED TO NATS STREAMING SERVER) (DOBIJENO SA nats.connect)
    */
-  private stanClient: Stan;
+  // UMSTO OVOGA
+  // private stanClient: Stan;
+  // ZADAJEM OVAKO
+  protected stanClient: Stan;
 
   /**
    *

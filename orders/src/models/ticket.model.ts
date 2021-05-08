@@ -3,6 +3,9 @@ import { OrderStatusEnum as OSE } from "@ramicktick/common";
 
 import { Order } from "./order.model";
 
+// EVO KAO STO VIDIS SAMO SAM NA SCHEMA-I DOAO NOVI FIELD
+// OSTALO NISTA NISAM DIRAO
+
 const ticketSchema = new Schema(
   {
     title: {
@@ -13,6 +16,11 @@ const ticketSchema = new Schema(
       type: Number,
       required: true,
       min: 0,
+    },
+    // EVO GA
+    orderId: {
+      type: String,
+      // I NARAVNO NIJE REQUIRED
     },
   },
   {
@@ -49,8 +57,6 @@ interface TicketFields {
 export interface TicketDocumentI extends Document, TicketFields {
   isReserved: () => Promise<boolean>; // PROMISE JER CE METODA BITI DEFINISANA KAO async
 }
-
-// EVO NA OVOM OBJEKTU DEFINISEM METODU
 
 /**
  * @description interface for additional things on the model (MOSTLY METHODS TO BE USED ON THE MODEL)
