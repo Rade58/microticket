@@ -355,4 +355,3 @@ it("throws Error if ticket version is out of order", async () => {
 
 I OVAJ TEST JE PROSAO
 
-
