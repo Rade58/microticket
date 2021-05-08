@@ -11,7 +11,7 @@ import { OrderCreatedListener } from "../order-created-listener";
 // OPET TI NAPOMINJEM DA JE OVO MOCK, IAKO JE UVOZ KAO DA UVOZIS REAL THING
 import { natsWrapper } from "../../nats-wrapper";
 
-import { Ticket } from "../../../models/ticket.model";
+import { Ticket, TicketDocumentI } from "../../../models/ticket.model";
 
 const { ObjectId } = Types;
 
@@ -31,21 +31,9 @@ const { ObjectId } = Types;
 // - msg ODNOSNO FAKED Message INSTANCU
 // - I LISTENER INSTANCU
 
-const setup = async () => {
-  // OVO JE USER KOJI OWN-UJE TICKET
-  const userId = new ObjectId().toHexString();
-  // NE CES GA KORISTITI KAO userId ZA ORDER
-  // JER DRUGI USER PRAVI ORDER
-
-  // PRVO CEMO KREIRATI Ticket
-  // KOJI NARAVNO NECE IMATI orderId NA SEBI (SECAS SE ZASTO, I SECAS SE ZASTO NE MOZE ODMAH IMATI)
-
-  const ticket = await Ticket.create({
-    price: 69,
-    title: "Stavros the mighty",
-    userId,
-  });
-
+const setup = async (
+  ticket: TicketDocumentI | { id: string; price: number; userId: string }
+) => {
   // KREIRAMO LISTENERA
   const listener = new OrderCreatedListener(natsWrapper.client);
 
@@ -79,7 +67,22 @@ const setup = async () => {
 // SADA MOZEMO DA PRAVIMO ASSERTIONS
 
 it("sucessfully processes event, updates a orderId field on ticket, and ack is succesfully called", async () => {
-  const { listener, parsedData, msg } = await setup();
+  // KREIRAMO TICKET
+  // OVO JE USER KOJI OWN-UJE TICKET
+  const userId = new ObjectId().toHexString();
+  // NE CES GA KORISTITI KAO userId ZA ORDER
+  // JER DRUGI USER PRAVI ORDER
+
+  // PRVO CEMO KREIRATI Ticket
+  // KOJI NARAVNO NECE IMATI orderId NA SEBI (SECAS SE ZASTO, I SECAS SE ZASTO NE MOZE ODMAH IMATI)
+
+  const myTicket = await Ticket.create({
+    price: 69,
+    title: "Stavros the mighty",
+    userId,
+  });
+
+  const { listener, parsedData, msg } = await setup(myTicket);
 
   // TICKET IS CREATED BY CALLING setup (SO WE ARE GOOD ON THAT)
 
@@ -103,4 +106,25 @@ it("sucessfully processes event, updates a orderId field on ticket, and ack is s
 
   // ack IS CALLED ONCE
   expect(msg.ack).toHaveBeenCalledTimes(1);
+});
+
+// MOZEMO NAPRAVITI I NEKE ASSERTIONS ZA FAILING
+
+it("returns error if ticket doesn't exist", async () => {
+  // PRAVIM SAMO RANDOM DATA ZA TICKET KOJI NE POSTOJI
+  const nonExistantTicketData = {
+    id: new ObjectId().toHexString(),
+    price: 420,
+    userId: new ObjectId().toHexString(),
+  };
+
+  const { listener, parsedData, msg } = await setup(nonExistantTicketData);
+
+  try {
+    await listener.onMessage(parsedData, msg);
+  } catch (err) {
+    console.log(err);
+
+    expect(err).toBeInstanceOf(Error);
+  }
 });

@@ -61,7 +61,7 @@ interface TicketFields {
 /**
  * @description interface for things, among others I can search on obtained document
  */
-interface TicketDocumentI extends Document, TicketFields {
+export interface TicketDocumentI extends Document, TicketFields {
   //
 }
 /**
