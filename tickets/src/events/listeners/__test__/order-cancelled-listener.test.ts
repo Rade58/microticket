@@ -32,13 +32,14 @@ const setup = (orderId: string, ticket: TicketDocumentI | { id: string }) => {
 
 // PRAVIMO ASSERTIONS
 
-it("sets null to orderId of the ticket", async () => {
+it("sets null to orderId of the ticket, and acknowledgent successfull", async () => {
   const orderId = new ObjectId().toHexString();
 
   // KREIRAMO TICKET
   const ticket = await Ticket.create({
     title: "Nick Mullen inc",
     price: 69,
+    userId: new ObjectId().toHexString(),
   });
 
   // ZASTO USTVARI NISAM GORE ZADAO I ORDER ID
@@ -48,6 +49,8 @@ it("sets null to orderId of the ticket", async () => {
   ticket.set("orderId", orderId);
 
   await ticket.save();
+
+  console.log({ ticket });
 
   expect(ticket.orderId).toEqual(orderId);
 
@@ -70,4 +73,24 @@ it("sets null to orderId of the ticket", async () => {
   if (sameTicket) {
     expect(sameTicket.orderId).toEqual(null);
   }
+
+  expect(msg.ack).toHaveBeenCalledTimes(1);
+});
+
+// ASSERTION FOR FAILING
+
+it("throws error, if ticket isn't found", async () => {
+  const { listener, parsedData, msg } = setup(new ObjectId().toHexString(), {
+    id: "ssafdsfdgfd",
+  });
+
+  try {
+    await listener.onMessage(parsedData, msg);
+  } catch (err) {
+    console.log(err);
+
+    expect(err).toBeInstanceOf(Error);
+  }
+
+  expect(msg.ack).not.toHaveBeenCalled();
 });

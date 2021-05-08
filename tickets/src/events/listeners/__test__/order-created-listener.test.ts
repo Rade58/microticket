@@ -127,4 +127,6 @@ it("returns error if ticket doesn't exist", async () => {
 
     expect(err).toBeInstanceOf(Error);
   }
+
+  expect(msg.ack).not.toHaveBeenCalled();
 });
