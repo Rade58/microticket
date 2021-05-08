@@ -93,6 +93,7 @@ interface TicketModelI extends Model<TicketDocumentI> {
   // SAMO TI OSTAVLJAM OVO KAO TEMPLATE DEFINISANJA
   __nothing: (input: string) => void; //stavio samo jer moram nesto da dodam, ali ovu metodu necu sigurno definisati
 }
+
 // BUILDING STATIC METHODS ON MODEL ( JUST SHOVING NOT GOING TO USE IT )
 // ticketSchema.statics.__nothing = async function (input) {/**/};
 // pre HOOK
