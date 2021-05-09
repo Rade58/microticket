@@ -1,7 +1,14 @@
 import request from "supertest";
-import { app } from "../../app";
 
 import { Types } from "mongoose";
+
+// ZELIM OVO
+import { BadRequestError } from "@ramicktick/common";
+// UVESCU I Ticket MODEL
+import { Ticket } from "../../models/ticket.model";
+//
+
+import { app } from "../../app";
 
 // UVOZIMO ONU FUNKCIJU
 // A UMESTO KOJE SE SERVIRA MOCK
@@ -215,4 +222,41 @@ it("'version' field is on Ticket document, and it is being incremented when upat
     });
 
   expect(response3.body.version).toEqual(2);
+});
+
+// --------
+
+it("it returns 400 if there is orderId on the ticket", async () => {
+  // KREIRACEMO JEDAN TICKET
+  const response1 = await request(app)
+    .post("/api/tickets")
+    .set("Cookie", global.getCookie())
+    .send({
+      title: "Stavros the Miighty",
+      price: 69,
+    });
+
+  const { id } = response1.body;
+
+  // NE POSTOJI ROUTE KOJI MOZES HIT-OVATI DA BI PROMENIO orderId
+  // ZATO KORISTIM Ticket MODEL, MADA SAM GA MOGAO KORISTITI I DA KREIRAM RICKET ALI NEMA VEZE
+
+  const ticket = await Ticket.findById(id);
+
+  if (ticket) {
+    ticket.set("orderId", new Types.ObjectId().toHexString());
+
+    await ticket.save();
+
+    // SADA MOZEMO DA POKUSAMO DA HIT-UJEMO UPDATE HANDLER
+    try {
+      await request(app).put(`/api/tickets/${id}`);
+    } catch (err) {
+      // OCEKUJEM BadRequestError
+
+      console.log({ err });
+
+      expect(err).toBeInstanceOf(BadRequestError);
+    }
+  }
 });

@@ -1,723 +1,105 @@
-# REAKO SAM TI U PROSLOM BRANCHU, DA SAM NAPRAVIO VELIKI PREVID, KADA SAM DEFINISAO CODE `onMessage` FUNKCIJE LISTENER-A; NAIME, JA SAM TADA UPDATE-OVAO DOKUMENTE IZ `Tickets` KOLEKCIJE, `tickets` MICROSERVICE-A, A TADA NISAM OBZANANI DRUGIM MICROSERVICE-OVIMA DA JE `Ticket` UPDATED
+# REJECTING EDITS OF RESERVED TICKET
 
-DAKLE JA NISAM PUBLISH-OVAO `"ticket:updated"`
+RANIJE SMO REKLI DA CEMO OVO URADITI
 
-DAKLE `orders` MICROSERVICE, KOJI JE ZA SADA JEDINI SUBSCRIBED NA `"ticket:updated"` CHANNEL, BIO BI U VELIKOM PROBLEMU, JER NE BI DOBIO EVENT, JER NIJE NI PUBLISHED
+JER VEC SADA SMO DEFINISALI DA `Ticket` DOKUMENT MOZE IMATI `orderId`, A KADA TO IMA IZ UGL RICKETA TO ZNACI DA NE BI TREBAL ODA BUDE MOGUC NJEGOV EDIT, ODNONO UPDATING, OD STRANE KORISNIKA KOJI JE ORIGINALLY KREIRAO TICKET, JER SAMO KORISNIK KOJI GA JE KREIRAO SME I DA GA EDIT-UJE
 
-DAKLE JASNO TI JE KAKVI BI SVE PROBLEMI NASTALI KADA TVOJ `tickets` MICROSERVICE, UPDATE-UJE TICKET, I TIME I INCRMENTIRA `version` FIELD NA TICKET-U; **A DA ZA TO NE ZNAJU DRUGI MICROSERVICE-I, KOJI U SVOJIM DATABASE-OVIMA, IMAJU REPLICATED `Tickets` KOLEKCIJU**
+DAKLE U `"PUT"` `/api/tickets/:id` HANDLERU ,POTREBNO JE DEFINISATI IF STATMENT, KOJI PROVERAVA DA LI POSTOJI `orderId` NA TICKETU, I AKO POSTIJ ITAJ FIELD, ODNOSNO AKO JE TRUTHY, MOZEMO THROW-OVATI ERROR
 
-**SADA CU TO DA POPRAVIM, TAKO STO CU PUBLISH-OVATI EVENT TO "`ticket:updated`" CHANNEL**
-
-NARAVNO POSLE TOGA MOGU PROSIRITI I TESTOVE, U KOJIMA BI TESTIRAO DA LI SE PUBLISH-OVAO EVENT KAKO TREBA
-
-## MEDJUTIM, POSTO SMO U UPOTREBU UVELI NOVI FIELD, KOJI SE ZOVE `orderId`, MI MORAMO UPDATE-OVATI TYPESCRIPT TYPE-OVE, KOJ ISU TIED TO PUBLISHERS, KAOKO BI I TAMO BIO TYPED TAJ FIELD; A TO ZNACI DA CEMO MORATI MODIFIKOVATI NAS COMMON MODULE
-
-DAKLE REDEFINISACEMO NAS common MODULE, PA CEMO G REPUBISH-OVATI
-
-A ONO GDE TYPE-UJEMO NOVI FIELD, JESTE SLEDECI FILE
-
-- `code common/src/events/event-interfaces/ticket-updated-event.ts`
+- `code tickets/src/routes/update.ts`
 
 ```ts
-import { ChannelNamesEnum as CNE } from "../channel-names";
+import { Router, Request, Response } from "express";
+import {
+  NotAuthorizedError,
+  NotFoundError,
+  // MISLIM DA J MOST APPROPRIATE ERROR OVDE, UPRAVO BadRequestError
+  BadRequestError,
+  // -----
+  validateRequest,
+  requireAuth,
+} from "@ramicktick/common";
 
-export interface TicketUpdatedEventI {
-  channelName: CNE.ticket_updated;
-  data: {
-    id: string;
-    version: number;
-    title: string;
-    price: number;
-    userId: string;
-    // DODAO OVO
-    orderId?: string;
-    //
-  };
-}
+import { body } from "express-validator";
 
-```
+import { Ticket } from "../models/ticket.model";
+import { TicketUpdatedPublisher } from "../events/publishers/ticket-updated-publisher";
+import { natsWrapper } from "../events/nats-wrapper";
 
-- `cd common`
+const router = Router();
 
-- `npm run pub`
+router.put(
+  "/api/tickets/:id",
+  requireAuth,
+  [
+    body("title")
+      .isString()
+      .not()
+      .isEmpty()
+      .withMessage("title has invalid format"),
+    body("price").isFloat({ gt: 0 }).withMessage("price has invalid format"),
+  ],
 
-## SADA MOZES DA UPDATE-UJES TVOJ COMMON MODULE, U `tickets` MICROSERVICE-U
+  validateRequest,
 
-- `cd tickets`
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const userId = req.currentUser?.id;
+    const { title, price } = req.body;
 
-- `yarn add @ramicktick/common --latest`
+    const data: { title?: string; price?: number } = {};
 
-ALU URADICU OVO I ZA orders ,PROSTO JER ZELIM DA I TAMO BUDE LATEST VERSION
+    if (title) {
+      data["title"] = title;
+    }
+    if (price) {
+      data["price"] = price;
+    }
 
-- `cd orders`
+    const ticket = await Ticket.findById(id).exec();
 
-- `yarn add @ramicktick/common --latest`
+    if (!ticket) {
+      throw new NotFoundError();
+    }
 
-## MEDJUTIM TREBLI BI I DA REDEFINISEMO MODELE ZA REPLICATED Tickets KOLEKCIJU; A NJU TRENUTN OSAMO IMAMO U `orders` MICROSERVICE-U
+    // ---- MOZEMO TU USLOVNU IZJAVU DA STAVIMO OVDE ----
 
-- `code orders/src/models/ticket.model.ts`
+    if (ticket.orderId) {
+      throw new BadRequestError(
+        "can not edit the ticket, it is already reserved"
+      );
+    }
 
-```ts
-import { Schema, model, Document, Model } from "mongoose";
-import { OrderStatusEnum as OSE } from "@ramicktick/common";
+    // ------------------------------------------------------
 
-import { Order } from "./order.model";
+    if (ticket.userId !== userId) {
+      throw new NotAuthorizedError();
+    }
 
-// EVO KAO STO VIDIS SAMO SAM NA SCHEMA-I DOAO NOVI FIELD
-// OSTALO NISTA NISAM DIRAO
+    if (data["title"]) {
+      ticket.set("title", data.title);
+    }
+    if (data["price"]) {
+      ticket.set("price", data.price);
+    }
 
-const ticketSchema = new Schema(
-  {
-    title: {
-      type: String,
-      required: true,
-    },
-    price: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-    // EVO GA
-    orderId: {
-      type: String,
-      // I NARAVNO NIJE REQUIRED
-    },
-  },
-  {
-    toJSON: {
-      /**
-       * @param ret object to be returned later as json
-       */
-      transform(doc, ret, options) {
-        ret.id = ret._id;
-        delete ret._id;
-        delete ret.__v;
-      },
-    },
+    await ticket.save();
 
-    optimisticConcurrency: true,
+    await new TicketUpdatedPublisher(natsWrapper.client).publish({
+      id: ticket.id,
+      version: ticket.version,
+      title: ticket.title,
+      price: ticket.price,
+      userId: ticket.userId,
+    });
 
-    versionKey: "version",
+    res.status(201).send(ticket);
   }
 );
 
-/**
- * @description this fields are inputs for the document creation
- */
-interface TicketFields {
-  version: number;
-  title: string;
-  price: number;
-  userId: string;
-}
-
-/**
- * @description interface for things, among others I can search on obtained document
- */
-export interface TicketDocumentI extends Document, TicketFields {
-  isReserved: () => Promise<boolean>; // PROMISE JER CE METODA BITI DEFINISANA KAO async
-}
-
-/**
- * @description interface for additional things on the model (MOSTLY METHODS TO BE USED ON THE MODEL)
- */
-interface TicketModelI extends Model<TicketDocumentI> {
-  // EVO OVO JE TA METODA
-  findOneByEvent(event: {
-    id: string;
-    version: number;
-  }): Promise<TicketDocumentI | null>;
-}
-
-/**
- *
- * @param event you can pass allparsedData
- * @returns Promise<TicketDocumentI | null>
- */
-ticketSchema.statics.findOneByEvent = async function (event: {
-  id: string;
-  version: number;
-}) {
-  const { id, version } = event;
-
-  const ticket = await this.findOne({ _id: id, version: version - 1 });
-
-  return ticket;
-};
-
-/**
- *
- * @description method on the document, to check if status is not cancelled, or that order doesn't exist
- * @returns boolean
- */
-ticketSchema.methods.isReserved = async function (): Promise<boolean> {
-  const ticketId = this.id;
-
-  const order = await Order.findOne({
-    ticket: ticketId,
-    status: {
-      $in: [OSE.created, OSE.awaiting_payment, OSE.complete],
-    },
-  });
-
-  if (order) {
-    return true;
-  }
-
-  return false;
-};
-
-/**
- * @description Ticket model
- */
-const Ticket = model<TicketDocumentI, TicketModelI>("Ticket", ticketSchema);
-
-export { Ticket };
-
+export { router as updateOneTicketRouter };
 ```
 
-KADA SAM SVE TO URAIO MOGU SE POSVETITI PUBLISHINGU EVENTA
+## MOZEMO DA NAPISEMO TEST
 
-ALI NE TAKO BRZO JER ZELIM DA NAPRAVIM JOS JEDNU IZMENU U NASEM COMMON MODULE-U
-
-## DA BI INSTATICIZIRALI PUBLISHERA, NAMA TREBA `natsWrapper`, ODNOSNO NATS CLIENT; MEDJUTIM NEZGODNO MI JE DA UVOZIM `natsWrapper` U FAJL, U KOJM MI DEFINISEMO CLASS ZA CUSTOM PUBLISHER-A
-
-TESTING BI BIO CHALLENGING KADA BI TO URADILI
-
-IAKO JE PONEKAD TO STVARNO NEIZBEZNO DA SE URADI, MI NECEMO SADA UVOZITI NESTO POPUT natsClient-A
-
-**DAKLE JA MORAM PONOVO MODIFIKOVATI MOJ common MODULE**
-
-TACNIJE, DODACU NOVI FIELD NA `Listener` KLASI, A TO CE BITI `stanClient` (**ALI NECE BITI POTREBE DA DOJAM NOVI FIELD JER JE VEC DEFINISAN, MEDJUTIM ON JE TRENUTNO `private`**)
-
-ALI JA CU DEFINISATI DA ON BUDE `protected`; **STO ZNACI DA CE SE MOCI KORISTITI SAMO WHITHIN EXTENDING CLASS, ALI NE I NA INSTANCAMA EXTENDING CLASS-E**, A TO NAM TACNO I TREBA
-
-- `code common/src/events/abstr/abstr-listener.ts`
-
-```ts
-import { Stan, Message } from "node-nats-streaming";
-import { ChannelNamesEnum as CNE } from "../channel-names";
-
-interface EventI {
-  channelName: CNE;
-  data: any;
-}
-
-// DAKLE SAMO CU UCINITI DA stnClient VVISE NE BUDE private
-// VEC protected FIELD
-
-export abstract class Listener<T extends EventI> {
-  /**
-   * @description OVO TREBA DA JE PRE INITIALLIZED, STAN CLIENT (STO ZNACI DA BISMO VEC TREBAL IDA BUDEMO
-   * CONNECCTED TO NATS STREAMING SERVER) (DOBIJENO SA nats.connect)
-   */
-  // UMSTO OVOGA
-  // private stanClient: Stan;
-  // ZADAJEM OVAKO
-  protected stanClient: Stan;
-
-  /**
-   *
-   * @description ime kanala, a mogao sam ga umesto channelName nzvati
-   * i subject, ali izbrao sa mda se zove kako se zove
-   * TO TI JE ONO STO JE U FORMATU    ticket:created   NA PRIMER
-   */
-  abstract channelName: T["channelName"];
-
-  /**
-   * @description SLUZI DA SE POSTIGNE UKLANJANJE EVENTA KOJI JE PROOCESSED
-   */
-  abstract queueGroupName: string;
-
-  /**
-   * @description
-   * @param parsedData any
-   * @param msg nats.Message
-   */
-  abstract onMessage(parsedData: T["data"], msg: Message): void;
-
-  /**
-   * @description BROJ MILI SEKUNDI NAKON KOJIH CE STREAMING SERVER PRESTATI
-   * DA SALJE NON PROCESSED EVENT
-   */
-  protected ackWait: number = 5 * 1000;
-
-  constructor(stanClient: Stan) {
-    this.stanClient = stanClient;
-
-    Object.setPrototypeOf(this, Listener.prototype);
-  }
-
-  /**
-   *
-   * @description Sets subscription options
-   */
-  subscriptionOptions() {
-    return (
-      this.stanClient
-        .subscriptionOptions()
-        /**
-         * @description ako je listener down na duze bice mu poslati zaostali events
-         */
-        .setDeliverAllAvailable()
-        /**
-         * @description ali mu nece biti poslati already processed events
-         * dali smo isti name kao queued group name
-         */
-        .setDurableName(this.queueGroupName)
-        /**
-         * @description morace se pozivati msg.ack da se potvrdi u listneru da je event processed
-         * sto se naravno govori nats streaming serveru da ne bi slao processed event opet
-         */
-        .setManualAckMode(true)
-        /**
-         * @description na acknoledgment ce se nats streaming server cekati
-         * specificirani broj milisekundi
-         */
-        .setAckWait(this.ackWait)
-    );
-  }
-
-  /**
-   * @description SETTING UP SUBSCRIPTION
-   */
-  listen() {
-    const subscription = this.stanClient.subscribe(
-      this.channelName,
-      this.queueGroupName,
-      this.subscriptionOptions()
-    );
-
-    subscription.on("message", (msg: Message) => {
-      console.log(
-        `Mesage received:
-          subject: ${this.channelName}
-          queueGroup: ${this.queueGroupName}
-        `
-      );
-
-      const parsedData = this.parseMessage(msg);
-
-      this.onMessage(parsedData, msg);
-    });
-  }
-
-  /**
-   * @description parsed message
-   * @param msg nats.Message
-   */
-  parseMessage(msg: Message) {
-    const data = msg.getData();
-
-    return typeof data === "string"
-      ? JSON.parse(data)
-      : JSON.parse(data.toString("utf-8"));
-  }
-}
-```
-
-SAMO DA KAZEM DA SAM JA OVO GORE URADIO I ZA ABSTRACT `Publisher` (BECAUSE WHY NOT, MOZDA CE POSTOJATI SCENARIO KADA CE TO TREBATI,, ALI ZA SADA NE TREBA)
-
-**I PONOVO CEMO DA REPUBLISH-UJEMO common MODULE**
-
-- `cd common`
-
-- `npm run pub`
-
-**I OPET CEMO DA INSTALIRAMO FRESHEST VERZIJU, TAMO GDE GA KORISTIMO**
-
-- `cd orders`
-
-- `yarn add @ramicktick/common --latest`
-
-- `cd tickets`
-
-- `yarn add @ramicktick/common --latest`
-
-SADA KONACNO MOZES DEFINISATI PUBLISHING
-
-# SADA CEMO DEFINISATI PUBLISHING EVENT-A FROM `onMessage` METHOD OF `OrderCreatedListener` CLASS
-
-- `code tickets/src/events/listeners/order-created-listener.ts`
-
-```ts
-import {
-  Listener,
-  OrderCreatedEventI,
-  ChannelNamesEnum as CNE,
-} from "@ramicktick/common";
-import { Stan, Message } from "node-nats-streaming";
-import { tickets_microservice } from "../queue_groups";
-import { Ticket } from "../../models/ticket.model";
-// SADA CU UVESTI I       TicketUpdatedPublisher
-import { TicketUpdatedPublisher } from "../publishers/ticket-updated-publisher";
-// ALI NAM TREBA I NATS CLIENT
-// MEDJUTIM ,NECEMO GA KORISTITI SA natsWrapper-A
-// JER client POSTOJI NA INSTANCI SLEDECE KLASE, KAO protected FIELD
-// JER TAKO SMO DEFINISALI KROZ Listener ABSTRACT CLASS-U
-
-export class OrderCreatedListener extends Listener<OrderCreatedEventI> {
-  channelName: CNE.order_created;
-
-  queueGroupName: string;
-
-  constructor(stanClient: Stan) {
-    super(stanClient);
-
-    this.channelName = CNE.order_created;
-    this.queueGroupName = tickets_microservice;
-
-    Object.setPrototypeOf(this, OrderCreatedListener.prototype);
-  }
-
-  async onMessage(parsedData: OrderCreatedEventI["data"], msg: Message) {
-    const { id: orderId, ticket: ticketData } = parsedData;
-
-    const { id: ticketId } = ticketData;
-
-    const ticket = await Ticket.findById(ticketId);
-
-    if (!ticket) {
-      throw new Error("ticket not found");
-    }
-
-    if (ticket.orderId) {
-      throw new Error("ticket already reserved");
-    }
-
-    ticket.set({ orderId });
-
-    await ticket.save();
-
-    // DAKLE RANIJE, NISI MOGAO UZETI stanClent SA this
-    // A SADA MOZES JER SAM JA DEFINISAO U ABSTRACT Listener-U
-    // DA JE TAJ FIELD protected
-    // ALI KAKO SAM REKAO, TO TAKODJE ZNACI DA INSTACA CUSTOM LISTENERA
-    // NE MOZE KORISTITI POMENUTI FIELD, DOK EXTENDING CLASS MOZE
-
-    // ISTO TAKO VAZNO JE PODSETITI SE DA JE GORNJIM ticket.save()
-    // POZIVOM OSIGURANO DA JE version INCRMENTED BY ONE
-
-    // ISTO TAKO NE MORAS DA REFETCH-UJES TICKET IZ DATBASE-A
-    // JER GORNJIM save POZIVOM TI SI OBEZBEDIO PROMENE NA TICKETU
-    // ONE CE BITI PRISUTNE NA ticketu NA KOJEM SI POZVAO save
-
-    await new TicketUpdatedPublisher(this.stanClient).publish({
-      id: ticket.id,
-      price: ticket.price,
-      title: ticket.title,
-      userId: ticket.userId,
-      version: ticket.version,
-      orderId: ticket.orderId,
-    });
-
-    msg.ack();
-  }
-}
-```
-
-# SADA CEMO DEFINISATI PUBLISHING EVENT-A FROM `onMessage` METHOD OF `OrderCancelledListener` CLASS
-
-- `code tickets/src/events/listeners/order-cancelled-listener.ts`
-
-```ts
-import {
-  Listener,
-  OrderCancelledEventI,
-  ChannelNamesEnum as CNE,
-} from "@ramicktick/common";
-import { Stan, Message } from "node-nats-streaming";
-import { tickets_microservice } from "../queue_groups";
-import { Ticket } from "../../models/ticket.model";
-// UVOZIM PUBLISHER-A
-import { TicketUpdatedPublisher } from "../publishers/ticket-updated-publisher";
-//
-
-export class OrderCancelledListener extends Listener<OrderCancelledEventI> {
-  channelName: CNE.order_cancelled;
-  queueGroupName: string;
-
-  constructor(stanClient: Stan) {
-    super(stanClient);
-
-    this.channelName = CNE.order_cancelled;
-    this.queueGroupName = tickets_microservice;
-    Object.setPrototypeOf(this, OrderCancelledListener.prototype);
-  }
-
-  async onMessage(parsedData: OrderCancelledEventI["data"], msg: Message) {
-    const { ticket: ticketData } = parsedData;
-
-    const { id } = ticketData;
-
-    const ticket = await Ticket.findById(id);
-
-    if (!ticket) {
-      throw new Error("ticket not found");
-    }
-
-    ticket.set("orderId", null);
-
-    await ticket.save();
-
-    // PUBLISH-UJEMO EVENT -------
-    await new TicketUpdatedPublisher(this.stanClient).publish({
-      id: ticket.id,
-      price: ticket.price,
-      title: ticket.title,
-      userId: ticket.userId,
-      version: ticket.version,
-      orderId: ticket.orderId,
-    });
-    //---------------------------
-
-    msg.ack();
-  }
-}
-```
-
-## MI JOS UVEK IMAMO TESTOVE I ONI BI TREBALI DA PROLAZE; SAMO STO MI NISMO TESTIRALI OVAJ PUBLISHING FROM `onMessage`
-
-PROVERICU TESTOVE
-
-- `cd tickets`
-
-- `yarn test` p `Enter` listener `Enter`
-
-TESTOVI ZA MOJA DVA LISTENERA SU PROSLA, KAO STO SAM I OCEKIVAO
-
-ALI KKO TESTIRATI PUBLISHING FROM onMessaage METHOD OF THE LISTENER
-
-**JASNO JE DA CEMO MI MORATI MOCK-OVATI NEKAKO NASE CUSTOM PUBLIHER-E**
-
-ALI MI SMO TO VEC URAILI; IAKO TI KORISTIS `this.stanClient`, **TO JE ONAJ, ISTI CLIENT KOJEG SMO MOCK-OVALI OVDE `tickets/src/events/__mocks__/nats-wrapper.ts`**
-
-ODNOSNO STA SMO MI U TOM MOCK-U RADILI
-
-PA MOZES DA SE PODSETIS
-
-- `cat tickets/src/events/__mocks__/nats-wrapper.ts`
-
-**KAO STO VIDIS NAPISALI SMO MOCK IMPLEMENTATION, ZA `publish` METHOD STAN CLIENT-A**
-
-```ts
-export const natsWrapper = {
-  client: {
-    publish: jest
-      .fn()
-      .mockImplementation(
-        (channelName: string, data: any, callback: () => void): void => {
-          callback();
-        }
-      ),
-  },
-};
-
-```
-
-MI SADA MOZEMO U NASIM TESTOVIIMA, NAPRAVITI ASSERTION DA JE GORNJI `publish` BIO CALLED
-
-- `code tickets/src/events/listeners/__test__/order-created-listener.test.ts`
-
-```ts
-// SAMO CU TI POKAZATI TEST KOJ ISAM NAPISAO SADA
-// OSTLO STO JE PREDHODNO NAPISANO NECU PRIKAZIVATI JER NEMA POTREBE
-// ...
-// ...
-it("publishes event from the onMessage method of OrderCreatedListener Instance", async () => {
-  const myTicket = await Ticket.create({
-    price: 69,
-    title: "Stavros the mighty",
-    userId: new ObjectId().toHexString(),
-  });
-
-  const { listener, parsedData, msg } = await setup(myTicket);
-
-  await listener.onMessage(parsedData, msg);
-
-  // MOZEM ONAPRAVITI ASSERTION
-  expect(natsWrapper.client.publish).toHaveBeenCalled();
-});
-
-```
-
-POKRENUCU ODMAH OVAJ TEST
-
-- `cd tickets`
-
-- `yarn test` p `Enter` order-created `Enter`
-
-I TEST JE ZAISTA PROSAO
-
-**SADA CEMO DA NAPISEMO SKORO ISTI TEST ZA PUBLISHING EVENT-A FROM `onMessage` METHOD OF THE TicketCancelledListener INSTANCE**
-
-- `code tickets/src/events/listeners/__test__/order-cancelled-listener.test.ts`
-
-```ts
-// SAMO CU TI POKAZATI TEST KOJ ISAM NAPISAO SADA
-// OSTLO STO JE PREDHODNO NAPISANO NECU PRIKAZIVATI JER NEMA POTREBE
-// ...
-// ...
-it("publishes event from the onMessage method of OrderCancelledListener Instance", async () => {
-  const orderId = new ObjectId().toHexString();
-
-  const ticket = await Ticket.create({
-    title: "Nick Mullen inc",
-    price: 69,
-    userId: new ObjectId().toHexString(),
-  });
-
-  ticket.set("orderId", orderId);
-
-  await ticket.save();
-
-  const { listener, parsedData, msg } = setup(orderId, ticket);
-
-  await listener.onMessage(parsedData, msg);
-
-  // PRAVIMO ASSERTION
-  expect(natsWrapper.client.publish).toHaveBeenCalled();
-});
-```
-
-TEST SUITE JE VEC UPALJEN ,SAM OCU FILTEROVATI DA RUNN-UJEM JEDAN TEST SUITE (`tickets-cancelled-listener.test.ts`)
-
-- p `Enter` order-cancelled `Enter`
-
-I ZAISTA I OVAJ TEST JE PROSAO
-
-# RANIJE TI NISAM POKAZAO DA MI MOZEMO DA GLEDAMO I U DRUGE STVARI NASE MOCK IMPLEMNTACIJE
-
-U NASEM SLUCAJU MOCK IMPLEMENTACIJA JE NASA publish FUNKCIJA NA CLIENT-U
-
-NA PRIMER SA KOJIM ARGUMENTIMA JE POZVANA
-
-- `code tickets/src/events/listeners/__test__/order-created-listener.test.ts`
-
-SAMO CEMO PROSIRITI, JEDAN OD NASIH TESTOVA DA I TO VIDIMO
-
-A USTVARI KORISTI SE `.mock.calls` KAKO BI VIDEO SA CIME JE FUNKCIJA POZVANA
-
-```ts
-// ...
-// ...
-
-it("publishes event from the onMessage method of OrderCreatedListener Instance", async () => {
-  const myTicket = await Ticket.create({
-    price: 69,
-    title: "Stavros the mighty",
-    userId: new ObjectId().toHexString(),
-  });
-
-  const { listener, parsedData, msg } = await setup(myTicket);
-
-  await listener.onMessage(parsedData, msg);
-
-  expect(natsWrapper.client.publish).toHaveBeenCalled();
-
-  // EVO OVAKO
-  console.log(
-    "CALL ARGUMENTS",
-    // eslint-disable-next-line
-    // @ts-ignore
-    natsWrapper.client.publish.mock.calls
-  );
-});
-```
-
-EVO STA SE STAMPALO U TEST SUITE-U
-
-```sh
-console.log
-    CALL ARGUMENTS [
-      [
-        'ticket:updated',
-        '{"id":"6097b1dbe14fad1bdba63276","price":69,"title":"Stavros the mighty","userId":"6097b1dbe14fad1bdba63275","version":1,"orderId":"6097b1dbe14fad1bdba63277"}',
-        [Function (anonymous)]
-      ]
-    ]
-```
-
-NARAVNO TI MOZES PRAVITI ASSERTION O ARGUMENTIMA  
-
-**A AKO NE ZELIS DA KORISTIS ESLINT DISABLE I TS IGNORE, MOZES OZNACITI publish KAO JEST MOCK FUNKCIJU**
-
-OVAKO
-
-- `code tickets/src/events/listeners/__test__/order-created-listener.test.ts`
-
-```ts
-// ...
-// ...
-
-it("publishes event from the onMessage method of OrderCreatedListener Instance", async () => {
-  const myTicket = await Ticket.create({
-    price: 69,
-    title: "Stavros the mighty",
-    userId: new ObjectId().toHexString(),
-  });
-
-  const { listener, parsedData, msg } = await setup(myTicket);
-
-  await listener.onMessage(parsedData, msg);
-
-  expect(natsWrapper.client.publish).toHaveBeenCalled();
-
-  // DAKLE KORISTIMO as KEYWORD
-
-  (natsWrapper.client.publish as jest.Mock).mock.calls;
-});
-
-```
-
-I SADA TYPESCRIPT NECE YELL-OVATI NA TEBE
-
-HAJDE DA SADA NAPRAVIMO NEKI ASSERTION U POGLEDU ARGUMENATA MOCK FUNKCIJE
-
-- `code tickets/src/events/listeners/__test__/order-created-listener.test.ts`
-
-```ts
-// ...
-// ...
-
-it("publishes event from the onMessage method of OrderCreatedListener Instance", async () => {
-  const myTicket = await Ticket.create({
-    price: 69,
-    title: "Stavros the mighty",
-    userId: new ObjectId().toHexString(),
-  });
-
-  const { listener, parsedData, msg } = await setup(myTicket);
-
-  await listener.onMessage(parsedData, msg);
-
-  expect(natsWrapper.client.publish).toHaveBeenCalled();
-
-  // EVO PRVO PARSE-UJEMO EVENT DATA, JER JE ONO JSON STRING
-
-  const parsedArgs = JSON.parse(
-    (natsWrapper.client.publish as jest.Mock).mock.calls[0][1]
-  );
-
-  // MEDJUTIM PRE EXPECTATION, MORAM OREQUERY-EOVATI TICKET
-
-  console.log({ parsedArgs, myTicket });
-
-  const sameTicket = await Ticket.findById(myTicket.id);
-  // MOZADA NISMO MORLI REQUERY-EOVATI TICKET, JER JE orderId 
-  // BIO KAO id NA parsedData
-
-  if (sameTicket) {
-    console.log({ sameTicket });
-    // PRAVIMO EXPECTATION
-    expect(parsedArgs.orderId).toEqual(sameTicket.orderId);
-  }
-});
-```
-
-- `cd tickets`
-
-- `yarn test` p `Enter` order-created `Enter`
-
-TEST JE PROSAO
-
+- `code `

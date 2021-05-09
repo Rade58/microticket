@@ -2,6 +2,9 @@ import { Router, Request, Response } from "express";
 import {
   NotAuthorizedError,
   NotFoundError,
+  // MISLIM DA J MOST APPROPRIATE ERROR OVDE, UPRAVO BadRequestError
+  BadRequestError,
+  // -----
   validateRequest,
   requireAuth,
 } from "@ramicktick/common";
@@ -47,6 +50,16 @@ router.put(
     if (!ticket) {
       throw new NotFoundError();
     }
+
+    // ---- MOZEMO TU USLOVNU IZJAVU DA STAVIMO OVDE ----
+
+    if (ticket.orderId) {
+      throw new BadRequestError(
+        "can not edit the ticket, it is already reserved"
+      );
+    }
+
+    // ------------------------------------------------------
 
     if (ticket.userId !== userId) {
       throw new NotAuthorizedError();
