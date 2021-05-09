@@ -46,3 +46,6 @@ nats_test_project/node_modules
 
 # orders
 orders/node_modules
+
+# expiration
+expiration/node_modules
