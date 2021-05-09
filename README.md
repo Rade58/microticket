@@ -586,3 +586,54 @@ TEST SUITE JE VEC UPALJEN ,SAM OCU FILTEROVATI DA RUNN-UJEM JEDAN TEST SUITE (`t
 
 I ZAISTA I OVAJ TEST JE PROSAO
 
+# RANIJE TI NISAM POKAZAO DA MI MOZEMO DA GLEDAMO I U DRUGE STVARI NASE MOCK IMPLEMNTACIJE
+
+U NASEM SLUCAJU MOCK IMPLEMENTACIJA JE NASA publish FUNKCIJA NA CLIENT-U
+
+NA PRIMER SA KOJIM ARGUMENTIMA JE POZVANA
+
+- `code tickets/src/events/listeners/__test__/order-created-listener.test.ts`
+
+SAMO CEMO PROSIRITI, JEDAN OD NASIH TESTOVA DA I TO VIDIMO
+
+A USTVARI KORISTI SE `.mock.calls` KAKO BI VIDEO SA CIME JE FUNKCIJA POZVANA
+
+```ts
+// ...
+// ...
+
+it("publishes event from the onMessage method of OrderCreatedListener Instance", async () => {
+  const myTicket = await Ticket.create({
+    price: 69,
+    title: "Stavros the mighty",
+    userId: new ObjectId().toHexString(),
+  });
+
+  const { listener, parsedData, msg } = await setup(myTicket);
+
+  await listener.onMessage(parsedData, msg);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
+
+  // EVO OVAKO
+  console.log(
+    "CALL ARGUMENTS",
+    // eslint-disable-next-line
+    // @ts-ignore
+    natsWrapper.client.publish.mock.calls
+  );
+});
+```
+
+EVO STA SE STAMPALO U TEST SUITE-U
+
+```sh
+console.log
+    CALL ARGUMENTS [
+      [
+        'ticket:updated',
+        '{"id":"6097b1dbe14fad1bdba63276","price":69,"title":"Stavros the mighty","userId":"6097b1dbe14fad1bdba63275","version":1,"orderId":"6097b1dbe14fad1bdba63277"}',
+        [Function (anonymous)]
+      ]
+    ]
+```

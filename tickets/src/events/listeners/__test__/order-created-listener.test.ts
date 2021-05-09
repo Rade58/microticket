@@ -131,7 +131,6 @@ it("returns error if ticket doesn't exist", async () => {
   expect(msg.ack).not.toHaveBeenCalled();
 });
 
-// EVO PISEMO TEST
 it("publishes event from the onMessage method of OrderCreatedListener Instance", async () => {
   const myTicket = await Ticket.create({
     price: 69,
@@ -143,6 +142,13 @@ it("publishes event from the onMessage method of OrderCreatedListener Instance",
 
   await listener.onMessage(parsedData, msg);
 
-  // MOZEM ONAPRAVITI ASSERTION
   expect(natsWrapper.client.publish).toHaveBeenCalled();
+
+  // EVO OVAKO
+  console.log(
+    "CALL ARGUMENTS",
+    // eslint-disable-next-line
+    // @ts-ignore
+    natsWrapper.client.publish.mock.calls
+  );
 });
