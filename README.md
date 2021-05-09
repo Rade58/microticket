@@ -580,7 +580,7 @@ it("publishes event from the onMessage method of OrderCancelledListener Instance
 });
 ```
 
-TEST SUITE JE VEC UPALJEN
+TEST SUITE JE VEC UPALJEN ,SAM OCU FILTEROVATI DA RUNN-UJEM JEDAN TEST SUITE (`tickets-cancelled-listener.test.ts`)
 
 - p `Enter` order-cancelled `Enter`
 
