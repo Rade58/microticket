@@ -475,3 +475,5 @@ export class OrderCancelledListener extends Listener<OrderCancelledEventI> {
   }
 }
 ```
+
+U SLEDECEM BRANCH-U NAPRAVICEMO MANUAL TESTS
