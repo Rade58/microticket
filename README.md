@@ -717,7 +717,7 @@ it("publishes event from the onMessage method of OrderCreatedListener Instance",
 
 - `cd tickets`
 
-- `yarn test`
+- `yarn test` p `Enter` order-created `Enter`
 
-UFGLANOM SVE JE PROSLO
+TEST JE PROSAO
 
