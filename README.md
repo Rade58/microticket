@@ -476,4 +476,113 @@ export class OrderCancelledListener extends Listener<OrderCancelledEventI> {
 }
 ```
 
-U SLEDECEM BRANCH-U NAPRAVICEMO MANUAL TESTS
+## MI JOS UVEK IMAMO TESTOVE I ONI BI TREBALI DA PROLAZE; SAMO STO MI NISMO TESTIRALI OVAJ PUBLISHING FROM `onMessage`
+
+PROVERICU TESTOVE
+
+- `cd tickets`
+
+- `yarn test` p `Enter` listener `Enter`
+
+TESTOVI ZA MOJA DVA LISTENERA SU PROSLA, KAO STO SAM I OCEKIVAO
+
+ALI KKO TESTIRATI PUBLISHING FROM onMessaage METHOD OF THE LISTENER
+
+**JASNO JE DA CEMO MI MORATI MOCK-OVATI NEKAKO NASE CUSTOM PUBLIHER-E**
+
+ALI MI SMO TO VEC URAILI; IAKO TI KORISTIS `this.stanClient`, **TO JE ONAJ, ISTI CLIENT KOJEG SMO MOCK-OVALI OVDE `tickets/src/events/__mocks__/nats-wrapper.ts`**
+
+ODNOSNO STA SMO MI U TOM MOCK-U RADILI
+
+PA MOZES DA SE PODSETIS
+
+- `cat tickets/src/events/__mocks__/nats-wrapper.ts`
+
+**KAO STO VIDIS NAPISALI SMO MOCK IMPLEMENTATION, ZA `publish` METHOD STAN CLIENT-A**
+
+```ts
+export const natsWrapper = {
+  client: {
+    publish: jest
+      .fn()
+      .mockImplementation(
+        (channelName: string, data: any, callback: () => void): void => {
+          callback();
+        }
+      ),
+  },
+};
+
+```
+
+MI SADA MOZEMO U NASIM TESTOVIIMA, NAPRAVITI ASSERTION DA JE GORNJI `publish` BIO CALLED
+
+- `code tickets/src/events/listeners/__test__/order-created-listener.test.ts`
+
+```ts
+// SAMO CU TI POKAZATI TEST KOJ ISAM NAPISAO SADA
+// OSTLO STO JE PREDHODNO NAPISANO NECU PRIKAZIVATI JER NEMA POTREBE
+// ...
+// ...
+it("publishes event from the onMessage method of OrderCreatedListener Instance", async () => {
+  const myTicket = await Ticket.create({
+    price: 69,
+    title: "Stavros the mighty",
+    userId: new ObjectId().toHexString(),
+  });
+
+  const { listener, parsedData, msg } = await setup(myTicket);
+
+  await listener.onMessage(parsedData, msg);
+
+  // MOZEM ONAPRAVITI ASSERTION
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
+});
+
+```
+
+POKRENUCU ODMAH OVAJ TEST
+
+- `cd tickets`
+
+- `yarn test` p `Enter` order-created `Enter`
+
+I TEST JE ZAISTA PROSAO
+
+**SADA CEMO DA NAPISEMO SKORO ISTI TEST ZA PUBLISHING EVENT-A FROM `onMessage` METHOD OF THE TicketCancelledListener INSTANCE**
+
+- `code tickets/src/events/listeners/__test__/order-cancelled-listener.test.ts`
+
+```ts
+// SAMO CU TI POKAZATI TEST KOJ ISAM NAPISAO SADA
+// OSTLO STO JE PREDHODNO NAPISANO NECU PRIKAZIVATI JER NEMA POTREBE
+// ...
+// ...
+it("publishes event from the onMessage method of OrderCancelledListener Instance", async () => {
+  const orderId = new ObjectId().toHexString();
+
+  const ticket = await Ticket.create({
+    title: "Nick Mullen inc",
+    price: 69,
+    userId: new ObjectId().toHexString(),
+  });
+
+  ticket.set("orderId", orderId);
+
+  await ticket.save();
+
+  const { listener, parsedData, msg } = setup(orderId, ticket);
+
+  await listener.onMessage(parsedData, msg);
+
+  // PRAVIMO ASSERTION
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
+});
+```
+
+TEST SUITE JE VEC UPALJEN
+
+- p `Enter` order-cancelled `Enter`
+
+I ZAISTA I OVAJ TEST JE PROSAO
+

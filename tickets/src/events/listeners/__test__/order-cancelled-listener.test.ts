@@ -94,3 +94,24 @@ it("throws error, if ticket isn't found", async () => {
 
   expect(msg.ack).not.toHaveBeenCalled();
 });
+
+it("publishes event from the onMessage method of OrderCancelledListener Instance", async () => {
+  const orderId = new ObjectId().toHexString();
+
+  const ticket = await Ticket.create({
+    title: "Nick Mullen inc",
+    price: 69,
+    userId: new ObjectId().toHexString(),
+  });
+
+  ticket.set("orderId", orderId);
+
+  await ticket.save();
+
+  const { listener, parsedData, msg } = setup(orderId, ticket);
+
+  await listener.onMessage(parsedData, msg);
+
+  // PRAVIMO ASSERTION
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
+});
