@@ -2,8 +2,6 @@ import request from "supertest";
 
 import { Types } from "mongoose";
 
-// ZELIM OVO
-import { BadRequestError } from "@ramicktick/common";
 // UVESCU I Ticket MODEL
 import { Ticket } from "../../models/ticket.model";
 //
