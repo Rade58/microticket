@@ -671,3 +671,48 @@ it("publishes event from the onMessage method of OrderCreatedListener Instance",
 ```
 
 I SADA TYPESCRIPT NECE YELL-OVATI NA TEBE
+
+HAJDE DA SADA NAPRAVIMO NEKI ASSERTION U POGLEDU ARGUMENATA MOCK FUNKCIJE
+
+- `code tickets/src/events/listeners/__test__/order-created-listener.test.ts`
+
+```ts
+// ...
+// ...
+
+it("publishes event from the onMessage method of OrderCreatedListener Instance", async () => {
+  const myTicket = await Ticket.create({
+    price: 69,
+    title: "Stavros the mighty",
+    userId: new ObjectId().toHexString(),
+  });
+
+  const { listener, parsedData, msg } = await setup(myTicket);
+
+  await listener.onMessage(parsedData, msg);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
+
+  // EVO PRVO PARSE-UJEMO EVENT DATA, JER JE ONO JSON STRING
+
+  const parsedArgs = JSON.parse(
+    (natsWrapper.client.publish as jest.Mock).mock.calls[0][1]
+  );
+
+  // MEDJUTIM PRE EXPECTATION, MORAM OREQUERY-EOVATI TICKET
+
+  console.log({ parsedArgs, myTicket });
+
+  const sameTicket = await Ticket.findById(myTicket.id);
+
+  if (sameTicket) {
+    console.log({ sameTicket });
+    // PRAVIMO EXPECTATION
+    expect(parsedArgs.orderId).toEqual(sameTicket.orderId);
+  }
+});
+```
+
+- `cd tickets`
+
+- `yarn test`

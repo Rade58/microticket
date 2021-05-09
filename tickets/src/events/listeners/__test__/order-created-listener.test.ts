@@ -144,7 +144,21 @@ it("publishes event from the onMessage method of OrderCreatedListener Instance",
 
   expect(natsWrapper.client.publish).toHaveBeenCalled();
 
-  // DAKLE KORISTIMO as KEYWORD
+  // EVO PRVO PARSE-UJEMO EVENT DATA, JER JE ONO JSON STRING
 
-  (natsWrapper.client.publish as jest.Mock).mock.calls;
+  const parsedArgs = JSON.parse(
+    (natsWrapper.client.publish as jest.Mock).mock.calls[0][1]
+  );
+
+  // MEDJUTIM PRE EXPECTATION, MORAM OREQUERY-EOVATI TICKET
+
+  console.log({ parsedArgs, myTicket });
+
+  const sameTicket = await Ticket.findById(myTicket.id);
+
+  if (sameTicket) {
+    console.log({ sameTicket });
+    // PRAVIMO EXPECTATION
+    expect(parsedArgs.orderId).toEqual(sameTicket.orderId);
+  }
 });
