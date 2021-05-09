@@ -102,4 +102,62 @@ export { router as updateOneTicketRouter };
 
 ## MOZEMO DA NAPISEMO TEST
 
-- `code `
+- `code tickets/src/routes/__tests__/update.test.ts`
+
+```ts
+// ...
+// ...
+
+// UVESCU I Ticket MODEL
+import { Ticket } from "../../models/ticket.model";
+//
+
+
+// ...
+// ...
+// ...
+// ...
+
+it("it returns 400 if there is orderId on the ticket", async () => {
+  // KREIRACEMO JEDAN TICKET
+  const response1 = await request(app)
+    .post("/api/tickets")
+    .set("Cookie", global.getCookie())
+    .send({
+      title: "Stavros the Miighty",
+      price: 69,
+    });
+
+  const { id } = response1.body;
+
+  // NE POSTOJI ROUTE KOJI MOZES HIT-OVATI DA BI PROMENIO orderId
+  // ZATO KORISTIM Ticket MODEL, MADA SAM GA MOGAO KORISTITI I DA KREIRAM RICKET ALI NEMA VEZE
+
+  const ticket = await Ticket.findById(id);
+
+  if (ticket) {
+    ticket.set("orderId", new Types.ObjectId().toHexString());
+
+    await ticket.save();
+
+    // SADA MOZEMO DA POKUSAMO DA HIT-UJEMO UPDATE HANDLER
+
+    const response2 = await request(app)
+      .put(`/api/tickets/${id}`)
+      .set("Cookie", global.getCookie())
+      .send({
+        title: "Nick Mullen estin cullen",
+        price: 420,
+      });
+
+    expect(response2.status).toEqual(400);
+  }
+});
+```
+
+- `cd tickets`
+
+- `yarn test` p `Enter` update `Enter`
+
+TEST JE PROSAO
+

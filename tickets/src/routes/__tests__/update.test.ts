@@ -249,14 +249,15 @@ it("it returns 400 if there is orderId on the ticket", async () => {
     await ticket.save();
 
     // SADA MOZEMO DA POKUSAMO DA HIT-UJEMO UPDATE HANDLER
-    try {
-      await request(app).put(`/api/tickets/${id}`);
-    } catch (err) {
-      // OCEKUJEM BadRequestError
 
-      console.log({ err });
+    const response2 = await request(app)
+      .put(`/api/tickets/${id}`)
+      .set("Cookie", global.getCookie())
+      .send({
+        title: "Nick Mullen estin cullen",
+        price: 420,
+      });
 
-      expect(err).toBeInstanceOf(BadRequestError);
-    }
+    expect(response2.status).toEqual(400);
   }
 });
