@@ -704,6 +704,8 @@ it("publishes event from the onMessage method of OrderCreatedListener Instance",
   console.log({ parsedArgs, myTicket });
 
   const sameTicket = await Ticket.findById(myTicket.id);
+  // MOZADA NISMO MORLI REQUERY-EOVATI TICKET, JER JE orderId 
+  // BIO KAO id NA parsedData
 
   if (sameTicket) {
     console.log({ sameTicket });
