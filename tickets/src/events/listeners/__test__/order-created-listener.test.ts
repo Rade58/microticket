@@ -144,11 +144,7 @@ it("publishes event from the onMessage method of OrderCreatedListener Instance",
 
   expect(natsWrapper.client.publish).toHaveBeenCalled();
 
-  // EVO OVAKO
-  console.log(
-    "CALL ARGUMENTS",
-    // eslint-disable-next-line
-    // @ts-ignore
-    natsWrapper.client.publish.mock.calls
-  );
+  // DAKLE KORISTIMO as KEYWORD
+
+  (natsWrapper.client.publish as jest.Mock).mock.calls;
 });

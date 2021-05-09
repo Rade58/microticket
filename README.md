@@ -637,3 +637,37 @@ console.log
       ]
     ]
 ```
+
+NARAVNO TI MOZES PRAVITI ASSERTION O ARGUMENTIMA  
+
+**A AKO NE ZELIS DA KORISTIS ESLINT DISABLE I TS IGNORE, MOZES OZNACITI publish KAO JEST MOCK FUNKCIJU**
+
+OVAKO
+
+- `code tickets/src/events/listeners/__test__/order-created-listener.test.ts`
+
+```ts
+// ...
+// ...
+
+it("publishes event from the onMessage method of OrderCreatedListener Instance", async () => {
+  const myTicket = await Ticket.create({
+    price: 69,
+    title: "Stavros the mighty",
+    userId: new ObjectId().toHexString(),
+  });
+
+  const { listener, parsedData, msg } = await setup(myTicket);
+
+  await listener.onMessage(parsedData, msg);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
+
+  // DAKLE KORISTIMO as KEYWORD
+
+  (natsWrapper.client.publish as jest.Mock).mock.calls;
+});
+
+```
+
+I SADA TYPESCRIPT NECE YELL-OVATI NA TEBE
