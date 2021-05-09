@@ -718,3 +718,6 @@ it("publishes event from the onMessage method of OrderCreatedListener Instance",
 - `cd tickets`
 
 - `yarn test`
+
+UFGLANOM SVE JE PROSLO
+
