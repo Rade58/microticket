@@ -1,177 +1,62 @@
-# CREATING A QUEUE
+# ENQUEUING A JOB, ON ARRIVAL OF `"order:created"` EVENT
 
-***
-***
+U PROSLOM BRANCHU SMO NAPRAVILI `Queue` INSTANCU KOJU SMO NAZVALI `expirationQueue`
 
-digresija1:
+PODESILI SMO TAKODJE PIECE OF CODE, KOJI PROCESS-UJE JOB, KOJI SALJE REDIS SERVER
 
-**NEMOJ SLUCAJNO DA MESAS OVO ZA QUEUE GROUP-AMA NEKOG KNALA, U NATS STREAING SERVERU**
+**ONO STA CEM OSADA URADITI JESTE QUEUING JOB-A, ONDA KADA PRISTIGNE EVENT IZ KANAL `"order:created"`**
 
-TO SSU POTPUNO RAZLICITE STVARI (SAMO TI NAPOMINJEM)
+STO ZNACI DA CEMO PISATI CODE INSIDE `onMessage` METODE `OrderCreatedListener` INSTANCE
 
-***
-***
-
-***
-***
-
-digresija2:
-
-ZABORAVIO SAM RANIJE DA INSTALIRAM TYPE DEFFINITIONS ZA BULL, TAKO DA CU TO SADA URADITI
-
-- `cd expiration`
-
-- `yarn add @types/bull`
-
-***
-***
-
-
-- `mkdir expiration/src/queues`
-
-U SLEDECEM FILE-U STAVICU MNOGO ACODE-A, RELATED TO Bull JS
-
-- `touch expiration/src/queues/expiration-queue.ts`
-
-HAJDE DA NAPRAVIM OVERVIEW STA CU JA USTVARITI RADITI
-
-1. "`order:created`" EVENT STIZE U `exoiration` MICROSERVICE
-
-2. KORISTICEMO JEDNU STVAR KOJA CE SE ZVATI `expirationQueue`, I KOJ UCEMO DEFINISATI U FILE-U KOJ ISMO MALOCAS KREIRALI
-
-KORISTICEMO JE KAKO BI SMO ENQUEUE-OVALI NOVI JOB
-
-O `JOB`-U MOZEMO RAZMISLJATI KAO O NECEMU STO JE SIMILAR IN NATURE, TO THE EVENT
-
-DAKLE PISACEMO **CODE TO ENQUEUE A JOB**, ILI ESENTIALLY MOZEMO RECI DA TADA "PUBLISH-UJEMO JOB"
-
-3. POMENUTI JOB BICE SENT TO REDIS SERVER
-
-TAMO CE BITI LIST OF DIFFERENT JOBS, KOJI CE IMATI TYPE **`"order:expiration"`**
-
-DAKLE JOB KOJI JE SENT DO REDIS SERVERA CE NA SEBI IMATI TYPE, KOJI CE BITI STRING DESCRIPTION (EKVIVALENTNO ONOM SUBJECTU, ILI CHANNEL-U KADA GOVORIMO O NATS-U)
-
-4. JOB CE ONDA TEMPORRY BITI STORED U REDIS-U
-
-I BICE STORED TAMO, DOK NE ELAPS-UJE 15 MINUTA ILI SLICNO
-
-5. KADA VREME PROTEKNE REDIS SERVER CE UZETI JOB I POSLACE GA NAAD DO `expirationQueue`-A
-
-A TO CEMO IMATI CODE DEDICATED ZA PROCESSING INCOMMING JOB-A
-
-6. KADA SE PROCESS-UJE JOB, ZELIM ODA EMMIT-UJEMO EVENT **`expiration:complete`**
-
-## MI CEMO MORATI DA FIGURE0-UJEMO OUT, KAKVU CEMO TO INFORMACIJU MI ZELETI DA STORE-UJEMO INSIDE A JOB OBJECT
-
-MORAMO DA STORE-UJMO NESTO STO UKAZUJE O TOM O KOJEM SE TO ORDERU RADI, KOJEG ZELIMO DA EXPIRE-UJEMO
-
-NAJBOLJE DA TO BUDE `orderId`
-
-NISTA DRUGO I NETREBA
-
-orderId JEDINO TREBA DA BUDE ONO STO CE SE PUBLISHOVATI SA `"expiration:complete"` EVENTOM
-
-# SADA MOZEMO DA POCNEMO DA PISEMO CODE ZA SVE STO SMO GORE POMENULI
-
-- `code expiration/src/queues/expiration-queue.ts`
+- `code expiration/src/events/listeners/order-created-listener.ts`
 
 ```ts
-import Queue from "bull";
+import { Stan, Message } from "node-nats-streaming";
+import {
+  Listener,
+  OrderCreatedEventI,
+  ChannelNamesEnum as CNE,
+} from "@ramicktick/common";
+import { expiration_microservice } from "../queue_groups";
 
-// KORISTICU GORNJU STVAR, DA NAPRAVIM NOVU Queue INSTANCU
-// I NAZVACEMO JE       expirationQueue
+// UVESCEMO queue INSTANCU
+import { expirationQueue } from "../../queues/expiration-queue";
+//
 
-// DAKLE TO CE BITI STVAR KOJA CE NAM OMOGUCITI DA PUBLISH-UJEMO JOB
-// (ODNOSNO DA GA ENQUEUE-JEMO)
+export class OrderCreatedListener extends Listener<OrderCreatedEventI> {
+  channelName: CNE.order_created;
+  queueGroupName: string;
 
-// A TO CE SLUZITI I DA EVENTUALLY PROCESS-UJE JOB KOJI DOLAZI
-// IZ REDIS INSTANCE
+  constructor(stanClent: Stan) {
+    super(stanClent);
 
-// PRVI ARGUMENT JE TYPE OF QUEUE, A MOZES O TOME RAZMISLJATI KAO O CHANNEL NAME-U
-// MOZEMO O QUEUE TYPE-U RAZMISLATI KAO O NECEMU STO NAS VEZE ZA BUCKET
-// U REDIS SERVERU, U KOJEM ZELIMO DA, PRIVREMENO STORE-UJEMO JOB
-// FORMAT STRINGA, ZA QUEUE TYPE NIJE BITAN, ALI JA VOLIM
-// DA STAVLJAM ISTI FORMAT, KAKV JE ONAJ KOJI KORISTIMO
-// ZA ZADAVANJE CHANNEL NAME-A, ODNOSNO SUBJECT-A
+    this.channelName = CNE.order_created;
+    this.queueGroupName = expiration_microservice;
 
-// DRUGI ARGUMENT JE OPTIONS OBJECT
+    Object.setPrototypeOf(this, OrderCreatedListener.prototype);
+  }
 
-const expirationQueue = new Queue("order:expiration", {
-  // SA OVIM OPCIJAMA GOVORIMO QUEUE-U
-  // DA ZELIMO DA SE KONEKTUJEMO DO INSTANCE REDIS SERVER-A
-  // KOJU RUNN-UJEMO U POD-U, KOJU SMO NE TAKO DAVNO KREIRALI
-  // APLY-UJUCI ONAJ DEPLOYMENT FILE
-  redis: {
-    // MOZEMO NACI HOST U CONFIG FILE-U ZA DEPLOYMENT I CLUSTER IP
-    // NASEG expiration MICROSERVICE-A, JER TAMO
-    // SMO DEFINISALI ENV VARIABLE ZA host
-    host: process.env.REDIS_HOST,
-  },
-});
+  async onMessage(parsedData: OrderCreatedEventI["data"], msg: Message) {
+    // OVDE CEMO SADA DA ENQUEUE JOB
+    // I ZNAS DA U NJEM UTREBA BITI orderId KAO DATA
+    // ZATO CEMO TO DA UZMEMO, ALI UZECEMO I ISOS DATE STRING
+    const { id: orderId, expiresAt } = parsedData;
 
-```
+    // EVO SADA VRSIMO ENQUEUING
 
-# ZBOG TOGA DA UVEK ZNAMO STA SE STAVLJA U JOB OBJECT, I STA MOZEMO PROCITATI SA JOB OBJECT-A, NAPRAVICEMO JEDAN TYPESCRIPT INTERFACE
+    await expirationQueue.add({ orderId });
 
-INTERFACE CE SE ZVATI `PayloadI`
-
-- `code expiration/src/queues/expiration-queue.ts`
-
-```ts
-import Queue from "bull";
-
-// EVO GA INTERFACE
-interface PayloadI {
-  orderId: string;
+    // SADA MOZEMO DA ACK-UJEMO OUR MESSAGE
+    msg.ack();
+  }
 }
 
-// A OVDE GA PASS-UJEMO KAO GENERIC TYPE
-const expirationQueue = new Queue<PayloadI>("order:expiration", {
-  redis: {
-    host: process.env.REDIS_HOST,
-  },
-});
 ```
 
-# SADA CEMO NAPISATI CODE DEDICATED TO PROCESSING A JOB
+**KAO STO VIDIS MI NISMO NISTA URDILI SA `expiresAt`**
 
-DAKLE PIECE OF CODE KOJI PROCESS-UJE JOB SENT BY REDIS SERVER
+KASNIJE CEMO I TO UPOTREBITI, MEDJUTIM JA SADA ZELIM DA NAPRAVIM MANUAL TEST
 
-- `code expiration/src/queues/expiration-queue.ts`
+PRE YOGA NARAVNO DA POKRENEM SKAFFOLD, KAKO BI SE SVE PROMENE APPLY-OVALE NE CLUSTER
 
-```ts
-import Queue from "bull";
-
-interface PayloadI {
-  orderId: string;
-}
-
-// ZABORAVIO SAM DA EXPORT-UJEM QUEUE
-export const expirationQueue = new Queue<PayloadI>("order:expiration", {
-  redis: {
-    host: process.env.REDIS_HOST,
-  },
-});
-
-// EVO OVO JE, POMENUTI PIECE OF CODE
-
-expirationQueue.process(async (job) => {
-  // NA job-U ,LAKO MOZES VIDETI STA MOZE DA BUDE
-  job.data.orderId;
-
-  // job OBJECT JE SIMILR IN NATURE, KAO ONAJ msg: Message
-  // KADA LISTEN-UJEMO FOR THE EVENT, KORISTECEI node-nats-streaming
-
-  // PORED data NA job-U IMA MNOGO STAVI, OD DATE, KADA JE INITIALLY
-  // CREATED, ILI NEKI ID OF JOB ITSELF ILI WHAT EVER ELSE
-
-  // EVENTUALLY MI CEMO OVDE PUBLISH-OVATI `"expiration:complete"` EVENT
-  // AL IZA SADA CEMO SAM ONA NESTO LOG-UJEMO
-
-  console.log(
-    "I want to publish event to 'expiration:complete' channel. Event data --> orderId",
-    job.data.orderId
-  );
-});
-
-```
+- `skaffold dev`
