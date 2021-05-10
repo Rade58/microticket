@@ -11,14 +11,15 @@ export * from "./middlewares/validate-request";
 
 export * from "./events/abstr/abstr-listener";
 export * from "./events/abstr/abstr-publisher";
+
 export * from "./events/channel-names";
 export * from "./events/event-interfaces/ticket-created-event";
 export * from "./events/event-interfaces/ticket-updated-event";
 
 export * from "./events/types/order-status-enum";
 
-// DODAO OVO
-//
-//
 export * from "./events/event-interfaces/order-cancelled-event";
 export * from "./events/event-interfaces/order-created-event";
+
+// EVO DODAO SAM OVO
+export * from "./events/event-interfaces/expiration-complete-event";
