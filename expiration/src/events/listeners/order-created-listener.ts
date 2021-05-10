@@ -1,20 +1,3 @@
-# CREATING `OrderCreatedListener` INSIDE `expiration` MICROSERVICE
-
-KREIRACEMO PRVO QUEUE GROUP NAME (TO RADIM JER VOLIM DA GA DRZIM U VARIJABLOJ)
-
-- `mkdir `
-
-```ts
-export const expiration_microservice = "expiration-microservice";
-```
-
-PA KREIRACU I CUSTOM LISTENER-A
-
-- `mkdir expiration/src/events/listeners`
-
-- `touch expiration/src/events/listeners/order-created-listener.ts`
-
-```ts
 import { Stan, Message } from "node-nats-streaming";
 import {
   Listener,
@@ -43,9 +26,3 @@ export class OrderCreatedListener extends Listener<OrderCreatedEventI> {
     // ZA 15 MINUTA
   }
 }
-
-```
-
-U SLEDECEM BRANCH-U NAPRAVICEMO DEEPER OVERVIEW O TOME STA SE DESAVA U `Bull JS` LIBRARY-JU
-
-
