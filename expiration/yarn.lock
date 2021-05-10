@@ -552,6 +552,13 @@
     "@types/connect" "*"
     "@types/node" "*"
 
+"@types/bull@^3.15.1":
+  version "3.15.1"
+  resolved "https://registry.yarnpkg.com/@types/bull/-/bull-3.15.1.tgz#3c3fd665b43ef383ca95a91b8d1448461fae0898"
+  integrity sha512-thZyjxikoyuDa/ptZEqtTEPUjwlDenkpPigpIyad1X5UMp7U0fXTLiDHJjZ/5yXmVPuWx0cXFXj3drmva/UJRA==
+  dependencies:
+    "@types/ioredis" "*"
+
 "@types/connect@*":
   version "3.4.34"
   resolved "https://registry.yarnpkg.com/@types/connect/-/connect-3.4.34.tgz#170a40223a6d666006d93ca128af2beb1d9b1901"
@@ -590,6 +597,13 @@
   version "4.1.5"
   resolved "https://registry.yarnpkg.com/@types/graceful-fs/-/graceful-fs-4.1.5.tgz#21ffba0d98da4350db64891f92a9e5db3cdb4e15"
   integrity sha512-anKkLmZZ+xm4p8JWBf4hElkM4XR+EZeA2M9BAkkTldmcyDY4mbdIJnRghDJH3Ov5ooY7/UAoENtmdMSkaAd7Cw==
+  dependencies:
+    "@types/node" "*"
+
+"@types/ioredis@*":
+  version "4.26.2"
+  resolved "https://registry.yarnpkg.com/@types/ioredis/-/ioredis-4.26.2.tgz#6185392fc771f758e26aa9ed99dac25f5e9a76d0"
+  integrity sha512-Dliwq2BDTs+Wljw3ByL9nG7XxakpvepvCUI/0tHH8RLsJ2LwUoxVr+/ZnbFD4uF8Uw/k6eFSvxvbUGbV6iVldg==
   dependencies:
     "@types/node" "*"
 
