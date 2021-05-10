@@ -181,3 +181,5 @@ BODY:
 [expiration] I want to publish event to 'expiration:complete' channel. Event data --> orderId 609959af3272420018444b86
 ```
 
+## U SLEDECEM BRANCH-U MI CEM OSE POZABAVITI TIME KAKO DA DEFINISEMO DELAY ZA JOB PROCESSING
+
