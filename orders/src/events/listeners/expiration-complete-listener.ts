@@ -20,10 +20,6 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
   }
 
   async onMessage(parsedData: ExpirationCompleteEventI["data"], msg: Message) {
-    // DAKLE TREBA UZETI TICKET I PROMENIT MU status FIELD
-
-    // ODAVDE BI MI ISS-UOVALI `"order:cancelled"` EVENT
-
     msg.ack();
   }
 }
