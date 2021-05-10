@@ -1,61 +1,33 @@
-# DEFINISANJE `ExpirationCompleteEventI` INTEFACE-A, U `common` MODULE-U
+# PUBLISHING AN EVENT WHEN JOB IS PROCESSED
 
-DOAJEMO PRVO NOVI CHANNEL NAME INSIDE CHANNEL NAME ENUM
+JASNO TI JE DA GOVORIMO O PUBLISHINGU U CHANNELL `"expiration:complete"`; LI IZ CALLBACK-A, KOJI JE PASSED KAO ARGUMENT `expirationQueue.process` METODE INSIDE `expiration/src/queues/expiration-queue.ts` FILE
 
-- `code common/src/events/channel-names.ts`
+**MEDJUTIM MI CEMO MORATI KREIRATI CUSTOM PUBLISHERA, KAKO BI MOGLI USPENO PUBLISH-OVATI POMENUTI EVENT**
 
-```ts
-/**
- * @description Channel Names Enum   (ALSO KNOWN AS SUBJECTS)
- * @description BITNO JE DA VREDNOSTI IMAJU ":"
- */
-export enum ChannelNamesEnum {
-  ticket_created = "ticket:created",
-  ticket_updated = "ticket:updated",
-  order_created = "order:created",
-  order_cancelled = "order:cancelled",
-  // DODAO OOVO IME KANALA
-  expiration_complete = "expiration:complete",
-}
+# KREIRAMO `ExpirationCompletePublisher`-A
 
-```
+- `mkdir expiration/src/events/publishers`
 
-SADA PRAVIMO INTERFACE Z NOVI EVENT
-
-- `touch common/src/events/event-interfaces/expiration-complete-event.ts`
+- `touch expiration/src/events/publishers/expiration-complete-publisher.ts`
 
 ```ts
-import { ChannelNamesEnum as CNE } from "../channel-names";
+import {
+  Publisher,
+  ExpirationCompleteEventI,
+  ChannelNamesEnum as CNE,
+} from "@ramicktick/common";
+import { Stan } from "node-nats-streaming";
 
-export interface ExpirationCompleteEventI {
+export class ExpirationCompletePublisher extends Publisher<ExpirationCompleteEventI> {
   channelName: CNE.expiration_complete;
-  data: {
-    orderId: string;
-  };
+
+  constructor(stanClient: Stan) {
+    super(stanClient);
+
+    this.channelName = CNE.expiration_complete;
+
+    Object.setPrototypeOf(this, ExpirationCompletePublisher.prototype);
+  }
 }
-```
-
-## MORAMO DA `ExpirationCompleteEventI` IZVEZEMO IZ `index.ts` FAJLA NASEG common MODULE-A
-
-- `code common/src/index.ts`
-
-```ts
-// ...
-// ...
-
-// EVO DODAO SAM OVO
-export * from "./events/event-interfaces/expiration-complete-event";
 
 ```
-
-# MOZEMO SADA DA REPUBLISH-UJEMO NAS PACKAGE
-
-- `cd common`
-
-- `npm run pub`
-
-# PA SADA MOZEMO DA INSTALIRAMO NOVIJU VERZIJU NASEG common MODULE-A, INSIDE `expiration` MICROSERVICE
-
-- `cd expiration`
-
-- `yarn add @ramicktick/common --latest`
