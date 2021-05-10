@@ -4,7 +4,7 @@ interface PayloadI {
   orderId: string;
 }
 
-const expirationQueue = new Queue<PayloadI>("order:expiration", {
+export const expirationQueue = new Queue<PayloadI>("order:expiration", {
   redis: {
     host: process.env.REDIS_HOST,
   },

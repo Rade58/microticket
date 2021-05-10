@@ -146,13 +146,14 @@ interface PayloadI {
   orderId: string;
 }
 
-const expirationQueue = new Queue<PayloadI>("order:expiration", {
+// ZABORAVIO SAM DA EXPORT-UJEM QUEUE
+export const expirationQueue = new Queue<PayloadI>("order:expiration", {
   redis: {
     host: process.env.REDIS_HOST,
   },
 });
 
-// EVO OVO JE TO
+// EVO OVO JE, POMENUTI PIECE OF CODE
 
 expirationQueue.process(async (job) => {
   // NA job-U ,LAKO MOZES VIDETI STA MOZE DA BUDE
