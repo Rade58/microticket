@@ -113,3 +113,110 @@ spec:
 DAKLE MI SE OVDE SAMO BRINEMO O TOME DA EVENTUALLY BUDE KRIRAN POD ZA expiration MICROSERVICE, KOJI CE KOMUNICIRATI SAMO SA NATS STREAMING SERVEROM
 
 ZATO SAM DEFINISAO SAMO DEPLOYMENT AND NOTHING ELSE
+
+# POKRENUCEMO SADA SKAFFOLD DA VIDIMO KAKO CE SE PONASTI
+
+- `skaffold dev`
+
+PA, U SUSTINI FAIL-OVACE
+
+ALI CES VIDETI DA SU SE IMAGE-OVI KREIRALI
+
+PREDPOSTAVLJAM DA FAIL-UJE JER NISAM DEFINISAO NISTA U SKAFFOLD KONFIGURACIJI
+
+# DODAJEM SADA NOVE STVARI U SKAFFOLD CONFIG
+
+- `code skaffold.yaml`
+
+```yaml
+apiVersion: skaffold/v2beta12
+kind: Config
+deploy:
+  kubectl:
+    manifests:
+      - ./infra/k8s/*
+build:
+  googleCloudBuild:
+    projectId: microticket
+  artifacts:
+    - image: eu.gcr.io/microticket/auth
+      context: auth
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.{ts,js}'
+            dest: .
+    - image: eu.gcr.io/microticket/client
+      context: client
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '**/*.{tsx,ts,js}'
+            dest: .
+    - image: eu.gcr.io/microticket/tickets
+      context: tickets
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.{ts,js}'
+            dest: .
+    - image: eu.gcr.io/microticket/orders
+      context: orders
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.{ts,js}'
+            dest: .
+    # EVO OVO SAM DODAO
+    - image: eu.gcr.io/microticket/expiration
+      context: expiration
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.{ts,js}'
+            dest: .
+```
+
+SADA MOZES DA POKRENES SKAFFOLD
+
+- `skaffold dev`
+
+IMAS USPESAM BUILD, A A I NOVI MICROSERVICE TI JE STARTOVAO
+
+EVO TI LOGS U SKAFFOLD TERMINALU
+
+```zsh
+[expiration] 
+[expiration]           Connected to Nats Streaming Server
+[expiration]           clientId: expiration-depl-7d88b9dcdc-942ss
+[expiration] 
+```
+
+MOZEMO DA PROVERIMO I PODS
+
+- `kubectl get pods`
+
+```zsh
+NAME                                     READY   STATUS    RESTARTS   AGE
+auth-depl-576d774f9b-rfxg9               1/1     Running   0          3m44s
+auth-mongo-depl-66687546f4-fh5xg         1/1     Running   0          3m44s
+client-depl-554678fc65-ghckt             1/1     Running   0          3m44s
+expiration-depl-7d88b9dcdc-942ss         1/1     Running   0          3m43s
+expiration-redis-depl-66d7c7554f-qdplg   1/1     Running   0          3m43s
+nats-depl-86bc59bbc6-twh68               1/1     Running   0          3m43s
+orders-depl-6f48744c44-24m6d             1/1     Running   0          3m42s
+orders-mongo-depl-6d8fdfbfb-lx8mc        1/1     Running   0          3m42s
+tickets-depl-f6589b5fb-44xt7             1/1     Running   0          3m42s
+tickets-mongo-depl-66dc986c98-nkp8r      1/1     Running   0          3m41s
+```
+
+EVO GAO STO VIDIS GORE, PODS:
+
+`expiration-depl-7d88b9dcdc-942ss` `expiration-redis-depl-66d7c7554f-qdplg`
+
+ZAISTA RUNN-UJU

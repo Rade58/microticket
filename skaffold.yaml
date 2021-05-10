@@ -32,9 +32,17 @@ build:
         manual:
           - src: 'src/**/*.{ts,js}'
             dest: .
-    # EVO OVO SAM DODAO
     - image: eu.gcr.io/microticket/orders
       context: orders
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.{ts,js}'
+            dest: .
+    # EVO OVO SAM DODAO
+    - image: eu.gcr.io/microticket/expiration
+      context: expiration
       docker:
         dockerfile: Dockerfile
       sync:
