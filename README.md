@@ -110,7 +110,7 @@ STO ZNACI DA JE NAKON 10 SEKUNDI JOB STIGAO DO PIECE- OF CODE, KOJI JE DOBIO JOB
 
 A JASAM UPRAVO U TOM PIECE OF CODE-U ZADAO DA SE STAMAPA, ONO STO SE GORE STAMPALO
 
-# MI CEMO PODESITI DA DELAY IPAK BUDE 15 MINUTA, KOLIKO I POKAZUJE ONAJ `expiresAt`
+# MI CEMO PODESITI DA DELAY IPAK BUDE ONOLIKI VEZAN OZA ONAJ DATE IN FUTURE, KOLIKO I POKAZUJE ONAJ `expiresAt`
 
 - `code expiration/src/events/listeners/order-created-listener.ts`
 
@@ -162,7 +162,152 @@ export class OrderCreatedListener extends Listener<OrderCreatedEventI> {
 
 SAD JE DELAY NEKIH 15 MINUTA
 
-I TO MOZES TESTIRATI TAK OSTO CES NAPRAVITI ORDER, ALI SADA MORAS CEKATI 15 MINUTA DA SE STAMPA ON OSTO SMO ZADALI
+I TO MOZES TESTIRATI TAKO STO CES NAPRAVITI ORDER, ALI SADA MORAS CEKATI 15 MINUTA DA SE STAMPA ON OSTO SMO ZADALI
+
+MI SMO ONAJ EXPIRATIO NHARDCODE-OVALI DA 15 MINUTA I TO SMO URADDILI OVDE ,PRI SAMOM PUBLISHINGU EVENT-A, DAKLE U SAMO MHANDLER-U ZA KREIRANJE NOVOG ORDERA
+
+HAJDE DA NAKRATKO TO PROMENIMO NA 10 SEKUNDI I DA ONDA NAPRAVIMO ORDER
+
+- `code  orders/src/routes/new.ts`
+
+```ts
+import { Router, Request, Response } from "express";
+import {
+  requireAuth,
+  validateRequest,
+  NotFoundError,
+  OrderStatusEnum as OSE,
+  BadRequestError,
+} from "@ramicktick/common";
+import { body } from "express-validator";
+import { Types as MongooseTypes } from "mongoose";
+import { Order } from "../models/order.model";
+import { Ticket } from "../models/ticket.model";
+import { natsWrapper } from "../events/nats-wrapper";
+import { OrderCreatedPublisher } from "../events/publishers/order-created-publisher";
+
+// EVO OVO JE TO STO MOXZEMO MENJATI
+// const EXPIRATION_PERIOD_SECONDS = 15 * 60;
+// EVO SADA JE 10 SEKUNDI
+const EXPIRATION_PERIOD_SECONDS = 10;
+
+const router = Router();
+
+router.post(
+  "/api/orders",
+  requireAuth,
+  [
+    body("ticketId")
+      .isString()
+      .not()
+      .isEmpty()
+      .custom((input: string) => {
+        return MongooseTypes.ObjectId.isValid(input);
+      })
+      .withMessage("'ticketId' is invalid or not provided"),
+  ],
+  validateRequest,
+  async (req: Request, res: Response) => {
+    const { ticketId } = req.body;
+    const userId = req?.currentUser?.id;
+    const ticket = await Ticket.findOne({ _id: ticketId }).exec();
+
+    if (!ticket) {
+      throw new NotFoundError();
+    }
+
+    const ticketIsReserved = await ticket.isReserved();
+
+    if (ticketIsReserved) {
+      throw new BadRequestError(
+        "can't make an order, ticket is already reserved"
+      );
+    }
+
+    // I CISTO DA TE PODSETIM TO SE KORISTI OVDE
+    // DA BI SE NAPRAVIO DATE KOJI UPUCUJE AT SOME MOMENT IN TIME IN FUTURE
+    const expirationDate = new Date(
+      new Date().getTime() + EXPIRATION_PERIOD_SECONDS * 1000
+    );
+
+    const order = await Order.create({
+      ticket: ticket.id,
+      userId: userId as string,
+      expiresAt: expirationDate,
+      status: OSE.created,
+    });
+
+    await new OrderCreatedPublisher(natsWrapper.client).publish({
+      id: order.id,
+      version: order.version,
+      //
+      expiresAt: new Date(order.expiresAt).toISOString(),
+      userId: order.userId,
+      status: order.status,
+      ticket: {
+        id: ticket.id,
+        price: ticket.price,
+      },
+    });
+
+    res.status(201).send(order);
+  }
+);
+
+export { router as createNewOrderRouter };
+```
+
+MOZES OPET DA NAPRAVIS ORDER
+
+I VIDECES DA CE SE NAKON 10 SEKUNDI STMAPATI ONO STO SI DEFINISAO DA SE STAMPA (ALI MORACES DA NAPRAVIS NOVI TICKET, JER JE ONAJ ZA KOJI SMO NE TAKO DAVNO NAPRAVILI ORDER, ALREDY RESERVED)
+
+USPENO SAM I OVO IZTESTIRAO
+
+`"POST"` `https://microticket.com/api/orders/`
+
+BODY:
+
+```json
+{
+	"ticketId": "60997b0411aaa50018b33126"
+}
+```
+
+USPESNO SAM NAPRAVIO ORDER, EVO JE ORDER DATA
+
+```json
+{
+  "status": "created",
+  "ticket": "60997af7cbe18d001823df25",
+  "userId": "609958c18b60a4002370f5ec",
+  "expiresAt": "2021-05-10T18:27:26.574Z",
+  "version": 0,
+  "id": "60997b0411aaa50018b33126"
+}
+```
+
+OVO SE ODMAH STMAPALO
+
+```zsh
+[orders] 
+[orders]             Event Published
+[orders]             Channel: order:created
+[orders]           
+[expiration] Mesage received:
+[expiration]           subject: order:created
+[expiration]           queueGroup: expiration-microservice
+[expiration]         
+```
+
+**A NAKON 10 SEKUNDI I OVO**
+
+```zsh
+[expiration] I want to publish event to 'expiration:complete' channel. Event data --> orderId 60997b0411aaa50018b33126
+```
+
+DAKLE SVE JE USPESNO TESTIRANO
+
+**TI IPAK VRATI DA ONAJ TIME BUDE IPAK 15 MINUTA** (OPET TI NAPOMINJEM DA TO PODESAVAS INSIDE `orders/src/routes/new.ts`)
 
 ## U SLEDECEM BRANCH-U DEFINISACEMO SVE STO TREBA DA BISMO KASNIJE USPENO NAPRAVILI `ExpirationCompletePublisher`-A ,A TAKODJE I `ExpirationCompleteListener`-A 
 
