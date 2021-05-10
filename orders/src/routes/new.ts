@@ -14,9 +14,9 @@ import { natsWrapper } from "../events/nats-wrapper";
 import { OrderCreatedPublisher } from "../events/publishers/order-created-publisher";
 
 // EVO OVO JE TO STO MOXZEMO MENJATI
-const EXPIRATION_PERIOD_SECONDS = 15 * 60;
-// EVO SADA JE 10 SEKUNDI
-// const EXPIRATION_PERIOD_SECONDS = 10;
+// const EXPIRATION_PERIOD_SECONDS = 15 * 60;
+// EVO SADA JE 20 SEKUNDI
+const EXPIRATION_PERIOD_SECONDS = 20;
 
 const router = Router();
 
