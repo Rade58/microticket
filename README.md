@@ -55,8 +55,129 @@ export class OrderCreatedListener extends Listener<OrderCreatedEventI> {
 
 **KAO STO VIDIS MI NISMO NISTA URDILI SA `expiresAt`**
 
-KASNIJE CEMO I TO UPOTREBITI, MEDJUTIM JA SADA ZELIM DA NAPRAVIM MANUAL TEST
+KASNIJE CEMO I TO UPOTREBITI
 
-PRE YOGA NARAVNO DA POKRENEM SKAFFOLD, KAKO BI SE SVE PROMENE APPLY-OVALE NE CLUSTER
+MEDJUTIM JA SADA ZELIM DA INSTATICIZIRAM LISTENER-A, I DA GA PRIMENIM `listen` NA NJEMU
+
+- `code expiration/src/events/listeners/order-created-listener.ts`
+
+```ts
+import { natsWrapper } from "./events/nats-wrapper";
+// UVESCU LISTENER
+import { OrderCreatedListener } from "./events/listeners/order-created-listener";
+
+const start = async () => {
+  if (!process.env.NATS_CLUSTER_ID) {
+    throw new Error("NATS_CLUSTER_ID env variable is undefined");
+  }
+  if (!process.env.NATS_CLIENT_ID) {
+    throw new Error("NATS_CLIENT_ID env variable is undefined");
+  }
+  if (!process.env.NATS_URL) {
+    throw new Error("NATS_URL env variable is undefined");
+  }
+
+  try {
+    await natsWrapper.connect(
+      process.env.NATS_CLUSTER_ID as string,
+      process.env.NATS_CLIENT_ID as string,
+      {
+        url: process.env.NATS_URL,
+      }
+    );
+
+    natsWrapper.client.on("close", () => {
+      console.log("Connection to NATS Streaming server closed");
+      process.exit();
+    });
+
+    const sigTerm_sigInt_callback = () => {
+      natsWrapper.client.close();
+    };
+    process.on("SIGINT", sigTerm_sigInt_callback);
+    process.on("SIGTERM", sigTerm_sigInt_callback);
+
+    // MOGU OVDE DA PODESIM LISTENING ---------------------
+    new OrderCreatedListener(natsWrapper.client).listen();
+    // ----------------------------------------------------
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+start();
+```
+
+A ZATIM ZELIM DA NAPRAVIM MANUAL TEST
+
+PRE TOGA NARAVNO DA POKRENEM SKAFFOLD, KAKO BI SE SVE PROMENE APPLY-OVALE NE CLUSTER
 
 - `skaffold dev`
+
+## SADA MOZEMO DA POKRENEMO INSOMNIU I DA NAPRAIMO JEDAN ORDER
+
+ZELIMO DA VIDIMO DA LI CE ONAJ ENQUEUED JOB, STICI EVENTUALLY DO PIECE OF CODE-A, KOJI PROCESS-UJE, POMENUTI JOB (A MI SMO U TOM PIECE-U OF CODE-A KOJI PROCESS-UJE JOB, USTVARI DEFINISALI LOGGING, TAKO DA CEMO SE UVERITI DA SVE FUNKCIONISE AKO SE U SKAFFOLLD TERMINLU DESI TAJ LOGGING)
+
+POSTO SMO RESTARTOVALI CLUSTER, POKRETANJEM SKAFFOLD-A, MI NEMAMO NI USERA NI TICKET, PA MOZEMO PRVO DA KREIRAMO USER-A
+
+`"POST"` `https://microticket.com/api/users/signup` 
+
+BODY:
+
+```json
+{"email": "stavros@mail.com",
+	"password": "ChillyIsGreat26"
+}
+```
+
+PA DA KREIRAMO TICKET
+
+`"POST"` `https://microticket.com/api/tickets/`
+
+BODY:
+
+```json
+{
+	"title": "Mastodon",
+	"price": 6999
+}
+```
+
+DATA:
+
+```json
+{
+  "title": "Mastodon",
+  "price": 6999,
+  "userId": "609958c18b60a4002370f5ec",
+  "version": 0,
+  "id": "609959289061df0018a07ba7"
+}
+```
+
+**I SADA JE MOMENT OF TRUTH, JER CEMO PRAVITI ORDER ZA GORNJI TICKET**
+
+`"POST"` `https://microticket.com/api/orders/`
+
+BODY:
+
+```json
+{
+	"ticketId": "609959289061df0018a07ba7"
+}
+```
+
+**I ZAISTA OVO JE USPELO, JER U SKAFFOLD TERMINALU SI MOGAO VIDETI SLEDECE LOGS**
+
+```zsh
+[orders] 
+[orders]             Event Published
+[orders]             Channel: order:created
+[orders]           
+[expiration] Mesage received:
+[expiration]           subject: order:created
+[expiration]           queueGroup: expiration-microservice
+[expiration]                  
+[expiration] I want to publish event to 'expiration:complete' channel. Event data --> orderId 609959af3272420018444b86
+```
+
