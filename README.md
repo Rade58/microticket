@@ -61,4 +61,46 @@ DAKLE ZELIM DA OVO TESTIRAM U INSOMNII
 
 SADA CEMO DA KREIRAMO ORDER ZA ODREDJENIM TICKET (NECU TI POKAZIVATI, KAKO SE KREIRA TICKET I OSTALI, JER POKAZAO SAM TI TO MNOGO PUTA, A NAJSVEZIJE JE STO SA TI TO POKAZAO U PREDHODNOM BRANCH-U, TAKO DA ZNAS)
 
-`"POST"` ``
+`"POST"` `https://microticket.com/api/orders/`
+
+BODY:
+
+```json
+{
+	"ticketId": "609970d2c52d2700185f48de"
+}
+```
+
+USPESN OSAM NAPRAVIO ORDER, EVO JE ORDER DATA
+
+```json
+{
+  "status": "created",
+  "ticket": "609970d2c52d2700185f48de",
+  "userId": "609958c18b60a4002370f5ec",
+  "expiresAt": "2021-05-10T17:59:07.239Z",
+  "version": 0,
+  "id": "609970e73ff22700193c3066"
+}
+```
+
+**SADA STO JE NAJVAZNIJE JESTE DA ODMAH POCNES DA POSMATRAS SKAFFOLD TERMINAL**
+
+PRVO STO SAM UOCIO JE OVO
+
+```zsh
+[orders] 
+[orders]             Event Published
+[orders]             Channel: order:created
+[orders]  
+```
+
+**E SADA NAKON 10 SEKUNDI POJAVILO SE I OVO**
+
+```zsh
+[expiration] I want to publish event to 'expiration:complete' channel. Event data --> orderId 609970e73ff22700193c3066
+```
+
+STO ZNACI DA JE NAKON 10 SEKUNDI JOB STIGAO DO PIECE- OF CODE, KOJI JE DOBIO JOB IZ REDISA, I TAJ PIECE OF CODE JE PROCESS-OVAO JOB
+
+A JASAM UPRAVO U TOM PIECE OF CODE-U ZADAO DA SE STAMAPA, ONO STO SE GORE STAMPALO
