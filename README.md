@@ -65,3 +65,79 @@ expirationQueue.process(async (job) => {
 });
 
 ```
+
+# MOZEMO DA NAPRAVIMO JEDAN MANUAL TEST
+
+KREIRAMO TICKET
+
+`"POST"` `https://microticket.com/api/tickets/`
+
+BODY:
+
+```json
+{
+	"title": "Mastodon",
+	"price": 69966
+}
+```
+
+DATA:
+
+```json
+{
+  "title": "Mastodon",
+  "price": 69966,
+  "userId": "609958c18b60a4002370f5ec",
+  "version": 0,
+  "id": "60999a4dc5d00000199098cd"
+}
+```
+
+**SADA CU DA ODRADIM NAJBITNIJE, A TO JE DA KREIRAM ORDER**
+
+`"POST"` `https://microticket.com/api/orders/`
+
+BODY:
+
+```json
+{
+	"ticketId": "60999a4dc5d00000199098cd"
+}
+```
+
+DATA:
+
+```json
+{
+  "status": "created",
+  "ticket": "60999a4dc5d00000199098cd",
+  "userId": "609958c18b60a4002370f5ec",
+  "expiresAt": "2021-05-10T20:41:38.201Z",
+  "version": 0,
+  "id": "60999a6ef52c83001803a4a7"
+}
+```
+
+**SADA CES IMATI OVAKAV OUTPUT U TERMINALU SKAFFOLD-A** (IZDVAJAM ST JE NAJVAZNIJE)
+
+```zsh
+[orders] 
+[orders]             Event Published
+[orders]             Channel: order:created
+[orders]           
+[expiration] Mesage received:
+[expiration]           subject: order:created
+[expiration]           queueGroup: expiration-microservice
+[expiration]
+```
+
+ONO STO BI TREBALO DA SE DESI JESTE DA SE NAKON 20 SEKUNDI PUBLISH-UJE EVENT `"expiration:complete"` (ZASTO POSLE 20 SEKUNDI PROVERI U PROSLOM BRANCH-U JER SAM O TOME PISAO)
+
+```zsh
+[expiration] 
+[expiration]             Event Published
+[expiration]             Channel: expiration:complete
+[expiration]           
+```
+
+**KAO STO VIDIS EVENT SE PUBLISH-OVAO NAKON 2O SEKUNDI, JER JE TOLIKO BIO DELAY PODESEN KADA JE expiration QUEUE QUEUE-OVAO JOB DO REDIS-A (A T OSAM TI VEC OBJASNIO U PROSLIM BRANCH-EVIMA)**
