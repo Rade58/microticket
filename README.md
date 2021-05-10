@@ -46,6 +46,7 @@ export class OrderCreatedListener extends Listener<OrderCreatedEventI> {
         // GORNJI JOB OBJECT, DO REDIS SERVER-A
         // MEDJUTIM, HAJDE DA ZADAMO SAMO 10 SEKUNDI U CILJU TESTIRANJA
         delay: 10 * 1000,
+        // DALI ARBITRARY DELAY OD 10 SEKUNDI
       }
     );
 
@@ -92,7 +93,11 @@ PRVO STO SAM UOCIO JE OVO
 [orders] 
 [orders]             Event Published
 [orders]             Channel: order:created
-[orders]  
+[orders]
+[expiration] Mesage received:
+[expiration]           subject: order:created
+[expiration]           queueGroup: expiration-microservice
+[expiration]    
 ```
 
 **E SADA NAKON 10 SEKUNDI POJAVILO SE I OVO**
