@@ -266,3 +266,9 @@ it("throws error, if order doesn't exist; ack was never called", async () => {
 });
 
 ```
+
+- `cd payments`
+
+- `yarn test` p `Enter` cancelled `Enter`
+
+TESTOVI SU PROSLI
