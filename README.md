@@ -202,7 +202,8 @@ const setup = async (order?: OrderDocumentI) => {
 
   const parsedData: OrderCancelledEventI["data"] = {
     id: order ? order.id : new ObjectId().toHexString(),
-    version: 1,
+    // version: 1, BITNO JE DA BUDE JEDAN, POSTO PLANIRAM
+    // DAU DATBASE-U IMAM ORDER KOJI CE IMATI version: 0
     ticket: {
       id: new ObjectId().toHexString(),
     },
