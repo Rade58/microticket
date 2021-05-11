@@ -27,9 +27,9 @@ const createTicketAndOrder = async () => {
   return { ticket, order };
 };
 
-const setup = async (ticket: TicketDocumentI, order: OrderDocumentI) => {
+const setup = async (ticket?: TicketDocumentI, order?: OrderDocumentI) => {
   const parsedData: ExpirationCompleteEventI["data"] = {
-    orderId: order.id,
+    orderId: order ? order.id : new ObjectId().toHexString(),
   };
 
   const listener = new ExpirationCompleteListener(natsWrapper.client);
@@ -56,7 +56,7 @@ it("successfully processes an 'expiration:complete' event; ack was called", asyn
 
   const sameOrder = await Order.findById(order.id);
 
-  console.log({ SameOrder });
+  console.log({ sameOrder });
 
   if (sameOrder) {
     expect(sameOrder.status).toEqual(OSE.cancelled);
@@ -65,6 +65,10 @@ it("successfully processes an 'expiration:complete' event; ack was called", asyn
   // ack BI TREBAL ODA BUDE POZVAN
 
   expect(msg.ack).toHaveBeenCalled();
+});
 
-  expect();
+// SADA CEMO DA NAPRAVIOMO ASSERTION ZA
+// ONDA KADA SE NE MOZE PRONACI ORDER
+it("throws error if order not found", async () => {
+  //
 });
