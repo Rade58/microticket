@@ -69,6 +69,18 @@ it("successfully processes an 'expiration:complete' event; ack was called", asyn
 
 // SADA CEMO DA NAPRAVIOMO ASSERTION ZA
 // ONDA KADA SE NE MOZE PRONACI ORDER
-it("throws error if order not found", async () => {
+it("throws error if order not found, ack is not called at all", async () => {
   //
+
+  const { listener, parsedData, msg } = await setup();
+
+  try {
+    await listener.onMessage(parsedData, msg);
+  } catch (err) {
+    console.error(err);
+
+    expect(err).toBeInstanceOf(Error);
+  }
+
+  expect(msg.ack).not.toHaveBeenCalled();
 });
