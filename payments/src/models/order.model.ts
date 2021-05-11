@@ -59,6 +59,11 @@ export interface OrderDocumentI extends Document, OrderFields {
  * @description interface for additional things on the model (MOSTLY METHODS TO BE USED ON THE MODEL)
  */
 interface OrderModelI extends Model<OrderDocumentI> {
+  /**
+   *
+   * @param event just "id" and "version"
+   * @description finds order by id and decremented version
+   */
   findOneByEvent(event: {
     id: string;
     version: number;
