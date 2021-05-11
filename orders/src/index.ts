@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import { natsWrapper } from "./events/nats-wrapper";
 import { TicketCreatedListener } from "./events/listeners/ticket-created-listener";
 import { TicketUpdatedListener } from "./events/listeners/ticket-updated-listener";
+// UVOZIMO LISTENER-A
+import { ExpirationCompleteListener } from "./events/listeners/expiration-complete-listener";
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
@@ -31,7 +33,6 @@ const start = async () => {
         url: process.env.NATS_URL,
       }
     );
-    // --------------------------------------
 
     const sigTerm_sigInt_callback = () => {
       natsWrapper.client.close();
@@ -46,6 +47,9 @@ const start = async () => {
 
     new TicketCreatedListener(natsWrapper.client).listen();
     new TicketUpdatedListener(natsWrapper.client).listen();
+    // EVO LISTENUJEM
+    new ExpirationCompleteListener(natsWrapper.client).listen();
+    //
 
     await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
