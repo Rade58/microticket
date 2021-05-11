@@ -69,21 +69,23 @@ it("successfully processes an 'expiration:complete' event; 'order:cancelled' eve
 
     expect(natsWrapper.client.publish).toHaveBeenCalled();
 
-    // ZELI MDA NAPRAVIM ASSERTIO NZA ARGUMENTE SA KOJIAM JE CALLED
+    // ZELIM DA NAPRAVIM ASSERTION ZA ARGUMENTE SA KOJIAM JE CALLED
     // MOCK, ODNONO       natsClient.publish
 
-    const publishArguments = JSON.parse(
+    // ODNOSNO ZA DRUGI ARGUMENT, POSTO JE PRVI ARGUMENT
+    // publish-A, USTVARI ONAJ channelName
+    const publishDataArguments = JSON.parse(
       (natsWrapper.client.publish as jest.Mock).mock.calls[0][1]
     );
 
-    console.log({ publishArguments });
+    console.log({ publishDataArguments });
 
-    expect(publishArguments.id).toEqual(sameOrder.id);
-    expect(publishArguments.version).toEqual(sameOrder.version);
+    expect(publishDataArguments.id).toEqual(sameOrder.id);
+    expect(publishDataArguments.version).toEqual(sameOrder.version);
 
     await sameOrder.populate("ticket").execPopulate();
 
-    expect(publishArguments.ticket.id).toEqual(sameOrder.ticket.id);
+    expect(publishDataArguments.ticket.id).toEqual(sameOrder.ticket.id);
   }
   //
   // ack BI TREBAL ODA BUDE POZVAN
