@@ -39,7 +39,11 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
 
     await order.save();
 
+    console.log({ order });
+
     await order.populate("ticket").execPopulate();
+
+    console.log({ order });
 
     await new OrderCancelledPublisher(this.stanClient).publish({
       id: order.id,

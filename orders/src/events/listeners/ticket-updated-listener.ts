@@ -28,6 +28,13 @@ export class TicketUpdatedListener extends Listener<TicketUpdatedEventI> {
     // const ticket = await Ticket.findOne({ _id: id, version: version - 1 });
     // PISEMO OVO
 
+    console.log({ parsedData });
+    console.log("-----------------------------------");
+
+    const tickets = await Ticket.find({});
+
+    console.log({ tickets });
+
     const ticket = await Ticket.findOneByEvent(parsedData);
 
     if (!ticket) {

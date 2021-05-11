@@ -37,6 +37,8 @@ export class OrderCancelledListener extends Listener<OrderCancelledEventI> {
 
     await ticket.save();
 
+    console.log({ ticket });
+
     // PUBLISH-UJEMO EVENT -------
     await new TicketUpdatedPublisher(this.stanClient).publish({
       id: ticket.id,

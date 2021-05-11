@@ -323,3 +323,107 @@ const start = async () => {
 start();
 
 ```
+
+# POKRENI SKAFFOLD AKO TI VEC NIJE BIO UPALJEN
+
+- `skaffold dev`
+
+# MOZEMO OVO TESTIRATI I U INSOMNII
+
+POTREBNO JE DA IMAMO AUTHENTICATED USERA, ODNOSNO COOKIE (NECU TI TO POKAZIVATI JER SAM VEC MNOGO PUTA PRVIO SIGNUP I SLICNO)
+
+POTREBNO JE KREIRATI NOVI TICKET
+
+`"POST"` `https://microticket.com/api/tickets/`
+
+BODY:
+
+```json
+{
+	"title": "Mastodon",
+	"price": 69966
+}
+```
+
+RECEIVED DATA:
+
+```json
+{
+  "title": "Mastodon",
+  "price": 69966,
+  "userId": "609958c18b60a4002370f5ec",
+  "version": 0,
+  "id": "609a793e2a54fa0023df140c"
+}
+```
+
+KAO STO VIDIS TICKET NEMA NA SEBI `orderId`, I NE TREBA DA GA IMA KADA JE JUST CREATED 
+
+**ONDA MOZEMO DA NAPRAVIMO ORDER ZA POMENUTIM TICKETOM**
+
+`"POST"` `https://microticket.com/api/orders/`
+
+BODY:
+
+```json
+{
+	"ticketId": "609a793e2a54fa0023df140c"
+}
+```
+
+RECEIVED DATA:
+
+```json
+{
+  "status": "created",
+  "ticket": "609a793e2a54fa0023df140c",
+  "userId": "609958c18b60a4002370f5ec",
+  "expiresAt": "2021-05-11T12:35:28.127Z",
+  "version": 0,
+  "id": "609a79fc41584b0018573521"
+}
+```
+
+**POSTO SMO U VARIJABLOJ PODESILI DA JE EXPIRATION 20 SEKUNDI ([OVDE](orders/src/routes/new.ts)), CEKACES UPRVO TOLIKO, DOK NE VIDIS LOG U SKAFFOLD-U**, A U MEDJUVREMENU, DOK JOS NIJE PROLO TIH 20 SEKUNDI MOZES DA UZES TICKET; I ON BI TREBALO DA IMA `orderId`
+
+`"GET"` `https://microticket.com/api/tickets/609a793e2a54fa0023df140c`
+
+RECEIVED DATA:
+
+```json
+{
+  "title": "Mastodon",
+  "price": 69966,
+  "userId": "609958c18b60a4002370f5ec",
+  "version": 2,
+  "orderId": "609a79fc41584b0018573521",
+  "id": "609a793e2a54fa0023df140c"
+}
+```
+
+KAO STO SAM REKAO TICKET IMA orderId
+
+**SADA ,KADA JE PROSLO 20 SEKUNDI, KAD GETT-UJEMO ISTI TICKET, TREBALO BI DA `orderId` BUDE `null`** 
+
+`"GET"` `https://microticket.com/api/tickets/609a793e2a54fa0023df140c`
+
+RECEIVED DATA:
+
+```json
+{
+  "title": "Mastodon",
+  "price": 69966,
+  "userId": "609958c18b60a4002370f5ec",
+  "version": 2,
+  "orderId": null,
+  "id": "609a793e2a54fa0023df140c"
+}
+```
+
+KAO STO VIDIS
+
+# MEDJUTIM NA KRAJU KADA SE POSALJE EVENT `ticket:updated` IZ tickets-A, I KADA GA DOCEKA `TicketUpdatedListener`, IMACES ERROR, JER REPLICATED DATA CE IMATI WRONG VERSION
+
+KAKO SE TO DESILO?
+
+MORAM TO ISPITATI U SLEDECEM BRANCH-U
