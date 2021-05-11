@@ -1,79 +1,22 @@
-# DON'T CANCEL COMPLETED ORDERS
+# `payments` MICROSERVICE
 
-OPET MORAM POSMATRATI SCENARIO:
+DA SE PODSETIMO TOGA, KOJE CE EVENT-OVE OVAJ MICROSERVICE RECEIVE-OVATI, A KOJE CE DA EMMIT-UJE
 
-**DAKLE NO MATTER WHAT, "`expiration:complete`" EVENT CE SE ISS-EOVATI, KADA PRODJE DELAY, I TO CE SE DAKLE DOGODITI UVEK**
+1. ON CE PRVO A RECEIVE-UJE EVENT IZ KANALA `"order:created"`
 
-IAKO MI DO SADA NISM NISTA RADILI ZA PAYMENT, ALI KADA BI IMAO TKAV MICROSERVICE, I KADA BI KORISNIK NAPRAVIO PAYMENT ,ODNOSNO KADA COMPLETE-UJE PAYMENT, ODNOSNO KADA SE STATUS ORDERA PROMENI NA  `"complete"`; **I DALJE MOZE PRISTICI `"expiration:complete"` EVENT, KOJ ICE STATUS PROMENITI NA `cancelled`**
+RECEIVE-OVACE GA JUST TU TELL IT, "HEY, HERE IS SOME ORDER, EXPECT TO GET A PAYMENT FOR IT"
 
-TO MI MOZEMO DA PROMENIMO
+STO ZNACI DA CE REPLICATED DATA U OVOM MICROSERVICEU BITI `Orders` COLLECTION
 
-- `code orders/src/events/listeners/expiration-complete-listener.ts`
+**REAL GOAL OF COMUNICATING OVER `"order:created"` EVENT, JESTE DA SE POSTARAS DA `payments` MICROSERVICE ZNA KOLIKO PARA CE TREBATI DA RECEIVE-UJE**
 
-```ts
-import {
-  Listener,
-  ExpirationCompleteEventI,
-  ChannelNamesEnum as CNE,
-  OrderStatusEnum as OSE,
-} from "@ramicktick/common";
-import { Stan, Message } from "node-nats-streaming";
-import { orders_microservice } from "../queue_groups";
-import { Order } from "../../models/order.model";
-import { OrderCancelledPublisher } from "../publishers/order-cancelled-publisher";
+2. SLUSACE I NA `"order:cancelled"` KANAL, KOJI EMMIT-UJE orders
 
-export class ExpirationCompleteListener extends Listener<ExpirationCompleteEventI> {
-  channelName: CNE.expiration_complete;
-  queueGroupName: string;
+TO CE RECI payments-U, DA JE VREM DA SE PRESTANE SA SLUSANJEM NA EVENTS, AKO NEKO POKUSA DA SUBMIT-UJE PAYMENT, ODNOSNO DA REJECT-UJE PAYMENT
 
-  constructor(stanClient: Stan) {
-    super(stanClient);
+3. `payments` MICROSERVICE CE DA PUBLISH-UJE TO `"charge:created"` KANAL
 
-    this.channelName = CNE.expiration_complete;
-    this.queueGroupName = orders_microservice;
+A TO REPREZENTUJE SOMEONE PAYING SOME MONEY FOR AN ORDER
 
-    Object.setPrototypeOf(this, ExpirationCompleteListener.prototype);
-  }
+OVAJ EVENT CE NA KRAJ UDA ODE DO `orders` MICROSERVICE-A, I RECI CE DA JE NEKO PLATIO FOR AN ORDER, I DA TREBA DA MARKIRA ORDER AS PAYYED OR COMPLETE
 
-  async onMessage(parsedData: ExpirationCompleteEventI["data"], msg: Message) {
-    const { orderId } = parsedData;
-
-    const order = await Order.findById(orderId);
-
-    if (!order) {
-      throw new Error("order not found");
-    }
-
-    // AKO JE STATUS COMPLETE, NECEMO PODESAVATI CANCEL
-
-    if (order.status === OSE.complete) {
-      // ALI NECEMO NI THROW-OVTI ERROR
-      // NEGO CEMO RETURN-OVATI EARLY
-      // A MORAMO I ACKNOWLEDGOVATI
-
-      return msg.ack();
-      // I TO JE SVE
-    }
-
-    order.set("status", OSE.cancelled);
-
-    await order.save();
-
-    const sameOrder = await Order.findById(order.id).populate("ticket").exec();
-
-    if (sameOrder) {
-      await new OrderCancelledPublisher(this.stanClient).publish({
-        id: sameOrder.id,
-        version: sameOrder.version,
-        ticket: {
-          id: sameOrder.ticket.id,
-        },
-      });
-    }
-
-    msg.ack();
-  }
-}
-```
-
-- `skaffold dev`
