@@ -59,7 +59,6 @@ import {
   ChannelNamesEnum as CNE,
   // TREBA NAM ENUM ZA STATUS
   OrderStatusEnum as OSE,
-  NotFoundError,
   //
 } from "@ramicktick/common";
 import { Stan, Message } from "node-nats-streaming";
@@ -91,7 +90,7 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
     const order = await Order.findById(orderId);
 
     if (!order) {
-      throw new NotFoundError();
+      throw new Error("order not found");
     }
 
     order.set("status", OSE.cancelled);
@@ -100,6 +99,7 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
 
     // MORAM POPULATE-OVATI JER MI TREBA TICKET ID
     await order.populate("ticket").execPopulate();
+    // POPULATE SI MOGAO DEFINISATI GORE I PRI SAMOM QUERYING-U
 
     await new OrderCancelledPublisher(this.stanClient).publish({
       id: order.id,

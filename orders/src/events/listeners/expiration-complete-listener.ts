@@ -4,7 +4,6 @@ import {
   ChannelNamesEnum as CNE,
   // TREBA NAM ENUM ZA STATUS
   OrderStatusEnum as OSE,
-  NotFoundError,
   //
 } from "@ramicktick/common";
 import { Stan, Message } from "node-nats-streaming";
@@ -33,7 +32,7 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
     const order = await Order.findById(orderId);
 
     if (!order) {
-      throw new NotFoundError();
+      throw new Error("order not found");
     }
 
     order.set("status", OSE.cancelled);
