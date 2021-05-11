@@ -164,4 +164,214 @@ A AKO KORISTIS MINICUBE RADIO BI OVO
 
 - `docker build -t radebajic/payments .`
 
-OPET TI NA POMEINJEM DA NE RADIS OVO AKO KORISTIS GOOGLE CLOUD
+- `docker push radebajic/payments`
+
+OPET TI NA POMEINJEM DA NE RADIS OVO, AKO KORISTIS GOOGLE CLOUD, A JA UPRAVO IMAM CLUSTER NA GOOGLE CLOUD-U
+
+# STO SE TICE K8S SETUPA- KRENUCU OD SKAFFOLD CONFIG-A
+
+- `code skaffold.yaml`
+
+```yaml
+apiVersion: skaffold/v2beta12
+kind: Config
+deploy:
+  kubectl:
+    manifests:
+      - ./infra/k8s/*
+build:
+  googleCloudBuild:
+    projectId: microticket
+  artifacts:
+    - image: eu.gcr.io/microticket/auth
+      context: auth
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.{ts,js}'
+            dest: .
+    - image: eu.gcr.io/microticket/client
+      context: client
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '**/*.{tsx,ts,js}'
+            dest: .
+    - image: eu.gcr.io/microticket/tickets
+      context: tickets
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.{ts,js}'
+            dest: .
+    - image: eu.gcr.io/microticket/orders
+      context: orders
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.{ts,js}'
+            dest: .
+    - image: eu.gcr.io/microticket/expiration
+      context: expiration
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.{ts,js}'
+            dest: .
+    # EVO OVO SAM DODAO
+    - image: eu.gcr.io/microticket/payments
+      context: payments
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.{ts,js}'
+            dest: .
+```
+
+# SADA CU DA KREIRAM DEPLOYMENT I CLUSTER IP CONFIGS
+
+- `touch infra/k8s/payments-depl.yaml`
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # OVO JE VAZNO, VIDECES I ZASTO
+  name: payments-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payments
+  template:
+    metadata:
+      labels:
+        app: payments
+    spec:
+      containers:
+        - name: payments
+          image: eu.gcr.io/microticket/payments
+          env:
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: 'http://nats-srv:4222'
+            - name: NATS_CLUSTER_ID
+              value: microticket
+            - name: MONGO_URI
+              value: 'mongodb://payments-mongo-srv:27017/payments'
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payments-srv
+spec:
+  selector:
+    app: payments
+  type: ClusterIP
+  ports:
+    - name: payments
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+
+```
+
+# SADA CU DA DODAM I DEPLOYMENT CONFIG ZA MONGODB, KOJI CE BITI TIED TO `payments` MICROSERVICE
+
+- `touch infra/k8s/payments-mongo-depl.yaml`
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payments-mongo-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payments-mongo
+  template:
+    metadata:
+      labels:
+        app: payments-mongo
+    spec:
+      containers:
+      - name: payments-mongo
+        image: mongo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payments-mongo-srv
+spec:
+  selector:
+    app: payments-mongo
+  type: ClusterIP
+  ports:
+    - name: db
+      protocol: TCP
+      port: 27017
+      targetPort: 27017
+```
+
+# SADA MOZEMO DA DODAMO ROUTE ZA payments INSIDE INGRESS NGINX CONFIG-A
+
+- `code infra/k8s/ingress-srv.yaml`
+
+```yaml
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-srv
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  rules:
+    - host: microticket.com
+      http:
+        paths:
+          - path: /api/users/?(.*)
+            pathType: Exact
+            backend:
+              serviceName: auth-srv
+              servicePort: 3000
+          - path: /api/tickets/?(.*)
+            pathType: Exact
+            backend:
+              serviceName: tickets-srv
+              servicePort: 3000
+          - path: /api/orders/?(.*)
+            pathType: Exact
+            backend:
+              serviceName: orders-srv
+              servicePort: 3000
+          # DODAO SAM OVO I TO NA OVOM MESTU
+          # I SAM ZNAS ZASTO NE SME NA ZADNJEM MESTU (NECU DA SE PONAVLJAM 100 PUTA)
+          #
+          - path: /api/payments/?(.*)
+            pathType: Exact
+            backend:
+              serviceName: payments-srv
+              servicePort: 3000
+          #
+          - path: /?(.*)
+            pathType: Exact
+            backend:
+              serviceName: client-srv
+              servicePort: 3000
+```

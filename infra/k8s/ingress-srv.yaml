@@ -20,13 +20,18 @@ spec:
             backend:
               serviceName: tickets-srv
               servicePort: 3000
-          # DODAO SAM OVO I TO NA OVOM MESTU
-          # I SAM ZNAS ZASTO NE SME NA ZADNJEM MESTU (NECU DA SE PONAVLJAM 100 PUTA)
-          #
           - path: /api/orders/?(.*)
             pathType: Exact
             backend:
               serviceName: orders-srv
+              servicePort: 3000
+          # DODAO SAM OVO I TO NA OVOM MESTU
+          # I SAM ZNAS ZASTO NE SME NA ZADNJEM MESTU (NECU DA SE PONAVLJAM 100 PUTA)
+          #
+          - path: /api/payments/?(.*)
+            pathType: Exact
+            backend:
+              serviceName: payments-srv
               servicePort: 3000
           #
           - path: /?(.*)
