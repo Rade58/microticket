@@ -1,23 +1,10 @@
-# REPLICATED DATA IN `payments` MICROSERVICE
+# CREATING `Order` MODEL INSIDE `payments` MICROSERVICE
 
-JASNO JE DA CE TO BITI `Orders` KOLEKCIJA
+- `mkdir payments/src/models`
 
-payments CE LISTENOVATI ZA `"order:created"` I ZA `"order:cancelled"`
+- `touch payments/src/models/order.model.ts`
 
-A PUBLISH-OVACE `"charge:created"`
+```ts
 
-**PRIMARY COLLECTION U DATBASE-U CE BITI `Charges`**
+```
 
-**SECONDARY COLLECTION U DATBASE-U CE BITI `Orders`**
-
-# MI MORAMO RAZMISLJATI O TOME KOJE FIELD-OVE Orders-A MI ZELIMO DA REPLICIRAMO
-
-`id`
-
-`status`
-
-`version`
-
-`userId`
-
-`price`
