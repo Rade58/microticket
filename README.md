@@ -119,7 +119,7 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
 
 - `touch orders/src/events/listeners/__test__/expiration-complete-listener.test.ts`
 
-SAM ODA TI NAPOMENEM DA CU TESTIRATI I SA KOJIM JE ARGUMENTIMA `natsWrapper.client.publish` MOCK, BIO POZVAN (ZA SLUCAJ PUBLISHINGA `"order:cancelled"` EVENT-A IZ onMessage METODE LISTENER-A, KOJEG  OVDE PRIMARNO TESTIRAMO)
+SAMO DA TI NAPOMENEM DA CU TESTIRATI I SA KOJIM JE ARGUMENTIMA `natsWrapper.client.publish` MOCK, BIO POZVAN (ZA SLUCAJ PUBLISHINGA `"order:cancelled"` EVENT-A IZ onMessage METODE LISTENER-A, KOJEG  OVDE PRIMARNO TESTIRAMO)
 
 ```ts
 import {
