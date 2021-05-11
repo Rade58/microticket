@@ -375,3 +375,7 @@ spec:
               serviceName: client-srv
               servicePort: 3000
 ```
+
+# SADA MOZEMO DA POKRENEMO SKAFFOLD
+
+- `skaffold dev`
