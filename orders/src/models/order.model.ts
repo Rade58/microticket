@@ -63,7 +63,7 @@ interface OrderFields {
 /**
  * @description interface for things, among others, I can search on obtained document
  */
-interface OrderDocumentI extends Document, OrderFields {
+export interface OrderDocumentI extends Document, OrderFields {
   //
 }
 

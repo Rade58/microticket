@@ -115,5 +115,11 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
 
 ```
 
+# SADA ZELIM DA NAPISEM TESTS ZA GORNJEG `ExpirationCompleteListener`-A, ODNSNO ZA NJEGOVU `onMessage`  METODU
 
+- `touch orders/src/events/listeners/__test__/expiration-complete-listener.test.ts`
+
+```ts
+
+```
 
