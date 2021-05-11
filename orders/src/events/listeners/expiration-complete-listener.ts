@@ -31,15 +31,24 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
       throw new Error("order not found");
     }
 
+    // AKO JE STATUS COMPLETE, NECEMO PODESAVATI CANCEL
+
+    if (order.status === OSE.complete) {
+      // ALI NECEMO NI THROW-OVTI ERROR
+      // NEGO CEMO RETURN-OVATI EARLY
+      // A MORAMO I ACKNOWLEDGOVATI
+
+      return msg.ack();
+      // I TO JE SVE
+    }
+
     order.set("status", OSE.cancelled);
 
     await order.save();
 
-    // PRAVIMO REQUERY
     const sameOrder = await Order.findById(order.id).populate("ticket").exec();
 
     if (sameOrder) {
-      // KORISTIMO REQUERIED DATA
       await new OrderCancelledPublisher(this.stanClient).publish({
         id: sameOrder.id,
         version: sameOrder.version,

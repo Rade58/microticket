@@ -1,105 +1,78 @@
-# DEBUGGING `"ticket:updated"` LISTENING IN `orders` MICROSERVICE
+# DON'T CANCEL COMPLETED ORDERS
 
-***
-***
+OPET MORAM POSMATRATI SCENARIO:
 
-digresija:
+**DAKLE NO MATTER WHAT, "`expiration:complete`" EVENT CE SE ISS-EOVATI, KADA PRODJE DELAY, I TO CE SE DAKLE DOGODITI UVEK**
 
-MOZDA CE POMOCI A MOZDA I NECE: **ZABORAVIO SAM DA UPDATE-UJEM COMMON MODULE U SVIM MICROSERVICE-OVIMA**
+IAKO MI DO SADA NISM NISTA RADILI ZA PAYMENT, ALI KADA BI IMAO TKAV MICROSERVICE, I KADA BI KORISNIK NAPRAVIO PAYMENT ,ODNOSNO KADA COMPLETE-UJE PAYMENT, ODNOSNO KADA SE STATUS ORDERA PROMENI NA  `"complete"`; **I DALJE MOZE PRISTICI `"expiration:complete"` EVENT, KOJ ICE STATUS PROMENITI NA `cancelled`**
 
-POKUSAJ OVO DA URADIS U SVIM MICROSERVICE-OVIMA KOJI KORISTE NAS COMMON MODULE
+TO MI MOZEMO DA PROMENIMO
 
-- `yarn add @ramicktick/common --latest`
- 
-**IPAK NIJE POMOGLO ALI JE DOBRO STO SAM OVO URADIO, KAKO BI IMAO LATEST VERZIJU**
-
-***
-***
-
-MOZDAJE JE PROBLEM U POZIVU `.save()`-A
-
-**IPAK NIJE**, JER `await ticket.save()` UPDATE-UJE TICKET I ISTOVREMENO IMAMM UPDATED VREDNOSTI NA ticket-U
-
-NAKON MAL ODEBUGGING-A OTKRIO SAM STA JE PROBLEM
-
-***
-***
-
-# PROBLEM JE U TOME STO NISAM PROVIDE-OVAO `orderId` U PRILIKOM UPDATINGA REPLICATED Ticket-A
-
-- `code orders/src/events/listeners/ticket-updated-listener.ts`
+- `code orders/src/events/listeners/expiration-complete-listener.ts`
 
 ```ts
 import {
   Listener,
+  ExpirationCompleteEventI,
   ChannelNamesEnum as CNE,
-  TicketUpdatedEventI,
+  OrderStatusEnum as OSE,
 } from "@ramicktick/common";
-import { Message, Stan } from "node-nats-streaming";
-import { Ticket } from "../../models/ticket.model";
+import { Stan, Message } from "node-nats-streaming";
 import { orders_microservice } from "../queue_groups";
+import { Order } from "../../models/order.model";
+import { OrderCancelledPublisher } from "../publishers/order-cancelled-publisher";
 
-export class TicketUpdatedListener extends Listener<TicketUpdatedEventI> {
-  channelName: CNE.ticket_updated;
+export class ExpirationCompleteListener extends Listener<ExpirationCompleteEventI> {
+  channelName: CNE.expiration_complete;
   queueGroupName: string;
 
-  constructor(natsClient: Stan) {
-    super(natsClient);
+  constructor(stanClient: Stan) {
+    super(stanClient);
 
-    this.channelName = CNE.ticket_updated;
+    this.channelName = CNE.expiration_complete;
     this.queueGroupName = orders_microservice;
 
-    Object.setPrototypeOf(this, TicketUpdatedListener.prototype);
+    Object.setPrototypeOf(this, ExpirationCompleteListener.prototype);
   }
 
-  async onMessage(parsedData: TicketUpdatedEventI["data"], msg: Message) {
-    // RANIJE NISAM OVDE DESTRUKTURIRAO OVAJ orderId
-    const { price, title, orderId } = parsedData;
+  async onMessage(parsedData: ExpirationCompleteEventI["data"], msg: Message) {
+    const { orderId } = parsedData;
 
-    // I PREMA TO GA NISAM NI UPDATE-OVAO
+    const order = await Order.findById(orderId);
 
-    const ticket = await Ticket.findOneByEvent(parsedData);
-
-    if (!ticket) {
-      throw new Error("ticket not found");
+    if (!order) {
+      throw new Error("order not found");
     }
 
-    // DAKLE RANIJE OVDE NISAM PROSLEDIVAO orderId
-    // I ZBOG TOGA SE REPLICATED TICKET NIJE UPDATE-OVAO
-    // DAKLE DAVAN MU JE UVEK ISTI tittle I price
-    // I ZBOG TOGAA SE UPDATE NIJE DESIO
-    // ODNOSNO version NIJE BIO INCREMENTED
-    ticket.set({
-      title,
-      price,
-      // DAKLE DODAO SAM OVO, I SADA CE BITI SVE U REDU
-      orderId,
-    });
+    // AKO JE STATUS COMPLETE, NECEMO PODESAVATI CANCEL
 
-    await ticket.save();
+    if (order.status === OSE.complete) {
+      // ALI NECEMO NI THROW-OVTI ERROR
+      // NEGO CEMO RETURN-OVATI EARLY
+      // A MORAMO I ACKNOWLEDGOVATI
+
+      return msg.ack();
+      // I TO JE SVE
+    }
+
+    order.set("status", OSE.cancelled);
+
+    await order.save();
+
+    const sameOrder = await Order.findById(order.id).populate("ticket").exec();
+
+    if (sameOrder) {
+      await new OrderCancelledPublisher(this.stanClient).publish({
+        id: sameOrder.id,
+        version: sameOrder.version,
+        ticket: {
+          id: sameOrder.ticket.id,
+        },
+      });
+    }
 
     msg.ack();
   }
 }
-
 ```
 
-# VISE NISTA NE MORAMO DA POPRAVLJAMO
-
-DAKLE SADA BI SVE TREBALO DA FUNKCIONISE
-
-- `skaffold dev`
-
-## SADA MOZEMO MALO MANUELNO DA TESTIRAMO
-
-MOZES DA U INSOMNII NAPRAVIS JEDAN TICKET
-
-MOZES I DA GA UPDATE-UJES
-
-PA DA NAPRAVIS JEDAN ORDER
-
-PA DA SACEKAS NA EXPIRATION
-
-I NE BI TREBALO SADA DA SE POJAVI NI JEDAN ERROR
-
-**DA ZAIST SVE JE BILO U REDU**
