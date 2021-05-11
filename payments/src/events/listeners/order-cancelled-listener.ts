@@ -22,8 +22,6 @@ export class OrderCancelledListener extends Listener<OrderCancelledEventI> {
   }
 
   async onMessage(parsedData: OrderCancelledEventI["data"], msg: Message) {
-    const { id, version } = parsedData;
-
     const order = await Order.findOneByEvent(parsedData);
 
     if (!order) {
