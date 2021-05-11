@@ -103,7 +103,7 @@ it("throws error if order not found; ack is not called at all", async () => {
   try {
     await listener.onMessage(parsedData, msg);
   } catch (err) {
-    console.error(err);
+    console.log(err);
 
     expect(err).toBeInstanceOf(Error);
   }
