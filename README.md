@@ -119,6 +119,8 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
 
 - `touch orders/src/events/listeners/__test__/expiration-complete-listener.test.ts`
 
+SAM ODA TI NAPOMENEM DA CU TESTIRATI I SA KOJIM JE ARGUMENTIMA `natsWrapper.client.publish` MOCK, BIO POZVAN (ZA SLUCAJ PUBLISHINGA `"order:cancelled"` EVENT-A IZ onMessage METODE LISTENER-A, KOJEG  OVDE PRIMARNO TESTIRAMO)
+
 ```ts
 import {
   ExpirationCompleteEventI,
@@ -166,8 +168,10 @@ const setup = async (ticket?: TicketDocumentI, order?: OrderDocumentI) => {
 };
 
 // PRVI ASSERTION
+// SVE CU SPOJITI U JEDAN TET IAKO SAM TREBAO NAPRAVITI
+// MOZDA DVA ILI TRI SPEPARATE TEST-A
 
-it("successfully processes an 'expiration:complete' event; ack was called", async () => {
+it("successfully processes an 'expiration:complete' event; 'order:cancelled' event have been published; ack was called", async () => {
   const { ticket, order } = await createTicketAndOrder();
 
   const { listener, parsedData, msg } = await setup(ticket, order);
@@ -182,16 +186,38 @@ it("successfully processes an 'expiration:complete' event; ack was called", asyn
 
   if (sameOrder) {
     expect(sameOrder.status).toEqual(OSE.cancelled);
-  }
 
-  // ack BI TREBALO JE BIO POZVAN
+    // clientpublish BI TREBALO DA BUDE POZVAN
+    // JER IZ onMessage SE PUBLISH-UJE TO `"order:cancelled"` CHANNNEL
+    // I ZANIMA NAS I SAKOJIM ARGUMENTIMA
+
+    expect(natsWrapper.client.publish).toHaveBeenCalled();
+
+    // ZELI MDA NAPRAVIM ASSERTIO NZA ARGUMENTE SA KOJIAM JE CALLED
+    // MOCK, ODNONO       natsClient.publish
+
+    const publishArguments = JSON.parse(
+      (natsWrapper.client.publish as jest.Mock).mock.calls[0][1]
+    );
+
+    console.log({ publishArguments });
+
+    expect(publishArguments.id).toEqual(sameOrder.id);
+    expect(publishArguments.version).toEqual(sameOrder.version);
+
+    await sameOrder.populate("ticket").execPopulate();
+
+    expect(publishArguments.ticket.id).toEqual(sameOrder.ticket.id);
+  }
+  //
+  // ack BI TREBAL ODA BUDE POZVAN
 
   expect(msg.ack).toHaveBeenCalled();
 });
 
 // SADA CEMO DA NAPRAVIOMO ASSERTION ZA
 // ONDA KADA SE NE MOZE PRONACI ORDER
-it("throws error if order not found, ack is not called at all", async () => {
+it("throws error if order not found; ack is not called at all", async () => {
   //
 
   const { listener, parsedData, msg } = await setup();
@@ -206,6 +232,7 @@ it("throws error if order not found, ack is not called at all", async () => {
 
   expect(msg.ack).not.toHaveBeenCalled();
 });
+
 ```
 
 DA POKRENEM TEST SUITE
