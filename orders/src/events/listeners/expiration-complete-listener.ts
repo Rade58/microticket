@@ -2,15 +2,11 @@ import {
   Listener,
   ExpirationCompleteEventI,
   ChannelNamesEnum as CNE,
-  // TREBA NAM ENUM ZA STATUS
   OrderStatusEnum as OSE,
-  //
 } from "@ramicktick/common";
 import { Stan, Message } from "node-nats-streaming";
 import { orders_microservice } from "../queue_groups";
-// TREBA NAM Order MODEL
 import { Order } from "../../models/order.model";
-// TREBA NAM I PUBLISHER
 import { OrderCancelledPublisher } from "../publishers/order-cancelled-publisher";
 
 export class ExpirationCompleteListener extends Listener<ExpirationCompleteEventI> {
@@ -39,19 +35,19 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
 
     await order.save();
 
-    console.log({ order });
+    // PRAVIMO REQUERY
+    const sameOrder = await Order.findById(order.id).populate("ticket").exec();
 
-    await order.populate("ticket").execPopulate();
-
-    console.log({ order });
-
-    await new OrderCancelledPublisher(this.stanClient).publish({
-      id: order.id,
-      version: order.version,
-      ticket: {
-        id: order.ticket.id,
-      },
-    });
+    if (sameOrder) {
+      // KORISTIMO REQUERIED DATA
+      await new OrderCancelledPublisher(this.stanClient).publish({
+        id: sameOrder.id,
+        version: sameOrder.version,
+        ticket: {
+          id: sameOrder.ticket.id,
+        },
+      });
+    }
 
     msg.ack();
   }

@@ -6,12 +6,7 @@ import {
 import { Stan, Message } from "node-nats-streaming";
 import { tickets_microservice } from "../queue_groups";
 import { Ticket } from "../../models/ticket.model";
-// SADA CU UVESTI I       TicketUpdatedPublisher
 import { TicketUpdatedPublisher } from "../publishers/ticket-updated-publisher";
-// ALI NAM TREBA I NATS CLIENT
-// MEDJUTIM ,NECEMO GA KORISTITI SA natsWrapper-A
-// JER client POSTOJI NA INSTANCI SLEDECE KLASE, KAO protected FIELD
-// JER TAKO SMO DEFINISALI KROZ Listener ABSTRACT CLASS-U
 
 export class OrderCreatedListener extends Listener<OrderCreatedEventI> {
   channelName: CNE.order_created;
@@ -46,27 +41,20 @@ export class OrderCreatedListener extends Listener<OrderCreatedEventI> {
 
     await ticket.save();
 
-    // DAKLE RANIJE, NISI MOGAO UZETI stanClent SA this
-    // A SADA MOZES JER SAM JA DEFINISAO U ABSTRACT Listener-U
-    // DA JE TAJ FIELD protected
-    // ALI KAKO SAM REKAO, TO TAKODJE ZNACI DA INSTACA CUSTOM LISTENERA
-    // NE MOZE KORISTITI POMENUTI FIELD, DOK EXTENDING CLASS MOZE
+    // I OVDE REQUERY-UJEM
+    const sameTicket = await Ticket.findById(ticket.id);
 
-    // ISTO TAKO VAZNO JE PODSETITI SE DA JE GORNJIM ticket.save()
-    // POZIVOM OSIGURANO DA JE version INCRMENTED BY ONE
-
-    // ISTO TAKO NE MORAS DA REFETCH-UJES TICKET IZ DATBASE-A
-    // JER GORNJIM save POZIVOM TI SI OBEZBEDIO PROMENE NA TICKETU
-    // ONE CE BITI PRISUTNE NA ticketu NA KOJEM SI POZVAO save
-
-    await new TicketUpdatedPublisher(this.stanClient).publish({
-      id: ticket.id,
-      price: ticket.price,
-      title: ticket.title,
-      userId: ticket.userId,
-      version: ticket.version,
-      orderId: ticket.orderId,
-    });
+    if (sameTicket) {
+      // I KORITIM DATA SA REQUERIED TICKETA
+      await new TicketUpdatedPublisher(this.stanClient).publish({
+        id: sameTicket.id,
+        price: sameTicket.price,
+        title: sameTicket.title,
+        userId: sameTicket.userId,
+        version: sameTicket.version,
+        orderId: sameTicket.orderId,
+      });
+    }
 
     msg.ack();
   }

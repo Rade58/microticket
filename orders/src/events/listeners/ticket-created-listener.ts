@@ -26,7 +26,7 @@ export class TicketCreatedListener extends Listener<TicketCreatedEventI> {
     const { id, title, price, userId } = parsedData;
 
     await Ticket.create({
-      _id: id, // EVO, OVO JE SADA OK
+      _id: id,
       title,
       price,
       userId,

@@ -483,10 +483,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
-"@ramicktick/common@^1.0.18":
-  version "1.0.18"
-  resolved "https://registry.yarnpkg.com/@ramicktick/common/-/common-1.0.18.tgz#96072d3b57db0a790f938b4f31501e534ab061f9"
-  integrity sha512-4IZl1X/Woycw1zvYeOB6HFlDCL1M6Q9gVWXjOmVZx1mliHZS3INo3/ciLZ4SyT6hq4/QuiTlJf5ANYCA0I+X+Q==
+"@ramicktick/common@^1.0.20":
+  version "1.0.20"
+  resolved "https://registry.yarnpkg.com/@ramicktick/common/-/common-1.0.20.tgz#99b2583224c152ca5cf53cb0bf4e9b0a331d4e48"
+  integrity sha512-Gl84NS9T2ast5NUBpGxCKTSuN5tlgixzb7tA8JYVKSxGMcCMwoOAeLGCvmAjUScvllL+8qR3QrKnT5iOz/SE+A==
   dependencies:
     "@types/cookie-session" "^2.0.42"
     "@types/express" "^4.17.11"

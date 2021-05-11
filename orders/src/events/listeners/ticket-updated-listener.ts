@@ -21,19 +21,10 @@ export class TicketUpdatedListener extends Listener<TicketUpdatedEventI> {
   }
 
   async onMessage(parsedData: TicketUpdatedEventI["data"], msg: Message) {
-    // NE TREBAS SVE DA RESTRUKTURIRAS VISE
-    const { /*id,*/ price, title /*, userId, version */ } = parsedData;
+    // RANIJE NISAM OVDE DESTRUKTURIRAO OVAJ orderId
+    const { price, title, orderId } = parsedData;
 
-    // SADA UMESTO OVOGA
-    // const ticket = await Ticket.findOne({ _id: id, version: version - 1 });
-    // PISEMO OVO
-
-    console.log({ parsedData });
-    console.log("-----------------------------------");
-
-    const tickets = await Ticket.find({});
-
-    console.log({ tickets });
+    // I PREMA TO GA NISAM NI UPDATE-OVAO
 
     const ticket = await Ticket.findOneByEvent(parsedData);
 
@@ -41,9 +32,16 @@ export class TicketUpdatedListener extends Listener<TicketUpdatedEventI> {
       throw new Error("ticket not found");
     }
 
+    // DAKLE RANIJE OVDE NISAM PROSLEDIVAO orderId
+    // I ZBOG TOGA SE REPLICATED TICKET NIJE UPDATE-OVAO
+    // DAKLE DAVAN MU JE UVEK ISTI tittle I price
+    // I ZBOG TOGAA SE UPDATE NIJE DESIO
+    // ODNOSNO version NIJE BIO INCREMENTED
     ticket.set({
       title,
       price,
+      // DAKLE DODAO SAM OVO, I SADA CE BITI SVE U REDU
+      orderId,
     });
 
     await ticket.save();

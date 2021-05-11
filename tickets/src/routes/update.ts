@@ -2,9 +2,7 @@ import { Router, Request, Response } from "express";
 import {
   NotAuthorizedError,
   NotFoundError,
-  // MISLIM DA J MOST APPROPRIATE ERROR OVDE, UPRAVO BadRequestError
   BadRequestError,
-  // -----
   validateRequest,
   requireAuth,
 } from "@ramicktick/common";
@@ -51,15 +49,11 @@ router.put(
       throw new NotFoundError();
     }
 
-    // ---- MOZEMO TU USLOVNU IZJAVU DA STAVIMO OVDE ----
-
     if (ticket.orderId) {
       throw new BadRequestError(
         "can not edit the ticket, it is already reserved"
       );
     }
-
-    // ------------------------------------------------------
 
     if (ticket.userId !== userId) {
       throw new NotAuthorizedError();
@@ -74,9 +68,13 @@ router.put(
 
     await ticket.save();
 
+    // UMESTO DA KORISTIM ticket REQUERY-EOVACU GA
+    //
     const sameTicket = await Ticket.findById(ticket.id);
+
     if (sameTicket) {
       await new TicketUpdatedPublisher(natsWrapper.client).publish({
+        // I PUBLISH-UJEM DATA SA REQUERIED TICKETA
         id: sameTicket.id,
         version: sameTicket.version,
         title: sameTicket.title,
@@ -84,7 +82,7 @@ router.put(
         userId: sameTicket.userId,
       });
     }
-    res.status(201).send(ticket);
+    res.status(201).send(sameTicket);
   }
 );
 

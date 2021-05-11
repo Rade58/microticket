@@ -36,19 +36,22 @@ router.patch(
     order.set("status", OSE.cancelled);
 
     await order.save();
-    await order.populate("ticket").execPopulate();
 
-    await new OrderCancelledPublisher(natsWrapper.client).publish({
-      id: order.id,
-      // I OVDE DODAJEM version
-      version: order.version,
-      //
-      ticket: {
-        id: order.ticket.id,
-      },
-    });
+    // REQUERY-UJEM
+    const sameOrder = await Order.findById(order.id).populate("ticket").exec();
 
-    res.status(200).send(order);
+    if (sameOrder) {
+      // I KORISTIM sameOrder
+      await new OrderCancelledPublisher(natsWrapper.client).publish({
+        id: sameOrder.id,
+        version: sameOrder.version,
+        ticket: {
+          id: sameOrder.ticket.id,
+        },
+      });
+    }
+
+    res.status(200).send(sameOrder);
   }
 );
 
