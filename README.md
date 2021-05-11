@@ -1,22 +1,167 @@
-# `payments` MICROSERVICE
+# INITIAL SETUP FOR `payments` MICROSERVICE
 
-DA SE PODSETIMO TOGA, KOJE CE EVENT-OVE OVAJ MICROSERVICE RECEIVE-OVATI, A KOJE CE DA EMMIT-UJE
+DAKLE OPET DUPLICATE-UJEM A LOT OF STUFF FROM OTHER MICROSERVICE DA BI NAPRAVIO OVAJ (MOZES KORISTITI tickets MICROSERVICE ZA TA INICIJALNA KOPIRANJA FAILE-OVA KOJI SU ISTI U SVIM MICROSERVICE-OVIMA)
 
-1. ON CE PRVO A RECEIVE-UJE EVENT IZ KANALA `"order:created"`
+- `mkdir -p payments/src/events`
 
-RECEIVE-OVACE GA JUST TU TELL IT, "HEY, HERE IS SOME ORDER, EXPECT TO GET A PAYMENT FOR IT"
+NAKON KOPIRANJA IMAM OVO
 
-STO ZNACI DA CE REPLICATED DATA U OVOM MICROSERVICEU BITI `Orders` COLLECTION
+- `ls -a payments/`
 
-**REAL GOAL OF COMUNICATING OVER `"order:created"` EVENT, JESTE DA SE POSTARAS DA `payments` MICROSERVICE ZNA KOLIKO PARA CE TREBATI DA RECEIVE-UJE**
+```zsh
+Dockerfile  .dockerignore  package.json  src  tsconfig.json
+```
 
-2. SLUSACE I NA `"order:cancelled"` KANAL, KOJI EMMIT-UJE orders
+- `ls -a payments/src`
 
-TO CE RECI payments-U, DA JE VREM DA SE PRESTANE SA SLUSANJEM NA EVENTS, AKO NEKO POKUSA DA SUBMIT-UJE PAYMENT, ODNOSNO DA REJECT-UJE PAYMENT
+```zsh
+app.ts  events  index.ts  test
+```
 
-3. `payments` MICROSERVICE CE DA PUBLISH-UJE TO `"charge:created"` KANAL
+- `ls -a payments/src/events`
 
-A TO REPREZENTUJE SOMEONE PAYING SOME MONEY FOR AN ORDER
+```zsh
+__mocks__  nats-wrapper.ts
+```
 
-OVAJ EVENT CE NA KRAJ UDA ODE DO `orders` MICROSERVICE-A, I RECI CE DA JE NEKO PLATIO FOR AN ORDER, I DA TREBA DA MARKIRA ORDER AS PAYYED OR COMPLETE
+- `ls -a payments/src/test`
 
+```zsh
+setup.ts
+```
+
+# PREPRAVLJAMO SAMO name U package.json
+
+- `code package.json`
+
+```json
+{
+"name": "payments",
+// ...
+``` 
+
+# IZ `index.ts` UKLANJAMO SVE LISTENER UVOZE I NJIHOVO INSTATICIZIRANJE, I LISTENING
+
+TAKO DA CE FILE SADA IZGLEDATI OVAKO
+
+- `code payments/src/index.ts`
+
+```ts
+import { app } from "./app";
+import mongoose from "mongoose";
+import { natsWrapper } from "./events/nats-wrapper";
+
+const start = async () => {
+  if (!process.env.JWT_KEY) {
+    throw new Error("JWT_KEY env variable undefined");
+  }
+
+  if (!process.env.MONGO_URI) {
+    throw new Error("MONGO_URI env variable undefined");
+  }
+
+  if (!process.env.NATS_CLUSTER_ID) {
+    throw new Error("NATS_CLUSTER_ID env variable is undefined");
+  }
+  if (!process.env.NATS_CLIENT_ID) {
+    throw new Error("NATS_CLIENT_ID env variable is undefined");
+  }
+  if (!process.env.NATS_URL) {
+    throw new Error("NATS_URL env variable is undefined");
+  }
+
+  try {
+    await natsWrapper.connect(
+      process.env.NATS_CLUSTER_ID as string,
+      process.env.NATS_CLIENT_ID as string,
+      {
+        url: process.env.NATS_URL,
+      }
+    );
+
+    console.log("Connected to nats streaming server");
+
+    const sigTerm_sigInt_callback = () => {
+      natsWrapper.client.close();
+    };
+    process.on("SIGINT", sigTerm_sigInt_callback);
+    process.on("SIGTERM", sigTerm_sigInt_callback);
+
+    natsWrapper.client.on("close", () => {
+      console.log("Connection to NATS Streaming server closed");
+      process.exit();
+    });
+
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+    });
+
+    console.log("Connected to DB (payments-mongo)");
+  } catch (err) {
+    console.log("Failed to connect to DB");
+    console.log(err);
+  }
+
+  const PORT = 3000;
+  app.listen(PORT, () => {
+    console.log(`listening on http://localhost:${PORT} INSIDE tickets POD`);
+  });
+};
+
+start();
+```
+
+# IZ `app.ts` UKLANJAMO SVE USED ROUTERS
+
+- `code payments/src/app.ts`
+
+```ts
+import express from "express";
+import "express-async-errors";
+import { json } from "body-parser";
+import cookieSession from "cookie-session";
+
+import { errorHandler, NotFoundError, currentUser } from "@ramicktick/common";
+
+const app = express();
+
+app.set("trust proxy", true);
+
+app.use(json());
+
+app.use(
+  cookieSession({
+    signed: false,
+
+    secure: process.env.NODE_ENV !== "test",
+  })
+);
+
+app.use(currentUser);
+
+app.all("*", async (req, res, next) => {
+  throw new NotFoundError();
+});
+
+app.use(errorHandler);
+
+export { app };
+```
+
+# MOZEMO DA INSTALIRAMO DEPENDANCIES
+
+- `cd payments`
+
+- `yarn`
+
+# DOCKER IMAGE NE PRAVIMO, I NE PUSH-UJEMO, JER KAO STO SAM TI REKAO, MNOGO PUTA RANIJE, MI IMAMO CUSTER NA GOOGLE CLOUD-U, I ZBOG TOGA TO NE MORAMO DA RADIMO
+
+A AKO KORISTIS MINICUBE RADIO BI OVO
+
+- `cd payments`
+
+- `docker build -t radebajic/payments .`
+
+OPET TI NA POMEINJEM DA NE RADIS OVO AKO KORISTIS GOOGLE CLOUD

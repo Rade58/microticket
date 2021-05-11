@@ -49,3 +49,6 @@ orders/node_modules
 
 # expiration
 expiration/node_modules
+
+# payments
+payments/node_modules
