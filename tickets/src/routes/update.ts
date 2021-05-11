@@ -74,14 +74,16 @@ router.put(
 
     await ticket.save();
 
-    await new TicketUpdatedPublisher(natsWrapper.client).publish({
-      id: ticket.id,
-      version: ticket.version,
-      title: ticket.title,
-      price: ticket.price,
-      userId: ticket.userId,
-    });
-
+    const sameTicket = await Ticket.findById(ticket.id);
+    if (sameTicket) {
+      await new TicketUpdatedPublisher(natsWrapper.client).publish({
+        id: sameTicket.id,
+        version: sameTicket.version,
+        title: sameTicket.title,
+        price: sameTicket.price,
+        userId: sameTicket.userId,
+      });
+    }
     res.status(201).send(ticket);
   }
 );
