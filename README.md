@@ -106,7 +106,7 @@ const start = async () => {
 
   const PORT = 3000;
   app.listen(PORT, () => {
-    console.log(`listening on http://localhost:${PORT} INSIDE tickets POD`);
+    console.log(`listening on http://localhost:${PORT} INSIDE payments POD`);
   });
 };
 
@@ -379,3 +379,53 @@ spec:
 # SADA MOZEMO DA POKRENEMO SKAFFOLD
 
 - `skaffold dev`
+
+```zsh
+[payments] 
+[payments] > payments@1.0.0 start /app
+[payments] > ts-node-dev src/index.ts
+[payments] 
+[payments] [INFO] 19:04:50 ts-node-dev ver. 1.1.6 (using ts-node ver. 9.1.1, typescript ver. 4.2.4)
+[payments] 
+[payments]           Connected to Nats Streaming Server
+[payments]           clientId: payments-depl-6985547f96-qd27j
+[payments]         
+[payments] Connected to nats streaming server
+
+[payments] Connected to DB (payments-mongo)
+[payments] listening on http://localhost:3000 INSIDE payments POD
+
+```
+
+# NAKON STO JE SKAFFOLD OBAVIO SVOJE DA VIDIMO PODS
+
+ZELIM ODA VIDIMO JOS DVA DEPLOYMENT-A, JEDAN ZA paymments ,A DRUGI ZA pyments-mongo
+
+- `kubectl get pods`
+
+```zsh
+NAME                                     READY   STATUS    RESTARTS   AGE
+auth-depl-7c755d9cc6-fhrhg               1/1     Running   0          3m34s
+auth-mongo-depl-74f44d8bbd-kx9jp         1/1     Running   0          3m34s
+client-depl-bd76cc5f7-zsfbj              1/1     Running   0          3m34s
+expiration-depl-74cd7dc686-ghxp9         1/1     Running   0          3m34s
+expiration-redis-depl-5976bc9b5f-qqlx5   1/1     Running   0          3m33s
+nats-depl-7986c89cf4-hpt7z               1/1     Running   0          3m33s
+orders-depl-5c4d8d6dc-hps77              1/1     Running   0          3m33s
+orders-mongo-depl-6d7c7c99cd-chjcd       1/1     Running   0          3m32s
+payments-depl-6985547f96-qd27j           1/1     Running   0          3m32s
+payments-mongo-depl-7b74df9fc4-6p4hx     1/1     Running   0          3m32s
+tickets-depl-776b5cc5bf-29hp2            1/1     Running   0          3m32s
+tickets-mongo-depl-77c7794c76-vll6d      1/1     Running   0          3m31s
+
+```
+
+EVO TO SU
+
+`orders-mongo-depl-6d7c7c99cd-chjcd`
+
+AND
+
+`payments-depl-6985547f96-qd27j`
+
+AND THEY ARE RUNNING

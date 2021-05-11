@@ -65,7 +65,7 @@ const start = async () => {
 
   const PORT = 3000;
   app.listen(PORT, () => {
-    console.log(`listening on http://localhost:${PORT} INSIDE tickets POD`);
+    console.log(`listening on http://localhost:${PORT} INSIDE orders POD`);
   });
 };
 
