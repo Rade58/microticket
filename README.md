@@ -84,7 +84,7 @@ interface OrderModelI extends Model<OrderDocumentI> {
 // METHODS ON DOCUMENT
 // orderSchema.methods.
 
-orderSchema.statics.findByEvent = async function (event: {
+orderSchema.statics.findOneByEvent = async function (event: {
   id: string;
   version: number;
 }) {
