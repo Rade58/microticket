@@ -15,6 +15,8 @@ export const payments_microservice = "payments-microservice";
 
 - `mkdir payments/src/events/listeners`
 
+# PRVO CU NAPRAVITI `OrderCreatedListener`
+
 - `touch payments/src/events/listeners/order-created-listener.ts`
 
 ```ts
@@ -129,3 +131,52 @@ it("creates replicated Order inside Orders collection inside 'payments' microser
 - `cd payments`
 
 - `yarn test`
+
+TEST JE PROSAO
+
+# SADA CU DA NAPRAVIM `OrderCancelledListener`
+
+- `touch payments/src/events/listeners/order-cancelled-listener.ts`
+
+```ts
+import {
+  Listener,
+  OrderCancelledEventI,
+  ChannelNamesEnum as CNE,
+  OrderStatusEnum as OSE,
+} from "@ramicktick/common";
+import { Stan, Message } from "node-nats-streaming";
+import { Order } from "../../models/order.model";
+import { payments_microservice } from "../queue_groups";
+
+export class OrderCancelledListener extends Listener<OrderCancelledEventI> {
+  channelName: CNE.order_cancelled;
+  queueGroupName: string;
+
+  constructor(stanClient: Stan) {
+    super(stanClient);
+
+    this.channelName = CNE.order_cancelled;
+    this.queueGroupName = payments_microservice;
+
+    Object.setPrototypeOf(this, OrderCancelledListener.prototype);
+  }
+
+  async onMessage(parsedData: OrderCancelledEventI["data"], msg: Message) {
+    const { id, version } = parsedData;
+
+    const order = await Order.findOneByEvent(parsedData);
+
+    if (!order) {
+      throw new Error("order not found");
+    }
+
+    order.set("status", OSE.cancelled);
+
+    await order.save();
+
+    msg.ack();
+  }
+}
+
+```
