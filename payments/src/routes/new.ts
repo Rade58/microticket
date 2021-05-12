@@ -44,6 +44,13 @@ router.post(
 
     // ****** EVO OVDE KORISTIMO Stripe INSTANCU ****
 
+    await stripe.charges.create({
+      currency: "usd",
+      amount: order.price * 100, // ZATO STO PRETVARAMO DOLARE U CENTE
+      // A OVDE PASS-UJEMO token AS A SOURCE
+      source: token,
+    });
+
     // ------------------------
     res.status(201).send({ success: true });
   }

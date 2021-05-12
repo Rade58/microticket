@@ -31,7 +31,7 @@ A TU PRONALAZIMO SECTION [`Create A Charge`](https://stripe.com/docs/api/charges
 
 NA CODE SAMPLE-OVIMA TI MOZES DA BIRS LIBRARY, PA TI BIRAJ NODEJS
 
-TU DAKLE SAZNAJEM DA SE CHARGE KREIRA (ODNOSNO DA SE USER CREDIT CARD BILL-UJE), TAKO STO SE KORISTI `await <Stripe INSTANCA>.charge.create(`
+TU DAKLE SAZNAJEM DA SE CHARGE KREIRA (ODNOSNO DA SE USER CREDIT CARD BILL-UJE), TAKO STO SE KORISTI `await <Stripe INSTANCA>.charges.create(`
 
 DODAJE SE KAI ARGUMENT OPPTION OBJECT
 
@@ -41,9 +41,21 @@ MI CEMO SVE GA UNETI TRI DO 4 OPCIJE
 
 `amount` SE POSTAVLJA U SMALLEST CURRENCY UNIT-IMA; STO ZNACI DA CE SE PODESAVATI BROJ `CENTA`(`CENTS`) AKO SE KAO `currency` KOORISTI `usd`
 
-SRO BI ZNACILO DA KADA STRIPE BUDE SUPPORTED U SRBIJI, MOCI CES DA CHARGE-UJES A amount BI POSTAVLJAU U BROJU `PARA` (JER PARA JE SMALLEST UNIT OD DINARA)
+STO BI ZNACILO DA KADA STRIPE BUDE SUPPORTED U SRBIJI, MOCI CES DA CHARGE-UJES A amount BI POSTAVLJAU U BROJU `PARA` (JER PARA JE SMALLEST UNIT OD DINARA)
 
 **DAKLE AKO TI STORE-UJES PRICE U DOLARIMA, NEOPHODNO JE DA IH PRE POZIVA POMENUTE FUNKCIJE, USTVARI CONVERTUJES U CENTS; A 100 CENTS JE 1$, STO ZNACI DA DOLARE MULTIPLY-UJES SA 100 DA DOBIJES CENTS**
+
+currency USTVARI TREBA DA IMA VREDNOSTU CURRENCY CODE-A, CURENCY-JA KOJI KORISTIS, NA PRIMER `"usd"` (UNUITED STATES DOLLAR) ILI `"rsd"` (REPUBLIC SERBIA DINAR)
+
+**POSTOJI I TRECI PROPERTI, KOJI JE OPTIONAL A KOJ IJE POTREBNO IPAK DEFINISATI; TO `source`**
+
+**TO JE PAYMENT SOURCE TO BE CHARGED, A POSTOJI MNOGO MOGUCIH SOURCE-VA, KOJE MOZES CHARGE-OVATI**
+
+**JEDAN VIABLE `source` JESTE `token`**
+
+TO CE BITI NESTO STO REPREZENTUJE CREDIT CARD, KOJI MOZEMO DA BILL-UJEMO FOR SOME AMOUNT OF MONEY (**A JA CU PODESITI KADA KORISNIK PRITISNE DUGME TO BE CHARGED NA FRONTENDU, DA SE TAJ TOKEN SALJE, DO NASEG ENDPOINTA ZA CREATING CHARGE** (VEC SAM TAJ TOKEN RESTRUKTURIRAO U SAMOM HANDLERU))
+
+**OPCIONO, MOZEMO PROVIDEOVATI `description`; I ON NEMA VEZE SA CHARGE-OM, ALI CE SE POKAZATI NA STRIPE DASBOARD-U, A MOZDA I KORISNICIMA AS WELL, KADA BUDU GLEDALI CREDIT CARD BILLING STATEMENTS**
 
 ***
 ***
@@ -53,5 +65,72 @@ KONACNO UVIZIKO I KORISTIMO Stripe INSTANCU
 - `code payments/src/routes/new.ts`
 
 ```ts
+import { Router, Request, Response } from "express";
+import {
+  requireAuth,
+  validateRequest,
+  BadRequestError,
+  NotFoundError,
+  NotAuthorizedError,
+  OrderStatusEnum as OSE,
+} from "@ramicktick/common";
+import { body } from "express-validator";
+import { Order } from "../models/order.model";
+// UVOZIMO DAKLE Stripe INSTANCU
+import { stripe } from "../stripe";
+
+const router = Router();
+
+router.post(
+  "/api/payments",
+  requireAuth,
+  [
+    body("token").not().isEmpty().withMessage("stripe token not provided"),
+    body("orderId").not().isEmpty().withMessage("orderId is missing"),
+  ],
+  validateRequest,
+  async (req: Request, res: Response) => {
+    // PRONALAZENJE ORDER-A KOJI USER ZELI DA PAY-UJE
+    const { token, orderId } = req.body;
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      throw new NotFoundError();
+    }
+    // MAKING SURE THAT THE ORDER BELONGS TO THE USER
+
+    if (req.currentUser?.id !== order.userId) {
+      throw new NotAuthorizedError();
+    }
+
+    // MAKE SURE THAT ORDER IS NOT ALREADY CANCELLED
+    if (order.status === OSE.cancelled) {
+      throw new BadRequestError("cant't pay fo already cancelled order");
+    }
+
+    // ****** EVO OVDE KORISTIMO Stripe INSTANCU ****
+
+    await stripe.charges.create({
+      currency: "usd",
+      amount: order.price * 100, // ZATO STO PRETVARAMO DOLARE U CENTE
+      // A OVDE PASS-UJEMO token AS A SOURCE
+      source: token,
+    });
+
+    // ------------------------
+    res.status(201).send({ success: true });
+  }
+);
+
+export { router as createChargeRouter };
 
 ```
+
+# MI BI SADA OVO MOGLI DA TESTIRAMO MANUELNO U INSOMII
+
+KSNIJE CEMO MI DA NAPRAVIMO AUTOMATED TESTS SA JESTOM, ALI SADA MOZEMO KORISTITI INSOMNI-U
+
+**TI ZISTA SMES TESTIRATI, JER U SUTINI SE KORISTI TEST DATA STRIPE-A, STO SI MOAGAO I SAM VIDETI U DASBORD-U, JER TAMO TI JE TO OBZANJENO; A PORED TOGA STRIPE NIJE SUPPORTED U MOM REGIONU, TAK ODA NISAM NI POVEZAO BANKING ACCOUNT OF MY ORGANIZATION, NA KOJI BI STIZAJE PARE OD CHARGES-A**
+
+DA MI JE SUPPORTED STRIPE MOGAO BI UNTOGGLE-OVATI TEST DATA MODE, I ONDA POVEZATI ACCOUNT, STO JE MALO VISE ENVOLVED PROCESS; **TO SE I RADI KADA SVOJ APP ZELIS DA PUSH-UJES TO PRODUCTION**
