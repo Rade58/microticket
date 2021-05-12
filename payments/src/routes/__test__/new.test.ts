@@ -11,6 +11,8 @@ import { stripe } from "../../stripe";
 
 const { ObjectId } = Types;
 
+const price = 69;
+
 const makeAnOrder = async (options: {
   userPayload?: { id: string; email: string };
   status?: OSE;
@@ -24,7 +26,7 @@ const makeAnOrder = async (options: {
     userId: userPayload ? userPayload.id : new ObjectId().toHexString(),
     version: 0,
     status: status ? status : OSE.created,
-    price: 69,
+    price,
   });
 
   return order;
@@ -95,11 +97,24 @@ it("returns 201 if charge is created; stripe.charges.create was called", async (
     .post("/api/payments")
     .set("Cookie", global.getOtherCookie(userPayload))
     .send({
-      token: "some stripe token",
+      token: "tok_visa",
       orderId: order.id,
     })
     .expect(201);
 
   // EVO GA TAJ EXPECTATION
   expect(stripe.charges.create).toHaveBeenCalled();
+
+  // HAJDE DA PRAVIMO EXPECTATION, I ZA ARGUMENTE SA KOJIMA JE MOCK CALLED
+  // TO SU ARGUMENTI KOJI SU PROSLEDJENI U stripe.charges.create
+  // POZIV, U SAMOM HANDLERU (MISLIM DA TI JE TO JASNO)
+  expect((stripe.charges.create as jest.Mock).mock.calls[0][0].source).toEqual(
+    "tok_visa"
+  );
+  expect(
+    (stripe.charges.create as jest.Mock).mock.calls[0][0].currency
+  ).toEqual("usd");
+  expect((stripe.charges.create as jest.Mock).mock.calls[0][0].amount).toEqual(
+    price * 100
+  );
 });
