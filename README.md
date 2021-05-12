@@ -133,7 +133,7 @@ it("returns 201 if charge is created; stripe.charges.create was called", async (
     .post("/api/payments")
     .set("Cookie", global.getOtherCookie(userPayload))
     .send({
-      // OVDE NISAM KORISTIO "tok_visa" (JER NIJE BITNO)
+      // OVDE NISAM KORISTIO SPECIAL "tok_visa" ZA TOKEN (JER NIJE BITNO)
       // (ODNONO MOCKU NIJE BITN DA LI CE ZA TOKEN UZETI ILI NECE )
       // TAKO SAM NAPISAO MOCK
       token: "some stripe token",
