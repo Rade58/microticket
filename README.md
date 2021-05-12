@@ -245,4 +245,212 @@ DEFINITIVNO PRE BILO KAKVOG TESTIRANJA U INSOMII, MORAMO POKRENUTI SKAFFOLD, DA 
 
 DA SE SADA VRATIM NA MANUELNO TESTIRANJE SA INSOMNIOM
 
+NARAVNO PRVO SE UVERI DA IMAS KREIRANOG USER, ALI INSOMIA JE TAKVA DA SE PONASA KAO BROWSER, TAKO DA AKO SAM RANIJE PRAVIO USSSERA I SETT-OVAO COOKIE, ON CE BITI U INSOMII KAO DA JE U BROWSER-U
+
+ALI HAJDE DA NAPRAVIMO USER-A, CISTO DA SE PODSETIMO KAKO SE TO RADI
+
+`"POST"` `https://microticket.com/api/users/signup`
+
+BODY:
+
+```json
+{
+	"email": "stavros@mail.com",
+	"password": "ChillyIsGreat26"
+}
+```
+
+RECEIVED DATA:
+
+```json
+{
+  "email": "stavros@mail.com",
+  "id": "609958c18b60a4002370f5ec"
+}
+```
+
+NAPRAVICEMO SADA TICKET
+
+`"POST"` `https://microticket.com/api/tickets/`
+
+BODY:
+
+```json
+{
+	"title": "Mastodon",
+	"price": 69
+}
+```
+
+RECEIVED DATA:
+
+```json
+{
+  "title": "Mastodon",
+  "price": 69,
+  "userId": "609958c18b60a4002370f5ec",
+  "version": 0,
+  "id": "609c1174efa7220023e6d838"
+}
+```
+
+**PRAVIMO ORDER ZA GORNJI TICKET**
+
+`"POST"` `https://microticket.com/api/orders/`
+
+BODY:
+
+```json
+{
+	"ticketId": "609c1174efa7220023e6d838"
+}
+```
+
+RECEIVED DATA:
+
+```json
+{
+  "status": "created",
+  "ticket": "609c1174efa7220023e6d838",
+  "userId": "609958c18b60a4002370f5ec",
+  "expiresAt": "2021-05-12T17:50:39.354Z",
+  "version": 0,
+  "id": "609c11eb75b0b90018e6acb8"
+}
+```
+
+**PRAVIMO CHARGE ZA GORNJI ORDER**
+
+`"POST"` `https://microticket.com/api/payments/`
+
+BODY:
+
+```json
+{
+	"token": "some stripe token",
+	"orderId": "609c11eb75b0b90018e6acb8"
+}
+```
+
+RECEIVED DATA:
+
+```json
+{
+  "errors": [
+    {
+      "message": "Something went wrong!"
+    }
+  ]
+}
+```
+
+KAO STO VIDIS DOBIO SI ERROR, KOJI JE TU PREDPOSTAVLJAM JER NISMO PROVIDE-OVALI VALIDAN STRIPE TOKEN
+
+**EVO POGLEDAJ KAKV SE ERROR LOG-OVAO U SKAFFOLD TERMINALU ZBOG TOG**
+
+```zsh
+[payments] StripeInvalidRequestError: No such token: 'some stripe token'
+[payments]     at Function.generate (/app/node_modules/stripe/lib/Error.js:40:16)
+[payments]     at IncomingMessage.<anonymous> (/app/node_modules/stripe/lib/StripeResource.js:180:33)
+[payments]     at Object.onceWrapper (events.js:421:28)
+[payments]     at IncomingMessage.emit (events.js:327:22)
+[payments]     at endReadableNT (internal/streams/readable.js:1327:12)
+[payments]     at processTicksAndRejections (internal/process/task_queues.js:80:21) {
+[payments]   type: 'StripeInvalidRequestError',
+[payments]   raw: {
+[payments]     code: 'resource_missing',
+[payments]     doc_url: 'https://stripe.com/docs/error-codes/resource-missing',
+[payments]     message: "No such token: 'some stripe token'",
+[payments]     param: 'source',
+[payments]     type: 'invalid_request_error',
+[payments]     headers: {
+[payments]       server: 'nginx',
+[payments]       date: 'Wed, 12 May 2021 17:38:13 GMT',
+[payments]       'content-type': 'application/json',
+[payments]       'content-length': '236',
+[payments]       connection: 'keep-alive',
+[payments]       'access-control-allow-credentials': 'true',
+[payments]       'access-control-allow-methods': 'GET, POST, HEAD, OPTIONS, DELETE',
+[payments]       'access-control-allow-origin': '*',
+[payments]       'access-control-expose-headers': 'Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required',
+[payments]       'access-control-max-age': '300',
+[payments]       'cache-control': 'no-cache, no-store',
+[payments]       'request-id': 'req_ucEBMSrkK22yo4',
+[payments]       'stripe-version': '2020-08-27',
+[payments]       'x-stripe-c-cost': '0',
+[payments]       'strict-transport-security': 'max-age=31556926; includeSubDomains; preload'
+[payments]     },
+[payments]     statusCode: 400,
+[payments]     requestId: 'req_ucEBMSrkK22yo4'
+[payments]   },
+[payments]   rawType: 'invalid_request_error',
+[payments]   code: 'resource_missing',
+[payments]   doc_url: 'https://stripe.com/docs/error-codes/resource-missing',
+[payments]   param: 'source',
+[payments]   detail: undefined,
+[payments]   headers: {
+[payments]     server: 'nginx',
+[payments]     date: 'Wed, 12 May 2021 17:38:13 GMT',
+[payments]     'content-type': 'application/json',
+[payments]     'content-length': '236',
+[payments]     connection: 'keep-alive',
+[payments]     'access-control-allow-credentials': 'true',
+[payments]     'access-control-allow-methods': 'GET, POST, HEAD, OPTIONS, DELETE',
+[payments]     'access-control-allow-origin': '*',
+[payments]     'access-control-expose-headers': 'Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required',
+[payments]     'access-control-max-age': '300',
+[payments]     'cache-control': 'no-cache, no-store',
+[payments]     'request-id': 'req_ucEBMSrkK22yo4',
+[payments]     'stripe-version': '2020-08-27',
+[payments]     'x-stripe-c-cost': '0',
+[payments]     'strict-transport-security': 'max-age=31556926; includeSubDomains; preload'
+[payments]   },
+[payments]   requestId: 'req_ucEBMSrkK22yo4',
+[payments]   statusCode: 400,
+[payments]   charge: undefined,
+[payments]   decline_code: undefined,
+[payments]   payment_intent: undefined,
+[payments]   payment_method: undefined,
+[payments]   payment_method_type: undefined,
+[payments]   setup_intent: undefined,
+[payments]   source: undefined
+[payments] }
+
+```
+
+**ZAISTA PROBLEM JE NASTA OZBOG NEVALIDNOG STRIPE TOKENA**
+
+# WHILE OUR ACCOUNRT IS IN TEST MODE, POSTOJI VERY SPECIAL TOKEN KOJI MOZEMO PROVIDE-OVATI, I KOJI CE UVEK SUCCEED SA STRIPE API-EM
+
+POPUT SECRET ESCAPE HATCH-A
+
+DAKLE OBICNO BI TOKEN DOSAO KORISCENJEM STRIPE LIVBRARY-JA NA FRONTEND-U, U BROWSER-U
+
+A OVAJ SPECIAL TOKEN MOZEMO OBEZBEDITI
+
+**U PITANJU JE STRING `"tok_visa"`**
+
+ZNAJUCI ZA TO SADA CU DA NAPRAVIM ORDER
+
+`"POST"` `https://microticket.com/api/payments/`
+
+BODY:
+
+```json
+{
+	"token": "tok_visa",
+	"orderId": "609c11eb75b0b90018e6acb8"
+}
+```
+
+RECEIVED DATA:
+
+```json
+{
+  "success": true
+}
+```
+
+**DAKLE USPESNO SAM KREIRAO CHARGE**
+
 
