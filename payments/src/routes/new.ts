@@ -14,7 +14,7 @@ router.post(
   "/api/payments",
   requireAuth,
   [
-    body("toket").not().isEmpty().withMessage("stripe token not provided"),
+    body("token").not().isEmpty().withMessage("stripe token not provided"),
     body("orderId").not().isEmpty().withMessage("orderId is missing"),
   ],
   validateRequest,
