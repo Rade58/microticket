@@ -307,3 +307,5 @@ it("returns 201 if charge is created", async () => {
 - `yarn test` p `Enter` new `Enter`
 
 **SVI TESTOVI SU PROSLI**
+
+## U SLEDECEM BRANCH-U POZABAVICU SE SETTING UP-OM STRIPE-A
