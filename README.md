@@ -147,7 +147,7 @@ it("returns 201 if charge is created; stripe.charges.create was called", async (
 
 - `yarn test` p `Enter` new `Enter`
 
-
+SVI TESTOVI SU PROSLI, UKLJUCUJUCI I POSLEDNJI KOJ ISAM MALOCAS DODAO
 
 
 
