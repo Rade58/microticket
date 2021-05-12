@@ -39,7 +39,7 @@ it("returns 404 if order doesn't exist", async () => {
     .expect(404);
 });
 
-it("returns 401, if user didn't make an order", async () => {
+it("returns 401, if user didn't make an order for whom he is trying to make payment", async () => {
   const order = await makeAnOrder({});
 
   await request(app)
