@@ -282,6 +282,7 @@ it("returns 400 if status of the order, is already cancelled", async () => {
 // SVE INSIDE HANDLER FOR CHARGE CREATING
 
 it("returns 201 if charge is created", async () => {
+  // DAKLE OVO JE NEPOTPUN TEST KOJ ICEMO STALNO MENJATI
   const userPayload = {
     id: new ObjectId().toHexString(),
     email: "stavros@mail.com",
