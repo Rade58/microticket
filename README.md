@@ -1,55 +1,87 @@
-# STRIPE SETUP
+# PUTTING STRIPE SECRET KEY INSIDE K8S SECRET OBJECT IN OUR CLUSTER
 
-***
+DAKLE U NASEM STRIPE DASBOARD-U MOZEMO PROCITATI SECRET KEY I PUBLISHABLE KEY
 
-digrsija: (ALI VAZNA)
+**A MI CEMO SADA DA STAVIMO SECRET KEY INSIDE SECRET OBJECT U NASEM CLUSTERU**
 
-TI SI SE VEC JEDNOM BAVIO SA STRIPE-OM:
+- `kubectl create secret generic stripe-secret --from-literal STRIPE_KEY=<tvoj stripe secret key>`
 
-1) [________](https://github.com/Rade58/gatsby-shopify-theme-workspace/tree/5_SETTING_UP_STRIPE#setting-up-stripe-a-n-connecting-stripe-to-gatsby)
+DA PROVERIM DA LI JE KREIRAN
 
-2) [________](https://github.com/Rade58/gatsby-shopify-theme-workspace/tree/5_1_STRIPE_MULTIPLE_PRODUCTS_MULTIPLE_PRICES#dakle-u-proslom-branchu-sam-podesio-stripe-i-uspesno-implementirao-checkout-a-sada-cu-sagledati-jos-nekoliko-stvari-koje-su-easy-sa-stripe-om)
+- `kubectl get secrets`
 
-3) [________](https://github.com/Rade58/gatsby-shopify-theme-workspace/tree/5_2_FETCHING_STRIPE_DATA#fetching-stripe-data)
+```zsh
+NAME                  TYPE                                  DATA   AGE
+default-token-f4zjf   kubernetes.io/service-account-token   3      45d
+jwt-secret            Opaque                                1      36d
+stripe-secret         Opaque                                1      35s
 
-MEDJUTIM MISLIM DA JA NECU KORISTITI STRIPE, KAKO SAM GA KORISTIO NA GORNJIM LINKOVIMA
+```
 
-DA SE SADA VRATIM NA TEMU
+USPESNO SAM DAKLE NAPRAVIO SECRET OBJECT
 
-***
+# SADA CU DA NAPISEM DO CONFIG-A, DA `STRIPE_KEY` UCITAM, KAO ENVIROMENT VARIABLE, INSIDE POD, U KOJEM RUNN-UJE NAS `payments` MICROSERVICE
 
-IMAMO SOME CODE IN PLACE INSIDE CREATE CHARGE HANDLERA, ALI NISMO NISTA DEFINISALI U POGLEDU STRIPE-A
+VEC SI OVO RADIO RANIJE U SLUCAJU `auth` MICROSERVICE-A, GDE SI UCITAVAO `JWT_KEY` ENVIROMNT VARIABLE (ALI MISLIM DA SMO GA UCITAVALI I U DRUGIM MICROSERVICE-OVIMA ,KADA SMO KOPIRALI I PREPRAVLJALI KONFIGURACIJE)
 
-**MI MORAMO DEFINISATI CODE ZA ACCEPTING PAYMENTA, KOJI USER ZELI DA PROVIDE-UJE ZA ORDER**
+- `code infra/k8s/payments-depl.yaml`
 
-U HANDLERU NAM JEDOSTUPAN `TOKEN FROM STRIPE`; ALI PORED TOKEN JA POTREBAN I `STRIPE API KEY`, KOJ ICE DA IDENTIFIIKUJE OUR APPLICATION TO THE STRIPE API
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # OVO JE VAZNO, VIDECES I ZASTO
+  name: payments-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payments
+  template:
+    metadata:
+      labels:
+        app: payments
+    spec:
+      containers:
+        - name: payments
+          image: eu.gcr.io/microticket/payments
+          env:
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: 'http://nats-srv:4222'
+            - name: NATS_CLUSTER_ID
+              value: microticket
+            - name: MONGO_URI
+              value: 'mongodb://payments-mongo-srv:27017/payments'
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+            # -- EVO DEFINISEMO OVO --
+            - name: STRIPE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: stripe-secret
+                  key: STRIPE_KEY
+            # ------------------------
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payments-srv
+spec:
+  selector:
+    app: payments
+  type: ClusterIP
+  ports:
+    - name: payments
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+```
 
-**SA TIM TOKENOM, MI RECH-UJEMO OUT TO STRIPE API, I ACTUALLY CHARGE USERS CREDIT CARD**
-
-# PRVO PRAVIMO NOVI STRIPE ORGANIZATION
-
-NE ZNAM DA LI MORA ALI JA CU TO URADITI
-
-NAZVAO SAM JE `Microticket`
-
-# SADA DA INSTALIRAMO MODUL `stripe`, KOJI PREDSTAVLJA NODEjs STRIPR LIBRARY ,ILI KAKO GA AUTOR WORKSHOPA ZOVE: NODEjs STRIPE SDK
-
-[EVO OVO JE NPM PACKAGE](https://www.npmjs.com/package/stripe)
-
-MISLIM DA MI NECMO KORISTI [@stripe/stipe-js](https://www.npmjs.com/package/@stripe/stripe-js)([github](https://github.com/stripe/stripe-js))
-
-TAKO JE OVOG PUTA KORISTIMO LIBRARY
-
-- `cd payments`
-
-- `yarn add stripe`
-
-# SADA MOZMO UZETI TEST API KEYS
-
-JEDAN JE SECRET, A DRUGI JE PUBLISHABLE
-
-MOZES IH NACI I LEVO NA `Developers` --> `API keys`
-
-## DALJE KAKO CEMO DA KORISTIMO OVE KEYS POKAZACU TI U SLEDECEM BRANCH-U
-
-TACNIJE KORISTICEMO SECRET KEY
+## U SLEDECEM BRANCH-U INICIJALIZOVACEMO STRIPE SDK U NASEM CREATE CHARGE ROUTE HANDLERU

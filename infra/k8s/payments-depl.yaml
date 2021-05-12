@@ -32,6 +32,13 @@ spec:
                 secretKeyRef:
                   name: jwt-secret
                   key: JWT_KEY
+            # -- EVO DEFINISEMO OVO --
+            - name: STRIPE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: stripe-secret
+                  key: STRIPE_KEY
+            # ------------------------
 ---
 apiVersion: v1
 kind: Service
