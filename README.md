@@ -10,11 +10,13 @@ U HANDLERU CE SE ONDA RADITI SLEDECE:
 
 2. POSTARAJ SE DA ORDER ACTUALLY BELONGS TO THE USER
 
-3. POSTARAJ SE DA AMOUNT OF MONEY KOJI DISPLAY-UJES INSIDE THE ORDER, USTVARI MATCH-UJE AMOUNT OF MONEY ZA KOJI NAS JE USER AUTHORIZE-OVAO TO CHARGE CREDIT CARD FOR
+3. POSTARAJ SE DA ORDER NIJE ALREDY CANCELLED
 
-4. MAKING REQUEST TO STRIPE API TO VERIFY PAYMENT; ODNONO TO CHATRGE USER CREDIT CARD; DAKLE TO JE BILLING USER-A
+4. POSTARAJ SE DA AMOUNT OF MONEY KOJI DISPLAY-UJES INSIDE THE ORDER, USTVARI MATCH-UJE AMOUNT OF MONEY ZA KOJI NAS JE USER AUTHORIZE-OVAO TO CHARGE CREDIT CARD FOR
 
-5. CREATING `CHARGE` RECORD U NASEM DATBASE-U (PRAVLJANJE Charge DOKUMENTA U Charges KOLEKCIJI DTABASE-A VEZANOG ZA `paymments` MICROSERVICE); U CHARGE RECORDU TREBA INFORMACIJA DA SMO SUCCESSFULLY BILL-OVALI USER-A FOR SOME AMOUNT OF MONEY
+5. MAKING REQUEST TO STRIPE API TO VERIFY PAYMENT; ODNONO TO CHATRGE USER CREDIT CARD; DAKLE TO JE BILLING USER-A
+
+6. CREATING `CHARGE` RECORD U NASEM DATBASE-U (PRAVLJANJE Charge DOKUMENTA U Charges KOLEKCIJI DTABASE-A VEZANOG ZA `paymments` MICROSERVICE); U CHARGE RECORDU TREBA INFORMACIJA DA SMO SUCCESSFULLY BILL-OVALI USER-A FOR SOME AMOUNT OF MONEY
 
 I TO JE OD PRILIKE SVE
 
@@ -131,3 +133,61 @@ RECEIVED DATA:
 ```
 
 KAO STO VIDIS HANDLER FUNKCIONISE KAKO TREBA
+
+**SADA MOZEMO DA IMPLEMENTIRAMO ONE STEPS OF BUSYNESS LOGIC INSIDE ROUTE HANDLER**
+
+# SADA CEMO URADITI PRVA 3 OD STEP-OVA, KOJE SAM TI REKAO DA CEMO IMPLEMENTIRATI U HANDLER-U
+
+- `code payments/src/routes/new.ts`
+
+```ts
+import { Router, Request, Response } from "express";
+import {
+  requireAuth,
+  validateRequest,
+  BadRequestError,
+  NotFoundError,
+  NotAuthorizedError,
+  OrderStatusEnum as OSE,
+} from "@ramicktick/common";
+import { body } from "express-validator";
+import { Order } from "../models/order.model";
+
+const router = Router();
+
+router.post(
+  "/api/payments",
+  requireAuth,
+  [
+    body("token").not().isEmpty().withMessage("stripe token not provided"),
+    body("orderId").not().isEmpty().withMessage("orderId is missing"),
+  ],
+  validateRequest,
+  async (req: Request, res: Response) => {
+    // PRONALAZENJE ORDER-A KOJ IUSER ZELI DA PAY-UJE
+    const { token, orderId } = req.body;
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      throw new NotFoundError();
+    }
+    // MAKING SURE THAT THE ORDER BELONGS TO THE USER
+
+    if (req.currentUser?.id !== order.userId) {
+      throw new NotAuthorizedError();
+    }
+
+    // MAKE SURE THAT ORDER IS NOT ALREADY CANCELLED
+    if (order.status === OSE.cancelled) {
+      throw new BadRequestError("cant't pay fo already cancelled order");
+    }
+
+    // ------------------------
+    res.send({ success: true });
+  }
+);
+
+export { router as createChargeRouter };
+
+```

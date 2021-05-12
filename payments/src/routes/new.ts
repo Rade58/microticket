@@ -4,6 +4,8 @@ import {
   validateRequest,
   BadRequestError,
   NotFoundError,
+  NotAuthorizedError,
+  OrderStatusEnum as OSE,
 } from "@ramicktick/common";
 import { body } from "express-validator";
 import { Order } from "../models/order.model";
@@ -19,9 +21,26 @@ router.post(
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    //
-    // ZA SADA CU SAMO DA SEND-UJEM ARBITRARY THING
-    // KOJI CU KASNIJE REPLACE-OVATI, VEMO BRZO
+    // PRONALAZENJE ORDER-A KOJ IUSER ZELI DA PAY-UJE
+    const { token, orderId } = req.body;
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      throw new NotFoundError();
+    }
+    // MAKING SURE THAT THE ORDER BELONGS TO THE USER
+
+    if (req.currentUser?.id !== order.userId) {
+      throw new NotAuthorizedError();
+    }
+
+    // MAKE SURE THAT ORDER IS NOT ALREADY CANCELLED
+    if (order.status === OSE.cancelled) {
+      throw new BadRequestError("cant't pay fo already cancelled order");
+    }
+
+    // ------------------------
     res.send({ success: true });
   }
 );
