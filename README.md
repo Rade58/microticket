@@ -191,3 +191,19 @@ router.post(
 export { router as createChargeRouter };
 
 ```
+
+**NARAVNO, NISAM SVE ZAVRSIO DO KRAJA ALI CU TESTIRATI LOGIKU, KOJU SAM DO SADA IMPLEMENTIRAO U GORNJEM HANDLER-U**
+
+PISACU AUTOMATED TESTS, DAKLE KOORISTICU JEST, JER BI BILO TEDIOUS DA U INSOMNII, SVE OVO TESTIRAM
+
+## DAKLE PISEM TESTOVE ZA `payments/src/routes/new.ts` HANDLER
+
+- `mkdir payments/src/routes/__test__`
+
+- `touch payments/src/routes/__test__/new.test.ts`
+
+```ts
+
+```
+
+
