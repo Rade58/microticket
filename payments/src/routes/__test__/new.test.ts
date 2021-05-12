@@ -5,9 +5,12 @@ import { app } from "../../app";
 
 import { Order } from "../../models/order.model";
 
+// UVOZIM POMENUTO
+import { stripe } from "../../stripe";
+//
+
 const { ObjectId } = Types;
 
-// HELPER
 const makeAnOrder = async (options: {
   userPayload?: { id: string; email: string };
   status?: OSE;
@@ -27,7 +30,13 @@ const makeAnOrder = async (options: {
   return order;
 };
 
-// DAKLE SVI ASSERTIONI KOJE CU SADA NAPRAVITI, BICE SA FAILING CASE-OVE
+// A DOLE NA DNU CU DA PRAVIM NOVI TEST
+// U KOJEM CU DA NAPRAVIM ASSERTION O TOME DA JE
+
+// OSTLE TESTOVE KOJE SAM RANIJE PRAVIO
+// ...
+// ...
+
 it("returns 404 if order doesn't exist", async () => {
   await request(app)
     .post("/api/payments")
@@ -72,10 +81,8 @@ it("returns 400 if status of the order, is already cancelled", async () => {
     .expect(400);
 });
 
-// OVO CE BITI TEST ZA SUCCESS, KOJI MOGU OVDE POCETI
-// A NARAVNO MENJACU GA NARAVNO JER NISAM IMPLEMENTIRAO
-// SVE INSIDE HANDLER FOR CHARGE CREATING
-
+// SAMO POPRAVLJAM USTVARI OVAJ TEST, TAKO STO CU NAPRAVITI
+// EXPECTATION DA JE MOCK USTVARI CALLED
 it("returns 201 if charge is created", async () => {
   const userPayload = {
     id: new ObjectId().toHexString(),
@@ -92,4 +99,7 @@ it("returns 201 if charge is created", async () => {
       orderId: order.id,
     })
     .expect(201);
+
+  // EVO GA TAJ EXPECTATION
+  expect(stripe.charges.create).toHaveBeenCalled();
 });
