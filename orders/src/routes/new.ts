@@ -13,10 +13,11 @@ import { Ticket } from "../models/ticket.model";
 import { natsWrapper } from "../events/nats-wrapper";
 import { OrderCreatedPublisher } from "../events/publishers/order-created-publisher";
 
-// EVO OVO JE TO STO MOXZEMO MENJATI
-// const EXPIRATION_PERIOD_SECONDS = 15 * 60;
-// EVO SADA JE 20 SEKUNDI
-const EXPIRATION_PERIOD_SECONDS = 20;
+// UMESTO OVOGA
+// const EXPIRATION_PERIOD_SECONDS = 20;
+// DEFINISEM OVO
+const EXPIRATION_PERIOD_SECONDS = 15 * 60;
+// I TO JE SVE
 
 const router = Router();
 
@@ -51,8 +52,6 @@ router.post(
       );
     }
 
-    // I CISTO DA TE PODSETIM TO SE KORISTI OVDE
-    // DA BI SE NAPRAVIO DATE KOJI UPUCUJE AT SOME MOMENT IN TIME IN FUTURE
     const expirationDate = new Date(
       new Date().getTime() + EXPIRATION_PERIOD_SECONDS * 1000
     );
@@ -67,7 +66,6 @@ router.post(
     await new OrderCreatedPublisher(natsWrapper.client).publish({
       id: order.id,
       version: order.version,
-      //
       expiresAt: new Date(order.expiresAt).toISOString(),
       userId: order.userId,
       status: order.status,

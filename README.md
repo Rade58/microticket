@@ -134,3 +134,115 @@ KSNIJE CEMO MI DA NAPRAVIMO AUTOMATED TESTS SA JESTOM, ALI SADA MOZEMO KORISTITI
 **TI ZISTA SMES TESTIRATI, JER U SUTINI SE KORISTI TEST DATA STRIPE-A, STO SI MOAGAO I SAM VIDETI U DASBORD-U, JER TAMO TI JE TO OBZANJENO; A PORED TOGA STRIPE NIJE SUPPORTED U MOM REGIONU, TAK ODA NISAM NI POVEZAO BANKING ACCOUNT OF MY ORGANIZATION, NA KOJI BI STIZAJE PARE OD CHARGES-A**
 
 DA MI JE SUPPORTED STRIPE MOGAO BI UNTOGGLE-OVATI TEST DATA MODE, I ONDA POVEZATI ACCOUNT, STO JE MALO VISE ENVOLVED PROCESS; **TO SE I RADI KADA SVOJ APP ZELIS DA PUSH-UJES TO PRODUCTION**
+
+STO SE TICE TESTINGA U INSOMII, MORAMO PRVO DA NAPRAVIMO JEDAN TICKET, PA DA NAPRAVIMO ORDER ZA TAJ TICKET
+
+***
+***
+
+digresija:
+
+MOZDA BI SADA BILO DA EXPIRATION TIME OF ORDER, POVECAS SA 20 SEKUNDI NA 15 MINUTA, JER MOZE TI SE DESITI DA TI BRZO ORDER POSTANE CANCELLED, ODNONO DA MU status POSTANE "cancelled"
+
+OVO OBAVLJAM U `orders` MICROSERVICE-U
+
+- `code orders/src/routes/new.ts`
+
+```ts
+import { Router, Request, Response } from "express";
+import {
+  requireAuth,
+  validateRequest,
+  NotFoundError,
+  OrderStatusEnum as OSE,
+  BadRequestError,
+} from "@ramicktick/common";
+import { body } from "express-validator";
+import { Types as MongooseTypes } from "mongoose";
+import { Order } from "../models/order.model";
+import { Ticket } from "../models/ticket.model";
+import { natsWrapper } from "../events/nats-wrapper";
+import { OrderCreatedPublisher } from "../events/publishers/order-created-publisher";
+
+// UMESTO OVOGA
+// const EXPIRATION_PERIOD_SECONDS = 20;
+// DEFINISEM OVO
+const EXPIRATION_PERIOD_SECONDS = 15 * 60;
+// I TO JE SVE
+
+const router = Router();
+
+router.post(
+  "/api/orders",
+  requireAuth,
+  [
+    body("ticketId")
+      .isString()
+      .not()
+      .isEmpty()
+      .custom((input: string) => {
+        return MongooseTypes.ObjectId.isValid(input);
+      })
+      .withMessage("'ticketId' is invalid or not provided"),
+  ],
+  validateRequest,
+  async (req: Request, res: Response) => {
+    const { ticketId } = req.body;
+    const userId = req?.currentUser?.id;
+    const ticket = await Ticket.findOne({ _id: ticketId }).exec();
+
+    if (!ticket) {
+      throw new NotFoundError();
+    }
+
+    const ticketIsReserved = await ticket.isReserved();
+
+    if (ticketIsReserved) {
+      throw new BadRequestError(
+        "can't make an order, ticket is already reserved"
+      );
+    }
+
+    const expirationDate = new Date(
+      new Date().getTime() + EXPIRATION_PERIOD_SECONDS * 1000
+    );
+
+    const order = await Order.create({
+      ticket: ticket.id,
+      userId: userId as string,
+      expiresAt: expirationDate,
+      status: OSE.created,
+    });
+
+    await new OrderCreatedPublisher(natsWrapper.client).publish({
+      id: order.id,
+      version: order.version,
+      expiresAt: new Date(order.expiresAt).toISOString(),
+      userId: order.userId,
+      status: order.status,
+      ticket: {
+        id: ticket.id,
+        price: ticket.price,
+      },
+    });
+
+    res.status(201).send(order);
+  }
+);
+
+export { router as createNewOrderRouter };
+```
+
+***
+***
+
+DEFINITIVNO PRE BILO KAKVOG TESTIRANJA U INSOMII, MORAMO POKRENUTI SKAFFOLD, DA BI SE CHANGES APPLY-OVALE NA NAS CLUSTER
+
+- `skaffold dev`
+
+***
+***
+
+DA SE SADA VRATIM NA MANUELNO TESTIRANJE SA INSOMNIOM
+
+
