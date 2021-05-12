@@ -363,3 +363,66 @@ start();
 OSTAJE JOS DA POKRENES SKAFFOLD AKO TI VEC NIJE BIO UPALJEN
 
 - `skaffold dev`
+
+# SADA CEMO DA ODRADIMO JEDAN MANUAL TESTING U INSOMNII
+
+NAPRAVICEMO TICKET, PA CEMO NAPRAVITI ORDER ZA TAJ TICKET
+
+`"POST"` `https://microticket.com/api/tickets/`
+
+BODY:
+
+```json
+{
+	"title": "Mastodon",
+	"price": 69
+}
+```
+
+RECEIVED DATA:
+
+```json
+{
+  "title": "Mastodon",
+  "price": 69,
+  "userId": "609958c18b60a4002370f5ec",
+  "version": 0,
+  "id": "609b84047146630019987613"
+}
+```
+
+**NAPRAVICEMO DAKLE ORDER ZA GORNJIM TICKEROM**
+
+`"POST"` `https://microticket.com/api/orders/`
+
+BODY:
+
+```json
+{
+	"ticketId": "609b84047146630019987613"
+}
+```
+
+**PA CEMO PRATITI SKAFFOLD TERMINAL**
+
+**ALI PRATIMO ONO STA JE RELEVANTNO ZA `payments`**
+
+ODMAH CIM SI NAAPRAVIO ORDER, IZMEDJU OSTALOG MOGAO SI OVO VIDETI U TERMINALU
+
+```zsh
+[payments] Mesage received:
+[payments]           subject: order:created
+[payments]           queueGroup: payments-microservice
+[payments] 
+```
+
+**ZATIM SAM PUSTIO DA PRODJE 20 SEKUNDI DA `expiration` MICROSERVICE, OBAVI SVOJE, ODNONO DA NAKON 20 SEKUNDI POSALJE `"expiration:complete"` EVENT, DO `orders` MICROSERVICE, PA DA ONDA `orders` POSALJE EVENT `"orders:cancelled"` NA KOJI JE SUBSCRIBED I `payments` MICROSERVICE**
+
+I ZBOG TOGA MOGAO SAM VIDETI OVO U TERMINALU
+
+```zsh
+[payments] Mesage received:
+[payments]           subject: order:cancelled
+[payments]           queueGroup: payments-microservice
+[payments]   
+```
