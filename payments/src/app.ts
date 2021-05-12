@@ -2,8 +2,10 @@ import express from "express";
 import "express-async-errors";
 import { json } from "body-parser";
 import cookieSession from "cookie-session";
-
 import { errorHandler, NotFoundError, currentUser } from "@ramicktick/common";
+
+// UVOZIM HANDLER-A
+import { createChargeRouter } from "./routes/new";
 
 const app = express();
 
@@ -20,6 +22,9 @@ app.use(
 );
 
 app.use(currentUser);
+
+// POVEZUJEM GA OVDE
+app.use(createChargeRouter);
 
 app.all("*", async (req, res, next) => {
   throw new NotFoundError();
