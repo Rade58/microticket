@@ -83,7 +83,7 @@ it("returns 400 if status of the order, is already cancelled", async () => {
 
 // SAMO POPRAVLJAM USTVARI OVAJ TEST, TAKO STO CU NAPRAVITI
 // EXPECTATION DA JE MOCK USTVARI CALLED
-it("returns 201 if charge is created", async () => {
+it("returns 201 if charge is created; stripe.charges.create was called", async () => {
   const userPayload = {
     id: new ObjectId().toHexString(),
     email: "stavros@mail.com",

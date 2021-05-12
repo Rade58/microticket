@@ -1,11 +1,11 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
-// import request from "supertest";
-// import { app } from "../app";
 import { sign } from "jsonwebtoken";
-// import crypto from "crypto";
 
 jest.mock("../events/nats-wrapper");
+// EVO DODAO SAM OVO, I OVO JE RELATIVNO NA OVAJ FILE
+// U KOJEM PISEM
+jest.mock("../stripe.ts");
 
 let mongo: any;
 

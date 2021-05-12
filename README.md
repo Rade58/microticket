@@ -53,6 +53,27 @@ export const stripe = {
 };
 ```
 
+ALI UMALO DA ZABORAVIM
+
+**MORAMO U SETUP FILE-U DA OZNACIMO STA MOCK-UJEMO**
+
+- `code payments/src/test/setup.ts`
+
+```ts
+import { MongoMemoryServer } from "mongodb-memory-server";
+import mongoose from "mongoose";
+import { sign } from "jsonwebtoken";
+
+jest.mock("../events/nats-wrapper");
+// EVO DODAO SAM OVO, I OVO JE RELATIVNO NA OVAJ FILE
+// U KOJEM PISEM
+jest.mock("../stripe.ts");
+
+// OSTALO TI NE MORAM POKAZIVATI
+// ...
+// ...
+```
+
 # OPET U TEST FILE, KAO POKUSAVAMO DA UVEZEMO REAL THING, ALI CE BITI UVEZEN MOCK, A U OVOM SLUCAJU TO JE MOCKED `stripe`, ODNOSNO MOCKED `Stripe` INSTANCA
 
 - `code payments/src/routes/__test__/new.test.ts`
@@ -100,7 +121,7 @@ const makeAnOrder = async (options: {
 
 // SAMO POPRAVLJAM USTVARI OVAJ TEST, TAKO STO CU NAPRAVITI
 // EXPECTATION DA JE MOCK USTVARI CALLED
-it("returns 201 if charge is created", async () => {
+it("returns 201 if charge is created; stripe.charges.create was called", async () => {
   const userPayload = {
     id: new ObjectId().toHexString(),
     email: "stavros@mail.com",
