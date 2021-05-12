@@ -133,6 +133,9 @@ it("returns 201 if charge is created; stripe.charges.create was called", async (
     .post("/api/payments")
     .set("Cookie", global.getOtherCookie(userPayload))
     .send({
+      // OVDE NISAM KORISTIO "tok_visa" (JER NIJE BITNO)
+      // (ODNONO MOCKU NIJE BITN DA LI CE ZA TOKEN UZETI ILI NECE )
+      // TAKO SAM NAPISAO MOCK
       token: "some stripe token",
       orderId: order.id,
     })
@@ -147,7 +150,7 @@ it("returns 201 if charge is created; stripe.charges.create was called", async (
 
 - `yarn test` p `Enter` new `Enter`
 
-SVI TESTOVI SU PROSLI, UKLJUCUJUCI I POSLEDNJI KOJ ISAM MALOCAS DODAO
+SVI TESTOVI SU PROSLI, UKLJUCUJUCI I POSLEDNJI KOJI SAM MALOCAS DODAO
 
 
 
