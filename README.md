@@ -1,87 +1,37 @@
-# PUTTING STRIPE SECRET KEY INSIDE K8S SECRET OBJECT IN OUR CLUSTER
+# CREATING A CHARGE WITH STRIPE
 
-DAKLE U NASEM STRIPE DASBOARD-U MOZEMO PROCITATI SECRET KEY I PUBLISHABLE KEY
+DAKLE U PROSLOM BRANCHU SMO PODESILI STRIPE SECRET KEY U SECRET KUBERNETES OBJECT-U, I DEFINISALI SMO U CONFIGU UCITAVANJE TOG KEY-A, KO ENVIROMENT VARIIJABLE
 
-**A MI CEMO SADA DA STAVIMO SECRET KEY INSIDE SECRET OBJECT U NASEM CLUSTERU**
+SADA CEMO TO DA KORISTIMO U JEDNOM SEPARATE FILE-U, KOJEG CEMO DA NAPRAVIMO, U CILJU DA U NJEGA UVEZEMO STRIPE LIBRARY I INSTATIATE-UJEM STRIPE LIBRARY
 
-- `kubectl create secret generic stripe-secret --from-literal STRIPE_KEY=<tvoj stripe secret key>`
+- `touch payments/src/stripe.ts`
 
-DA PROVERIM DA LI JE KREIRAN
+```ts
+import Stripe from "stripe";
 
-- `kubectl get secrets`
-
-```zsh
-NAME                  TYPE                                  DATA   AGE
-default-token-f4zjf   kubernetes.io/service-account-token   3      45d
-jwt-secret            Opaque                                1      36d
-stripe-secret         Opaque                                1      35s
+export const stripe = new Stripe(process.env.STRIPE_KEY as string, {
+  apiVersion: "2020-08-27", // CIM NAPISES "" BIO MI JE SUGESTED OVAJ VERSION
+  typescript: true, // za ovo kazu da nema nekog efekta, ali stavicu ovo
+});
 
 ```
 
-USPESNO SAM DAKLE NAPRAVIO SECRET OBJECT
+# MOZEMO SADA IMPORTOVATI `Stripe` INSTANCU, U NASEM HANDLERU, I KORISTITI JE DA CHARGE-UJEMO USERS CREDIT CARD
 
-# SADA CU DA NAPISEM DO CONFIG-A, DA `STRIPE_KEY` UCITAM, KAO ENVIROMENT VARIABLE, INSIDE POD, U KOJEM RUNN-UJE NAS `payments` MICROSERVICE
+***
+***
 
-VEC SI OVO RADIO RANIJE U SLUCAJU `auth` MICROSERVICE-A, GDE SI UCITAVAO `JWT_KEY` ENVIROMNT VARIABLE (ALI MISLIM DA SMO GA UCITAVALI I U DRUGIM MICROSERVICE-OVIMA ,KADA SMO KOPIRALI I PREPRAVLJALI KONFIGURACIJE)
+ALI KAKO MI, USTVARI CHARG-UJEMO USERS CREDIT CARD KORISCENJE STRIPE LIBRARY-JA
 
-- `code infra/k8s/payments-depl.yaml`
+[NAJBOLJE JE POGLEDATI API REFERENCE](https://stripe.com/docs/api) KAKO BI OVO BOLJE RAZUMEO 
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  # OVO JE VAZNO, VIDECES I ZASTO
-  name: payments-depl
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: payments
-  template:
-    metadata:
-      labels:
-        app: payments
-    spec:
-      containers:
-        - name: payments
-          image: eu.gcr.io/microticket/payments
-          env:
-            - name: NATS_CLIENT_ID
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-            - name: NATS_URL
-              value: 'http://nats-srv:4222'
-            - name: NATS_CLUSTER_ID
-              value: microticket
-            - name: MONGO_URI
-              value: 'mongodb://payments-mongo-srv:27017/payments'
-            - name: JWT_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: jwt-secret
-                  key: JWT_KEY
-            # -- EVO DEFINISEMO OVO --
-            - name: STRIPE_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: stripe-secret
-                  key: STRIPE_KEY
-            # ------------------------
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: payments-srv
-spec:
-  selector:
-    app: payments
-  type: ClusterIP
-  ports:
-    - name: payments
-      protocol: TCP
-      port: 3000
-      targetPort: 3000
+***
+***
+
+KONACNO UVIZIKO I KORISTIMO Stripe INSTANCU
+
+- `code payments/src/routes/new.ts`
+
+```ts
+
 ```
-
-## U SLEDECEM BRANCH-U INICIJALIZOVACEMO STRIPE SDK U NASEM CREATE CHARGE ROUTE HANDLERU

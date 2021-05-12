@@ -9,6 +9,8 @@ import {
 } from "@ramicktick/common";
 import { body } from "express-validator";
 import { Order } from "../models/order.model";
+// UVOZIMO DAKLE Stripe INSTANCU
+import { stripe } from "../stripe";
 
 const router = Router();
 
@@ -21,7 +23,7 @@ router.post(
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    // PRONALAZENJE ORDER-A KOJ IUSER ZELI DA PAY-UJE
+    // PRONALAZENJE ORDER-A KOJI USER ZELI DA PAY-UJE
     const { token, orderId } = req.body;
 
     const order = await Order.findById(orderId);
@@ -39,6 +41,8 @@ router.post(
     if (order.status === OSE.cancelled) {
       throw new BadRequestError("cant't pay fo already cancelled order");
     }
+
+    // ****** EVO OVDE KORISTIMO Stripe INSTANCU ****
 
     // ------------------------
     res.status(201).send({ success: true });
