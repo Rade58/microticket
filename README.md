@@ -104,3 +104,11 @@ app.use(errorHandler);
 export { app };
 
 ```
+
+AKO TI NIJE SKAFFOLD UPALJEN POKRENI GA
+
+- `skaffold dev`
+
+**TESTIRACEMO ROUTE U INSOMNII**
+
+
