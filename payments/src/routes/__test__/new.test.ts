@@ -108,6 +108,7 @@ it("returns 201 if charge is created; stripe.charges.create was called", async (
   // HAJDE DA PRAVIMO EXPECTATION, I ZA ARGUMENTE SA KOJIMA JE MOCK CALLED
   // TO SU ARGUMENTI KOJI SU PROSLEDJENI U stripe.charges.create
   // POZIV, U SAMOM HANDLERU (MISLIM DA TI JE TO JASNO)
+
   expect((stripe.charges.create as jest.Mock).mock.calls[0][0].source).toEqual(
     "tok_visa"
   );

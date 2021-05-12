@@ -154,6 +154,13 @@ it("returns 201 if charge is created; stripe.charges.create was called", async (
   expect((stripe.charges.create as jest.Mock).mock.calls[0][0].currency).toEqual("usd")
   expect((stripe.charges.create as jest.Mock).mock.calls[0][0].amount).toEqual(price * 100) // ZATO STO SU CENTI U PITANJU
 
+  // CISTO DA TI KAZEM JESTE DA JE PRVI ARRAY ONAJ KOJI ODREDJUJE
+  // KOLIKO JE MOCK BIO PUTA POZVAN
+  // JA ZNAM DA JE JEDNOM POZVAN I ZATO JE NULA [0]
+  // A DRUGO [0] UKAZUJE NA PRVI I JEDINI ARGUMENT SA KOJIM JE FUNKCIJA
+  // POZVANA, A TO JE OPTIONS OBJECT KOJ ISE PASS-UJE U `stripe.charges.create`
+
+
 });
 ```
 
