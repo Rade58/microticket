@@ -80,7 +80,7 @@ it("returns 400 if status of the order, is already cancelled", async () => {
     .expect(400);
 });
 
-// NEM ARAZLOGA DA PRAVIM NOVI TEST, SAMO CU OVAJ TEST PROSIRITI
+// NEMA RAZLOGA DA PRAVIM NOVI TEST, SAMO CU OVAJ TEST PROSIRITI
 it("returns 201 if charge is created; stripe.charges.create was called; stripe chare object created, and payment object created", async () => {
   const userPayload = {
     id: new ObjectId().toHexString(),
