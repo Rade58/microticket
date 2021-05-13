@@ -181,3 +181,7 @@ it("returns 201 if charge is created; stripe.charges.create was called; stripe c
 - `yarn test` p `Enter` new `Enter`
 
 I TEST JE PROSAO
+
+## NAIME, MI JOS NISMO OVDE ZAVRSILI; JER TREBALI BI DA PUBLISH-UJEMO EVENT, KAKO BI SMO REKLI OSTATKU APP-A DA JE KREIRAN CHARGE, ILI PAYMENT
+
+TO CEMO URADITI U SLEDECEM BRANCH-U
