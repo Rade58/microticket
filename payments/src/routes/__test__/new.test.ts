@@ -12,7 +12,9 @@ import { stripe } from "../../stripe";
 
 const { ObjectId } = Types;
 
-const price = 69;
+// ALI OVOG PUTA CU DA RANDOMLY GENERISEM price
+const price = Math.round(Math.random() * 100);
+// A VIDECES I ZASTO
 
 const makeAnOrder = async (options: {
   userPayload?: { id: string; email: string };
@@ -107,5 +109,17 @@ it("returns 201 if charge is created; stripe.charges.create was called", async (
   // EVO UZIMAMO LISTU CHARGE-VA
   const charges = await stripe.charges.list();
 
-  console.log({ charges });
+  // DOBICU USTVARI OBJEKAT, U KOJEM JE LISTA U
+  // data PROPERTIJU
+
+  // console.log({ charges: charges.data });
+
+  const lastCharge = charges.data[0];
+
+  // POSTO MI JE price U DOLARIMA, A DOBICU NAZAD CENTS
+  // MNOZIM SA 100
+  expect(lastCharge.amount).toEqual(price * 100);
+
+  // MOGU DA PRAVIM EXPECTATION I ZA currency
+  expect(lastCharge.currency).toEqual("usd");
 });
