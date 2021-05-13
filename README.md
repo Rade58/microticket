@@ -309,3 +309,8 @@ it("returns 201 if charge is created; stripe.charges.create was called", async (
 
 ```
 
+- `cd payments`
+
+- `yarn test` p `Enter` new `Enter`
+
+I ZAISTA TEST JE PROSAO
