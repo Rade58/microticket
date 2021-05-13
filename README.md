@@ -296,3 +296,7 @@ it("returns 201 if charge is created; stripe.charges.create was called; stripe c
 - `yarn test` p `Enter` new `Enter`
 
 **I TEST JE PROSAO**
+
+## ONO STA JE JOS POTREBNO DA URADIM JESTE DEFINISANJE LISTENERA ZA `"payment:created"` INSIDE `orders` MICROSERVICE
+
+STO CU URADITI U SLEDECEM BRANCH-U
