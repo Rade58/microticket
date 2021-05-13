@@ -5,9 +5,9 @@ import { sign } from "jsonwebtoken";
 require("dotenv").config();
 
 jest.mock("../events/nats-wrapper");
-// EVO DODAO SAM OVO, I OVO JE RELATIVNO NA OVAJ FILE
-// U KOJEM PISEM
-jest.mock("../stripe.ts");
+
+// EVO OVO UKLANJAM
+// jest.mock("../stripe.ts");
 
 let mongo: any;
 

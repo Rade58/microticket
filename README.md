@@ -64,6 +64,25 @@ NAJLAKSE MI JE DA CEO TAJ MOCKS FOLDER (U KOJEM IMAM SAMO JEDAN FILE) PREIMENUJE
 
 PREIMENOVAO SAM `payments/src/__mocks__` U `payments/src/trash`
 
-**I UKLANJAM OVO**
+**I UKLANJAM OZNACAVANJE, `stripe.ts` KAO MOCK-A**
 
 - `code payments/src/test/setup.ts`
+
+```ts
+import { MongoMemoryServer } from "mongodb-memory-server";
+import mongoose from "mongoose";
+import { sign } from "jsonwebtoken";
+
+require("dotenv").config();
+
+jest.mock("../events/nats-wrapper");
+
+// EVO OVO UKLANJAM
+// jest.mock("../stripe.ts");
+
+// ...
+// ...
+// ...
+```
+
+
