@@ -175,3 +175,9 @@ it("returns 201 if charge is created; stripe.charges.create was called; stripe c
   }
 });
 ```
+
+- `cd payments`
+
+- `yarn test` p `Enter` new `Enter`
+
+I TEST JE PROSAO
