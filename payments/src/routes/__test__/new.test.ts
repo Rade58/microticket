@@ -5,10 +5,10 @@ import { app } from "../../app";
 
 import { Order } from "../../models/order.model";
 
-// OVO VISE NE KORISTIS OVAKO, JER OVO JE SLUZILO
-// RANIJE DA SE UVEZE MOCK
-// import { stripe } from "../../stripe";
-//
+// UVOZIM NASU stripe INSTANCU
+// KOJU CU D AKORISTIM U TESTU
+import { stripe } from "../../stripe";
+// ---------------------------------
 
 const { ObjectId } = Types;
 
@@ -32,6 +32,11 @@ const makeAnOrder = async (options: {
 
   return order;
 };
+
+// ...
+// ...
+// ...
+// ...
 
 it("returns 404 if order doesn't exist", async () => {
   await request(app)
@@ -86,8 +91,6 @@ it("returns 201 if charge is created; stripe.charges.create was called", async (
 
   const order = await makeAnOrder({ userPayload });
 
-  // OVO MOZEMO SADA DA STAVIMO U VARIJABLU
-  // VIDECES KASNIJE ZASTO SAM TO URADIO
   const response = await request(app)
     .post("/api/payments")
     .set("Cookie", global.getOtherCookie(userPayload))
@@ -96,20 +99,13 @@ it("returns 201 if charge is created; stripe.charges.create was called", async (
       orderId: order.id,
     });
 
-  // I NE OCEKUJEM NIKAKAV ERROREUS RESPONSE
-  // STO ZNACI DA CE SE CHARGE USPENO KREIRATI
+  // DAKLE NAPRAVILI SMO JEDAN CHARGE
+  // KAO I RANIJE
+  // I HANDLER BI TREBAO DA POSALJE 201 STATUS
   expect(response.status).toEqual(201);
 
-  // OVO VISE NIJE RELEVANTNO
-  /* expect(stripe.charges.create).toHaveBeenCalled();
+  // EVO UZIMAMO LISTU CHARGE-VA
+  const charges = await stripe.charges.list();
 
-  expect((stripe.charges.create as jest.Mock).mock.calls[0][0].source).toEqual(
-    "tok_visa"
-  );
-  expect(
-    (stripe.charges.create as jest.Mock).mock.calls[0][0].currency
-  ).toEqual("usd");
-  expect((stripe.charges.create as jest.Mock).mock.calls[0][0].amount).toEqual(
-    price * 100
-  ); */
+  console.log({ charges });
 });
