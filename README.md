@@ -58,3 +58,12 @@ require("dotenv").config();
 
 **SADA KADA BILO GDE U FILE-OVIMA KUCAS `process.env.STRIPE_KEY` KORISTICE SE TVOJ SECRET STRIPE KEY**
 
+# SADA MOZES UKLONITI MOCKS ZA `stripe.ts`
+
+NAJLAKSE MI JE DA CEO TAJ MOCKS FOLDER (U KOJEM IMAM SAMO JEDAN FILE) PREIMENUJEM (ZA SVAK ISLUCAJ)
+
+PREIMENOVAO SAM `payments/src/__mocks__` U `payments/src/trash`
+
+**I UKLANJAM OVO**
+
+- `code payments/src/test/setup.ts`
