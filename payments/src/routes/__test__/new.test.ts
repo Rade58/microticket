@@ -5,8 +5,9 @@ import { app } from "../../app";
 
 import { Order } from "../../models/order.model";
 
-// UVOZIM POMENUTO
-import { stripe } from "../../stripe";
+// OVO VISE NE KORISTIS OVAKO, JER OVO JE SLUZILO
+// RANIJE DA SE UVEZE MOCK
+// import { stripe } from "../../stripe";
 //
 
 const { ObjectId } = Types;
@@ -31,13 +32,6 @@ const makeAnOrder = async (options: {
 
   return order;
 };
-
-// A DOLE NA DNU CU DA PRAVIM NOVI TEST
-// U KOJEM CU DA NAPRAVIM ASSERTION O TOME DA JE
-
-// OSTLE TESTOVE KOJE SAM RANIJE PRAVIO
-// ...
-// ...
 
 it("returns 404 if order doesn't exist", async () => {
   await request(app)
@@ -83,8 +77,7 @@ it("returns 400 if status of the order, is already cancelled", async () => {
     .expect(400);
 });
 
-// SAMO POPRAVLJAM USTVARI OVAJ TEST, TAKO STO CU NAPRAVITI
-// EXPECTATION DA JE MOCK USTVARI CALLED
+// --------
 it("returns 201 if charge is created; stripe.charges.create was called", async () => {
   const userPayload = {
     id: new ObjectId().toHexString(),
@@ -93,21 +86,22 @@ it("returns 201 if charge is created; stripe.charges.create was called", async (
 
   const order = await makeAnOrder({ userPayload });
 
-  await request(app)
+  // OVO MOZEMO SADA DA STAVIMO U VARIJABLU
+  // VIDECES KASNIJE ZASTO SAM TO URADIO
+  const response = await request(app)
     .post("/api/payments")
     .set("Cookie", global.getOtherCookie(userPayload))
     .send({
       token: "tok_visa",
       orderId: order.id,
-    })
-    .expect(201);
+    });
 
-  // EVO GA TAJ EXPECTATION
-  expect(stripe.charges.create).toHaveBeenCalled();
+  // I NE OCEKUJEM NIKAKAV ERROREUS RESPONSE
+  // STO ZNACI DA CE SE CHARGE USPENO KREIRATI
+  expect(response.status).toEqual(201);
 
-  // HAJDE DA PRAVIMO EXPECTATION, I ZA ARGUMENTE SA KOJIMA JE MOCK CALLED
-  // TO SU ARGUMENTI KOJI SU PROSLEDJENI U stripe.charges.create
-  // POZIV, U SAMOM HANDLERU (MISLIM DA TI JE TO JASNO)
+  // OVO VISE NIJE RELEVANTNO
+  /* expect(stripe.charges.create).toHaveBeenCalled();
 
   expect((stripe.charges.create as jest.Mock).mock.calls[0][0].source).toEqual(
     "tok_visa"
@@ -117,7 +111,5 @@ it("returns 201 if charge is created; stripe.charges.create was called", async (
   ).toEqual("usd");
   expect((stripe.charges.create as jest.Mock).mock.calls[0][0].amount).toEqual(
     price * 100
-  );
-
-  console.log({ STRIPE_KEY: process.env.STRIPE_KEY });
+  ); */
 });

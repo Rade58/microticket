@@ -60,7 +60,7 @@ require("dotenv").config();
 
 # SADA MOZES UKLONITI MOCKS ZA `stripe.ts`
 
-NAJLAKSE MI JE DA CEO TAJ MOCKS FOLDER (U KOJEM IMAM SAMO JEDAN FILE) PREIMENUJEM (ZA SVAK ISLUCAJ)
+NAJLAKSE MI JE DA CEO TAJ MOCKS FOLDER (U KOJEM IMAM SAMO JEDAN FILE) PREIMENUJEM (ZA SVAKI SLUCAJ)
 
 PREIMENOVAO SAM `payments/src/__mocks__` U `payments/src/trash`
 
@@ -85,4 +85,91 @@ jest.mock("../events/nats-wrapper");
 // ...
 ```
 
+# SADA MOZES KORIGOVATI TESTOVE GDE SI GOD KORISTIO `stripe.charges.create` KAO MOCK
 
+TO JE U SUSTINI U SAMO JEDNOM TESTU
+
+- `code payments/src/routes/__test__/new.test.ts`
+
+```ts
+import request from "supertest";
+import { OrderStatusEnum as OSE } from "@ramicktick/common";
+import { Types } from "mongoose";
+import { app } from "../../app";
+
+import { Order } from "../../models/order.model";
+
+// OVO VISE NE KORISTIS OVAKO, JER OVO JE SLUZILO
+// RANIJE DA SE UVEZE MOCK
+// import { stripe } from "../../stripe";
+//
+
+const { ObjectId } = Types;
+
+const price = 69;
+
+const makeAnOrder = async (options: {
+  userPayload?: { id: string; email: string };
+  status?: OSE;
+}) => {
+  const { status, userPayload } = options;
+
+  const _id = new ObjectId().toHexString();
+
+  const order = await Order.create({
+    _id,
+    userId: userPayload ? userPayload.id : new ObjectId().toHexString(),
+    version: 0,
+    status: status ? status : OSE.created,
+    price,
+  });
+
+  return order;
+};
+
+
+// ...
+// ...
+// ...
+// ...
+// ...
+
+
+// --------
+it("returns 201 if charge is created; stripe.charges.create was called", async () => {
+  const userPayload = {
+    id: new ObjectId().toHexString(),
+    email: "stavros@mail.com",
+  };
+
+  const order = await makeAnOrder({ userPayload });
+
+  // OVO MOZEMO SADA DA STAVIMO U VARIJABLU
+  // VIDECES KASNIJE ZASTO SAM TO URADIO
+  const response = await request(app)
+    .post("/api/payments")
+    .set("Cookie", global.getOtherCookie(userPayload))
+    .send({
+      token: "tok_visa",
+      orderId: order.id,
+    });
+
+  // I NE OCEKUJEM NIKAKAV ERROREUS RESPONSE
+  // STO ZNACI DA CE SE CHARGE USPENO KREIRATI
+  expect(response.status).toEqual(201);
+
+  // OVO VISE NIJE RELEVANTNO
+  /* expect(stripe.charges.create).toHaveBeenCalled();
+
+  expect((stripe.charges.create as jest.Mock).mock.calls[0][0].source).toEqual(
+    "tok_visa"
+  );
+  expect(
+    (stripe.charges.create as jest.Mock).mock.calls[0][0].currency
+  ).toEqual("usd");
+  expect((stripe.charges.create as jest.Mock).mock.calls[0][0].amount).toEqual(
+    price * 100
+  ); */
+});
+
+```
