@@ -3,10 +3,10 @@ import { OrderStatusEnum as OSE } from "@ramicktick/common";
 import { Types } from "mongoose";
 import { app } from "../../app";
 import { Order } from "../../models/order.model";
-// UVESCEMO I Payment MODEL
 import { Payment } from "../../models/payment.model";
-//
 import { stripe } from "../../stripe";
+// UVOZIMO natsWrapper ZA KOJI TI PO STOTI PUT GOVORIM DA JE MOCKED
+import { natsWrapper } from "../../events/nats-wrapper";
 
 const { ObjectId } = Types;
 
@@ -80,8 +80,7 @@ it("returns 400 if status of the order, is already cancelled", async () => {
     .expect(400);
 });
 
-// NEMA RAZLOGA DA PRAVIM NOVI TEST, SAMO CU OVAJ TEST PROSIRITI
-it("returns 201 if charge is created; stripe.charges.create was called; stripe chare object created, and payment object created", async () => {
+it("returns 201 if charge is created; stripe.charges.create was called; stripe chare object created, payment object created; and published to 'payment:created' channel", async () => {
   const userPayload = {
     id: new ObjectId().toHexString(),
     email: "stavros@mail.com",
@@ -107,9 +106,6 @@ it("returns 201 if charge is created; stripe.charges.create was called; stripe c
 
   expect(lastCharge.currency).toEqual("usd");
 
-  // MOZEMO DA PROBAMO DA UZMEMO Payment DOKUMRNT
-  // PREMA ORDER ID-JU, ALI I PREMA STRIPE CHARG ID-JU
-
   const payment = await Payment.findOne({
     order: order.id,
     stripeChargeId: lastCharge.id,
@@ -119,19 +115,29 @@ it("returns 201 if charge is created; stripe.charges.create was called; stripe c
 
   if (payment) {
     await payment.populate("order").execPopulate();
-    // SADA MOZEMO DA NAPRAVIMO NEKE ASSERTIONS
 
     expect(payment.stripeChargeId).toEqual(lastCharge.id);
 
     expect(payment.order.id).toEqual(order.id);
 
-    // A MOGLI SMO DA PONOVO FETCH-UJEMO CHARGE
-    // NEMA VEZE STO NAM JE VEC DOSTUPNA
-    // ZELIMO DA PROBAMO stripe.charges.retrieve
     const sameCharge = await stripe.charges.retrieve(payment.stripeChargeId);
 
     expect(sameCharge.id).toEqual(lastCharge.id);
 
     expect(sameCharge.amount).toEqual(order.price * 100);
+
+    // EVO OVDE PRAVIM TVRDNJU DA JE natsWrapper.client.publish ZAISTA CALLED
+
+    expect(natsWrapper.client.publish).toHaveBeenCalled();
+
+    // console.log((natsWrapper.client.publish as jest.Mock).mock.calls);
+
+    const argumentsOfPublish = JSON.parse(
+      (natsWrapper.client.publish as jest.Mock).mock.calls[0][1]
+    );
+
+    expect(argumentsOfPublish.orderId).toEqual(order.id);
+    expect(argumentsOfPublish.id).toEqual(payment.id);
+    expect(argumentsOfPublish.stripeChargeId).toEqual(sameCharge.id);
   }
 });
