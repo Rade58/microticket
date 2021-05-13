@@ -173,8 +173,11 @@ router.post(
       orderId: payment.order.id,
       stripeChargeId: payment.stripeChargeId,
     });
+    // JA SAM AWAIT-OVAO PUBLISHING, MADA TO I NE MORAS DA RADIS
+    // JER ZASTO BI TI PUBLISHING PRAVIO MALI ZASTOJ, ALI NEMA VEZE
 
-    res.status(201).send({ success: true });
+    // AUTOR WORKSHOPA JE IPAK ODLUCIO DA POSALJE PAYMENT ID
+    res.status(201).send({ id: payment.id });
   }
 );
 
