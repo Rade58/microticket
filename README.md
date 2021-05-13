@@ -57,3 +57,21 @@ DA SAD REPUBLISH-UJEMO MODULE
 - `cd common`
 
 - `npm run pub`
+
+**I SADA CU U SVIM MICROSERVICE-OVIMA, UPDATE-OATI MOJ MODUL** (NE KAZEM DA CE NAJNOVIJA VERZIJA TREBATI U SVIM MICROSERVICE-OVIMA, AL IZASTO NE BI SVAKI MICROSERVICE IMAO LATEST VERZIJU)
+
+- `cd tickets`
+
+- `yarn add @ramicktick/common --latest`
+
+- `cd orders`
+
+- `yarn add @ramicktick/common --latest`
+
+- `cd expiration`
+
+- `yarn add @ramicktick/common --latest`
+
+- `cd payments`
+
+- `yarn add @ramicktick/common --latest`
