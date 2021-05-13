@@ -52,3 +52,4 @@ expiration/node_modules
 
 # payments
 payments/node_modules
+payments/.env

@@ -2,6 +2,8 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 import { sign } from "jsonwebtoken";
 
+require("dotenv").config();
+
 jest.mock("../events/nats-wrapper");
 // EVO DODAO SAM OVO, I OVO JE RELATIVNO NA OVAJ FILE
 // U KOJEM PISEM

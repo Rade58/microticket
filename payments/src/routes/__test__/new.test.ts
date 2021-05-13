@@ -118,4 +118,6 @@ it("returns 201 if charge is created; stripe.charges.create was called", async (
   expect((stripe.charges.create as jest.Mock).mock.calls[0][0].amount).toEqual(
     price * 100
   );
+
+  console.log({ STRIPE_KEY: process.env.STRIPE_KEY });
 });
