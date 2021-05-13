@@ -9,7 +9,9 @@ import {
 } from "@ramicktick/common";
 import { body } from "express-validator";
 import { Order } from "../models/order.model";
-// UVOZIMO DAKLE Stripe INSTANCU
+// UVOZIMO Payment MODEL
+import { Payment } from "../models/payment.model";
+//
 import { stripe } from "../stripe";
 
 const router = Router();
@@ -23,7 +25,6 @@ router.post(
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    // PRONALAZENJE ORDER-A KOJI USER ZELI DA PAY-UJE
     const { token, orderId } = req.body;
 
     const order = await Order.findById(orderId);
@@ -31,27 +32,31 @@ router.post(
     if (!order) {
       throw new NotFoundError();
     }
-    // MAKING SURE THAT THE ORDER BELONGS TO THE USER
 
     if (req.currentUser?.id !== order.userId) {
       throw new NotAuthorizedError();
     }
 
-    // MAKE SURE THAT ORDER IS NOT ALREADY CANCELLED
     if (order.status === OSE.cancelled) {
       throw new BadRequestError("cant't pay fo already cancelled order");
     }
 
-    // ****** EVO OVDE KORISTIMO Stripe INSTANCU ****
-
-    await stripe.charges.create({
+    // UZIMAMO ID CHARGE-A
+    const { id: stripeChargeId } = await stripe.charges.create({
       currency: "usd",
-      amount: order.price * 100, // ZATO STO PRETVARAMO DOLARE U CENTE
-      // A OVDE PASS-UJEMO token AS A SOURCE
+      amount: order.price * 100,
       source: token,
     });
 
-    // ------------------------
+    // OVDE PRAVIMO Payment DOKUMENT
+    await Payment.create({
+      order: order.id,
+      stripeChargeId,
+    });
+
+    // OPER SA RESPONSE-OM NE SALJEM NISTA OOSIM
+    // POTVRDE DA JE SVE PROSLO USPESNO
+
     res.status(201).send({ success: true });
   }
 );

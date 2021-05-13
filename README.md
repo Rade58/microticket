@@ -1,117 +1,84 @@
-# POVEZIVANJE ORDERA SA CHARGE-OM
+# KREIRANJE `Payment` DOKUMENTA U HANDLERU ZA KREIRANJE STRIPE CHARGE-A
 
-JA NISAM JOS ZAVRSIO SA DEFINICIJOM MOG HANDLER-A ZA CREATING CHARGE
+PRO CEMO OPET DA POGLEDAMO STRIPE API DOCS, A ONO STA NAS ZANIMA JESTE STA IMA NA OBJEKTU KOJI DOBIJEMO KADA KREIRAMO STRIPE CHARGE
 
-JOS RANIJE, REKAO SAM DA CU U DATBASE-U TIED TO `payments` IMATI PRIMARNU KOLEKCIJU; A REPLICATED KOLEKCIJA JE `Orders`
+[DAKLE TAJ CHARGE OBJEKAT PORED OSTALOG IMA id](https://stripe.com/docs/api/charges/create) ,KOJI NAS TRENUTNO ZANIMA
 
-ZA Orders SAM NAPRAVIO MODEL I KORISTIO SAM GA DA BI NA `"order:create"` I `"order:cancelled"`, KREIRAO/UPDATE-OVAO REPLICATED ORDER
+ISTO TAKO DA TI OPET KAZEM [DA CHARGE PREKO ID-JA MOZES RETRIEVE-OVATI IS STRIPE API-A](https://stripe.com/docs/api/charges/retrieve) ,KORISCENJEM ONE METODE `stripe.charges.retrieve` DAKLE AKO ZELIS DA VIDIS CHAREGE IN THE FUTURE, MOZES KORISTITI POMENUTU METODU, A KADA KOMPLETIRAMO HANDLER, TAJ STRIPE CHARGE ID, BICE NA Payment
 
-I ZATO IMAMO GAP I U NASEM HANDLERU ZA KREIRANJE CHARGE-A
-
-MI JESMO KREIRALI CHARGE, VEZANO ZA STRIPE, ALI NISMO ODREDJENI DATA CHARGE-A STORE-OVALI U DATBASE, TACNIJE NAS CHARGE NEMA NA SEBI NIKAKV DATA KOJI GA POVEZUJE, SA ODREDJENIM ORDEROM
-
-**MI NEMAMO DEFINISAN MODEL KOJI BI TAKAV DATA STORE-OVAO U NEKOM DOKUMENTU U DATBASE-U (MISLIM NA OBJEKAT KOJI BI IMAO DATA, KOJI POVEZUJE ORDER SA NEKI MCHARGE-OM)**
-
-**MI CEMO USTVARI DEFINISATI `Payments` MODEL**
-
-TAKAV MODEL CE NAM TREBATI JER ZELIMO DA IMAMO U DATBASE-U INFO, KADA JE NECIJI CREDIT CARD BIO BILLED I INFORMACIJE TOG BILLING-A; ALI I SA KOJIM JE ORDEROM POVEZAN TAJ BILLING
-
-**DATA POMENUTE KOLEKCIJE JA NECU KORISTITI NIGDE U MOM APP-U; NECEMMO CITATI IZ NJE, NECEMO SHOW-OVATI ANY INFORMATION FROM IT**
-
-ALI MOZE BITI FUTURE PROOFING, ODNOSNO MOZDA TI MOZE POSLUZITI U BUDUCNOSTI, AKO IKAD BUDES IMAO DASHBOARD ZA SVOJE USER-E, DA ONI VIDE KAOJE SU PAYMENTS OBAVILI U TVOJ WEB APLIKACIJI, I ZA KOJE ORDER-E
-
-# PRAVIMO `Payment` MODEL
-
-- `touch payments/src/models/payment.model.ts`
+- `code payments/src/routes/new.ts`
 
 ```ts
-import { Schema, model, Document, Model } from "mongoose";
-import { OrderDocumentI } from "./order.model";
+import { Router, Request, Response } from "express";
+import {
+  requireAuth,
+  validateRequest,
+  BadRequestError,
+  NotFoundError,
+  NotAuthorizedError,
+  OrderStatusEnum as OSE,
+} from "@ramicktick/common";
+import { body } from "express-validator";
+import { Order } from "../models/order.model";
+// UVOZIMO Payment MODEL
+import { Payment } from "../models/payment.model";
+//
+import { stripe } from "../stripe";
 
-const { ObjectId } = Schema.Types;
+const router = Router();
 
-const paymentSchema = new Schema(
-  {
-    order: {
-      // OVO NIJE MORAO DA BUDE REF ,ALI JA SAM GA IPAK DEFINISAO
-      type: ObjectId,
-      ref: "Order",
-      required: true,
-    },
-    stripeChargeId: {
-      type: String,
-      required: true,
-    },
-  },
-  {
-    toJSON: {
-      /**
-       *
-       * @param doc
-       * @param ret object to be returned later as json
-       * @param options
-       */
-      transform(doc, ret, options) {
-        ret.id = ret._id;
-        delete ret._id;
-        delete ret.__v;
-      },
-    },
-    // POSTO SE CHARING ZA NEKI ORDER OBAVLJA SAMO JEDNOM
-    // MI NIKADA NECEMO UPDATE-OVATI Payment DOKUMENT
-    // ZATO OVO NIJE POTREBNO
-    /* optimisticConcurrency: true,
-    versionKey: "version",
-    */
+router.post(
+  "/api/payments",
+  requireAuth,
+  [
+    body("token").not().isEmpty().withMessage("stripe token not provided"),
+    body("orderId").not().isEmpty().withMessage("orderId is missing"),
+  ],
+  validateRequest,
+  async (req: Request, res: Response) => {
+    const { token, orderId } = req.body;
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      throw new NotFoundError();
+    }
+
+    if (req.currentUser?.id !== order.userId) {
+      throw new NotAuthorizedError();
+    }
+
+    if (order.status === OSE.cancelled) {
+      throw new BadRequestError("cant't pay fo already cancelled order");
+    }
+
+    // UZIMAMO ID CHARGE-A
+    const { id: stripeChargeId } = await stripe.charges.create({
+      currency: "usd",
+      amount: order.price * 100,
+      source: token,
+    });
+
+    // OVDE PRAVIMO Payment DOKUMENT
+    await Payment.create({
+      order: order.id,
+      stripeChargeId,
+    });
+
+    // OPER SA RESPONSE-OM NE SALJEM NISTA OOSIM
+    // POTVRDE DA JE SVE PROSLO USPESNO
+
+    res.status(201).send({ success: true });
   }
 );
 
-/**
- * @description this fields are inputs for the document creation
- */
-interface PaymentFields {
-  stripeChargeId: string;
-  order: OrderDocumentI;
-  // OVO NECE POSTOJATI DAKLE
-  // version: number;
-}
-
-/**
- * @description interface for things, among others, I can search on obtained document
- */
-export interface PaymentDocumentI extends Document, PaymentFields {
-  //
-}
-
-/**
- * @description interface for additional things on the model (MOSTLY METHODS TO BE USED ON THE MODEL)
- */
-interface PaymentModelI extends Model<PaymentDocumentI> {
-  __nothing: () => void;
-}
-
-// BUILDING STATIC METHODS ON MODEL ( JUST SHOVING NOT GOING TO USE IT )
-// paymentSchema.statics.__nothing = async function (input) {/**/};
-// pre HOOK
-// paymentSchema.pre("save", async function (next) {/**/});
-// METHODS ON DOCUMENT
-// paymentSchema.methods.
-
-const Payment = model<PaymentDocumentI, PaymentModelI>(
-  "Payment",
-  paymentSchema
-);
-
-export { Payment };
-
+export { router as createChargeRouter };
 ```
 
-ALI DOBRA JE PRAKSA INCLUDE-OVATI VERSIO NZA ANY RECORD I KORISTITI OPTIMISTIC CONCURRENCY, CAK I KADA MISLIS DA SE DOKUMENT NIKADA NECE UPDATE-OVATI
+# SADA CEMO NAPISATI TEST SA ASSERTIONOM DA JE KREIRAN NOVI `Payment` OBJEKAT U DATBASE-U
 
-ALI NEMA VEZE, JA TO OVDE NECU URADITI; **JER ZASIGURNO ZNAM DA NIKAD NECEMO MENJATI DOKUMENTE IZ `Payments` KOLEKCIJE**
+- `code payments/src/routes/__test__/new.test.ts`
 
-# U SLEDECEM BRANCH-U CEMO DA DEFINISEMO MAKING `Payment` DOKUMENTA INSIDE HANDLER FOR CREATING STRIPE CHARGES, ODNO JEDINOM HANDLERU KOJEG IMAO U `payments` MICROSERVICE-U
+```ts
 
-GOVORIM O HANDLERU `payments/src/routes/new.ts`
-
-A TAKODJE CEMO DA NAPISEMO I TEST KAD ZAVRSIOMO POMENUTO
+```

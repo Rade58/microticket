@@ -2,19 +2,15 @@ import request from "supertest";
 import { OrderStatusEnum as OSE } from "@ramicktick/common";
 import { Types } from "mongoose";
 import { app } from "../../app";
-
 import { Order } from "../../models/order.model";
-
-// UVOZIM NASU stripe INSTANCU
-// KOJU CU D AKORISTIM U TESTU
+// UVESCEMO I Payment MODEL
+import { Payment } from "../../models/payment.model";
+//
 import { stripe } from "../../stripe";
-// ---------------------------------
 
 const { ObjectId } = Types;
 
-// ALI OVOG PUTA CU DA RANDOMLY GENERISEM price
 const price = Math.round(Math.random() * 100);
-// A VIDECES I ZASTO
 
 const makeAnOrder = async (options: {
   userPayload?: { id: string; email: string };
@@ -84,8 +80,8 @@ it("returns 400 if status of the order, is already cancelled", async () => {
     .expect(400);
 });
 
-// --------
-it("returns 201 if charge is created; stripe.charges.create was called", async () => {
+// NEM ARAZLOGA DA PRAVIM NOVI TEST, SAMO CU OVAJ TEST PROSIRITI
+it("returns 201 if charge is created; stripe.charges.create was called; stripe chare object created, and payment object created", async () => {
   const userPayload = {
     id: new ObjectId().toHexString(),
     email: "stavros@mail.com",
@@ -101,25 +97,24 @@ it("returns 201 if charge is created; stripe.charges.create was called", async (
       orderId: order.id,
     });
 
-  // DAKLE NAPRAVILI SMO JEDAN CHARGE
-  // KAO I RANIJE
-  // I HANDLER BI TREBAO DA POSALJE 201 STATUS
   expect(response.status).toEqual(201);
 
-  // EVO UZIMAMO LISTU CHARGE-VA
   const charges = await stripe.charges.list();
-
-  // DOBICU USTVARI OBJEKAT, U KOJEM JE LISTA U
-  // data PROPERTIJU
-
-  // console.log({ charges: charges.data });
 
   const lastCharge = charges.data[0];
 
-  // POSTO MI JE price U DOLARIMA, A DOBICU NAZAD CENTS
-  // MNOZIM SA 100
   expect(lastCharge.amount).toEqual(price * 100);
 
-  // MOGU DA PRAVIM EXPECTATION I ZA currency
   expect(lastCharge.currency).toEqual("usd");
+
+  // MOZEMO DA PROBAMO DA UZMEMO Payment DOKUMRNT
+  // PREMA ORDER ID-JU
+
+  const payment = await Payment.findOne({ order: order.id });
+
+  console.log({ payment });
+
+  if (payment) {
+    //
+  }
 });
