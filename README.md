@@ -80,5 +80,98 @@ export { router as createChargeRouter };
 - `code payments/src/routes/__test__/new.test.ts`
 
 ```ts
+import request from "supertest";
+import { OrderStatusEnum as OSE } from "@ramicktick/common";
+import { Types } from "mongoose";
+import { app } from "../../app";
+import { Order } from "../../models/order.model";
+// UVESCEMO I Payment MODEL
+import { Payment } from "../../models/payment.model";
+//
+import { stripe } from "../../stripe";
 
+const { ObjectId } = Types;
+
+const price = Math.round(Math.random() * 100);
+
+const makeAnOrder = async (options: {
+  userPayload?: { id: string; email: string };
+  status?: OSE;
+}) => {
+  const { status, userPayload } = options;
+
+  const _id = new ObjectId().toHexString();
+
+  const order = await Order.create({
+    _id,
+    userId: userPayload ? userPayload.id : new ObjectId().toHexString(),
+    version: 0,
+    status: status ? status : OSE.created,
+    price,
+  });
+
+  return order;
+};
+
+// ...
+// ...
+// ...
+// ...
+
+
+// NEMA RAZLOGA DA PRAVIM NOVI TEST, SAMO CU OVAJ TEST PROSIRITI
+it("returns 201 if charge is created; stripe.charges.create was called; stripe chare object created, and payment object created", async () => {
+  const userPayload = {
+    id: new ObjectId().toHexString(),
+    email: "stavros@mail.com",
+  };
+
+  const order = await makeAnOrder({ userPayload });
+
+  const response = await request(app)
+    .post("/api/payments")
+    .set("Cookie", global.getOtherCookie(userPayload))
+    .send({
+      token: "tok_visa",
+      orderId: order.id,
+    });
+
+  expect(response.status).toEqual(201);
+
+  const charges = await stripe.charges.list();
+
+  const lastCharge = charges.data[0];
+
+  expect(lastCharge.amount).toEqual(price * 100);
+
+  expect(lastCharge.currency).toEqual("usd");
+
+  // MOZEMO DA PROBAMO DA UZMEMO Payment DOKUMRNT
+  // PREMA ORDER ID-JU, ALI I PREMA STRIPE CHARG ID-JU
+
+  const payment = await Payment.findOne({
+    order: order.id,
+    stripeChargeId: lastCharge.id,
+  });
+
+  console.log({ payment, order });
+
+  if (payment) {
+    await payment.populate("order").execPopulate();
+    // SADA MOZEMO DA NAPRAVIMO NEKE ASSERTIONS
+
+    expect(payment.stripeChargeId).toEqual(lastCharge.id);
+
+    expect(payment.order.id).toEqual(order.id);
+
+    // A MOGLI SMO DA PONOVO FETCH-UJEMO CHARGE
+    // NEMA VEZE STO NAM JE VEC DOSTUPNA
+    // ZELIMO DA PROBAMO stripe.charges.retrieve
+    const sameCharge = await stripe.charges.retrieve(payment.stripeChargeId);
+
+    expect(sameCharge.id).toEqual(lastCharge.id);
+
+    expect(sameCharge.amount).toEqual(order.price * 100);
+  }
+});
 ```

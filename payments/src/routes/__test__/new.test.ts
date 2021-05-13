@@ -108,13 +108,30 @@ it("returns 201 if charge is created; stripe.charges.create was called; stripe c
   expect(lastCharge.currency).toEqual("usd");
 
   // MOZEMO DA PROBAMO DA UZMEMO Payment DOKUMRNT
-  // PREMA ORDER ID-JU
+  // PREMA ORDER ID-JU, ALI I PREMA STRIPE CHARG ID-JU
 
-  const payment = await Payment.findOne({ order: order.id });
+  const payment = await Payment.findOne({
+    order: order.id,
+    stripeChargeId: lastCharge.id,
+  });
 
-  console.log({ payment });
+  console.log({ payment, order });
 
   if (payment) {
-    //
+    await payment.populate("order").execPopulate();
+    // SADA MOZEMO DA NAPRAVIMO NEKE ASSERTIONS
+
+    expect(payment.stripeChargeId).toEqual(lastCharge.id);
+
+    expect(payment.order.id).toEqual(order.id);
+
+    // A MOGLI SMO DA PONOVO FETCH-UJEMO CHARGE
+    // NEMA VEZE STO NAM JE VEC DOSTUPNA
+    // ZELIMO DA PROBAMO stripe.charges.retrieve
+    const sameCharge = await stripe.charges.retrieve(payment.stripeChargeId);
+
+    expect(sameCharge.id).toEqual(lastCharge.id);
+
+    expect(sameCharge.amount).toEqual(order.price * 100);
   }
 });
