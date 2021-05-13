@@ -1,189 +1,59 @@
-# KREIRANJE `Payment` DOKUMENTA U HANDLERU ZA KREIRANJE STRIPE CHARGE-A
+# DEFINING AND THEN PUBLISHING `"payment:created"` EVENT
 
-PRO CEMO OPET DA POGLEDAMO STRIPE API DOCS, A ONO STA NAS ZANIMA JESTE STA IMA NA OBJEKTU KOJI DOBIJEMO KADA KREIRAMO STRIPE CHARGE
+OPET KRECEMO OD NASEG LIBRARY-JA `@ramicktic/common` ,GDE DEFINISEMO INTERFACE ZA EVENT
 
-[DAKLE TAJ CHARGE OBJEKAT PORED OSTALOG IMA id](https://stripe.com/docs/api/charges/create) ,KOJI NAS TRENUTNO ZANIMA
-
-ISTO TAKO DA TI OPET KAZEM [DA CHARGE PREKO ID-JA MOZES RETRIEVE-OVATI IS STRIPE API-A](https://stripe.com/docs/api/charges/retrieve) ,KORISCENJEM ONE METODE `stripe.charges.retrieve` DAKLE AKO ZELIS DA VIDIS CHAREGE IN THE FUTURE, MOZES KORISTITI POMENUTU METODU, A KADA KOMPLETIRAMO HANDLER, TAJ STRIPE CHARGE ID, BICE NA Payment
-
-- `code payments/src/routes/new.ts`
+- `code common/src/events/channel-names.ts`
 
 ```ts
-import { Router, Request, Response } from "express";
-import {
-  requireAuth,
-  validateRequest,
-  BadRequestError,
-  NotFoundError,
-  NotAuthorizedError,
-  OrderStatusEnum as OSE,
-} from "@ramicktick/common";
-import { body } from "express-validator";
-import { Order } from "../models/order.model";
-// UVOZIMO Payment MODEL
-import { Payment } from "../models/payment.model";
-//
-import { stripe } from "../stripe";
-
-const router = Router();
-
-router.post(
-  "/api/payments",
-  requireAuth,
-  [
-    body("token").not().isEmpty().withMessage("stripe token not provided"),
-    body("orderId").not().isEmpty().withMessage("orderId is missing"),
-  ],
-  validateRequest,
-  async (req: Request, res: Response) => {
-    const { token, orderId } = req.body;
-
-    const order = await Order.findById(orderId);
-
-    if (!order) {
-      throw new NotFoundError();
-    }
-
-    if (req.currentUser?.id !== order.userId) {
-      throw new NotAuthorizedError();
-    }
-
-    if (order.status === OSE.cancelled) {
-      throw new BadRequestError("cant't pay fo already cancelled order");
-    }
-
-    // UZIMAMO ID CHARGE-A
-    const { id: stripeChargeId } = await stripe.charges.create({
-      currency: "usd",
-      amount: order.price * 100,
-      source: token,
-    });
-
-    // OVDE PRAVIMO Payment DOKUMENT
-    await Payment.create({
-      order: order.id,
-      stripeChargeId,
-    });
-
-    // OPER SA RESPONSE-OM NE SALJEM NISTA OOSIM
-    // POTVRDE DA JE SVE PROSLO USPESNO
-
-    res.status(201).send({ success: true });
-  }
-);
-
-export { router as createChargeRouter };
+/**
+ * @description Channel Names Enum   (ALSO KNOWN AS SUBJECTS)
+ * @description BITNO JE DA VREDNOSTI IMAJU ":"
+ */
+export enum ChannelNamesEnum {
+  ticket_created = "ticket:created",
+  ticket_updated = "ticket:updated",
+  order_created = "order:created",
+  order_cancelled = "order:cancelled",
+  expiration_complete = "expiration:complete",
+  // DODAO OVO IME KANALA
+  payment_created = "payment:created",
+}
 ```
 
-# SADA CEMO NAPISATI TEST SA ASSERTIONOM DA JE KREIRAN NOVI `Payment` OBJEKAT U DATBASE-U
-
-- `code payments/src/routes/__test__/new.test.ts`
+- `touch common/src/events/event-interfaces/payment-created-event.ts`
 
 ```ts
-import request from "supertest";
-import { OrderStatusEnum as OSE } from "@ramicktick/common";
-import { Types } from "mongoose";
-import { app } from "../../app";
-import { Order } from "../../models/order.model";
-// UVESCEMO I Payment MODEL
-import { Payment } from "../../models/payment.model";
-//
-import { stripe } from "../../stripe";
+import { ChannelNamesEnum as CNE } from "../channel-names";
 
-const { ObjectId } = Types;
-
-const price = Math.round(Math.random() * 100);
-
-const makeAnOrder = async (options: {
-  userPayload?: { id: string; email: string };
-  status?: OSE;
-}) => {
-  const { status, userPayload } = options;
-
-  const _id = new ObjectId().toHexString();
-
-  const order = await Order.create({
-    _id,
-    userId: userPayload ? userPayload.id : new ObjectId().toHexString(),
-    version: 0,
-    status: status ? status : OSE.created,
-    price,
-  });
-
-  return order;
-};
-
-// ...
-// ...
-// ...
-// ...
-
-
-// NEMA RAZLOGA DA PRAVIM NOVI TEST, SAMO CU OVAJ TEST PROSIRITI
-it("returns 201 if charge is created; stripe.charges.create was called; stripe chare object created, and payment object created", async () => {
-  const userPayload = {
-    id: new ObjectId().toHexString(),
-    email: "stavros@mail.com",
+export interface PaymentCreatedEventI {
+  channelName: CNE.payment_created;
+  data: {
+    id: string;
+    orderId: string;
+    stripeChargeId: string;
   };
+}
 
-  const order = await makeAnOrder({ userPayload });
-
-  const response = await request(app)
-    .post("/api/payments")
-    .set("Cookie", global.getOtherCookie(userPayload))
-    .send({
-      token: "tok_visa",
-      orderId: order.id,
-    });
-
-  expect(response.status).toEqual(201);
-
-  const charges = await stripe.charges.list();
-
-  const lastCharge = charges.data[0];
-
-  expect(lastCharge.amount).toEqual(price * 100);
-
-  expect(lastCharge.currency).toEqual("usd");
-
-  // MOZEMO DA PROBAMO DA UZMEMO Payment DOKUMRNT
-  // PREMA ORDER ID-JU, ALI I PREMA STRIPE CHARG ID-JU
-
-  const payment = await Payment.findOne({
-    order: order.id,
-    stripeChargeId: lastCharge.id,
-  });
-
-  console.log({ payment, order });
-
-  if (payment) {
-    await payment.populate("order").execPopulate();
-    // SADA MOZEMO DA NAPRAVIMO NEKE ASSERTIONS
-
-    expect(payment.stripeChargeId).toEqual(lastCharge.id);
-
-    expect(payment.order.id).toEqual(order.id);
-
-    // A MOGLI SMO DA PONOVO FETCH-UJEMO CHARGE
-    // NEMA VEZE STO NAM JE VEC DOSTUPNA
-    // ZELIMO DA PROBAMO stripe.charges.retrieve
-    const sameCharge = await stripe.charges.retrieve(payment.stripeChargeId);
-
-    expect(sameCharge.id).toEqual(lastCharge.id);
-
-    expect(sameCharge.amount).toEqual(order.price * 100);
-  }
-});
 ```
 
-- `cd payments`
+TI SI GORE UVRSTIO stripeCharge ID, IAKO GA NE TREBA TRENUTNO NI JEDAN DEO TVOJE APLIKACIJE, NI JEDAN MICROSERVICE (PREDPOSTAVLJAM DA JE OVO FUTURE PROOFING; DAKLE NE KAZEM DA HOCEMO IMATI U NASEM PROJEKTU; ALI MOZE SE DESITI DA SE NEKAD NA PRIMER U BUDUCNOSTI DODA NOVI MICROSERVICE, KOJI CE VERIFIKOVATI PAYMENTS ILI HANDLE-UJE RETURNS ILI WHO KNOWS WHAT)
 
-- `yarn test` p `Enter` new `Enter`
+IZVOZIM INTERFACE IZ MODULA
 
-I TEST JE PROSAO
+- `code common/src/index.ts`
 
-## NAIME, MI JOS NISMO OVDE ZAVRSILI; JER TREBALI BI DA PUBLISH-UJEMO EVENT, KAKO BI SMO REKLI OSTATKU APP-A DA JE KREIRAN CHARGE, ILI PAYMENT
+```ts
+// ...
+// ...
+// ...
+// ...
 
-TO CEMO URADITI U SLEDECEM BRANCH-U
+// EVO DODAO SAM OVO
+export * from "./events/event-interfaces/payment-created-event";
+```
 
-A IDEJA JE DA KAZEMO ORDERU DA JE PAYMENT CREATED IL IDA JE CHARGE CREATED, I DA PREMA TOME ORDER, PROMENI STATUS
+DA SAD REPUBLISH-UJEMO MODULE
+
+- `cd common`
+
+- `npm run pub`

@@ -7,6 +7,7 @@ export enum ChannelNamesEnum {
   ticket_updated = "ticket:updated",
   order_created = "order:created",
   order_cancelled = "order:cancelled",
-  // DODAO OOVO IME KANALA
   expiration_complete = "expiration:complete",
+  // DODAO OVO IME KANALA
+  payment_created = "payment:created",
 }

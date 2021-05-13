@@ -21,5 +21,6 @@ export * from "./events/types/order-status-enum";
 export * from "./events/event-interfaces/order-cancelled-event";
 export * from "./events/event-interfaces/order-created-event";
 
-// EVO DODAO SAM OVO
 export * from "./events/event-interfaces/expiration-complete-event";
+// EVO DODAO SAM OVO
+export * from "./events/event-interfaces/payment-created-event";
