@@ -12,6 +12,13 @@ interface CurrentUserI {
 
 export type currentUserType = CurrentUserI | null;
 
+interface PropsI {
+  data?: { currentUser: currentUserType };
+  errors?: any;
+  foo?: string;
+}
+
+// ---------------------------------------------------
 export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
   return {
     props: {
@@ -19,12 +26,7 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
     },
   };
 };
-
-interface PropsI {
-  data?: { currentUser: currentUserType };
-  errors?: any;
-  foo?: string;
-}
+// ---------------------------------------------------
 
 const IndexPage: FunctionComponent<PropsI> = (props) => {
   console.log(props);

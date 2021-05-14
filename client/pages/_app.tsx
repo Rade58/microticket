@@ -4,43 +4,30 @@ import { buildApiClient } from "../utils/buildApiClient";
 import { currentUserType } from "./index";
 import "bootstrap/dist/css/bootstrap.css";
 import Header from "../components/Header";
+// UVESCU POMENUTI HELPER ZA FETCHING ZA CURRENT USER-OM
+import { getCurrentUser } from "../utils/getCurrentUser";
+//
 
 MyApp.getInitialProps = async (appCtx: AppContext) => {
   const { ctx } = appCtx;
 
   try {
-    // EVO BUILD-UJEMO API CLIENT-A
-    const apiClient = buildApiClient(ctx);
+    // OVO NECE TREBATI
+    // const apiClient = buildApiClient(ctx);
 
-    // FETCH-UJEMO USER-A
-    const response = await apiClient.get("/api/users/current-user");
+    // DODAO OVO
+    const { currentUser } = await getCurrentUser(ctx);
 
-    // OVO ZELIM DA TI POKAZEM, ALI NEMA MNOGO SENSA
-    // JEDINO DA TI KAZEM DA OVO RETURN-UJE OBJEKAT
-    // KOJI JE U OVOM FORMATU
-    //                          { pageProps:  }
     const appProps = await App.getInitialProps(appCtx);
 
-    // I TO JE OBJEKAT KOJI U TVOM FORMATU RETURN-UJES DA BI
-    // PASS-OOVAO PROPS
+    // OVO SAM MALO SREDIO OVAKO
+    appProps.pageProps.data = { currentUser } as {
+      currentUser: currentUserType;
+    };
 
-    // JA SAM RANIJE HARDCODE-OVAO TAJ OBJEKAT, MEDJUTIM NECU
-    // VISE, KACICU NA GORNJI OBJEKAT, PA CU NJEGA PASS-OVATI
+    return appProps;
 
-    appProps.pageProps.data = response.data as { currentUser: currentUserType };
-
-    // UMESTO OVOGA OVAKVOG
-    /* return {
-      pageProps: {
-        data: response.data as { currentUser: currentUserType },
-      },
-    }; */
-
-    // RETURN-OVACU OVO
-    return appProps; // TU UNUTRA U TOM OBJECKTU JE
     //
-
-    // --------------------------------------
   } catch (err) {
     console.log(err);
     return {

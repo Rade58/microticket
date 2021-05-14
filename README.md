@@ -2,6 +2,8 @@
 
 OVI PROBLEMI SE TICU TOGA DA NE MOGU PROSLEDITI NISAT IZ `getInitialProps` TO `getServerSideProps` KAKO BI TO MOZDA MOGAO OBRADJIVATI ,ODNOSNO PROCESS-PVATI INSIDE `getServerSideProps`
 
+**USTVARI OVO CE BITI REFACTORING MORE THEN FIXING PROBLEMS**
+
 # PRVO DA TE PODSETIM JOS JEDNOM DA USERA FETCH-UJEMO U `getInitialProps`
 
 - `code client/pages/_app.tsx`
@@ -74,3 +76,103 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 export default MyApp;
 ```
+
+DOBRO OVO IZNAD SAM MALO REFAKTORISAO
+
+POSTO JE AUTOR WORKSHOPA REKAO DA CE SE INSIDE `getServerSideProps` MOZDA FETCH-OVATI USER, A JA PRVENSTVENO FETCH-UJEM USERA INSIDE `_app.tsx`-OVOG `getInitialProps`-A, ZELIM DA NAPRAVIM NEKAKAV HELPER ZA GETTING USER-A
+
+# SADA ZELIM DA NAPRAVIM HELPERA KOJI CE SLUZITI SAMO DA SE FETCH-UJE USER
+
+NE ZNAM DA LI CE MI OVO TREBATI; AUTOR WORKSHOPA JE UKAZAO DA HOCE
+
+- `touch client/utils/getCurrentUser.ts`
+
+```ts
+import { GetServerSidePropsContext, NextPageContext } from "next";
+import { buildApiClient } from "./buildApiClient";
+
+export const getCurrentUser = async (
+  ctx?: GetServerSidePropsContext | NextPageContext
+) => {
+  const client = buildApiClient(ctx);
+
+  try {
+    const response = await client.get("/api/users/current-user");
+
+    return { currentUser: response.data.currentUser };
+  } catch (err) {
+    console.error(err);
+
+    return { currentUser: null };
+  }
+};
+```
+
+# ZELIM DA PROBAM DA KORISTIM OVU METODU U `getInitialProps`
+
+DA VIDIM DA LI CE FUNKCIONISATI
+
+- `code client/pages/_app.tsx`
+
+```tsx
+import React from "react";
+import App, { AppProps, AppContext } from "next/app";
+import { buildApiClient } from "../utils/buildApiClient";
+import { currentUserType } from "./index";
+import "bootstrap/dist/css/bootstrap.css";
+import Header from "../components/Header";
+// UVESCU POMENUTI HELPER ZA FETCHING ZA CURRENT USER-OM
+import { getCurrentUser } from "../utils/getCurrentUser";
+//
+
+MyApp.getInitialProps = async (appCtx: AppContext) => {
+  const { ctx } = appCtx;
+
+  try {
+    // OVO NECE TREBATI
+    // const apiClient = buildApiClient(ctx);
+
+    // DODAO OVO
+    const { currentUser } = await getCurrentUser(ctx);
+
+    const appProps = await App.getInitialProps(appCtx);
+
+    // OVO SAM MALO SREDIO OVAKO
+    appProps.pageProps.data = { currentUser } as {
+      currentUser: currentUserType;
+    };
+
+    return appProps;
+
+    //
+  } catch (err) {
+    console.log(err);
+    return {
+      pageProps: {
+        errors: err.message as any,
+      },
+    };
+  }
+};
+
+// APP PAGE
+function MyApp({ Component, pageProps }: AppProps) {
+  const { currentUser } = pageProps.data;
+
+  return (
+    <div>
+      <Header currentUser={currentUser} />
+      <Component something={"anything"} {...pageProps} />
+    </div>
+  );
+}
+
+export default MyApp;
+
+```
+
+- `skaffold dev`
+
+IDI NA INDEX PAGE I RELOAD-UJE
+
+MISLIM DA BI SVE TREBAL ODA BUDE U REDU
