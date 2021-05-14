@@ -4,23 +4,16 @@ import { buildApiClient } from "../utils/buildApiClient";
 import { currentUserType } from "./index";
 import "bootstrap/dist/css/bootstrap.css";
 import Header from "../components/Header";
-// UVESCU POMENUTI HELPER ZA FETCHING ZA CURRENT USER-OM
 import { getCurrentUser } from "../utils/getCurrentUser";
-//
 
 MyApp.getInitialProps = async (appCtx: AppContext) => {
   const { ctx } = appCtx;
 
   try {
-    // OVO NECE TREBATI
-    // const apiClient = buildApiClient(ctx);
-
-    // DODAO OVO
     const { currentUser } = await getCurrentUser(ctx);
 
     const appProps = await App.getInitialProps(appCtx);
 
-    // OVO SAM MALO SREDIO OVAKO
     appProps.pageProps.data = { currentUser } as {
       currentUser: currentUserType;
     };
@@ -39,13 +32,19 @@ MyApp.getInitialProps = async (appCtx: AppContext) => {
 };
 
 // APP PAGE
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component: PageComponent, pageProps }: AppProps) {
+  // EVO VIDIS
+
   const { currentUser } = pageProps.data;
+
+  // PORED TOGA STO SAM GA PROSLEDIO KAO PROP ZA HEADER
+  // ZELI MDA GA PROSLEDIM ZA SVAKI PAGE
 
   return (
     <div>
       <Header currentUser={currentUser} />
-      <Component something={"anything"} {...pageProps} />
+      {/* EVO SAMO SAM DODAO OVAJ currentUser PROP */}
+      <PageComponent currentUser={currentUser} {...pageProps} />
     </div>
   );
 }
