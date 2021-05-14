@@ -1,5 +1,5 @@
 import React from "react";
-import { AppProps, AppContext } from "next/app";
+import App, { AppProps, AppContext } from "next/app";
 import { buildApiClient } from "../utils/buildApiClient";
 import { currentUserType } from "./index";
 import "bootstrap/dist/css/bootstrap.css";
@@ -24,13 +24,13 @@ MyApp.getInitialProps = async (appCtx: AppContext) => {
 
     const response = await apiClient.get("/api/users/current-user");
 
-    // EVO OVDE CU DA STMAPAM DATA KOJI IZ RESPONSE-A ZA CURRENT USEROM
-    console.log({ FROM_GET_INITIAL_PROPS_FUNCTION: response.data });
+    const appProps = await App.getInitialProps(appCtx);
 
     return {
-      // I VIDIS KAKO SE KAO PAGE PROP SALJE data ,A TO JE USTVARI DAT CUTRRENT USER-A
       pageProps: {
         data: response.data as { currentUser: currentUserType },
+        foo: "bazinga",
+        brom: "brmmmmm",
       },
     };
   } catch (err) {
