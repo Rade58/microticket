@@ -22,7 +22,6 @@ REKAO SAM TI RANIJE DA U NORMALNOM APP-U TI BI OPTIONALY RENDER-OVAO signin sign
 
 4. `/` `/pages/index.tsx` 
 
-
 ***
 ***
 
