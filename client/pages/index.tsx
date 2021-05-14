@@ -3,19 +3,12 @@
 import { FunctionComponent, useEffect } from "react";
 import { GetServerSideProps } from "next";
 import { buildApiClient } from "../utils/buildApiClient";
+import { InitialPropsI } from "../types/initial-props";
 
-interface CurrentUserI {
-  id: string;
-  email: string;
-  iat: number;
-}
-
-export type currentUserType = CurrentUserI | null;
-
-interface PropsI {
-  data?: { currentUser: currentUserType };
-  errors?: any;
-  foo?: string;
+// EVO EXTEND-UJEM OVAJ INTERFACE, KOJI TYPE-UJE
+// PROPSE INDIVIDUAL PAGE-A
+interface PropsI extends InitialPropsI {
+  foo: string;
 }
 
 // ---------------------------------------------------
@@ -29,6 +22,7 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 // ---------------------------------------------------
 
 const IndexPage: FunctionComponent<PropsI> = (props) => {
+  // STAMPACU PROPSE
   console.log(props);
 
   useEffect(() => {
@@ -39,15 +33,16 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
     });
   }, []);
 
-  const { data, errors } = props;
+  // OVDE SADA MOGU RESTRUKTURIRATI NESTO DRUGO
+  const { initialProps, foo } = props;
+
+  const { currentUser, errors } = initialProps;
 
   if (errors) {
     return <pre>{JSON.stringify(errors, null, 2)}</pre>;
   }
 
-  if (data) {
-    const { currentUser } = data;
-
+  if (currentUser) {
     return <h1>You are {!currentUser ? "not" : ""} signed in.</h1>;
   }
 

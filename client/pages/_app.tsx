@@ -1,7 +1,7 @@
 import React from "react";
 import App, { AppProps, AppContext } from "next/app";
 import { buildApiClient } from "../utils/buildApiClient";
-import { currentUserType } from "./index";
+import { InitialPropsI } from "../types/initial-props";
 import "bootstrap/dist/css/bootstrap.css";
 import Header from "../components/Header";
 import { getCurrentUser } from "../utils/getCurrentUser";
@@ -14,8 +14,8 @@ MyApp.getInitialProps = async (appCtx: AppContext) => {
 
     const appProps = await App.getInitialProps(appCtx);
 
-    appProps.pageProps.data = { currentUser } as {
-      currentUser: currentUserType;
+    appProps.pageProps.initialProps = { currentUser } as {
+      currentUser: InitialPropsI["initialProps"]["currentUser"];
     };
 
     return appProps;
@@ -25,7 +25,9 @@ MyApp.getInitialProps = async (appCtx: AppContext) => {
     console.log(err);
     return {
       pageProps: {
-        errors: err.message as any,
+        initialProps: {
+          errors: err.message as any,
+        },
       },
     };
   }
@@ -35,7 +37,7 @@ MyApp.getInitialProps = async (appCtx: AppContext) => {
 function MyApp({ Component: PageComponent, pageProps }: AppProps) {
   // EVO VIDIS
 
-  const { currentUser } = pageProps.data;
+  const { currentUser } = pageProps.initialProps;
 
   // PORED TOGA STO SAM GA PROSLEDIO KAO PROP ZA HEADER
   // ZELI MDA GA PROSLEDIM ZA SVAKI PAGE

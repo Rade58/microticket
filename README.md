@@ -219,7 +219,9 @@ MyApp.getInitialProps = async (appCtx: AppContext) => {
     console.log(err);
     return {
       pageProps: {
-        errors: err.message as any,
+        data: {
+          errors: err.message as any,
+        }
       },
     };
   }
@@ -246,3 +248,94 @@ function MyApp({ Component: PageComponent, pageProps }: AppProps) {
 export default MyApp;
 
 ```
+
+# IMAM NEKU IDEJU DA NAPRAVIM TYPES ZA COMMON PROPSE KOJI SU ISTI ZA SVAKI PAGE; ODNOSNO DA NAPRAVIM INTERFACE ZA INITIAL PROPS; PA DA SE TI PROPSI MOGU EXTEND-OVATI OD PAGE DA PAGE-A
+
+- `mkdir client/types`
+
+- `touch client/types/initial-props.ts`
+
+```ts
+import { CurrentUserI } from "./current-user";
+
+// BITNO JE DA OVDE SVE BUDE ?: JER NECU U SUPROTNOM MOCI KAKO TREBA DA EXTEND-UJEM
+// INTERFACE NA INDIVIDUAL PAGE-U
+// BITNO JE DA OVO BUDE OPCIIONO SAMO IZ RAZLOGA
+// STO CE INTERFACE KOJI CE EXTEND-OVATI ONAJ
+// ZA INDIVIDUAL PAGE, USTVARI EXTEND-OVATI TRENUTNI INTERFACE
+export interface InitialPropsI {
+  initialProps?: {
+    currentUser?: CurrentUserI | null;
+    errors?: any;
+  };
+  // IMACU I OVDE currentUser-A
+  // JER TO PROSLEDJUJES Component INSIDE _app.tsx
+  currentUser?: CurrentUserI | null;
+}
+```
+
+SADA ZELIM DA OVAJ INTERFACE NA PRAVI NACIN ISKORISTIM U NEKAOM PAGE-U
+
+NA PRIMER U INDEX PAGE-U
+
+- `code client/pages/index.tsx`
+
+```ts
+/* eslint react/react-in-jsx-scope: 0 */
+/* eslint jsx-a11y/anchor-is-valid: 1 */
+import { FunctionComponent, useEffect } from "react";
+import { GetServerSideProps } from "next";
+import { buildApiClient } from "../utils/buildApiClient";
+import { InitialPropsI } from "../types/initial-props";
+
+// EVO EXTEND-UJEM OVAJ INTERFACE, KOJI TYPE-UJE
+// PROPSE INDIVIDUAL PAGE-A
+interface PropsI extends InitialPropsI {
+  foo: string;
+}
+
+// ---------------------------------------------------
+export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
+  return {
+    props: {
+      foo: "bar",
+    },
+  };
+};
+// ---------------------------------------------------
+
+const IndexPage: FunctionComponent<PropsI> = (props) => {
+  // STAMPACU PROPSE
+  console.log(props);
+
+  useEffect(() => {
+    const apiClient = buildApiClient();
+
+    apiClient.get("/api/users/current-user").then((response) => {
+      console.log(response.data);
+    });
+  }, []);
+
+  // OVDE SADA MOGU RESTRUKTURIRATI NESTO DRUGO
+  const { initialProps, foo } = props;
+
+  const { currentUser, errors } = initialProps;
+
+  if (errors) {
+    return <pre>{JSON.stringify(errors, null, 2)}</pre>;
+  }
+
+  if (currentUser) {
+    return <h1>You are {!currentUser ? "not" : ""} signed in.</h1>;
+  }
+
+  return null;
+};
+
+export default IndexPage;
+
+```
+
+TAKODJE SAM IZMENIO DOSTA STVARI INSIDE `client/pages/_app.tsx`; A TO SAM POGLEDAJ
+
+- `cat client/pages/_app.tsx`
