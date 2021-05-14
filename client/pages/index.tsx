@@ -25,7 +25,6 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
     const apiClient = buildApiClient();
 
     apiClient.get("/api/users/current-user").then((response) => {
-      console.log("FRONTEND");
       console.log(response.data);
     });
   }, []);

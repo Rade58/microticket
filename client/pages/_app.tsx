@@ -26,6 +26,8 @@ MyApp.getInitialProps = async (appCtx: AppContext) => {
 
     const appProps = await App.getInitialProps(appCtx);
 
+    console.log({ appProps });
+
     return {
       pageProps: {
         data: response.data as { currentUser: currentUserType },
