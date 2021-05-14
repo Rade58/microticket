@@ -46,6 +46,8 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
 };
 
 export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
+  console.log({ FROM_GET_SERVER_SIDE_PROPS_INDEX_PAGE: ctx.res.getHeaders() });
+
   return {
     props: {
       foo: "bar",
