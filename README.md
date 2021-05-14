@@ -339,3 +339,29 @@ export default IndexPage;
 TAKODJE SAM IZMENIO DOSTA STVARI INSIDE `client/pages/_app.tsx`; A TO SAM POGLEDAJ
 
 - `cat client/pages/_app.tsx`
+
+## POKUSALI SMO `props` STAMPATI NA CLIENT STRANI, ALI DAKLE ON SU SE STAMPALI I NA SERVER STRANI
+
+OVO SE STAMPALO U SKAFFOLD TERMINALU
+
+```zsh
+[client] {
+[client]   currentUser: {
+[client]     email: 'stavros@mail.com',
+[client]     id: '609ed3e04ae8ad0023b4ef9d',
+[client]     iat: 1621021665
+[client]   },
+[client]   initialProps: {
+[client]     currentUser: {
+[client]       email: 'stavros@mail.com',
+[client]       id: '609ed3e04ae8ad0023b4ef9d',
+[client]       iat: 1621021665
+[client]     }
+[client]   },
+[client]   foo: 'bar'
+[client] }
+```
+
+
+
+
