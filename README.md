@@ -8,17 +8,17 @@ I TO IMAM DVA MOGUCA MESTA SA KOJEG SALJEM PROPSE; **I KADA KAZEM DVA MOGUCA MES
 
 `getServerSideProps` SE HOCE IZVRSITI ZA SVAKI PAGE ZA KOJI JE DEFINISAN; JA IMAM SAMO JEDAN OVAJ HANDLER DEFINISAN, ZA INDEX PAGE, ALI NE SALJEM NISTA RELEVANTNO, SAMO NEKI FOO MESSAGE, U CILJU TRY OUT-A
 
-# TRENUTNO KOD MENE `getInitialProps`, IMA PRIMARNU NAMENU DA POSALJE REQUEST ZA CURRRENT USER (`/api/users/current-user` ENDPOINT), I DA TAKO OSIGURA AUTHENTICATION LOGIC, PRE NEGO STO JE BILO STA RENDERED NA PAGE-U
+## TRENUTNO KOD MENE `getInitialProps`, IMA PRIMARNU NAMENU DA POSALJE REQUEST ZA CURRRENT USER (`/api/users/current-user` ENDPOINT), I DA TAKO OSIGURA AUTHENTICATION LOGIC, PRE NEGO STO JE BILO STA RENDERED NA PAGE-U
 
 NARAVNO, AKO NEMA USER-A, SLACE SE errors KAO PROPS
 
-# ALI SAMI `/pages/_app.tsx` MENI SLUZI I DA RENDER-UJEM JEDNU TE ISTU KOMPONENTU NA SVIM PAGE-OVIMA, I DA KOMPONENTI PROSLEDIM ONO STAZELIM KAO PROPSE
+## ALI SAMI `/pages/_app.tsx` MENI SLUZI I DA RENDER-UJEM JEDNU TE ISTU KOMPONENTU NA SVIM PAGE-OVIMA, I DA KOMPONENTI PROSLEDIM ONO STAZELIM KAO PROPSE
 
 KOD NAS JE Header KOMPONENTA RENDERED NA SVAKOM PAGE-U, A `currentUser`-A JOJ PROSLEDJUMEO KAO PROPS; **BAS ZATO STO SMO JE DEFINISALI KROZ `_app.tsx`**
 
 I HEADER IMA SVOJU LOGIKU, I U ODNUSA NA TO DA LI POSTOJU CURRENT USER, ON PRIKAZUJE DUGMAD ZA SIGNIN ILI SIGNUP ILI SIGNOUT
 
-# CISTO DA VIDIS PRAKTICNO KAKO SE IZVRSVAJU `getInitialProps` "`APP PAGE`"-A, I `getServerSideProps` INDEX PAGE-A, STAMPACU NESTO U TIM FUNKCIJAMA
+## CISTO DA VIDIS PRAKTICNO KAKO SE IZVRSVAJU `getInitialProps` "`APP PAGE`"-A, I `getServerSideProps` INDEX PAGE-A, STAMPACU NESTO U TIM FUNKCIJAMA
 
 - `code client/pages/_app.tsx`
 
@@ -228,11 +228,170 @@ export default SignInPage;
 
 ```
 
-SADA CI DA POKRENEM SKAFFOLD
+SADA CU DA POKRENEM SKAFFOLD
 
 - `skaffold dev`
 
+MOZES DA OBAVIS ONU PRIJAVU NA SIGNUP NAMERNO, AKO SI TO BVEC RANIJE RADIO IMAS COOKIE I SVE JE OK ALI PRIJAVI SE, POSTO ZELIM DA CURRENT USER BUDE PRISUTAN KADA BUDEMO OBAVLJALI OVAJ NAS MANUELNI TEST
 
+OTVORI NOVI TAB BROWSER-A
 
+1. UNESI `https://microticket.com/` U ADRESS BAR I PRISTISNI ENTER (DAKLE IDEMO NA INDEX PAGE)
 
+PA POGLEDAJ SKAFFOLD TERMINAL
 
+EVO STA SE STAMPALO U SKAFFOLD TERMIANLU
+
+```zsh
+# EVO IMAS ONO STO SAM DEFINISAO DA SE STAMPA U `getInitialProps`
+[client] {
+[client]   FROM_GET_INITIAL_PROPS_FUNCTION: {
+[client]     currentUser: {
+[client]       email: 'stavros@mail.com',
+[client]       id: '609e682ba16d56002385afb0',
+[client]       iat: 1620994091
+[client]     }
+[client]   }
+[client] }
+# OVO JE ONO STO SAM DEFINISAO DA SE STMAPA U `getServerSideProps` ZA INDEX PAGE
+[client] {
+[client]   FROM_GET_SERVER_SIDE_PROPS_INDEX_PAGE: {
+[client]     host: 'microticket.com',
+[client]     'x-request-id': '397b6e513b6cf45b50d61722ad0d58b4',
+[client]     'x-real-ip': '178.223.56.235',
+[client]     'x-forwarded-for': '178.223.56.235',
+[client]     'x-forwarded-host': 'microticket.com',
+[client]     'x-forwarded-port': '443',
+[client]     'x-forwarded-proto': 'https',
+[client]     'x-scheme': 'https',
+[client]     'upgrade-insecure-requests': '1',
+[client]     'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36',
+[client]     accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+[client]     'sec-gpc': '1',
+[client]     'sec-fetch-site': 'none',
+[client]     'sec-fetch-mode': 'navigate',
+[client]     'sec-fetch-user': '?1',
+[client]     'sec-fetch-dest': 'document',
+[client]     'accept-encoding': 'gzip, deflate, br',
+[client]     'accept-language': 'en-US,en;q=0.9',
+[client]     cookie: 'express:sess=eyJqd3QiOiJleUpoYkdjaU9pSklVekkxTmlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKbGJXRnBiQ0k2SW5OMFlYWnliM05BYldGcGJDNWpiMjBpTENKcFpDSTZJall3T1dVMk9ESmlZVEUyWkRVMk1EQXlNemcxWVdaaU1DSXNJbWxoZENJNk1UWXlNRGs1TkRBNU1YMC5BSUFSamFteVh6eGhqTVJRTnR6Q3poQllLRVljREM2Q0lGY3hWODJKYVZvIn0='
+# OVO SU PROPSI KOJE SAM DEFINISAO DA SE STMAPAJU U SAMOJ KOMPONENTI
+# ALI TAJ CODE LOGGINGA SE IZVRSIO I SERVER SIDE
+# ZATO JE OVO STMAPANO OVDE U TERMINALU
+# A PORED TOGA NACI CES OVAJ LOG I U BROWSEROVOJ KONZOLI
+[client]   }
+[client] }
+[client] {
+[client]   data: {
+[client]     currentUser: {
+[client]       email: 'stavros@mail.com',
+[client]       id: '609e682ba16d56002385afb0',
+[client]       iat: 1620994091
+[client]     }
+[client]   },
+[client]   foo: 'bar'
+[client] }
+# DAKLE SVE JE KAKO SAM I OCEKIVAO
+# I ONO PROSLEDJENO IZ getInitialProps I getServerSideProps
+# JE ZAVRSILO U KOMPONENTI 
+# foo : 'bar' SMP PROSLEDILI IZ `getServerSideProps`
+```
+
+2. SADA CEMO POSETITI DRUGI PAGE NASE APLIKACIJE, A TO CE BITI `https://microticket.com/auth/signin`
+
+OVO JE ONO STA SE STAMPALO U SKAFFOLD TERMINALU
+
+```zsh
+# EVO OVO SAM DEFINISAO DA SE STMAPA INSIDE `getInitialProps`
+[client] {
+[client]   FROM_GET_INITIAL_PROPS_FUNCTION: {
+[client]     currentUser: {
+[client]       email: 'stavros@mail.com',
+[client]       id: '609e682ba16d56002385afb0',
+[client]       iat: 1620994091
+[client]     }
+[client]   }
+[client] }
+# NISMO DEFINISALI     `getServerSideProps`    ZA POMENUTI PAGE
+# PREMA TOME OKO TOGA SE NISTA NIJE NI MOGLO STMAPTI
+
+# ALI EVO I OVDE IMAMO ONO STA SMO DEFINISALI DA SE STMAPA CLIENT SIDE (DAKLE U BROWSERU)
+# STO ZNACI DA SE CODE IZVRSIO I SERVER SIDE, CIM JE STMAPAN OVDE
+# ALI NAJVAZNIJA STVAR JE DA JE TO ONO STO SMO PROSLEDILI IZ
+# `getInitialProps` APP PAGE-A
+[client] {
+[client]   data: {
+[client]     currentUser: {
+[client]       email: 'stavros@mail.com',
+[client]       id: '609e682ba16d56002385afb0',
+[client]       iat: 1620994091
+[client]     }
+[client]   },
+[client] }
+```
+
+DAKLE NAJVAZNIJA STVAR KOJU TREBAM DA ZAPAMTIM, JESTE TA DOBRA STRANA UPOTREBE `getInitialProps` ODNOSNO, ILI `getServerSideProps`-A  
+
+# JA DAKLE TRENUTNO KORISTIM `getInitialProps` SAMO DA OBEZBEDIM CURRENT USER-A; ILI DA GA NE OBEZBEDIMA; DAKLE SAMO ZBOG AUTHENTICATION-A
+
+MEDJUTIM NEKE STVARI NISMA DEFINISAO, VEZNE ZA TOG USER-A
+
+**I SAM VIDIS DA SAM NESMETANO OTISAO NA SIGNIN PAGE A NISAM BIO REDIRECTED DO INDEX PAGE-A**
+
+TO BI UPRAVO TREBAL ODA SE RADI U SLUCAJU DA JE PRISUTAN USER
+
+TO BI VAZILO I ZA SIGNUP PAGE
+
+DOBRO TO SU NEKE STVARI KOJE BI SE TREBALE PROMENITI, **A ZAISTA SE MOGU PROMENITI**
+
+MOZDA CES TU LOGIKU TOKOM WORKSHOPA DEFINISATI U KOMPONENTI, KOJU BI MOZDA RENDER-OVAO ISTO KAO STO SI RENDER-OVAO I HEADER; NAIME INSIDE APP PAGE-A (ODNOSNO OVDE: `client/pages/_app.tsx`)
+
+# NAIME ISTO POGLEDAJ `client/utils/buildApiClient.ts` DA SE PODSETIS KAKO SMO DEFINISALI DA SE BUILD-UJE API CLIENT, U ZAVISNOSTI OD TOGA DA LI SE RADI O SERVER SIDE MAKINGU REQUEST-OVA, PREM NASIM DRUGIM MICROSERVICE-OVIMA, ILI SE MAKE-UJU REQUESTS FROM THE BROWSER
+
+- `cat client/utils/buildApiClient.ts`
+
+```ts
+import axios from "axios";
+import { isSSR } from "./isSSR";
+import { GetServerSidePropsContext, NextPageContext } from "next";
+
+// OVA FUNKCIJA USTVARI UZIMA context U KOJEM SU REQUEST I RESPONSE PORED OSTALOG
+export const buildApiClient = (
+  ctx?: GetServerSidePropsContext | NextPageContext
+) => {
+  const isServerSide = isSSR();
+
+  // EVO VIDIS OVO JE BASE URL KOJI SE KORISTI KADA
+  // SE MAKE-UJE REQUEST FROM ONE POD TO ANOTHER INSIDE CLUSTER
+  const baseURL = isServerSide
+    ? "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local"
+    : "";
+  // KAO STO SI VIDEO U PITANJU JE INGRESS NGINX STVAR
+
+  if (isServerSide && ctx) {
+    // OVDE SU PROSLEDJENI I SVI COOKIES FROM THE ctx.req
+    return axios.create({
+      // NARAVNO NOVI BASE URL SE KORISTI
+      baseURL,
+      headers: ctx.req.headers,
+    });
+  } else {
+    // OVDE SE USTVARI RETURN-UJES SAMO axios
+    // JER NIJE REC O SERVER SIDE-U CODE-U
+    return axios;
+  }
+};
+
+```
+
+MISLIM DA JE OVO JASNO
+
+OVO GORE SAM KORISTIO DA UZMEM USER OBJECT INSIDE `getInitialProps`
+
+ZNAS I ZASTO; PA ZATO STO JE TO SERVER SIDE CODE, JEDNOG PODA; A `auth` MICROSERVICE RUNN-UJE U POTPUNO DRUGOM POD-U
+
+# JA SAM TAKODJE NAPRAVIO `useRequest` CUSTOM HOOK, KOJI NE SLUZI SAMO DA SE NAPRAVI REQUEST, VEC SE MOZE PROSLEDITI I REDIRECTION URL, USTVARI URL ZA PROGRMATTIC NAVIGATION
+
+TO POGLEDAJ ON YOUR OWN
+
+A KORISTIO SAM GA U SIGNIN SIGNUP SIGNOUT PAGE-OVIMA ZA REDRECTIONG ON SUBMIT
