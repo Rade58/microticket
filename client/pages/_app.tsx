@@ -11,7 +11,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <div>
       <Header currentUser={currentUser} />
-      <Component {...pageProps} />
+      <Component something={"anything"} {...pageProps} />
     </div>
   );
 }
@@ -23,11 +23,11 @@ MyApp.getInitialProps = async (appCtx: AppContext) => {
     const apiClient = buildApiClient(ctx);
 
     const response = await apiClient.get("/api/users/current-user");
-
+    /*
     const appProps = await App.getInitialProps(appCtx);
 
     console.log({ appProps });
-
+ */
     return {
       pageProps: {
         data: response.data as { currentUser: currentUserType },
