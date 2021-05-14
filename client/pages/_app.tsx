@@ -24,9 +24,11 @@ MyApp.getInitialProps = async (appCtx: AppContext) => {
 
     const response = await apiClient.get("/api/users/current-user");
 
+    // EVO OVDE CU DA STMAPAM DATA KOJI IZ RESPONSE-A ZA CURRENT USEROM
     console.log({ FROM_GET_INITIAL_PROPS_FUNCTION: response.data });
 
     return {
+      // I VIDIS KAKO SE KAO PAGE PROP SALJE data ,A TO JE USTVARI DAT CUTRRENT USER-A
       pageProps: {
         data: response.data as { currentUser: currentUserType },
       },

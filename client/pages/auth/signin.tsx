@@ -3,7 +3,8 @@
 import { FunctionComponent, useState } from "react";
 import useRequest from "../../hooks/useRequest";
 
-const SignupPage: FunctionComponent = (props) => {
+const SignInPage: FunctionComponent = (props) => {
+  // EVO VIDIS STMAPAM POMENUTE PROPSE
   console.log({ props });
 
   const [email, setEmail] = useState<string>("");
@@ -16,7 +17,6 @@ const SignupPage: FunctionComponent = (props) => {
     ErrorMessages,
     errors,
     makeRequest,
-    // PROMENIO SAM URL NA /signin
   } = useRequest("/api/users/signin", "post", { email, password }, "/");
 
   return (
@@ -61,4 +61,4 @@ const SignupPage: FunctionComponent = (props) => {
   );
 };
 
-export default SignupPage;
+export default SignInPage;
