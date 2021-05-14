@@ -3,16 +3,13 @@ import { AppProps, AppContext } from "next/app";
 import { buildApiClient } from "../utils/buildApiClient";
 import { currentUserType } from "./index";
 import "bootstrap/dist/css/bootstrap.css";
-// UVOZIM Header KOMPONENTU
 import Header from "../components/Header";
 
 function MyApp({ Component, pageProps }: AppProps) {
-  // IZDVAJAMO currentUser
   const { currentUser } = pageProps.data;
 
   return (
     <div>
-      {/* STVLJAMO HEADER, I PASS-UJEMO currentUser*/}
       <Header currentUser={currentUser} />
       <Component {...pageProps} />
     </div>

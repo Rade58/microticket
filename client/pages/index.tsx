@@ -29,7 +29,6 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
       console.log(response.data);
     });
   }, []);
-  // ----------------------------------------------------------
 
   const { data, errors } = props;
 
@@ -47,7 +46,6 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
 };
 
 export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
-  // EVO ODAVDE SAMO RETURN-UJEM NESTO BEZVEZE
   return {
     props: {
       foo: "bar",
