@@ -12,6 +12,14 @@ interface CurrentUserI {
 
 export type currentUserType = CurrentUserI | null;
 
+export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
+  return {
+    props: {
+      foo: "bar",
+    },
+  };
+};
+
 interface PropsI {
   data?: { currentUser: currentUserType };
   errors?: any;
@@ -42,16 +50,6 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
   }
 
   return null;
-};
-
-// EVO OVDE IMAS getServerSideProps
-
-export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
-  return {
-    props: {
-      foo: "bar",
-    },
-  };
 };
 
 export default IndexPage;
