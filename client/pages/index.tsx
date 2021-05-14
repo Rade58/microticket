@@ -47,9 +47,6 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
 // EVO OVDE IMAS getServerSideProps
 
 export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
-  // ISTO KAO I  U getInitialProps TI IMAS OVDE
-  // PRISTUP req I res
-
   return {
     props: {
       foo: "bar",
