@@ -29,7 +29,7 @@ MyApp.getInitialProps = async (appCtx: AppContext) => {
 
     appProps.pageProps.data = response.data as { currentUser: currentUserType };
 
-    // UMESTO OVOGA
+    // UMESTO OVOGA OVAKVOG
     /* return {
       pageProps: {
         data: response.data as { currentUser: currentUserType },
