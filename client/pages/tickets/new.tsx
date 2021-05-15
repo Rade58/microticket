@@ -4,8 +4,12 @@
 import { FunctionComponent, useState, useCallback } from "react";
 import { GetServerSideProps } from "next";
 import { InitialPropsI } from "../../types/initial-props";
-//
-import { buildApiClient } from "../../utils/buildApiClient";
+// OVO NAM NE TREBA
+// import { buildApiClient } from "../../utils/buildApiClient";
+// UVOZIM INTERFACE ZA DATA
+import { TicketDataI } from "../../types/data/ticket-data";
+// UVOZIM I MOJ CUSTOM HOOK ZA REQUESTS
+import useRequest from "../../hooks/useRequestHook";
 //
 
 interface PropsI extends InitialPropsI {
@@ -16,27 +20,32 @@ const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
   // const { currentUser } = props;
 
   const [title, setTitle] = useState<string>("");
-  // DEFAULT MOZE BITI 0.00
   const [price, setPrice] = useState<string>("0.00");
 
-  // NAPRAVICU FUNKCIJU KOJA CE SANITIZE-OVATI PRICE
-  // I SAMO CU JE KORISTITI ON BLUR
+  // EVO OVDE KORISTIM HOOK
+  // PRICE MORA DA BUDE NUMBER, JER MI OCEKUJEMO NUMBER U HANDLERU
+  const priceNumber = parseFloat(price);
+  const {} = useRequest<{ title: string; price: number }, TicketDataI>(
+    "/api/tickets",
+    { method: "post" },
+    { title, price: priceNumber }
+  );
+
   const sanitizePriceOnBlur = useCallback(() => {
     const priceValue = parseFloat(price);
-
-    // TO FIXED DVE DECIMALE JE JER JE TO FORMAT NOVCA
     const fixedDecimals = priceValue.toFixed(2);
 
     if (!isNaN(priceValue)) {
       setPrice(fixedDecimals);
       return;
     }
-    // AKO VREDNOST JESTE NaN ZADAJEM DA BUDE 0.00
+
     setPrice("0.00");
     return;
   }, [price]);
 
-  const createTicket = useCallback(async () => {
+  // OVO NECU KORISTITI
+  /* const createTicket = useCallback(async () => {
     const client = buildApiClient();
 
     try {
@@ -53,7 +62,7 @@ const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
 
       return err;
     }
-  }, [title, price]);
+  }, [title, price]); */
 
   return (
     <div>
@@ -61,7 +70,7 @@ const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          console.log(price);
+
           // createTicket();
         }}
       >

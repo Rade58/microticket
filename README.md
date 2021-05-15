@@ -4,6 +4,25 @@ JA SAM VEC NESTO RADIO, MEDJUTIM NISAM KORISTIO `useRequestHook`, KOJI SAM NAPRA
 
 SADA CU MALO REFAKTORISATI CODE, KAKO BI KORISTIO, TAJ HOOK
 
+ALI BOLJE DA PRE TOGA NAPRAVIM INTERFACE ZA DATA, KOJI MOZES OBTAIN-OVATI PRAVLJANJEM REQUEST-A
+
+ZNAMO KOJI JE DATA, JER SMO MI PRAVILI I API ENDPOINTS; ODNOSNO PRAVILI SMO SVE ROUTES U NASIM MICROSERVICE-OVIMA
+
+- `mkdir client/types/data`
+
+- `touch client/types/data/ticket-data.ts`
+
+```ts
+export interface TicketDataI {
+  id: string;
+  title: string;
+  price: number;
+  userId: string;
+  version: number;
+}
+```
+**SADA MOGU D ASE POSVETIM PRAVLJANJU REQUEST, KORISCENJEM MOG CUSTOM HOOK-A**
+
 - `code client/pages/tickets/new.tsx`
 
 ```tsx
