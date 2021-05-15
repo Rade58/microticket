@@ -5,6 +5,10 @@ import { GetServerSideProps } from "next";
 import { buildApiClient } from "../utils/buildApiClient";
 import { InitialPropsI } from "../types/initial-props";
 
+// TEST
+import makeRequestHook from "../hooks/useRequestHook";
+//
+
 // EVO EXTEND-UJEM OVAJ INTERFACE, KOJI TYPE-UJE
 // PROPSE INDIVIDUAL PAGE-A
 interface PropsI extends InitialPropsI {
@@ -24,6 +28,17 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 const IndexPage: FunctionComponent<PropsI> = (props) => {
   // STAMPACU PROPSE
   console.log(props);
+
+  /* const { data } = makeRequestHook<
+    any,
+    {
+      id: string;
+      title: string;
+      price: number;
+      userId: string;
+      version: number;
+    }
+  >("/api/tickets/", { method: "get" }); */
 
   useEffect(() => {
     const apiClient = buildApiClient();
