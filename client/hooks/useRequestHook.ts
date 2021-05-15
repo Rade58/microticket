@@ -141,7 +141,18 @@ const useRequestHook = <T, P>(url: string, options: OptionsI, body?: T) => {
         await redirectAfterFailiure();
       }
     }
-  }, [setData, setErrors, setHasError, body]);
+  }, [
+    setData,
+    setErrors,
+    setHasError,
+    method,
+    body,
+    afterFailiure,
+    afterSuccess,
+    redicectAfterSuccess,
+    redirectAfterFailiure,
+    url,
+  ]);
 
   return {
     makeRequest,
