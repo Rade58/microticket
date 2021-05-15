@@ -56,7 +56,12 @@ const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
           makeRequestToCreateTicket({
             price: priceNumber,
             title,
-          });
+          })
+            // OVDE MOGU RESETOVATI
+            .then(() => {
+              setPrice("0.00");
+              setTitle("");
+            });
         }}
       >
         <div className="form-group">
