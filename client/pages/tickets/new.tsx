@@ -36,14 +36,6 @@ const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
     return;
   }, [price]);
 
-  // ALI JA ZELIM I SANITIZE PRICE ON CHANGE
-  // TO ZELIM JER ZELI MDA SE VALUE UVEK prikazuje sa .00
-  const sanitizePriceOnChange = useCallback((val: string) => {
-    const priceValue = parseFloat(val);
-    const fixedDecimals = priceValue.toFixed(2);
-    setPrice(fixedDecimals);
-  }, []);
-
   const createTicket = useCallback(async () => {
     const client = buildApiClient();
 
@@ -86,14 +78,14 @@ const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
         <div className="form-group">
           <label htmlFor="price-input">Price</label>
           <input
-            onChange={(e) => sanitizePriceOnChange(e.target.value)}
+            onChange={(e) => setPrice(e.target.value)}
             // EVO DODAJEM JE OVDE
             onBlur={sanitizePriceOnBlur}
             //
             value={price}
             className="form-control"
             // NAMERNO SAM STAVIO DA JE TEXT, DA BI SE
-            // PRIKAZIVALO .00
+            // PRIKAZIVALO .00 ON BLUR
             type="text"
             id="price-input"
           />
