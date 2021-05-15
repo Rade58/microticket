@@ -37,6 +37,8 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
   // DA RESTRUKTURIRAMO tickets ARRAY
   const { tickets } = props;
 
+  console.log({ tickets });
+
   // PRAVIMO UI, ODNONO TABLE UI
   return (
     <div>

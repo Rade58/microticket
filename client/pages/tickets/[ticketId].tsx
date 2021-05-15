@@ -25,7 +25,7 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
   // JA CU MOCI DA FETCH-UJEM DATA SINGLE TICKET-A
 
   try {
-    const { data } = await client.get(`/api/${ticketId}`);
+    const { data } = await client.get(`/api/tickets/${ticketId}`);
 
     // AKO POSTOJI TICKET SVE JE U REDU
     // RETURN-UJEM GA

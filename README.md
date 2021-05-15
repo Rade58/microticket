@@ -30,7 +30,7 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
   // JA CU MOCI DA FETCH-UJEM DATA SINGLE TICKET-A
 
   try {
-    const { data } = await client.get(`/api/${ticketId}`);
+    const { data } = await client.get(`/api/tickets/${ticketId}`);
 
     // AKO POSTOJI TICKET SVE JE U REDU
     // RETURN-UJEM GA
@@ -79,3 +79,9 @@ I SADA PRITISKAM ENTER
 I TREBAO BI BITI REDIRECTED NA MAIN PAGE, ODNOSNO NA `https://microticket.com`
 
 **I ZAIST JESTE TAKO**
+
+## MOZEMO SADA DA KRIEAMO NEKI TICKET; PA DA PROBAMO DA VISIT-UJEMO `https://microticket.com/tickets/<id ticket-a>`
+
+I ZAISTA KREIRAO SM TICKET (POSTO STMAPAM SVE TICKETS NA MAIN PAG-U, JAS SAM KOPIRAO ID)
+
+FORMIRAO SAM URL, DOADAO MU POMENUTI ID, I ZISTA PAGE SINGLE TICKET-A JESTE SERVED
