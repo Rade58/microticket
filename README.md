@@ -6,7 +6,7 @@ SAMO CU SADA KRIRATI PAGE, NA KOJOJ TREBA DA BUDE FORMULAR ZA KREIRANJE TICKET-A
 
 - `touch client/pages/tickets/new.tsx`
  
-```ts
+```tsx
 /* eslint react/react-in-jsx-scope: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 import { FunctionComponent } from "react";
@@ -48,3 +48,6 @@ POKRENUCU SKAFFOLD
 I SADA IDEM NA <https://microticket.com/tickets/new> DA VIDIM DA LI JE PAGE KREIRAN
 
 I ZAIST PAGE JE SERVED
+
+# SADA CEMO KREIRATI FORM NA STRANICI
+

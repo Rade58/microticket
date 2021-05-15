@@ -26,7 +26,20 @@ const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
 
   return (
     <div>
-      <pre>{JSON.stringify({ props }, null, 2)}</pre>
+      <h1>Create A Ticket</h1>
+      <form>
+        <div className="form-group">
+          <label htmlFor="title-input">Title</label>
+          <input id="title-input" type="text" />
+        </div>
+        <div className="form-group">
+          <label htmlFor="price-input">Price</label>
+          <input type="number" id="price-input" />
+        </div>
+        <button className="btn btn-primary" type="submit">
+          Create
+        </button>
+      </form>
     </div>
   );
 };
