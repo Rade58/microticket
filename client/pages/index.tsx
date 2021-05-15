@@ -1,7 +1,10 @@
 /* eslint react/react-in-jsx-scope: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 1 */
-import { FunctionComponent, useEffect } from "react";
+import { FunctionComponent } from "react";
 import { GetServerSideProps } from "next";
+// UVOZIM NEXT LINK
+import Link from "next/link";
+//
 import { buildApiClient } from "../utils/buildApiClient";
 import { InitialPropsI } from "../types/initial-props";
 import { allTicketsType } from "../types/data/all-tickets";
@@ -34,12 +37,11 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 // ---------------------------------------------------
 
 const IndexPage: FunctionComponent<PropsI> = (props) => {
-  // DA RESTRUKTURIRAMO tickets ARRAY
   const { tickets } = props;
 
-  console.log({ tickets });
+  // USTVARI DODACU JOS JEDNU KOLONU
+  // KOJA CE BITI KOLONA ZA LINK TICKET
 
-  // PRAVIMO UI, ODNONO TABLE UI
   return (
     <div>
       <h1>Tickets</h1>
@@ -48,6 +50,7 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
           <tr>
             <th>Title</th>
             <th>Price</th>
+            <th>Link</th>
           </tr>
         </thead>
         <tbody>
@@ -56,6 +59,12 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
               <tr key={id}>
                 <td>{title}</td>
                 <td>${price.toFixed(2)}</td>
+                {/* EVO VIDIS STA SAM URADIO */}
+                <td>
+                  <Link href={`/tickets/${id}`}>
+                    <a>view</a>
+                  </Link>
+                </td>
               </tr>
             );
           })}
