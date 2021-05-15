@@ -52,7 +52,7 @@ const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
 
   // EVO OVDE KORISTIM HOOK
 
-  const { makeRequest: makeRequestToCreateTicket } = useRequest<
+  const { makeRequest: makeRequestToCreateTicket, data } = useRequest<
     { title: string; price: number },
     TicketDataI
   >("/api/tickets", { method: "post" });
@@ -91,6 +91,10 @@ const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
     }
   }, [title, price]); */
 
+  // DATU TI STMAPAM, JER KADA SE USPESNO NAPRAVI REQUEST, TREBALO BI
+  // data BI TREBALO DA BUDE DEFINED
+  console.log({ data });
+
   return (
     <div>
       <h1>Create A Ticket</h1>
@@ -105,8 +109,6 @@ const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
           makeRequestToCreateTicket({
             price: priceNumber,
             title,
-          }).then((data) => {
-            console.log({ data }); // STAMAPM DATA DA VIDIM STA IMAM
           });
         }}
       >
@@ -155,10 +157,21 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 
 export default CreateNewTicketPage;
 
+
 ```
 
 - `skaffold dev`
 
 SADA BI TREBALO DA MOZES DA USPESNO KREIRAS TICKET
 
-PROBACIU TO
+PROBACU TO
+
+I ZAISTA MI JE USPELO
+
+STAMPAO SAM DATA I USPESNO SAM MOGAO DA UZMEME ID NOVOKREIRANOG TICKETA IZMEDJU OSTALIH PODATKA
+
+ZATO SAM STAVIO OVO U ADRESS BAR BROWSER-A
+
+<https://microticket.com/api/tickets/609ffd7d2781ce00230cf53c>
+
+PRITISNUO SAM ENTER CIME SAM NAPRAVIO GET REQUEST, MOGAO SAM VIDETI DATA

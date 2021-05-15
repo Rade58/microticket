@@ -24,7 +24,7 @@ const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
 
   // EVO OVDE KORISTIM HOOK
 
-  const { makeRequest: makeRequestToCreateTicket } = useRequest<
+  const { makeRequest: makeRequestToCreateTicket, data } = useRequest<
     { title: string; price: number },
     TicketDataI
   >("/api/tickets", { method: "post" });
@@ -63,6 +63,10 @@ const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
     }
   }, [title, price]); */
 
+  // DATU TI STMAPAM, JER KADA SE USPESNO NAPRAVI REQUEST, TREBALO BI
+  // data BI TREBALO DA BUDE DEFINED
+  console.log({ data });
+
   return (
     <div>
       <h1>Create A Ticket</h1>
@@ -77,8 +81,6 @@ const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
           makeRequestToCreateTicket({
             price: priceNumber,
             title,
-          }).then((data) => {
-            console.log({ data }); // STAMAPM DATA DA VIDIM STA IMAM
           });
         }}
       >
