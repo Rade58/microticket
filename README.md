@@ -1,82 +1,84 @@
-# SKAFFOLDING FORM FOR CREATING NEW TICKET
+# SANITIZING `price` INPUT, ON `client/pages/tickets/new.tsx` PAGE
 
-SAMO CU SADA KRIRATI PAGE, NA KOJOJ TREBA DA BUDE FORMULAR ZA KREIRANJE TICKET-A
+PRVO CEMO DAKLE DA KORISTIMO `useState` DA BI MOGLI DA IMAMO STATE ZA CONTROLE FORMULARA
 
-- `mkdir client/pages/tickets`
+**TAKODJE CU DA OBEZBEDIM I `onSubmit` ,A KASNIJE CEMO DA GOVORIMO O SANITIZINGU**
 
-- `touch client/pages/tickets/new.tsx`
- 
+- `code client/pages/tickets/new.tsx`
+
+JA CU OVDE BITI MALO SLOBODNIJI, ALI ONO STA PLANIRAM JESTE DA NAPRAVIM NOVI HOOK ZA REQUESTS (A TO CU URADITI KASNIJE)
+
 ```tsx
 /* eslint react/react-in-jsx-scope: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 1 */
-import { FunctionComponent } from "react";
+// TREBA NAM useState I useCallback
+import { FunctionComponent, useState, useCallback } from "react";
 import { GetServerSideProps } from "next";
-// UVOZIM ONAJ INTERFACE KOJI DESCRIBE-UJE INITIAL PROPS
 import { InitialPropsI } from "../../types/initial-props";
+//
+import { buildApiClient } from "../../utils/buildApiClient";
 //
 
 interface PropsI extends InitialPropsI {
   foo: false;
 }
 
-// OVO MI MOZDA NECE NI TREBATI ALI NEMA VEZE
-export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
-  return {
-    props: {
-      foo: false,
-    },
-  };
-};
-
 const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
-  //
+  // ZA KREIRANJE TICKETA TI NE TREBA I userId
+  const { currentUser } = props;
+  // ZATO STO JE CURRENT USER DEO COOKIE-A
 
-  console.log(props);
+  const [title, setTitle] = useState<string>("");
+  const [price, setPrice] = useState<string>("");
 
-  return (
-    <div>
-      <pre>{JSON.stringify({ props }, null, 2)}</pre>
-    </div>
-  );
-};
+  const createTicket = useCallback(async () => {
+    const client = buildApiClient();
 
-export default CreateNewTicketPage;
-```
+    try {
+      const response = await client.post("/tickets/new", {
+        title,
+        price,
+      });
 
-POKRENUCU SKAFFOLD
+      console.log(response.data);
 
-I SADA IDEM NA <https://microticket.com/tickets/new> DA VIDIM DA LI JE PAGE KREIRAN
+      return response.data;
+    } catch (err) {
+      console.error(err);
 
-I ZAIST PAGE JE SERVED
+      return err;
+    }
+  }, [title, price]);
 
-# SADA CEMO KREIRATI FORM NA STRANICI
-
-- `code client/pages/tickets/new.tsx`
-
-```tsx
-/* eslint react/react-in-jsx-scope: 0 */
-/* eslint jsx-a11y/anchor-is-valid: 1 */
-// TREBA NAM use
-import { FunctionComponent } from "react";
-import { GetServerSideProps } from "next";
-import { InitialPropsI } from "../../types/initial-props";
-
-interface PropsI extends InitialPropsI {
-  foo: false;
-}
-
-const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
   return (
     <div>
       <h1>Create A Ticket</h1>
-      <form>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+
+          createTicket();
+        }}
+      >
         <div className="form-group">
           <label htmlFor="title-input">Title</label>
-          <input className="form-control" id="title-input" type="text" />
+          <input
+            onChange={(e) => setTitle(e.target.value)}
+            value={title}
+            className="form-control"
+            id="title-input"
+            type="text"
+          />
         </div>
         <div className="form-group">
           <label htmlFor="price-input">Price</label>
-          <input className="form-control" type="number" id="price-input" />
+          <input
+            onChange={(e) => setPrice(e.target.value)}
+            value={price}
+            className="form-control"
+            type="number"
+            id="price-input"
+          />
         </div>
         <button className="btn btn-primary" type="submit">
           Create
@@ -99,59 +101,40 @@ export default CreateNewTicketPage;
 
 ```
 
-# FORMULAR ZA SADA IZGLEDA RUZNO JER SE PROTEZE PREKO CELE STRANE, ALI MI MOZEMO WRAPP-OVATI SVE KROZ `_app.tsx` U NEKI ELEMENT, KOJI BI CONTAIN-OVAO FORMUALAR NA NASEM PAGE-U, ALI TO CE BITI APPLIED I NA DRUGE PAGE-OVE
+OVO CE GORE FUNKCIONISATI
 
-- `code client/pages/_app.tsx`
+# MEDJUTIM MOZE SE DESITI PROBLEM DA KORISNIK UNESE, NEKAKV BROJ KOJI NE BI BIO U VALIDNOM FORMATU, STO SE TICE VALUTE; TADA BI MI TREBAL IDA SANITIZE-UJEMO TAJ UNOS
 
-```tsx
-import React from "react";
-import App, { AppProps, AppContext } from "next/app";
-// import { buildApiClient } from "../utils/buildApiClient";
-import { InitialPropsI } from "../types/initial-props";
-import "bootstrap/dist/css/bootstrap.css";
-import Header from "../components/Header";
-import { getCurrentUser } from "../utils/getCurrentUser";
+***
 
-MyApp.getInitialProps = async (appCtx: AppContext) => {
-  const { ctx } = appCtx;
-  try {
-    const { currentUser } = await getCurrentUser(ctx);
-    const appProps = await App.getInitialProps(appCtx);
-    appProps.pageProps.initialProps = { currentUser } as {
-      currentUser: InitialPropsI["initialProps"]["currentUser"];
-    };
-    return appProps;
-  } catch (err) {
-    console.log(err);
-    return {
-      pageProps: {
-        initialProps: {
-          errors: err.message as any,
-        },
-      },
-    };
-  }
-};
+digresija:
 
-//
-function MyApp({ Component: PageComponent, pageProps }: AppProps) {
-  // EVO VIDIS
-  const { currentUser } = pageProps.initialProps;
+BEZ OBZIRA KOJEG JE TIPA input FIELD, ON CE TI UVEK PROIZVODITI VREDNOSTI KOJE SU STRINGOVI
 
-  return (
-    <div>
-      <Header currentUser={currentUser} />
-      {/* EVO WRAPP-OVAO SAM SVE U OVAJ container div */}
-      <div className="container">
-        <PageComponent currentUser={currentUser} {...pageProps} />
-      </div>
-    </div>
-  );
-}
+***
 
-export default MyApp;
+NAIME POSTO KORITIM INPUT KOJI "number" TIPA TO ZNACI DA KADA KORISNIK POKUSA DA UNESE KARAKTERE, DA SE ONI NECE UNOSITI; ALI POSTO AUTOR WORKSHOPA TO NIJE URADIO ,ON KORISTI TYPE "text", ON JE ZELEO DA PARSE-UJE VREDNOST
 
-```
+**USTVARI ON JE ZELEO DA POKAZE HANDLE-OVANJE `NaN`-A**
 
-SADA LEPSE IZGLEDA
+JER `parseFloat("8")` JESTE `8`
+
+A `parseFloat("8nesto")` JESTE `8`
+
+ALI `parseFloat("nesto8")` JESTE `NaN`
+
+DA SE SADA VRATIM NA TEMU
+
+NAPRAVICU FUNKCIJU, KOJA CE SANITIZE-OVATI price STATE, ONDA KADA SE BLUR-UJE
+
+***
+
+digresija:
+
+BLUR SE DESI I KADA SA INPUT FIELD-A, PREDJES NA NEKI DRUGI FIELD; ILI PRITISNES NEKI BUTTON PORED; **DAKLE I TADA SE DESAVA BLUR ZA TAJ INPUT FIELD**
+
+***
+
+- `code client/pages/tickets/new.tsx`
+
 
