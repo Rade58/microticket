@@ -56,9 +56,9 @@ const useRequestHook = <T, P>(url: string, options: OptionsI) => {
 
   const [data, setData] = useState<P>(null);
 
-  const [errors, setErrors] = useState<{
-    errors: { message: string; field?: string }[];
-  }>({ errors: [] });
+  const [errors, setErrors] = useState<{ message: string; field?: string }[]>(
+    []
+  );
 
   const [hasErrors, setHasError] = useState<boolean>(false);
 
@@ -119,7 +119,7 @@ const useRequestHook = <T, P>(url: string, options: OptionsI) => {
           const response = await axios[method](url, body);
 
           setData(response.data as P);
-          setErrors({ errors: [] });
+          setErrors([]);
           setHasError(false);
 
           afterSuccess();
@@ -134,7 +134,7 @@ const useRequestHook = <T, P>(url: string, options: OptionsI) => {
           // ONAJ ERROROUS DATA KOJI SMO POSLALI
           // A TO JE ARRAY OF ERRORS, JE SMESTED INSIDE
 
-          //        err.response.data.errors
+          //        err.response.data
           // I ZATO TO TAKO I SETT-UJEMO
           setErrors(err.response.data.errors);
           setHasError(true);
@@ -150,7 +150,7 @@ const useRequestHook = <T, P>(url: string, options: OptionsI) => {
           const response = await axios[method](url);
 
           setData(response.data as P);
-          setErrors({ errors: [] });
+          setErrors([]);
           setHasError(false);
 
           afterSuccess();
