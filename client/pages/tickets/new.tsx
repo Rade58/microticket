@@ -1,12 +1,3 @@
-# SKAFFOLDING FORM FOR CREATING NEW TICKET
-
-SAMO CU SADA KRIRATI PAGE, NA KOJOJ TREBA DA BUDE FORMULAR ZA KREIRANJE TICKET-A
-
-- `mkdir client/pages/tickets`
-
-- `touch client/pages/tickets/new.tsx`
- 
-```ts
 /* eslint react/react-in-jsx-scope: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 import { FunctionComponent } from "react";
@@ -41,8 +32,3 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
 };
 
 export default IndexPage;
-```
-
-POKRENUCU SKAFFOLD
-
-I SADA IDEM NA <https://microticket.com/tickets/new> DA VIDIM DA LI JE PAGE KREIRAN
