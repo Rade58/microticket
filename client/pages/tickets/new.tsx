@@ -17,17 +17,22 @@ const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
   const [title, setTitle] = useState<string>("");
   const [price, setPrice] = useState<string>("0.00");
 
-  // RESTRUKTURIRAM I ERROR MESSAGE KOMPONENTU, TAKODJE I errors
+  // NE TREBAM NISTA POSEBNO RADITI, JER SAM DEFINISAO
+  // DA SE REDIRECTING MOZE DESITI KADA PROVIDE-UJEM
+  // REDIRECT PATH, ODNOSNO URL
   const {
     makeRequest: makeRequestToCreateTicket,
-    data,
+    // data,
     ErrorMessagesComponent,
     errors,
   } = useRequest<{ title: string; price: number }, TicketDataI>(
     "/api/tickets",
-    { method: "post" }
+    {
+      method: "post",
+      // EVO OVDE PODESAVAM TAJ URL
+      redirectSuccessUrl: "/",
+    }
   );
-  // ---------------------------------------------------------------------
 
   const sanitizePriceOnBlur = useCallback(() => {
     const priceValue = parseFloat(price);
@@ -41,9 +46,6 @@ const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
     setPrice("0.00");
     return;
   }, [price]);
-
-  console.log({ data });
-  console.log({ errors });
 
   return (
     <div>
@@ -85,9 +87,7 @@ const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
             id="price-input"
           />
         </div>
-        {/* EVO OVDE STAVLJAM ERROR MESSAGES */}
         <ErrorMessagesComponent errors={errors} />
-        {/* -------------------------------- */}
         <button className="btn btn-primary" type="submit">
           Create
         </button>
