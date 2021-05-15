@@ -41,9 +41,9 @@ const useRequestHook = <T, P>(url: string, options: OptionsI) => {
 
   const [data, setData] = useState<P>(null);
 
-  const [errors, setErrors] = useState<{
-    errors: { message: string; field?: string }[];
-  }>({ errors: [] });
+  const [errors, setErrors] = useState<{ message: string; field?: string }[]>(
+    []
+  );
 
   const [hasErrors, setHasError] = useState<boolean>(false);
 
@@ -104,7 +104,7 @@ const useRequestHook = <T, P>(url: string, options: OptionsI) => {
           const response = await axios[method](url, body);
 
           setData(response.data as P);
-          setErrors({ errors: [] });
+          setErrors([]);
           setHasError(false);
 
           afterSuccess();
@@ -135,7 +135,7 @@ const useRequestHook = <T, P>(url: string, options: OptionsI) => {
           const response = await axios[method](url);
 
           setData(response.data as P);
-          setErrors({ errors: [] });
+          setErrors([]);
           setHasError(false);
 
           afterSuccess();
