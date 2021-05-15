@@ -137,4 +137,11 @@ BLUR SE DESI I KADA SA INPUT FIELD-A, PREDJES NA NEKI DRUGI FIELD; ILI PRITISNES
 
 - `code client/pages/tickets/new.tsx`
 
+```ts
+
+```
+
+
+
+
 
