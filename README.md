@@ -276,3 +276,5 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
 
 export default IndexPage;
 ```
+
+VIDECES SADA DA SU SVE TICKETS REPRESENTED U TABLE-U
