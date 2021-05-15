@@ -2,21 +2,16 @@
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 import { FunctionComponent, useEffect } from "react";
 import { GetServerSideProps } from "next";
-// OVO CE MI TREBATI JER CU DATA UZETI SERVER SIDE
 import { buildApiClient } from "../utils/buildApiClient";
-//
 import { InitialPropsI } from "../types/initial-props";
-// UVESCU I TYPE, KOJI SAM MALOCAS NAPRAVIO
 import { allTicketsType } from "../types/data/all-tickets";
 
-// SADA MOGU TYPE-OVATI DA CU ALL TICKETS PROSLEDITI KAO PROP
 interface PropsI extends InitialPropsI {
   tickets: allTicketsType;
 }
 
 // ---------------------------------------------------
 export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
-  // BUILD-UJEMO CLIENT-A
   const client = buildApiClient(ctx);
 
   try {
@@ -39,9 +34,33 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 // ---------------------------------------------------
 
 const IndexPage: FunctionComponent<PropsI> = (props) => {
-  // SADA BI MEDJU PROPSIMA TREBAL IDA SE NADJU ALL TICKETS
+  // DA RESTRUKTURIRAMO tickets ARRAY
+  const { tickets } = props;
 
-  return <pre>{JSON.stringify({ tickets: props.tickets }, null, 2)}</pre>;
+  // PRAVIMO UI, ODNONO TABLE UI
+  return (
+    <div>
+      <h1>Tickets</h1>
+      <table className="table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          {tickets.map(({ price, title, id }) => {
+            return (
+              <tr key={id}>
+                <td>{title}</td>
+                <td>${price.toFixed(2)}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
 };
 
 export default IndexPage;
