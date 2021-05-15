@@ -1,8 +1,3 @@
-# MAKING INDIVIDUAL TICKET PAGE
-
-- `touch client/pages/tickets/[ticketId].tsx`
-
-```tsx
 /* eslint react/react-in-jsx-scope: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 import { FunctionComponent } from "react";
@@ -63,18 +58,3 @@ const SingleTicketPage: FunctionComponent<PropsI> = (props) => {
 };
 
 export default SingleTicketPage;
-
-```
-
-## JA ODMAH MOGU DA TESTIRAM NEUSPESAN GETTING TICKET-A
-
-DAKLE MOGU DEFINISATI NEKI RANDOM TICKET ID KADA PRAVIM PATH INSIDE URL KOJI UNOSUIM U BROWSER ADRESS BAR
-
-DAKLE OVAKO NESTO
-
-`https://microticket.com/tickets/<nepostojeeci id>`
-
-I SADA PRITISKAM ENTER
-
-I TREBAO BI BITI REDIRECTED NA MAIN PAHGE, ODNONO NA `https://microticket.com`
-
