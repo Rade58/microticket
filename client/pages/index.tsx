@@ -29,7 +29,7 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
   // STAMPACU PROPSE
   console.log(props);
 
-  /* const { data } = makeRequestHook<
+  const { data, errors: errs, hasErrors, makeRequest } = makeRequestHook<
     any,
     {
       id: string;
@@ -38,9 +38,17 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
       userId: string;
       version: number;
     }
-  >("/api/tickets/", { method: "get" }); */
+  >("/api/tickets/609feaa3f76b990024443367", { method: "get" });
+
+  console.log("DATA DATA DATA DATA");
+  console.log(data, errs, hasErrors);
+  console.log("DATA DATA DATA DATA");
+
+  // debugger;
 
   useEffect(() => {
+    makeRequest();
+
     const apiClient = buildApiClient();
 
     apiClient.get("/api/users/current-user").then((response) => {
