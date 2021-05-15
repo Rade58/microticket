@@ -2,70 +2,46 @@
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 import { FunctionComponent, useEffect } from "react";
 import { GetServerSideProps } from "next";
+// OVO CE MI TREBATI JER CU DATA UZETI SERVER SIDE
 import { buildApiClient } from "../utils/buildApiClient";
-import { InitialPropsI } from "../types/initial-props";
-
-// TEST
-import makeRequestHook from "../hooks/useRequestHook";
 //
+import { InitialPropsI } from "../types/initial-props";
+// UVESCU I TYPE, KOJI SAM MALOCAS NAPRAVIO
+import { allTicketsType } from "../types/data/all-tickets";
 
-// EVO EXTEND-UJEM OVAJ INTERFACE, KOJI TYPE-UJE
-// PROPSE INDIVIDUAL PAGE-A
+// SADA MOGU TYPE-OVATI DA CU ALL TICKETS PROSLEDITI KAO PROP
 interface PropsI extends InitialPropsI {
-  foo: string;
+  tickets: allTicketsType;
 }
 
 // ---------------------------------------------------
 export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
-  return {
-    props: {
-      foo: "bar",
-    },
-  };
+  // BUILD-UJEMO CLIENT-A
+  const client = buildApiClient(ctx);
+
+  try {
+    const { data } = await client.get("/api/tickets");
+
+    return {
+      props: {
+        tickets: data as allTicketsType,
+      },
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      props: {
+        tickets: [],
+      },
+    };
+  }
 };
 // ---------------------------------------------------
 
 const IndexPage: FunctionComponent<PropsI> = (props) => {
-  // STAMPACU PROPSE
-  console.log(props);
+  // SADA BI MEDJU PROPSIMA TREBAL IDA SE NADJU ALL TICKETS
 
-  const { data, errors: errs, hasErrors, makeRequest } = makeRequestHook<
-    any,
-    {
-      id: string;
-      title: string;
-      price: number;
-      userId: string;
-      version: number;
-    }
-  >("/api/tickets/609feaa3f76b990024443367", { method: "get" });
-
-  // debugger;
-
-  useEffect(() => {
-    // makeRequest();
-
-    const apiClient = buildApiClient();
-
-    apiClient.get("/api/users/current-user").then((response) => {
-      console.log(response.data);
-    });
-  }, []);
-
-  // OVDE SADA MOGU RESTRUKTURIRATI NESTO DRUGO
-  const { initialProps, foo } = props;
-
-  const { currentUser, errors } = initialProps;
-
-  if (errors) {
-    return <pre>{JSON.stringify(errors, null, 2)}</pre>;
-  }
-
-  if (currentUser) {
-    return <h1>You are {!currentUser ? "not" : ""} signed in.</h1>;
-  }
-
-  return null;
+  return <pre>{JSON.stringify({ tickets: props.tickets }, null, 2)}</pre>;
 };
 
 export default IndexPage;
