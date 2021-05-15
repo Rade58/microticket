@@ -156,8 +156,6 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 };
 
 export default CreateNewTicketPage;
-
-
 ```
 
 - `skaffold dev`
