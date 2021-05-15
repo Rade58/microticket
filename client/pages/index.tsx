@@ -40,14 +40,10 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
     }
   >("/api/tickets/609feaa3f76b990024443367", { method: "get" });
 
-  console.log("DATA DATA DATA DATA");
-  console.log(data, errs, hasErrors);
-  console.log("DATA DATA DATA DATA");
-
   // debugger;
 
   useEffect(() => {
-    makeRequest();
+    // makeRequest();
 
     const apiClient = buildApiClient();
 
