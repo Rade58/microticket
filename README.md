@@ -28,7 +28,7 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
   };
 };
 
-const IndexPage: FunctionComponent<PropsI> = (props) => {
+const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
   //
 
   console.log(props);
@@ -40,9 +40,11 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
   );
 };
 
-export default IndexPage;
+export default CreateNewTicketPage;
 ```
 
 POKRENUCU SKAFFOLD
 
 I SADA IDEM NA <https://microticket.com/tickets/new> DA VIDIM DA LI JE PAGE KREIRAN
+
+I ZAIST PAGE JE SERVED

@@ -19,7 +19,7 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
   };
 };
 
-const IndexPage: FunctionComponent<PropsI> = (props) => {
+const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
   //
 
   console.log(props);
@@ -31,4 +31,4 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
   );
 };
 
-export default IndexPage;
+export default CreateNewTicketPage;
