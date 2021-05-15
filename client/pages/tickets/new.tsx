@@ -23,13 +23,12 @@ const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
   const [price, setPrice] = useState<string>("0.00");
 
   // EVO OVDE KORISTIM HOOK
-  // PRICE MORA DA BUDE NUMBER, JER MI OCEKUJEMO NUMBER U HANDLERU
-  const priceNumber = parseFloat(price);
-  const {} = useRequest<{ title: string; price: number }, TicketDataI>(
-    "/api/tickets",
-    { method: "post" },
-    { title, price: priceNumber }
-  );
+
+  const { makeRequest: makeRequestToCreateTicket } = useRequest<
+    { title: string; price: number },
+    TicketDataI
+  >("/api/tickets", { method: "post" });
+  // ---------------------------------------------------------------------
 
   const sanitizePriceOnBlur = useCallback(() => {
     const priceValue = parseFloat(price);
@@ -71,7 +70,16 @@ const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
         onSubmit={(e) => {
           e.preventDefault();
 
-          // createTicket();
+          // PRICE MORA DA BUDE NUMBER, JER MI OCEKUJEMO NUMBER U HANDLERU
+          const priceNumber = parseFloat(price);
+          //
+          // PRAVIM REQUEST; I KAO STO VIDIS OVDE PROSLEDJUJEM BODY
+          makeRequestToCreateTicket({
+            price: priceNumber,
+            title,
+          }).then((data) => {
+            console.log({ data }); // STAMAPM DATA DA VIDIM STA IMAM
+          });
         }}
       >
         <div className="form-group">
@@ -107,6 +115,7 @@ const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
   );
 };
 
+// (OD RANIJE)
 // OVO MI MOZDA NECE NI TREBATI ALI NEMA VEZE ,UKLONICU GA NA KRAJU
 export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
   return {
