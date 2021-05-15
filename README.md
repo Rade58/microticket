@@ -153,8 +153,12 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
                 <td>{title}</td>
                 <td>${price.toFixed(2)}</td>
                 {/* EVO VIDIS STA SAM URADIO */}
+                {/* NE ZNA ZASTO MORA OVAKVA PRAKASA */}
+                {/* GDE SE U as PROSLEDJUJE REAL URL
+                A DA JE HREF TKAV DA UKAZUJE NA IME PAGE-A
+                SA [ticketId] IN IT */}
                 <td>
-                  <Link href={`/tickets/${id}`}>
+                  <Link href="/tickets/[ticketId]" as={`/tickets/${id}`}>
                     <a>view</a>
                   </Link>
                 </td>
@@ -171,3 +175,9 @@ export default IndexPage;
 ```
 
 SADA NA INDEX PAGE-U IMAS LINKOVE ZA SVAKI LISTED TICKET
+
+I KLIKTAO SAM I UREDNO POSECIVAO PAGE
+
+**U DOKUMENTACIJI NIGDE NISAM VIDEO DA SE KORISTI GORNJI `as` MADA FUNKCIONISE** (ALI VEROVATNO SAM JA KORISTIO NEKI OUTTADED LEGACY NACIN)
+
+ALI NECU NISTAMENJATI, KADA I OVAKO FUNKCIONISE
