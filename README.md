@@ -56,8 +56,8 @@ const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-
-          createTicket();
+          // OVO SAM KREIRAO ALI COMMENT-OVAO OUT
+          // createTicket();
         }}
       >
         <div className="form-group">
