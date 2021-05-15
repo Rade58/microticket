@@ -41,7 +41,7 @@ interface OptionsI {
  * @description T (first generic) DESCRIBES DATA OF body ARGUMENT
  * @description P (second generic) DESCRIBES data OF response
  */
-const useRequestHook = <T, P>(url: string, options: OptionsI, body?: T) => {
+const useRequestHook = <T, P>(url: string, options: OptionsI) => {
   //
 
   const {
@@ -112,69 +112,71 @@ const useRequestHook = <T, P>(url: string, options: OptionsI, body?: T) => {
   }, [hasErrors, redirectFailireUrl, push]);
   // ----------------------------------------------------------
 
-  const makeRequest = useCallback(async () => {
-    if (body && method !== "get") {
-      try {
-        const response = await axios[method](url, body);
+  const makeRequest = useCallback(
+    async (body?: T) => {
+      if (body && method !== "get") {
+        try {
+          const response = await axios[method](url, body);
 
-        setData(response.data as P);
-        setErrors({ errors: [] });
-        setHasError(false);
+          setData(response.data as P);
+          setErrors({ errors: [] });
+          setHasError(false);
 
-        afterSuccess();
-        await redicectAfterSuccess();
-      } catch (err) {
-        console.log(err);
+          afterSuccess();
+          await redicectAfterSuccess();
+        } catch (err) {
+          console.log(err);
 
-        // BITNA STVAR KAKO SMO FORMATIRALI ERRORS
-        // KADA IH SALJEMO U RESPONSE-U
-        // ALI BITNO JE I TO KAKO AXIOS DAJE REPOSNSE
-        // KADE JE U PITANJU ERROREUS STATUS CODE
-        // ONAJ ERROROUS DATA KOJI SMO POSLALI
-        // A TO JE ARRAY OF ERRORS, JE SMESTED INSIDE
+          // BITNA STVAR KAKO SMO FORMATIRALI ERRORS
+          // KADA IH SALJEMO U RESPONSE-U
+          // ALI BITNO JE I TO KAKO AXIOS DAJE REPOSNSE
+          // KADE JE U PITANJU ERROREUS STATUS CODE
+          // ONAJ ERROROUS DATA KOJI SMO POSLALI
+          // A TO JE ARRAY OF ERRORS, JE SMESTED INSIDE
 
-        //        err.response.data
-        // I ZATO TO TAKO I SETT-UJEMO
-        setErrors(err.response.data);
-        setHasError(true);
-        setData(null);
+          //        err.response.data
+          // I ZATO TO TAKO I SETT-UJEMO
+          setErrors(err.response.data);
+          setHasError(true);
+          setData(null);
 
-        afterFailiure();
-        await redirectAfterFailiure();
+          afterFailiure();
+          await redirectAfterFailiure();
+        }
       }
-    }
 
-    if (method === "get") {
-      try {
-        const response = await axios[method](url);
+      if (method === "get") {
+        try {
+          const response = await axios[method](url);
 
-        setData(response.data as P);
-        setErrors({ errors: [] });
-        setHasError(false);
+          setData(response.data as P);
+          setErrors({ errors: [] });
+          setHasError(false);
 
-        afterSuccess();
-        await redicectAfterSuccess();
-      } catch (err) {
-        setErrors(err.response.data);
-        setHasError(true);
-        setData(null);
+          afterSuccess();
+          await redicectAfterSuccess();
+        } catch (err) {
+          setErrors(err.response.data);
+          setHasError(true);
+          setData(null);
 
-        afterFailiure();
-        await redirectAfterFailiure();
+          afterFailiure();
+          await redirectAfterFailiure();
+        }
       }
-    }
-  }, [
-    setData,
-    setErrors,
-    setHasError,
-    method,
-    body,
-    afterFailiure,
-    afterSuccess,
-    redicectAfterSuccess,
-    redirectAfterFailiure,
-    url,
-  ]);
+    },
+    [
+      setData,
+      setErrors,
+      setHasError,
+      method,
+      afterFailiure,
+      afterSuccess,
+      redicectAfterSuccess,
+      redirectAfterFailiure,
+      url,
+    ]
+  );
 
   return {
     makeRequest,
