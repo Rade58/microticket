@@ -134,9 +134,9 @@ const useRequestHook = <T, P>(url: string, options: OptionsI) => {
           // ONAJ ERROROUS DATA KOJI SMO POSLALI
           // A TO JE ARRAY OF ERRORS, JE SMESTED INSIDE
 
-          //        err.response.data
+          //        err.response.data.errors
           // I ZATO TO TAKO I SETT-UJEMO
-          setErrors(err.response.data);
+          setErrors(err.response.data.errors);
           setHasError(true);
           setData(null);
 
@@ -156,7 +156,7 @@ const useRequestHook = <T, P>(url: string, options: OptionsI) => {
           afterSuccess();
           await redicectAfterSuccess();
         } catch (err) {
-          setErrors(err.response.data);
+          setErrors(err.response.data.errors);
           setHasError(true);
           setData(null);
 
