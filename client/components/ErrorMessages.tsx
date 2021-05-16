@@ -3,6 +3,8 @@ import React, { FC } from "react";
 const ErrorMessages: FC<{
   errors: { message: string; field?: string }[];
 }> = ({ errors }) => {
+  console.log(errors);
+
   return (
     errors.length > 0 && (
       <div className="alert alert-danger">

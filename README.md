@@ -1,317 +1,44 @@
-# SHOWING STRIPE PAYMENT FORM
+# FILTERING RESERVED TICKETS FROM THE TABLE ON MAIN PAGE
 
-VEC SAM RANIJE KORISTIO STRIPE NA FRONEND-U
+ZELIM DA OVI TICKET-OVI BUDU MARKED I DA NEMAJU LINK KOJI VODI DO NJIHOVOG PAGE-A
 
-EVO MOZES DA [POGLEDAS OVDE](https://github.com/Rade58/gatsby-shopify-theme-workspace/tree/5_SETTING_UP_STRIPE), [I OVDE](https://github.com/Rade58/gatsby-shopify-theme-workspace/tree/5_1_STRIPE_MULTIPLE_PRODUCTS_MULTIPLE_PRICES), [I OVDE](https://github.com/Rade58/gatsby-shopify-theme-workspace/tree/5_2_FETCHING_STRIPE_DATA)
+**USTVARI BOLJE JE MODIFIKOVATI SAMI HANDLER INSIDE `tickets` MICROSERVICE, DA SE SAMO QUERY-UJE ZA TICKET-OVIMA, KOJI NISU RESERVED**
 
-ALI PROVEO BI DOSTA VREMENA POKUSAVAJUCI NESTO OVAKO, ZATO CU KORISTITI PAKET, KOJI KORISTI I AUTOR WORKSHOPA (**IAKO JE KAKO VIDIM, UNMAINTAINED FOR 4 YEARS**)
+- `code tickets/src/routes/index.ts`
 
-STVARI KOJE SAM RANIJE RADIO ZAHTEVAJU DEFINISANJE CELOG JEDNOG PAGE-A ZA STRIPE CHECKOUT (STO JE NARAVNO PRAVI NACIN DA SE IDE KADA SE KORISTI STRIPE, ALI TO JE TOO MUCH ZA MOJU APLIKACIJU)
+```ts
+import { Router } from "express";
+// TREBACE MI OVO
+import { OrderStatusEnum as OSE } from "@ramicktick/common";
+import { Ticket } from "../models/ticket.model";
 
-ZATO CU KORISTITI PAKET KOJI KORISTI AUTOR WORKSHOPAS
+const router = Router();
 
-## KORISTICEMO PAKET `react-stripe-checkout`; IAKO GA NIKAD NECU KORISTITI U PRODUCTION-U; CISTO ZELIM DA STO PRE ZAVRSIM WORKSHOP
+router.get("/api/tickets", async (req, res) => {
+  // SADA PRAVIM OVAKAV QUERY
+  const ticketsOrderUndefined = await Ticket.find({
+    orderId: undefined,
+  });
+  // DAKL UZIMAM SAMO TICKETS KOJI IMAJU null AO ORDER ID
+  // ALI JA MISLI MDA SAM RANIJE POGRESIO, I DEFINISAO SAM DA KADA
+  // ORDER EXPIRE-UJE DA SE NA TICKETU PODESI DA orderId
+  // BUDE null ;ZATO MISLIM DA MI JE OVAKO SIGURNIJE DA URADIM
 
-DAKLE KADA BUDEM PRAVIO REAL WORLD APP, [KORISTIO BI NESTO OVAKO](https://stripe.com/docs/payments/integration-builder), A NE OVO STO CU SADA URADITI
+  const ticketsOrderNull = await Ticket.find({
+    orderId: null,
+  });
 
-**MEDJUTIM PAKET NIJE LOS; JEDINO STA OON RADI, JESTE DA PROVIDE-UJE UI U KOJE CE KORISNIK UNOSITI SVOJ CREDIT CARD DATA; A ONO STO SE DOBIJA IZ SVGA TOGA JESTE `token`; TOKEN KOJI JE POTREBAN I KOJI MI OCEKUJEMO U NASEM ENDPOINTU ZA payments MICROSERVICE, KAKO BISMO USPESNO NAPRAVILI STRIPE CHECKOUT**
+  const tickets = [...ticketsOrderUndefined, ...ticketsOrderNull];
 
-- `cd client`
+  res.status(200).send(tickets);
+});
 
-- `yarn add` [react-stripe-checkout](https://www.npmjs.com/package/react-stripe-checkout)
-
-## TREBACE TI PUBLISHABLE STRIPE KEY, KOJI MOZES NACI U STRIPE DASBOARD-U
-
-POSTO JE PUBLISHABLE MOZES GA HARDCODE-OVATI GDE HOCES
-
-ALI NIJE NI TO DOBRA PARKASA
-
-ZATO CU GA DODATI U .env.local FILE KOJI NE COMMIT-UJEM
-
-- `touch client/.env.local`
-
-```zsh
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
-```
-
-# MOZEMO KONACNO DA UPOTREBIMO PAKET KOJ ISMO INSTALIRALI
-
-- `code client/pages/orders/[orderId].tsx`
-
-```tsx
-/* eslint react/react-in-jsx-scope: 0 */
-/* eslint jsx-a11y/anchor-is-valid: 1 */
-import { FunctionComponent, useState, useEffect } from "react";
-import { GetServerSideProps } from "next";
-import { InitialPropsI } from "../../types/initial-props";
-import { OrderDataTicketPopulatedI } from "../../types/data/order-data";
-import { buildApiClient } from "../../utils/buildApiClient";
-// UVOZIM PAKET KOJ ISAM MALOCAS INSTALIRAO
-import StripeCheckoutModal from "react-stripe-checkout";
-//
-
-interface PropsI extends InitialPropsI {
-  order: OrderDataTicketPopulatedI;
-}
-
-export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
-  const client = buildApiClient(ctx);
-
-  const { orderId } = ctx.params;
-
-  try {
-    const { data } = await client.get(`/api/orders/${orderId}`);
-
-    return {
-      props: {
-        order: data,
-      },
-    };
-  } catch (err) {
-    ctx.res.writeHead(302, { Location: "/" });
-
-    ctx.res.end();
-
-    return { props: { order: {} } };
-  }
-};
-
-const OrderPage: FunctionComponent<PropsI> = (props) => {
-  const {
-    order: {
-      expiresAt,
-      ticket: { price },
-    },
-    currentUser: { email },
-  } = props;
-
-  const expirationTimeMiliseconds: number = new Date(expiresAt).getTime();
-
-  const [currentTimeMiliseconds, setCurrnetTimeMiliseconds] = useState<number>(
-    new Date().getTime()
-  );
-
-  const [timerId, setTimerId] = useState<number | undefined>(undefined);
-
-  const timeDiffMiliseconds =
-    expirationTimeMiliseconds - currentTimeMiliseconds;
-
-  const minutes = new Date(timeDiffMiliseconds).getMinutes();
-  const seconds = new Date(timeDiffMiliseconds).getSeconds();
-
-  useEffect(() => {
-    const timerId = window.setInterval(() => {
-      setCurrnetTimeMiliseconds(new Date().getTime());
-    }, 1000);
-
-    setTimerId(timerId);
-  }, []);
-
-  useEffect(
-    () => () => {
-      window.clearInterval(timerId);
-    },
-    [timerId]
-  );
-
-  useEffect(() => {
-    if (timeDiffMiliseconds <= 0) {
-      window.clearInterval(timerId);
-    }
-  }, [timeDiffMiliseconds, timerId]);
-
-  return (
-    <div>
-      {timeDiffMiliseconds > 0 ? (
-        <span>
-          expires in: {minutes} minutes and {seconds} seconds
-        </span>
-      ) : (
-        <span>order expired</span>
-      )}
-      {timeDiffMiliseconds > 0 ? (
-        <StripeCheckoutModal
-          // PRVA DVA PROPA SU REQUIRED
-          stripeKey={process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
-          // TOKEN MORA DA BUDE CALLBACK FUNKCIJA
-          // DAKLE TO JE TOKEN KOJI CE BITI KREIRAN
-          // KADA KORISNIK UNESE INFO SVOJE KREDITNE KARTICE
-          token={({ id: token }) => {
-            console.log({ token });
-            // ODAVDE CEMO HIT-OVATI NAS payments MICROSERVICE
-            // JEDINI ENDPOINT TOG MICROSERVICE
-            // MI TAMO SA TOKENOM PRAVIM OSTRIPE CHECKOUT
-          }}
-          // OPCIONO MOZES DODATI EMAIL KORISNIKA
-          email={email}
-          // ONO STO BI TREBALO DA DA DODAS JESTE AMOUNT
-          // ON MORA BITI U CENTIMA (najmanjoj jedinici valute)
-          amount={price * 100}
-        />
-      ) : (
-        ""
-      )}
-    </div>
-  );
-};
-
-export default OrderPage;
+export { router as getAllTicketsRouter };
 
 ```
 
-MOZEMO OVO ODMAH DA TESTIRAMO
+**SADA MOZES DA ODES NA `https://microticket.com/tickets/new` I NAPRAVI 4 TICKETA**
 
-- `skaffold dev`
+PA ZATIM NPRAVI ORDERE ZA DVA I KUPI IH
 
-OBAVI SAV PROCES OD KRIRANJA TICKETA (`https://microticket.com/tickets/new`), DO MAKINGA ORDER-A ZA TAJ TICKET
-
-**PA NA ORDER PAGE-U, PRITISNI NA DUGME ZA BUY I POSMATRAJ KONZOLU** (OBJASNJENO TI JE DA MOZES KORISTITI `4242424242424242` KAO CARD NUMBER A TESTIRANJE ([pogledaj i ovo](https://stripe.com/docs/testing#cards)))
-
-TREBAO BI DA SE STMAPA TOKEN NAMENJAN ZA PRAVLJANJE STRIPE CHECKOUT-A
-
-**I ZAISTA JE TAKO**
-
-# SADA MOZEMO DA DEFINISEMO PRAVLJNJE REQUESTA, PREMA `/api/payments`
-
-- `code client/pages/orders/[orderId].tsx`
-
-```tsx
-/* eslint react/react-in-jsx-scope: 0 */
-/* eslint jsx-a11y/anchor-is-valid: 1 */
-import { FunctionComponent, useState, useEffect } from "react";
-import { GetServerSideProps } from "next";
-import { InitialPropsI } from "../../types/initial-props";
-import { OrderDataTicketPopulatedI } from "../../types/data/order-data";
-import { buildApiClient } from "../../utils/buildApiClient";
-import StripeCheckoutModal from "react-stripe-checkout";
-// KORISTICEMO OPET ONAJ useRequestHook
-import useRequest from "../../hooks/useRequestHook";
-//
-
-interface PropsI extends InitialPropsI {
-  order: OrderDataTicketPopulatedI;
-}
-
-export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
-  const client = buildApiClient(ctx);
-
-  const { orderId } = ctx.params;
-
-  try {
-    const { data } = await client.get(`/api/orders/${orderId}`);
-
-    return {
-      props: {
-        order: data,
-      },
-    };
-  } catch (err) {
-    ctx.res.writeHead(302, { Location: "/" });
-
-    ctx.res.end();
-
-    return { props: { order: {} } };
-  }
-};
-
-//
-const OrderPage: FunctionComponent<PropsI> = (props) => {
-  const [orderCompleted, setOrderCompleted] = useState<boolean>(false);
-
-  // EVO SADA MOZEMO ODMAH OVDE DA KORISTIMO useRequest
-
-  const {
-    makeRequest: makeRequestToPayments,
-    ErrorMessagesComponent,
-    errors,
-  } = useRequest<{ orderId: string; token: string }, { id: string }>(
-    "/api/payments",
-    { method: "post" }
-  );
-  // SADA MOZEMO KORISTITI GORNJU FUNKCIJU ZA MAKING REQUEST , U token CALLBACK-U
-
-  const {
-    order: {
-      id: orderId,
-      expiresAt,
-      ticket: { price },
-    },
-    currentUser: { email },
-  } = props;
-
-  const expirationTimeMiliseconds: number = new Date(expiresAt).getTime();
-
-  const [currentTimeMiliseconds, setCurrnetTimeMiliseconds] = useState<number>(
-    new Date().getTime()
-  );
-
-  const [timerId, setTimerId] = useState<number | undefined>(undefined);
-
-  const timeDiffMiliseconds =
-    expirationTimeMiliseconds - currentTimeMiliseconds;
-
-  const minutes = new Date(timeDiffMiliseconds).getMinutes();
-  const seconds = new Date(timeDiffMiliseconds).getSeconds();
-
-  useEffect(() => {
-    const timerId = window.setInterval(() => {
-      setCurrnetTimeMiliseconds(new Date().getTime());
-    }, 1000);
-
-    setTimerId(timerId);
-  }, []);
-
-  useEffect(
-    () => () => {
-      window.clearInterval(timerId);
-    },
-    [timerId]
-  );
-
-  useEffect(() => {
-    if (timeDiffMiliseconds <= 0) {
-      window.clearInterval(timerId);
-    }
-  }, [timeDiffMiliseconds, timerId]);
-
-  return (
-    <div>
-      {timeDiffMiliseconds > 0 ? (
-        <span>
-          expires in: {minutes} minutes and {seconds} seconds
-        </span>
-      ) : (
-        <span>order expired</span>
-      )}
-      {timeDiffMiliseconds > 0 && orderCompleted === false ? (
-        <StripeCheckoutModal
-          stripeKey={process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
-          token={({ id: token }) => {
-            // console.log({ token });
-
-            // EVO OVDE PRAVIM REQUEST
-            makeRequestToPayments({ orderId, token }).then((data) => {
-              if (data) {
-                console.log(data.id);
-
-                setOrderCompleted(true);
-              }
-            });
-          }}
-          email={email}
-          amount={price * 100}
-        />
-      ) : (
-        ""
-      )}
-      <ErrorMessagesComponent errors={errors} />
-    </div>
-  );
-};
-
-export default OrderPage;
-```
-
-OVO SAM I TETIRAO, I USPESNO SAM NAPRAVIO PAYMENT, STO SAM MOGAO DA VIDIM I U STRIPE DASBOARD-U 
-
-MOZES SE VRATITI NAZAD PA PONOVO PROBATO DA NAPRAVIS ORDER ZA ISTI TICKET; TREBALO BI DA SE DESI ERROR
+PA ONDA POKUSAJ DA SE VRATIS NA ``https://microticket.com` ;DA VIDIS KOLIKO IMAS LISTED TICKET-A

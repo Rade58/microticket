@@ -44,11 +44,11 @@ router.post(
     }
     // OVO SAM DODAO
 
-    console.log({ orderStatus: order.status });
+    /* console.log({ orderStatus: order.status });
 
     if (order.status === OSE.complete) {
       throw new BadRequestError("cant't pay for completed order");
-    }
+    } */
 
     const { id: stripeChargeId } = await stripe.charges.create({
       currency: "usd",

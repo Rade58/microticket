@@ -91,14 +91,14 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
   );
 
   useEffect(() => {
-    if (timeDiffMiliseconds <= 0) {
+    if (timeDiffMiliseconds <= 0 || orderCompleted === true) {
       window.clearInterval(timerId);
     }
-  }, [timeDiffMiliseconds, timerId]);
+  }, [timeDiffMiliseconds, timerId, orderCompleted]);
 
   return (
     <div>
-      {timeDiffMiliseconds > 0 ? (
+      {timeDiffMiliseconds > 0 && orderCompleted === false ? (
         <span>
           expires in: {minutes} minutes and {seconds} seconds
         </span>

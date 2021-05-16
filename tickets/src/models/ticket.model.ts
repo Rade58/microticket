@@ -54,7 +54,7 @@ interface TicketFields {
   price: number;
   userId: string;
   // EVO GA
-  orderId?: string;
+  orderId?: string | undefined;
   // I NISTA VISE NISAM DEFINISAO
 }
 
