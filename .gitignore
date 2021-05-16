@@ -34,6 +34,8 @@ client/node_modules
 client/.next
 client/.env
 
+client/.env.local
+
 #common
 node_modules
 package.lock.json
@@ -53,3 +55,4 @@ expiration/node_modules
 # payments
 payments/node_modules
 payments/.env
+

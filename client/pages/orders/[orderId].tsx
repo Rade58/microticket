@@ -2,11 +2,11 @@
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 import { FunctionComponent, useState, useEffect } from "react";
 import { GetServerSideProps } from "next";
-// NAPRAVIO SAM TYPE ZA DATA ZA ORDER, KOJI CES OBTIN-OVATI
-// ISTO TAKO ON CE IMATI POPULATED TICKET
 import { OrderDataTicketPopulatedI } from "../../types/data/order-data";
-// TREBA I DA BUILD-UJEMO API CLIENT-A
 import { buildApiClient } from "../../utils/buildApiClient";
+// UVOZIM PAKET KOJ ISAM MALOCAS INSTALIRAO
+import StripeCheckoutModal from "react-stripe-checkout";
+//
 
 interface PropsI {
   order: OrderDataTicketPopulatedI;
@@ -15,10 +15,8 @@ interface PropsI {
 export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
   const client = buildApiClient(ctx);
 
-  // UZIMAS [orderId]
   const { orderId } = ctx.params;
 
-  // UZIMAMO ORDER
   try {
     const { data } = await client.get(`/api/orders/${orderId}`);
 
@@ -28,7 +26,6 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
       },
     };
   } catch (err) {
-    // AKO NEMA ORDER-A I OVDE BI TREBAO DA NAPRAVIM REDIRECT
     ctx.res.writeHead(302, { Location: "/" });
 
     ctx.res.end();
@@ -50,16 +47,12 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
 
   const [timerId, setTimerId] = useState<number | undefined>(undefined);
 
-  // OVO JE MALO OSIGURANJE DA NE MOZE ICI MANJE OD NULA
   const timeDiffMiliseconds =
     expirationTimeMiliseconds - currentTimeMiliseconds;
-
-  console.log({ timeDiffMiliseconds });
 
   const minutes = new Date(timeDiffMiliseconds).getMinutes();
   const seconds = new Date(timeDiffMiliseconds).getSeconds();
 
-  // ---------- SETTING TIMER ---------------
   useEffect(() => {
     const timerId = window.setInterval(() => {
       setCurrnetTimeMiliseconds(new Date().getTime());
@@ -68,16 +61,12 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
     setTimerId(timerId);
   }, []);
 
-  // --------- CLEARING TIMER ZALUCAJ OVAKO ----------------
   useEffect(
     () => () => {
       window.clearInterval(timerId);
     },
     [timerId]
   );
-  // ------------------------------------------
-  // ALI HJDE DA CLEAR-UJEMO TIMER I KADA JE RAZLIKA
-  // DOSLA DO NULA ILI ISPOD NULA
 
   useEffect(() => {
     if (timeDiffMiliseconds <= 0) {
@@ -85,8 +74,6 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
     }
   }, [timeDiffMiliseconds, timerId]);
 
-  // AKO JE RAZLIMA MANJA OD NULE ILI NULA
-  // DISPLAY-OVACU NESTO DRUGO
   return (
     <div>
       {timeDiffMiliseconds > 0 ? (
@@ -96,6 +83,11 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
       ) : (
         <span>order expired</span>
       )}
+
+      <StripeCheckoutModal
+        stripeKey={process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+        //
+      />
     </div>
   );
 };
