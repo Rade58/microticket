@@ -143,3 +143,11 @@ const SingleTicketPage: FunctionComponent<PropsI> = (props) => {
 export default SingleTicketPage;
 
 ```
+
+# PRVENSTVENO U CILJU DA USPESNO MOZEMO DA ISPROBAMO ORDER CREATION, SKAFFOLD-OVCEMO PAGE ZA ORDER
+
+- `mkdir client/pages/orders`
+
+- `touch client/pages/orders/[orderId].tsx`
+
+NECU TI POKAZIVATI STRANICU, JER JE TO SAMO ZA ZADA HELLO WORLD PAGE
