@@ -2,13 +2,14 @@
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 import { FunctionComponent, useState, useEffect } from "react";
 import { GetServerSideProps } from "next";
+import { InitialPropsI } from "../../types/initial-props";
 import { OrderDataTicketPopulatedI } from "../../types/data/order-data";
 import { buildApiClient } from "../../utils/buildApiClient";
 // UVOZIM PAKET KOJ ISAM MALOCAS INSTALIRAO
 import StripeCheckoutModal from "react-stripe-checkout";
 //
 
-interface PropsI {
+interface PropsI extends InitialPropsI {
   order: OrderDataTicketPopulatedI;
 }
 
@@ -36,7 +37,11 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 
 const OrderPage: FunctionComponent<PropsI> = (props) => {
   const {
-    order: { expiresAt },
+    order: {
+      expiresAt,
+      ticket: { price },
+    },
+    currentUser: { email },
   } = props;
 
   const expirationTimeMiliseconds: number = new Date(expiresAt).getTime();
@@ -83,11 +88,28 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
       ) : (
         <span>order expired</span>
       )}
-
-      <StripeCheckoutModal
-        stripeKey={process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
-        //
-      />
+      {timeDiffMiliseconds > 0 ? (
+        <StripeCheckoutModal
+          // PRVA DVA PROPA SU REQUIRED
+          stripeKey={process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+          // TOKEN MORA DA BUDE CALLBACK FUNKCIJA
+          // DAKLE TO JE TOKEN KOJI CE BITI KREIRAN
+          // KADA KORISNIK UNESE INFO SVOJE KREDITNE KARTICE
+          token={(token) => {
+            console.log(token);
+            // ODAVDE CEMO HIT-OVATI NAS payments MICROSERVICE
+            // JEDINI ENDPOINT TOG MICROSERVICE
+            // MI TAMO SA TOKENOM PRAVIM OSTRIPE CHECKOUT
+          }}
+          // OPCIONO MOZES DODATI EMAIL KORISNIKA
+          email={email}
+          // ONO STO BI TREBALO DA DA DODAS JESTE AMOUNT
+          // ON MORA BITI U CENTIMA (najmanjoj jedinici valute)
+          amount={price * 100}
+        />
+      ) : (
+        ""
+      )}
     </div>
   );
 };
