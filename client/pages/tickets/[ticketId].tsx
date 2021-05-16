@@ -64,14 +64,6 @@ const SingleTicketPage: FunctionComponent<PropsI> = (props) => {
     method: "post",
   });
 
-  // OVO NE VALJA
-  /* useEffect(() => {
-    if (data) {
-      push(`/orders/${data.id}`);
-    }
-  }, [data]);
- */
-
   return (
     <div>
       <h1>{title}</h1>
