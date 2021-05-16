@@ -34,7 +34,7 @@ ZATO CU GA DODATI U .env.local FILE KOJI NE COMMIT-UJEM
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 ```
 
-# MOZEMO KONACNO DA UPOTREBIMO PAKET KOJ ISMO INSTALIRALI
+# MOZEMO KONACNO DA UPOTREBIMO PAKET KOJI SMO INSTALIRALI
 
 - `code client/pages/orders/[orderId].tsx`
 
@@ -122,14 +122,18 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
 
   return (
     <div>
-      {timeDiffMiliseconds > 0 ? (
-        <span>
-          expires in: {minutes} minutes and {seconds} seconds
-        </span>
-      ) : (
-        <span>order expired</span>
-      )}
-      {timeDiffMiliseconds > 0 ? (
+      {orderCompleted === false ? (
+        <>
+          {timeDiffMiliseconds > 0 ? (
+            <span>
+              expires in: {minutes} minutes and {seconds} seconds
+            </span>
+          ) : (
+            <span>order expired</span>
+          )}
+        </>
+      ) : null}
+      {timeDiffMiliseconds > 0 && orderCompleted === false ? (
         <StripeCheckoutModal
           // PRVA DVA PROPA SU REQUIRED
           stripeKey={process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
@@ -151,7 +155,9 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
       ) : (
         ""
       )}
+      <ErrorMessagesComponent errors={errors} />
     </div>
+   
   );
 };
 
@@ -269,20 +275,24 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
   );
 
   useEffect(() => {
-    if (timeDiffMiliseconds <= 0) {
+    if (timeDiffMiliseconds <= 0 || orderCompleted === true) {
       window.clearInterval(timerId);
     }
-  }, [timeDiffMiliseconds, timerId]);
+  }, [timeDiffMiliseconds, timerId, orderCompleted]);
 
   return (
     <div>
-      {timeDiffMiliseconds > 0 ? (
-        <span>
-          expires in: {minutes} minutes and {seconds} seconds
-        </span>
-      ) : (
-        <span>order expired</span>
-      )}
+      {orderCompleted === false ? (
+        <>
+          {timeDiffMiliseconds > 0 ? (
+            <span>
+              expires in: {minutes} minutes and {seconds} seconds
+            </span>
+          ) : (
+            <span>order expired</span>
+          )}
+        </>
+      ) : null}
       {timeDiffMiliseconds > 0 && orderCompleted === false ? (
         <StripeCheckoutModal
           stripeKey={process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
@@ -310,6 +320,7 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
 };
 
 export default OrderPage;
+
 ```
 
 OVO SAM I TETIRAO, I USPESNO SAM NAPRAVIO PAYMENT, STO SAM MOGAO DA VIDIM I U STRIPE DASBOARD-U 

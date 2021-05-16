@@ -91,20 +91,24 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
   );
 
   useEffect(() => {
-    if (timeDiffMiliseconds <= 0) {
+    if (timeDiffMiliseconds <= 0 || orderCompleted === true) {
       window.clearInterval(timerId);
     }
-  }, [timeDiffMiliseconds, timerId]);
+  }, [timeDiffMiliseconds, timerId, orderCompleted]);
 
   return (
     <div>
-      {timeDiffMiliseconds > 0 ? (
-        <span>
-          expires in: {minutes} minutes and {seconds} seconds
-        </span>
-      ) : (
-        <span>order expired</span>
-      )}
+      {orderCompleted === false ? (
+        <>
+          {timeDiffMiliseconds > 0 ? (
+            <span>
+              expires in: {minutes} minutes and {seconds} seconds
+            </span>
+          ) : (
+            <span>order expired</span>
+          )}
+        </>
+      ) : null}
       {timeDiffMiliseconds > 0 && orderCompleted === false ? (
         <StripeCheckoutModal
           stripeKey={process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
