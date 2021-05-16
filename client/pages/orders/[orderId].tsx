@@ -38,6 +38,8 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 
 //
 const OrderPage: FunctionComponent<PropsI> = (props) => {
+  const [orderCompleted, setOrderCompleted] = useState<boolean>(false);
+
   // EVO SADA MOZEMO ODMAH OVDE DA KORISTIMO useRequest
 
   const {
@@ -103,7 +105,7 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
       ) : (
         <span>order expired</span>
       )}
-      {timeDiffMiliseconds > 0 ? (
+      {timeDiffMiliseconds > 0 && orderCompleted === false ? (
         <StripeCheckoutModal
           stripeKey={process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
           token={({ id: token }) => {
@@ -113,6 +115,8 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
             makeRequestToPayments({ orderId, token }).then((data) => {
               if (data) {
                 console.log(data.id);
+
+                setOrderCompleted(true);
               }
             });
           }}

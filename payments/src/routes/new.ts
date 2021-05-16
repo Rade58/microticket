@@ -42,6 +42,13 @@ router.post(
     if (order.status === OSE.cancelled) {
       throw new BadRequestError("cant't pay fo already cancelled order");
     }
+    // OVO SAM DODAO
+
+    console.log({ orderStatus: order.status });
+
+    if (order.status === OSE.complete) {
+      throw new BadRequestError("cant't pay for completed order");
+    }
 
     const { id: stripeChargeId } = await stripe.charges.create({
       currency: "usd",
