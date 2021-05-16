@@ -7,33 +7,7 @@ ZELIM DA OVI TICKET-OVI BUDU MARKED I DA NEMAJU LINK KOJI VODI DO NJIHOVOG PAGE-
 - `code tickets/src/routes/index.ts`
 
 ```ts
-import { Router } from "express";
-// TREBACE MI OVO
-import { OrderStatusEnum as OSE } from "@ramicktick/common";
-import { Ticket } from "../models/ticket.model";
 
-const router = Router();
-
-router.get("/api/tickets", async (req, res) => {
-  // SADA PRAVIM OVAKAV QUERY
-  const ticketsOrderUndefined = await Ticket.find({
-    orderId: undefined,
-  });
-  // DAKL UZIMAM SAMO TICKETS KOJI IMAJU null AO ORDER ID
-  // ALI JA MISLI MDA SAM RANIJE POGRESIO, I DEFINISAO SAM DA KADA
-  // ORDER EXPIRE-UJE DA SE NA TICKETU PODESI DA orderId
-  // BUDE null ;ZATO MISLIM DA MI JE OVAKO SIGURNIJE DA URADIM
-
-  const ticketsOrderNull = await Ticket.find({
-    orderId: null,
-  });
-
-  const tickets = [...ticketsOrderUndefined, ...ticketsOrderNull];
-
-  res.status(200).send(tickets);
-});
-
-export { router as getAllTicketsRouter };
 
 ```
 
