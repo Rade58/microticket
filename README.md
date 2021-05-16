@@ -16,7 +16,7 @@ A SADA SE VRATI NA TEMU
 ***
 ***
 
-DAKLE JA NA ORDER PAGE-U ZELIM DA PRIKAZEM TIMER, KOJI CE POKAZIVATI KORISNIKU, KOLIKO JOS MINUTA ILI SEKUNDI IMA DOK MU ORDER BNE EXPIRE-UJE; ODNPNO KOLIKO JOS IMA VREMENA DA PRISTISNE NA `Buy` DUGME, KOJE CE ISTO BITI DISPLAYED
+DAKLE JA NA ORDER PAGE-U ZELIM DA PRIKAZEM TIMER, KOJI CE POKAZIVATI KORISNIKU, KOLIKO JOS MINUTA ILI SEKUNDI IMA DOK MU ORDER BNE EXPIRE-UJE; ODNPNO KOLIKO JOS IMA VREMENA DA PRISTISNE NA `Pay` DUGME, KOJE CE ISTO BITI DISPLAYED, ALI SA `Pay` DUGMENTOM CU SE POZABAVITI U SLEDECEM BRANCH-U
 
 IMAM NEKE IDEJE
 
@@ -68,6 +68,8 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
   }
 };
 
+// DEFINISAO SAM SERVER SIDE CODE, A SADA CU DA SE POZABAVIM DEFINISANJEM TIMER-A, U KOMPONENTI
+
 const OrderPage: FunctionComponent<PropsI> = (props) => {
   const {
     order: { expiresAt },
@@ -75,18 +77,15 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
 
   const expirationTimeMiliseconds: number = new Date(expiresAt).getTime();
 
-  const [
-    currentTimeMiliseconds,
-    setCurrnetTimeMiliseconds,
-  ] = useState<number>();
+  const [currentTimeMiliseconds, setCurrnetTimeMiliseconds] = useState<number>(
+    new Date().getTime()
+  );
 
   const [timerId, setTimerId] = useState<number | undefined>(undefined);
 
   // OVO JE MALO OSIGURANJE DA NE MOZE ICI MANJE OD NULA
   const timeDiffMiliseconds =
-    expirationTimeMiliseconds - currentTimeMiliseconds > 0
-      ? expirationTimeMiliseconds - currentTimeMiliseconds
-      : 0;
+    expirationTimeMiliseconds - currentTimeMiliseconds;
 
   console.log({ timeDiffMiliseconds });
 
@@ -119,20 +118,27 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
     }
   }, [timeDiffMiliseconds, timerId]);
 
-  // ZA SADA SAMO DA TI POKAZEM DA SVE FUNKCIONISE
-  // PRIKAZUJEM TI SLEDECI UI
+  // AKO JE RAZLIMA MANJA OD NULE ILI NULA
+  // DISPLAY-OVACU NESTO DRUGO
   return (
     <div>
-      expires in: {minutes} minutes and {seconds} seconds
+      {timeDiffMiliseconds > 0 ? (
+        <span>
+          expires in: {minutes} minutes and {seconds} seconds
+        </span>
+      ) : (
+        <span>order expired</span>
+      )}
     </div>
   );
 };
 
 export default OrderPage;
+
 ```
 
 U SUSTINI SVE FUNKCIONISE U POGLEDU TIMER-A
 
-TREBLI BI DA ULEPASAMO UI
+MI BI TREBALI BI DA DISPLAY-UJEMO I `Pay` BUTTON, KOJI CE SE USLOVNO PRIKAZIVATI, AKO JE VARIJABLA, KOJOJ SAM DAO IME `timeDiffMiliseconds` VECA OD NULA 
 
-TREBALI BI DA DISPLAY-UJEMO I `Pay` BUTTON, KOJI CE SE USLOVNO PRIKAZIVATI, AKO JE BROJ 
+## POSTO CE `Pay` DUGME I NJEGOVA LOGIKA BITI VEZANA ZA STRIPE, TIME CU SE POZABAVITI U SLEDECEM BRANCH-U

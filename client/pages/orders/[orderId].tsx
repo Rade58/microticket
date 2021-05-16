@@ -44,18 +44,15 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
 
   const expirationTimeMiliseconds: number = new Date(expiresAt).getTime();
 
-  const [
-    currentTimeMiliseconds,
-    setCurrnetTimeMiliseconds,
-  ] = useState<number>();
+  const [currentTimeMiliseconds, setCurrnetTimeMiliseconds] = useState<number>(
+    new Date().getTime()
+  );
 
   const [timerId, setTimerId] = useState<number | undefined>(undefined);
 
   // OVO JE MALO OSIGURANJE DA NE MOZE ICI MANJE OD NULA
   const timeDiffMiliseconds =
-    expirationTimeMiliseconds - currentTimeMiliseconds > 0
-      ? expirationTimeMiliseconds - currentTimeMiliseconds
-      : 0;
+    expirationTimeMiliseconds - currentTimeMiliseconds;
 
   console.log({ timeDiffMiliseconds });
 
@@ -88,11 +85,17 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
     }
   }, [timeDiffMiliseconds, timerId]);
 
-  // ZA SADA SAMO DA TI POKAZEM DA SVE FUNKCIONISE
-  // PRIKAZUJEM TI SLEDECI UI
+  // AKO JE RAZLIMA MANJA OD NULE ILI NULA
+  // DISPLAY-OVACU NESTO DRUGO
   return (
     <div>
-      expires in: {minutes} minutes and {seconds} seconds
+      {timeDiffMiliseconds > 0 ? (
+        <span>
+          expires in: {minutes} minutes and {seconds} seconds
+        </span>
+      ) : (
+        <span>order expired</span>
+      )}
     </div>
   );
 };
