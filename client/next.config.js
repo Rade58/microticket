@@ -40,14 +40,15 @@ module.exports = (phase, { defaultConfig }) => {
   };
 
   // WEBPACK 5 ENABLING
-  newConfig.future = {
+  /* newConfig.future = {
     webpack5: true,
-  };
+  }; */
 
   // *********************
   // EVO OVDE CU DA PODESIM TU webpackDevMiddleware FUNKCIJU
   newConfig.webpackDevMiddleware = (config) => {
-    config.watchOptions.poll = 300;
+    config.watchOptions.poll = 1000;
+    config.watchOptions.aggregateTimeout = 300;
     return config;
   };
   // ***********************

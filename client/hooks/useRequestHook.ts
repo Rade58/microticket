@@ -109,7 +109,7 @@ const useRequestHook = <T, P>(url: string, options: OptionsI) => {
           afterSuccess();
           await redicectAfterSuccess();
 
-          return response.data;
+          return response.data as P;
         } catch (err) {
           console.log(err);
 
@@ -119,7 +119,7 @@ const useRequestHook = <T, P>(url: string, options: OptionsI) => {
 
           afterFailiure();
           await redirectAfterFailiure();
-          return err;
+          return null;
         }
       }
 
@@ -133,7 +133,7 @@ const useRequestHook = <T, P>(url: string, options: OptionsI) => {
 
           afterSuccess();
           await redicectAfterSuccess();
-          return response.data;
+          return response.data as P;
         } catch (err) {
           setErrors(err.response.data.errors);
           setHasError(true);
@@ -141,7 +141,7 @@ const useRequestHook = <T, P>(url: string, options: OptionsI) => {
 
           afterFailiure();
           await redirectAfterFailiure();
-          return err;
+          return null;
         }
       }
     },

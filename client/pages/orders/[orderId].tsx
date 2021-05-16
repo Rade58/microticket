@@ -20,7 +20,9 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 
   // UZIMAMO ORDER
   try {
-    const { data } = await client.get(`/orders/${orderId}`);
+    const { data } = await client.get(`/api/orders/${orderId}`);
+
+    console.log({ data });
 
     return {
       props: {
@@ -37,7 +39,9 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
   }
 };
 
-const IndexPage: FunctionComponent<PropsI> = (props) => {
+const OrderPage: FunctionComponent<PropsI> = (props) => {
+  console.log({ props });
+
   const {
     order: { expiresAt },
   } = props;
@@ -45,4 +49,4 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
   return <div>{expiresAt}</div>;
 };
 
-export default IndexPage;
+export default OrderPage;

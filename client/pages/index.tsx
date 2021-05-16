@@ -65,7 +65,7 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
                 A DA JE HREF TKAV DA UKAZUJE NA IME PAGE-A
                 SA [ticketId] IN IT */}
                 <td>
-                  <Link href="/tickets/[ticketId]" as={`/tickets/${id}`}>
+                  <Link href={`/tickets/${id}`}>
                     <a>view</a>
                   </Link>
                 </td>

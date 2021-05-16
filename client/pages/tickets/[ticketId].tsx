@@ -6,7 +6,7 @@
 import { FunctionComponent, useEffect } from "react";
 import { GetServerSideProps } from "next";
 // TREBACE MI I push FROM ROUTER
-import router from "next/router";
+import { useRouter } from "next/router";
 //
 import { buildApiClient } from "../../utils/buildApiClient";
 import { TicketDataI } from "../../types/data/ticket-data";
@@ -48,7 +48,7 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 // -----------------------------------------------------------
 
 const SingleTicketPage: FunctionComponent<PropsI> = (props) => {
-  const { push } = router;
+  const { push } = useRouter();
 
   const {
     ticket: { id: ticketId, price, title },
@@ -57,7 +57,6 @@ const SingleTicketPage: FunctionComponent<PropsI> = (props) => {
   // EVO KORISTIM HOOK
   const {
     makeRequest: makeRequestToCreateOrder,
-    data,
     errors,
     ErrorMessagesComponent,
     hasErrors,
@@ -65,26 +64,13 @@ const SingleTicketPage: FunctionComponent<PropsI> = (props) => {
     method: "post",
   });
 
-  // NAMERNO KORISTIM EFFECT ZA REDIRECTING, JER CE ELIMINISATI MNOGE PROBLEME KOJ ISE MOGU JAVITI
-  // JER data IL Ierrors IZ useRequestHook-A SU NEKAKO PODESNE
-  // VISE ZA DEFINISANJE RENDERING STVARI, A NE ZA REDIRECCT
-
-  // OVO JE KONKRETNO VAZNO ZA TO DA SE REDIRECT NE DESI KADA
-  // KORISNIK POKUSA DA MAKE-UJE ORDER ZA VEC RESERVED TICKET
-  useEffect(() => {
-    if (data && !hasErrors) {
-      push("/orders/[orderId]", `/orders/${data.id}`);
+  // OVO NE VALJA
+  /* useEffect(() => {
+    if (data) {
+      push(`/orders/${data.id}`);
     }
-  }, [data, hasErrors, push]);
-
-  // DA BUILD-UJEMO I UI ZA INDIVIDUAL TICKET PAGE
-
-  // A DODACEM I BUTTON, NA CIJI CLICK TREBA DA SE
-  // INCIRA KREIRANJE ORDER-A
-
-  // NA NJEMU CE PISATI `Purchase` A KLIK NA TO DUGME, PORED STO PRAVI
-  // ORDER, TREBALO BI DA NAS REDIRECT-UJE NA ORDER PAGE, ZA
-  // TAJ ORDER
+  }, [data]);
+ */
 
   return (
     <div>
@@ -92,7 +78,12 @@ const SingleTicketPage: FunctionComponent<PropsI> = (props) => {
       <h4>Price: {price}</h4>
       <button
         onClick={() => {
-          makeRequestToCreateOrder({ ticketId });
+          makeRequestToCreateOrder({ ticketId }).then((data) => {
+            console.log({ data });
+            if (data) {
+              push(`/orders/${data.id}`);
+            }
+          });
         }}
         className="btn btn-primary"
       >
