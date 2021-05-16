@@ -5,8 +5,9 @@ import { GetServerSideProps } from "next";
 import { InitialPropsI } from "../../types/initial-props";
 import { OrderDataTicketPopulatedI } from "../../types/data/order-data";
 import { buildApiClient } from "../../utils/buildApiClient";
-// UVOZIM PAKET KOJ ISAM MALOCAS INSTALIRAO
 import StripeCheckoutModal from "react-stripe-checkout";
+// KORISTICEMO OPET ONAJ useRequestHook
+import useRequest from "../../hooks/useRequestHook";
 //
 
 interface PropsI extends InitialPropsI {
@@ -35,7 +36,20 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
   }
 };
 
+//
 const OrderPage: FunctionComponent<PropsI> = (props) => {
+  // EVO SADA MOZEMO ODMAH OVDE DA KORISTIMO useRequest
+
+  const {
+    makeRequest: makeRequestToPayments,
+    ErrorMessagesComponent,
+    errors,
+  } = useRequest<{ orderId: string; token: string }, { id: string }>(
+    "/api/payments",
+    { method: "post" }
+  );
+  // SADA MOZEMO KORISTITI GORNJU FUNKCIJU ZA MAKING REQUEST , U token CALLBACK-U
+
   const {
     order: {
       id: orderId,
@@ -91,26 +105,24 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
       )}
       {timeDiffMiliseconds > 0 ? (
         <StripeCheckoutModal
-          // PRVA DVA PROPA SU REQUIRED
           stripeKey={process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
-          // TOKEN MORA DA BUDE CALLBACK FUNKCIJA
-          // DAKLE TO JE TOKEN KOJI CE BITI KREIRAN
-          // KADA KORISNIK UNESE INFO SVOJE KREDITNE KARTICE
           token={({ id: token }) => {
-            console.log({ token });
-            // ODAVDE CEMO HIT-OVATI NAS payments MICROSERVICE
-            // JEDINI ENDPOINT TOG MICROSERVICE
-            // MI TAMO SA TOKENOM PRAVIM OSTRIPE CHECKOUT
+            // console.log({ token });
+
+            // EVO OVDE PRAVIM REQUEST
+            makeRequestToPayments({ orderId, token }).then((data) => {
+              if (data) {
+                console.log(data.id);
+              }
+            });
           }}
-          // OPCIONO MOZES DODATI EMAIL KORISNIKA
           email={email}
-          // ONO STO BI TREBALO DA DA DODAS JESTE AMOUNT
-          // ON MORA BITI U CENTIMA (najmanjoj jedinici valute)
           amount={price * 100}
         />
       ) : (
         ""
       )}
+      <ErrorMessagesComponent errors={errors} />
     </div>
   );
 };
