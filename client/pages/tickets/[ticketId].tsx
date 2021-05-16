@@ -13,7 +13,7 @@ import { TicketDataI } from "../../types/data/ticket-data";
 // TREBACE MI CUSTOM HOOK
 import useRequest from "../../hooks/useRequestHook";
 //TREBA MI I OVO
-import { OrderataI } from "../../types/data/order-data";
+import { OrderDataI } from "../../types/data/order-data";
 
 interface PropsI {
   ticket?: TicketDataI;
@@ -61,7 +61,7 @@ const SingleTicketPage: FunctionComponent<PropsI> = (props) => {
     errors,
     ErrorMessagesComponent,
     hasErrors,
-  } = useRequest<{ ticketId: string }, OrderataI>("/api/orders", {
+  } = useRequest<{ ticketId: string }, OrderDataI>("/api/orders", {
     method: "post",
   });
 
