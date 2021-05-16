@@ -38,7 +38,7 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 
 - `code client/pages/orders/[orderId].tsx`
 
-```ts
+```tsx
 /* eslint react/react-in-jsx-scope: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 import { FunctionComponent, useState, useEffect } from "react";
@@ -136,8 +136,8 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
           // TOKEN MORA DA BUDE CALLBACK FUNKCIJA
           // DAKLE TO JE TOKEN KOJI CE BITI KREIRAN
           // KADA KORISNIK UNESE INFO SVOJE KREDITNE KARTICE
-          token={(token) => {
-            console.log(token);
+          token={({ id: token }) => {
+            console.log({ token });
             // ODAVDE CEMO HIT-OVATI NAS payments MICROSERVICE
             // JEDINI ENDPOINT TOG MICROSERVICE
             // MI TAMO SA TOKENOM PRAVIM OSTRIPE CHECKOUT
@@ -163,8 +163,10 @@ MOZEMO OVO ODMAH DA TESTIRAMO
 
 - `skaffold dev`
 
-OBAVI SAM VROCES OD KRIRANJA TICKETA, DO MAKINGA ORDER-A ZA TAJ TICKET
+OBAVI SAV PROCES OD KRIRANJA TICKETA (`https://microticket.com/tickets/new`), DO MAKINGA ORDER-A ZA TAJ TICKET
 
-**PA NA ORDER PAGE-U, PRITISNI NA DUGME ZA BUY I POSMATRAJ KONZOLU**
+**PA NA ORDER PAGE-U, PRITISNI NA DUGME ZA BUY I POSMATRAJ KONZOLU** (OBJASNJENO TI JE DA MOZES KORISTITI `4242424242424242` KAO CARD NUMBER A TESTIRANJE ([pogledaj i ovo](https://stripe.com/docs/testing#cards)))
 
 TREBAO BI DA SE STMAPA TOKEN NAMENJAN ZA PRAVLJANJE STRIPE CHECKOUT-A
+
+**I ZAISTA JE TAKO**

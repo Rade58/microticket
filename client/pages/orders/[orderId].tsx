@@ -38,6 +38,7 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 const OrderPage: FunctionComponent<PropsI> = (props) => {
   const {
     order: {
+      id: orderId,
       expiresAt,
       ticket: { price },
     },
@@ -95,8 +96,8 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
           // TOKEN MORA DA BUDE CALLBACK FUNKCIJA
           // DAKLE TO JE TOKEN KOJI CE BITI KREIRAN
           // KADA KORISNIK UNESE INFO SVOJE KREDITNE KARTICE
-          token={(token) => {
-            console.log(token);
+          token={({ id: token }) => {
+            console.log({ token });
             // ODAVDE CEMO HIT-OVATI NAS payments MICROSERVICE
             // JEDINI ENDPOINT TOG MICROSERVICE
             // MI TAMO SA TOKENOM PRAVIM OSTRIPE CHECKOUT
