@@ -166,14 +166,35 @@ ZELIM ODA NAS TEST EXIT-UJE
 "test:ci": "jest"
 ```
 
-# 1. COMMIT-OVACEMO CHANGES KAKO TREBA
+# MEDJUTIM POSTO JA NISAM URADIO GIT INIT, U VEC ZAVRSENOM PROJEKTU, KAKO JE AUTOR WORKSHOPA URADIO; JA NECU IMATI ISTI FLOW KAO ON
+
+ON JE, JER JE IMAO JEDINO main BRANCH, DALJE COMMIT-OVAO
+
+NAPOMINJEM TI DA NECU OVO URADITI
+
+- `git add -A`
+
+- `git commit -m "something"`
+
+- `git pull origin main` (DA BI UZELI ONE PROMENE VEZANE ZA yml FILE GITHUB ACTION-A)
+
+# MI CEM DAKLE STVARI URADITI DRUGACIJE
+
+NAPRAVICEMO NOVI BRANCH, PA CEMO GA MERGE-OVATI TO `main`
 
 - `git add auth/package.json`
 
 - `git commit -m "feat(auth/package.json) test script added"`
 
+- `git checkout -b microticket_practice`
+
+**ZELI MDA MERGE-UJEM TO `main`**
+
+- `git checkout main` 
+
+# 1. COMMIT-OVACEMO CHANGES KAKO TREBA
+
 # 2. NAPRAVICU NOVI BRANCH, CISTO DA POCNEM FRESH
 
-- `git checkout -b microticket_practice`
 
 
