@@ -1,0 +1,58 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# auth
+auth/node_modules
+
+
+# minicube
+^minicube
+
+# client app
+client/node_modules
+client/.next
+client/.env
+
+client/.env.local
+
+#common
+node_modules
+package.lock.json
+
+# tickets
+tickets/node_modules
+
+# subproject
+nats_test_project/node_modules
+
+# orders
+orders/node_modules
+
+# expiration
+expiration/node_modules
+
+# payments
+payments/node_modules
+payments/.env
+
