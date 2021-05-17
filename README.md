@@ -1,34 +1,54 @@
-# FILTERING RESERVED TICKETS FROM THE TABLE ON MAIN PAGE
+# HEADER LINKS
 
-ZELIM DA OVI TICKET-OVI BUDU MARKED I DA NEMAJU LINK KOJI VODI DO NJIHOVOG PAGE-A
+- `code client/components/Header.tsx`
 
-**USTVARI BOLJE JE MODIFIKOVATI SAMI HANDLER INSIDE `tickets` MICROSERVICE, DA SE SAMO QUERY-UJE ZA TICKET-OVIMA, KOJI NISU RESERVED**
+```tsx
+/* eslint jsx-a11y/anchor-is-valid: 1 */
+import React, { FunctionComponent, Fragment } from "react";
+import Link from "next/link";
+import { CurrentUserI } from "../types/current-user";
 
-- `code tickets/src/routes/index.ts`
+interface HeaderPropsI {
+  currentUser: CurrentUserI;
+}
 
-```ts
-import { Router } from "express";
-// TREBACE MI OVO
-import { OrderStatusEnum as OSE } from "@ramicktick/common";
-import { Ticket } from "../models/ticket.model";
-
-const router = Router();
-
-router.get("/api/tickets", async (req, res) => {
-  const tickets = await Ticket.find({
-    // DODAO OVO
-    orderId: null,
+const Header: FunctionComponent<HeaderPropsI> = ({ currentUser }) => {
+  const links = [
+    // DODAJEM I OVO
+    currentUser && { label: "Sell Tickets", href: "/tickets/new" },
+    // OVO CE BITI PAGE, KOJI CU DODATI, A N KOJEM CU PRIKAZATI SVE
+    // ORDERS KOJE JE USER NAPRAVIO
+    currentUser && { label: "My Orders", href: "/orders" },
+    // NAPRAVICU GORNJI PAGE U SLEDECEM BRANCH-U
+    currentUser && { label: "Sign Out", href: "/auth/signout" },
+    !currentUser && { label: "Sign In", href: "/auth/signin" },
+    !currentUser && { label: "Sign Up", href: "/auth/signup" },
+  ].map((item) => {
+    if (item && item.label) {
+      return (
+        <Fragment key={item.label}>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <li key={item.label} className="nav-item">
+            <Link href={item.href}>
+              <a>{item.label}</a>
+            </Link>
+          </li>
+        </Fragment>
+      );
+    }
   });
 
-  res.status(200).send(tickets);
-  //
-});
+  return (
+    <nav className="navbar navbar-light bg-light">
+      <Link href="/">
+        <a className="navbar-brand">MicTick</a>
+      </Link>
+      <div className="d-flex justify-content-end">
+        <ul className="nav d-flex align-items-center">{links}</ul>
+      </div>
+    </nav>
+  );
+};
 
-export { router as getAllTicketsRouter };
+export default Header;
 ```
-
-**SADA MOZES DA ODES NA `https://microticket.com/tickets/new` I NAPRAVI 4 TICKETA**
-
-PA ZATIM NPRAVI ORDERE ZA DVA (**ALI NEMOJ DA IH KUPUJES, JER KAD IH KUPIS, SA TICKETA JE SKLONJEN orderId I OPET CE BITI LISTED**)
-
-PA ONDA POKUSAJ DA SE VRATIS NA `https://microticket.com` ;DA VIDIS KOLIKO IMAS LISTED TICKET-A
