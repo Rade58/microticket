@@ -9,7 +9,7 @@ export interface TicketUpdatedEventI {
     price: number;
     userId: string;
     // DODAO OVO
-    orderId?: string;
+    orderId?: string | null | undefined;
     //
   };
 }
