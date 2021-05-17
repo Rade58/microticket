@@ -2,13 +2,12 @@
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 import { FunctionComponent, useState, useEffect } from "react";
 import { GetServerSideProps } from "next";
+import { useRouter } from "next/router";
 import { InitialPropsI } from "../../types/initial-props";
 import { OrderDataTicketPopulatedI } from "../../types/data/order-data";
 import { buildApiClient } from "../../utils/buildApiClient";
 import StripeCheckoutModal from "react-stripe-checkout";
-// KORISTICEMO OPET ONAJ useRequestHook
 import useRequest from "../../hooks/useRequestHook";
-//
 
 interface PropsI extends InitialPropsI {
   order: OrderDataTicketPopulatedI;
@@ -40,7 +39,7 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 const OrderPage: FunctionComponent<PropsI> = (props) => {
   const [orderCompleted, setOrderCompleted] = useState<boolean>(false);
 
-  // EVO SADA MOZEMO ODMAH OVDE DA KORISTIMO useRequest
+  const { push } = useRouter();
 
   const {
     makeRequest: makeRequestToPayments,
@@ -50,7 +49,6 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
     "/api/payments",
     { method: "post" }
   );
-  // SADA MOZEMO KORISTITI GORNJU FUNKCIJU ZA MAKING REQUEST , U token CALLBACK-U
 
   const {
     order: {
@@ -113,14 +111,14 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
         <StripeCheckoutModal
           stripeKey={process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
           token={({ id: token }) => {
-            // console.log({ token });
-
-            // EVO OVDE PRAVIM REQUEST
             makeRequestToPayments({ orderId, token }).then((data) => {
               if (data) {
                 console.log(data.id);
 
                 setOrderCompleted(true);
+
+                // EVO OVDE MOGU NAPRAVITI TAJ REDIRECT
+                push(`/orders`);
               }
             });
           }}
