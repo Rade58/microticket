@@ -36,3 +36,12 @@ MOZES NAPRAVITI `.gitignore`, ZA KOJI TI NECU OBJASNJAVATI STA TREBAS STAVLJATI 
 
 - `git commit -am "initial commit"`
 
+SADA BI TI NA GITHUB-U KREIRAO REPO
+
+PA BI KOPIRAO OVNAJ URL, ZNAS VEC ODAKLE
+
+I URADIO OVO
+
+- `git remote add origin <url>`
+
+- `git push -u origin main`
