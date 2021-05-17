@@ -178,6 +178,10 @@ NAPOMINJEM TI DA NECU OVO URADITI
 
 - `git pull origin main` (DA BI UZELI ONE PROMENE VEZANE ZA yml FILE GITHUB ACTION-A)
 
+PA JE ONDA PUSH-OVAO SVE DO mian
+
+- `git puh origin main`
+
 # MI CEM DAKLE STVARI URADITI DRUGACIJE
 
 NAPRAVICEMO NOVI BRANCH, PA CEMO GA MERGE-OVATI TO `main`
@@ -190,7 +194,9 @@ NAPRAVICEMO NOVI BRANCH, PA CEMO GA MERGE-OVATI TO `main`
 
 **ZELI MDA MERGE-UJEM TO `main`**
 
-- `git checkout main` 
+- `git checkout main`
+
+- `git merge microticket_practice`
 
 # 1. COMMIT-OVACEMO CHANGES KAKO TREBA
 
