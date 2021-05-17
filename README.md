@@ -46,6 +46,12 @@ digresija:
 
 [MORE INFO ABOUT GITHUB ACTIONS](https://docs.github.com/en/actions)
 
+A NAJVAZNIJE STO MOZES PROCITATI JE OVO:
+
+[EVENTS THAT TRIGGER WORKFLOWS](https://docs.github.com/en/actions/reference/events-that-trigger-workflows)
+
 ***
+
+
 
 
