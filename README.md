@@ -172,7 +172,7 @@ ZELIM ODA NAS TEST EXIT-UJE
 
 - `git commit -m "feat(auth/package.json) test script added"`
 
-# 2. NAPRAVICU NOVI BRANCH
+# 2. NAPRAVICU NOVI BRANCH, CISTO DA POCNEM FRESH
 
 - `git checkout -b microticket_practice`
 
