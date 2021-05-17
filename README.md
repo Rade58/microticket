@@ -166,4 +166,14 @@ ZELIM ODA NAS TEST EXIT-UJE
 "test:ci": "jest"
 ```
 
-# 1. KREIRACEMO 
+# 1. COMMIT-OVACEMO CHANGES KAKO TREBA
+
+- `git add auth/package.json`
+
+- `git commit -m "feat(auth/package.json) test script added"`
+
+# 2. NAPRAVICU NOVI BRANCH
+
+- `git checkout -b microticket_practice`
+
+
