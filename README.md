@@ -2,6 +2,25 @@
 
 DAKLE PODESILI SMO NAS GITHUB ACTION, URADILI SVE STA SMO URADILI
 
+- `cat .github/workflows/tests.yml`
+
+```yml
+name: tests
+# 
+on:
+  pull_request
+  
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+      - run: cd auth && npm install && npm run test:ci
+
+```
+
 NECU SE PONAVLJATI, CITAJ PROSLI BRANCH AKO TE ZANIMA STA SAM RADIO
 
 SADA CEMO KONACNO RADITI ONAJ WORKFLOW KOJI SAM POMINJAO, I KOJI AUTOR WORKSHOPA VOLI DA KORISTI
@@ -32,3 +51,59 @@ SADA CEMO KONACNO RADITI ONAJ WORKFLOW KOJI SAM POMINJAO, I KOJI AUTOR WORKSHOPA
 ***
 ***
 
+**ON LOCAL MACHINE**
+
+# 1. DAKLE PRVO CEMO IZMENITI NEKI FILE
+
+UBACI NEKI `console.log` BILO GDE U `auth` MICROSERVICE-u
+
+NE MORAS NISTA DA COMMIT-UJES U TRENUTNOM BRANCH-U (NA PRIMER MI SMO IN `main` BRANCH)
+
+I TU DAKLE NISTA NE COMMIT-UJEMO
+
+CTITICAL PART JE DA NIST NE COMMIT-UJEMO U `main` BRANCH-U
+
+# 2. NAPTRAVI NOVI BRANCH, I COMMIT-OVACU CODE TO THAT BRANCH
+
+- `git checkout -b dev`
+
+- `git add -A`
+
+- `git commit -am "feat(auth/src/index.ts) added a console log"`
+
+# 3. PUSH-UJEM NOVI BRANCH, KOJI SAM NAZVAO `dev`, TO THE GITHUB
+
+- `git push origin dev`
+
+***
+
+digresija:
+
+AKO SE SECAS MI KOTISTIMO INCE `git push -u origin <branch>` (TO RADIMO KAKO NE BISMO MORLI STALNO DA RADIMO `git push origin` ,VEC DA SLEDECI PUT MOZEMO DA KUCAMO SAMO `git push`)
+
+***
+***
+***
+
+**ON GITHUB**
+
+1. OTVORI `Pull requests` TAB
+
+MOZES KLIKNUTI NA ONO `Compare & pull request`; ALI MI CEMO SADA NAPRAVITI PULL REQUEST MANUALLY; TAKO DA KLIKNI NA `New Pull Request`
+
+SADA SI U NEKOM DIALOGU `Compare changes`
+
+I U TU U PADJUCIM MENU-OVIMA MOZES DA BIRAS BRANCH-EVE
+
+KAO `base` BRANCH PODESAVAS `main`; A KAO `compare` BRANCH PODESAVAS `dev`
+
+SADA MOZES DA KLIKNES NA `Create Pull Request`
+
+SADA CES BITI PROMPTED DA DODAS TITLE ZA PULL REQUEST I DA UNESES MESSAGE, KAO NEKI DESCRIPTION ABOUT CHANGES YOU WANT TO MAKE
+
+I ONDA KLIKNES NA `Create Pull Request`
+
+<!--  -->
+
+***
+***
