@@ -20,5 +20,7 @@ it("if user isn't signed in, respods with 200, but currentUser is null", async (
     .send()
     .expect(200);
 
-  expect(response.body.currentUser).toEqual(null);
+
+  // expect(response.body.currentUser).toEqual(null);
+  expect(response.body.currentUser).toEqual(69);
 });
