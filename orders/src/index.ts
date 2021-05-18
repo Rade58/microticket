@@ -8,6 +8,8 @@ import { ExpirationCompleteListener } from "./events/listeners/expiration-comple
 import { PaymentCreatedListener } from "./events/listeners/payment-created-listener";
 //
 
+console.log("orders microservice")
+
 const start = async () => {
   if (!process.env.JWT_KEY) {
     throw new Error("JWT_KEY env variable undefined");
