@@ -1,7 +1,9 @@
 name: orders-tickets
 
 on:
-  pull_request
+  pull_request:
+    paths:
+      - 'orders/**'
 
 jobs:
   build:
