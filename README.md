@@ -69,3 +69,7 @@ CTITICAL PART JE DA NIST NE COMMIT-UJEMO U `main` BRANCH-U
 
 - `git commit -am "feat(auth/src/index.ts) added a console log"`
 
+# 3. PUSH-UJEM NOVI BRANCH, KOJI SAM NAZVAO `dev`, TO THE GITHUB
+
+- `git push origin dev`
+
