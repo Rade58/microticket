@@ -6,7 +6,7 @@ export const stripe = {
       // KORISTIO SA natsWrapper-OM
       // ZATO STO create FUNKCIJA TREBA DA RETURN-UJE Promise
       .mockResolvedValue(
-        {}
+        {id: "some random id"}
         // OVO SAM JA POMISLI ODA TREBAM DEFINISATI FUNKCIJU
         // ALI NIJE TAKO, DAKLE OVA mockImplemntation CE UZIMATI
         // PRAZAN OBJEKAT

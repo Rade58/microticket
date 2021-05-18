@@ -10,4 +10,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
       - run: cd tickets && npm install && npm run test:ci
+
