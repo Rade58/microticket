@@ -78,6 +78,10 @@ DAKLE `package.json` U MICROSERVICE-OVIMA, U KOJIMA IMAMO DEFINISANE TESTOVE, MO
 
 ZA `auth` MICROSERVICE, TO SMO VEC RANIJE URADILI
 
+## UKLONI ONAJ `.github/workflows/tests.yml` IZ SVOG PROJECT-A
+
+- `rm .github/workflows/tests.yml `
+
 ## PRVO CEMO DA COMMIT-UJEMO NASE PROMENE
 
 **MI SE DAKLE NALAZIMO U `dev` BRANCH-U**
@@ -85,5 +89,9 @@ ZA `auth` MICROSERVICE, TO SMO VEC RANIJE URADILI
 - `git add -A`
 
 - `git commit -a "added test scripts"`
+
+## PA MOZEMO A PULL-UJEMO DOWN PROMENE KOJE SAM DEFINISAO DIREKTNO EDITINGOM NA GITHUBU; GOVORIM O SVIM TIM `yml` FILE-OVIMA KOJE SAM KREIRAO INSIDE `.github/workflows`
+
+- `git pull origin main`
 
 
