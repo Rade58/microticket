@@ -94,4 +94,6 @@ ZA `auth` MICROSERVICE, TO SMO VEC RANIJE URADILI
 
 - `git pull origin main`
 
+## SADA CEMO DA PUSH-UJEMO CHANGES TO REMOTE `dev` BRANCH
 
+- `git push origin dev`
