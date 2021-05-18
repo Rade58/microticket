@@ -8,6 +8,7 @@ import { stripe } from "../../stripe";
 // UVOZIMO natsWrapper ZA KOJI TI PO STOTI PUT GOVORIM DA JE MOCKED
 import { natsWrapper } from "../../events/nats-wrapper";
 
+
 const { ObjectId } = Types;
 
 const price = Math.round(Math.random() * 100);
@@ -95,6 +96,8 @@ it("returns 201 if charge is created; stripe.charges.create was called; stripe c
       token: "tok_visa",
       orderId: order.id,
     });
+
+
 
   expect(response.status).toEqual(201);
 
