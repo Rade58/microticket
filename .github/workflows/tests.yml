@@ -10,4 +10,4 @@ jobs:
     
     steps:
       - uses: actions/checkout@v2
-      - run: cd auth && npm install && npm run test:ci
+      - run: cd auth && npm install && npm install --save-dev && npm run test:ci
