@@ -1,4 +1,4 @@
-name: tests-tickets
+name: tests-auth
 
 on:
   pull_request
@@ -10,6 +10,4 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
-      - run: cd tickets && npm install && npm run test:ci
-
+      - run: cd auth && npm install && npm install && npm run test:ci
