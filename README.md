@@ -96,4 +96,6 @@ ZA `auth` MICROSERVICE, TO SMO VEC RANIJE URADILI
 
 ## SADA CEMO DA PUSH-UJEMO CHANGES TO REMOTE `dev` BRANCH
 
-- `git push origin dev`
+- `git push origin dev` (ILI `git push`, AKO JE RANIJE PODESEN `git push -u origin dev`)
+
+
