@@ -6,8 +6,8 @@ require("dotenv").config();
 
 jest.mock("../events/nats-wrapper");
 
-// EVO OVO UKLANJAM
-// jest.mock("../stripe.ts");
+
+jest.mock("../stripe.ts");
 
 let mongo: any;
 
