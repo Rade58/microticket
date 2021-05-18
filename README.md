@@ -76,6 +76,11 @@ CTITICAL PART JE DA NIST NE COMMIT-UJEMO U `main` BRANCH-U
 - `git push origin dev`
 
 ***
+
+AKO SE SECAS MI KOTISTIMO INCE `git push -u origin <branch>` (TO RADIMO KAKO NE BISMO MORLI STALNO DA RADIMO `git push origin` ,VEC DA SLEDECI PUT MOZEMO DA KUCAMO SAMO `git push`)
+
+***
+***
 ***
 
 **ON GITHUB**
