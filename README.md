@@ -2,6 +2,25 @@
 
 DAKLE PODESILI SMO NAS GITHUB ACTION, URADILI SVE STA SMO URADILI
 
+- `cat .github/workflows/tests.yml`
+
+```yml
+name: tests
+# 
+on:
+  pull_request
+  
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+      - run: cd auth && npm install && npm run test:ci
+
+```
+
 NECU SE PONAVLJATI, CITAJ PROSLI BRANCH AKO TE ZANIMA STA SAM RADIO
 
 SADA CEMO KONACNO RADITI ONAJ WORKFLOW KOJI SAM POMINJAO, I KOJI AUTOR WORKSHOPA VOLI DA KORISTI
@@ -31,4 +50,18 @@ SADA CEMO KONACNO RADITI ONAJ WORKFLOW KOJI SAM POMINJAO, I KOJI AUTOR WORKSHOPA
 
 ***
 ***
+
+# 1. DAKLE PRVO CEMO IZMENITI NEKI FILE
+
+UBACI NEKI `console.log` BILO GDE U `auth` MICROSERVICE-u
+
+NE MORAS NISTA DA COMMIT-UJES U TRENUTNOM BRANCH-U
+
+# 2. NAPTRAVI NOVI BRANCH, I COMMIT-OVACU CODE TO THAT BRANCH
+
+- `git checkout -b dev`
+
+- `git add -A`
+
+- `git commit -am "feat(auth/src/index.ts) added a console log"`
 
