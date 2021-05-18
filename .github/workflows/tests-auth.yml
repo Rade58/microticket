@@ -1,7 +1,10 @@
 name: tests-auth
 
 on:
-  pull_request
+  pull_request:
+  # DODAJEMO paths
+    paths:
+      - 'auth/**'
 
 jobs:
   build:
