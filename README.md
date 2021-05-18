@@ -103,11 +103,8 @@ SADA CES BITI PROMPTED DA DODAS TITLE ZA PULL REQUEST I DA UNESES MESSAGE, KAO N
 
 I ONDA KLIKNES NA `Create Pull Request`
 
-<<<<<<< HEAD
-=======
 <!--  -->
 
 <!--  -->
->>>>>>> 9_2_0_3_RUNNING_TESTS_ON_PR_CREATION
 ***
 ***
