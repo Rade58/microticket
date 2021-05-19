@@ -3,8 +3,6 @@ import { app } from "./app";
 // A OVO TREBA ZA DATABASE CONNECTION
 import mongoose from "mongoose";
 
-console.log("auth microservice is cool")
-
 const start = async () => {
   if (!process.env.JWT_KEY) {
     throw new Error("JWT_KEY env variable undefined");
