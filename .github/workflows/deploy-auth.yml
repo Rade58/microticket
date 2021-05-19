@@ -11,4 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2   
-      - run: 'cd auth && docker build -t radebajic/mt-auth . && docker push radebajic/mt-auth'
+      - run: cd auth && docker build -t radebajic/mt-auth .
+      # UNOSIM NOVI run
+      # KAO STO VIDIS REFERENCIRAM SECRETS KAO ENV VARIABLES
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        env:
+          # A OVDE USTVARI PODESAVAMKOJE DA SE SE SECRETS UZMU I PODESE
+          # KAO ENV VARIABLES
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      # SADA MOZEMO DEFINISATI PUSHING IMAGE-A TO DOCKER HUB
+      - run: docker push radebajic/mt-auth
