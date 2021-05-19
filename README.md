@@ -59,7 +59,7 @@ jobs:
 # DOCKEROM, TAKO DA TU INSTALACIJU INSIDE COMMAND, NE MORAS
 # DEFINISATI 
       # mt MI JE SKARACENO ZA microticket (TO MI JE NAJLOGICNIJE DA SMISLIM)      
-      - run: 'cd auth && docker build -t radebajic/mt-auth . && docker push radebajic/mt-auth'
+      - run: cd auth && docker build -t radebajic/mt-auth 
 
 # NAKON STO SE BUILD-UJE IMAGE, TREBA DA SE PUSH-UJE TO DOCKER 
 # HUB
@@ -72,3 +72,49 @@ jobs:
 # NECEMO IME I SIFRU UNOSITI DIREKTNO U SCRIPT OVDE
 # VEC CEMO DODATI USER NAME I PASSWORD, KO SECRET
 ```
+
+# DAKLE MOJE DOCKER CREDENTIALS DODAJEM INTO REPOSITORY KAO SECRET
+
+COMMIT-UJ GORNJI FILE ZA SADA (PRITISNI `Start Commit` DUGME I OSTALO), KAKO BI MOGLI DA SE NAVIGTE-UJEMO AWAY, JER CEMO MORATI DA PRITISNEMO NA `Settings` TAB NASEG REPO-A (MADA SMO MOGLI DA `Settings` OTVORIMO U NOVOM BROWSER-OVOM TABU)
+
+UGLAVNOM OTVORILI SMO `Settings` --> `Secrets` --> `New repository secret`
+
+DODAO SAM `DOCKER_USERNAME` SECRET
+
+PA SAM DODAO JOS JEDAN SECRET, A TO JE `DOCKER_PASSWORD`
+
+SADA IMAMO DOSTUPNIM POMENUTE SECRET-OVE U NASIM GITHUB ACTIONIMA, KAO ENV VARIABLES
+
+# VRACAMO SE DA EDIT-UJEMO NAS WORKFLOW FILE, KAKO BI SMO REFERENCIRALI SECRETS, KOJE SAM PODESIO ;A TO SE RADI UZ DODAVANJE $ SIGN-A ISPRED ENV VARIABLE-A; ALI MORACES DA PODESIS ENV VARIABLES
+
+I PAZI DA NE NAPRAVIS NEKI TYPEO
+
+```yml
+name: deploy-auth
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'auth/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2   
+      - run: cd auth && docker build -t radebajic/mt-auth .
+      # UNOSIM NOVI run
+      # KAO STO VIDIS REFERENCIRAM SECRETS KAO ENV VARIABLES
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        env:
+          # A OVDE USTVARI PODESAVAMKOJE DA SE SE SECRETS UZMU I PODESE
+          # KAO ENV VARIABLES
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      # SADA MOZEMO DEFINISATI PUSHING IMAGE-A TO DOCKER HUB
+      - run: docker push radebajic/mt-auth
+```
+
+MOZEMO DA COMMIT-IJEMO OVAJ FILE (`Start commit` DUGME)
+
