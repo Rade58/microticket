@@ -13,7 +13,6 @@ interface PropsI extends InitialPropsI {
   tickets: allTicketsType;
 }
 
-//
 // ---------------------------------------------------
 export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
   const client = buildApiClient(ctx);

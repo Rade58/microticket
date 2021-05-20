@@ -4,9 +4,8 @@ import { natsWrapper } from "./events/nats-wrapper";
 import { TicketCreatedListener } from "./events/listeners/ticket-created-listener";
 import { TicketUpdatedListener } from "./events/listeners/ticket-updated-listener";
 import { ExpirationCompleteListener } from "./events/listeners/expiration-complete-listener";
-// UVOZIMO
 import { PaymentCreatedListener } from "./events/listeners/payment-created-listener";
-//
+
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
