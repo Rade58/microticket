@@ -218,3 +218,83 @@ spec:
       port: 3000
       targetPort: 3000
 ```
+
+## STO SE RICE PROMENE HOST-A INSIDE `infra/k8s-prod/ingress-srv.yaml` TO NE MOZEMO JOS RADITI JER NISMO KUPILI DOMAIN NAME, KOJI BI MOGLI DA SPECIFICIRAMO
+
+ALI CIM KUPIMO DOMAIN NAME ZA NAS APP VRATICU SE DA GA SPECIFICIRAM OVDE: `infra/k8s-prod/ingress-srv.yaml`
+
+# KAKO NAM NAS DEVELOPMENT CLUSTER NA GOOGLE CLOUD-U, MOGAO DOBITI RIGHT CONFIGURATIONS, KADA ODLUCIMO DA DEVELOP-UJEMO, MORAMO MODIFIKOVATI `skaffold.yaml` FILE
+
+DAKLE SAMO DODAJEMO JOS JEDAN PATH, U `manifests` ARRAY
+
+- `code skaffold.yaml`
+
+```yaml
+apiVersion: skaffold/v2beta12
+kind: Config
+deploy:
+  kubectl:
+    manifests:
+      - ./infra/k8s/*
+      # DAKLE DODALI SMO OVO, TAKO DA CE PORED
+      # MANIFEST-OVA IZ k8s FOLDERA, UZIMATI I
+      # MANIFESTOVE IZ k8s-dev FOLDERA
+      - ./infra/k8s-dev/*
+build:
+  googleCloudBuild:
+    projectId: microticket
+  artifacts:
+    - image: eu.gcr.io/microticket/auth
+      context: auth
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.{ts,js}'
+            dest: .
+    - image: eu.gcr.io/microticket/client
+      context: client
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '**/*.{tsx,ts,js}'
+            dest: .
+    - image: eu.gcr.io/microticket/tickets
+      context: tickets
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.{ts,js}'
+            dest: .
+    - image: eu.gcr.io/microticket/orders
+      context: orders
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.{ts,js}'
+            dest: .
+    - image: eu.gcr.io/microticket/expiration
+      context: expiration
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.{ts,js}'
+            dest: .
+    - image: eu.gcr.io/microticket/payments
+      context: payments
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.{ts,js}'
+            dest: .
+
+```
+
+**A STO SE TICE SPECIFICIRANJA KAKO CE NAS PRODUCTION CLUSTER SA DIGITL OCEAN-A, DOBIJATI MANIFESTS, KOJI CE SE NA NJEGA APPLY-OVATI, O TOME CEMO GOVORITI U SLEDECEM BRANCH-U**
+
+JASNO TI JE DA CEMO DEFINISATI JOS JEDAN WORKFLOW FILE NA GITHUB-U
