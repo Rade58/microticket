@@ -168,6 +168,24 @@ TO SAM VIDEO I VRATIO SAM SE DA GLEDAM U SVE ORKFLOWS
 
 - `kubectl get deployments`
 
-```zsh
+VIDECU DA IMAM PROBLEMA SA DVA DEPLOYMENT-A, TO SU client I expiration
 
+```zsh
+NAME                    READY   UP-TO-DATE   AVAILABLE   AGE
+auth-depl               1/1     1            1           4h2m
+auth-mongo-depl         1/1     1            1           4h2m
+client-depl             0/1     1            0           4h2m
+expiration-depl         0/1     1            0           4h2m
+expiration-redis-depl   1/1     1            1           4h2m
+nats-depl               1/1     1            1           4h2m
+orders-depl             1/1     1            1           4h2m
+orders-mongo-depl       1/1     1            1           4h2m
+payments-depl           1/1     1            1           4h2m
+payments-mongo-depl     1/1     1            1           4h2m
+tickets-depl            1/1     1            1           4h2m
+tickets-mongo-depl      1/1     1            1           4h2m
 ```
+
+**U SUSTINI JA VEC PREDPOSTAVLJAM U CEMU MOZE BITI PROBLEM SA client DEPLOYMENTOM, MISLI MDA NISAM OBEZBEDIO TACAN IMAGE**
+
+ALI HAJDE NIST NECU REDI OVDE, VEC CU DEBUGGING OBAVITI U SLEDECEM BRANCH-U
