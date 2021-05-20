@@ -23,7 +23,46 @@ OPET NA GITHUB-U OTVARAMO, ONAJ FILE: `/.github/workflows/deploy-auth.yml`
 KAKO BISMO DODALI JOS STEP-OVA INSIDE
 
 ```yml
+name: deploy-auth
 
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'auth/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2   
+      - run: cd auth && docker build -t radebajic/mt-auth .
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - run: docker push radebajic/mt-auth
+      # REKAO SAM DA MORAMO doctl DA INSTALIRAMO MANUELNO
+      # TO JE USTVARI OVO, NISMO BAS MANULNI, JER JE DIGITAL OCEAN
+      # NAPRAVIO SHORTCUT, KAKO BI SE doctl INSTALIRAO AUTOMATSKI INSIDE
+      # RUNNING GITHUB CONTAINER
+      - uses: digitalocean/action-doctl@v2
+        # OVO SLEDECE CE OMOGUCITI DA TOKEN KOJI SMO UNELI BUDE PROVIDED
+        # TO THE SCRIPT, CIME CEMO DOBITI PREINITIALIZED VERSION OF doctl
+        with:
+          token: $DIGITALOCEAN_ACCESS_TOKEN
 ```
 
+**IDEMO SADA U DIGITALOCEAN DASBOARD DA GENERISEMO NOVI TOKEN**
 
+IDEMO U `ACOUNT` -> `API` -> (Personal access tokens) -> `Generate New Token`
+
+TOKENU SAM DAO IME `github_access_token` KAKO BI BILO MORE DESCRIPTIVE
+
+ZATIM SAM KOPIRAO TAJ TOKEN
+
+**IDEMO SADA U GITHUB REPO, DA PODESIMO SECRET**
+
+IDEMO U `Settings` TAB -> `Secrets` -> `New repository secret`
+
+I DODAO SAM SECRET `DIGITALOCEAN_ACCESS_TOKEN`
