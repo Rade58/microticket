@@ -243,3 +243,80 @@ POZABAVICES SE OVIM, KADA RESIMO DRUGE PROBLEM
 
 
 ***
+
+DA SADA PROVERIM PODS
+
+- `kubectl get pods`
+
+```zsh
+NAME                                     READY   STATUS    RESTARTS   AGE
+auth-depl-668bfbc668-njs6c               1/1     Running   0          2m7s
+auth-mongo-depl-6b6f97556-hlncf          1/1     Running   0          6h16m
+client-depl-79fcc8678b-kx7rw             1/1     Running   0          2m9s
+expiration-depl-7576d8cdb9-wnnhb         1/1     Running   0          2m18s
+expiration-redis-depl-55c656669f-fc6wv   1/1     Running   0          6h16m
+nats-depl-68b7d794b4-hr85z               1/1     Running   0          6h16m
+orders-depl-6f6854b5bd-8l5w9             1/1     Running   0          2m10s
+orders-mongo-depl-6b554544d8-ff25q       1/1     Running   0          6h16m
+payments-depl-cd4b7c878-vwldz            1/1     Running   0          2m7s
+payments-mongo-depl-76ffcb78fb-52tsb     1/1     Running   0          6h16m
+tickets-depl-66c4b4ccd4-b6jpx            1/1     Running   0          2m3s
+tickets-mongo-depl-8546d98f5b-zn2kb      1/1     Running   0          6h16m
+
+```
+
+**IZGLEDA DA SVE FUNKCIONISE**
+
+MOZEMO DA POGLEDAMO LOGS IZ NEKIH POD-OVA
+
+- `kubectl logs expiration-depl-7576d8cdb9-wnnhb`
+
+```zsh
+> expiration@1.0.0 start /app
+> ts-node-dev src/index.ts
+
+[INFO] 23:25:12 ts-node-dev ver. 1.1.6 (using ts-node ver. 9.1.1, typescript ver. 4.2.4)
+
+          Connected to Nats Streaming Server
+          clientId: expiration-depl-7576d8cdb9-wnnhb
+
+```
+
+SVE IZGLEDA U REDU
+
+- `kubectl logs client-depl-79fcc8678b-kx7rw`
+
+```zsh
+> client@1.0.0 dev /app
+> next
+
+ready - started server on 0.0.0.0:3000, url: http://localhost:3000
+info  - Using webpack 4. Reason: future.webpack5 option disabled https://nextjs.org/docs/messages/webpack5
+Development
+event - compiled successfully
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+Development
+
+```
+
+I OVDE JE SVE U REDU
+
+
+****
+****
+****
+****
+****
+
+NE ZABORAVI PODSETNIK
+
+****
+****
+****
+****
+****
+
