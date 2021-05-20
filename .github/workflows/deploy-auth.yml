@@ -12,13 +12,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2   
       - run: cd auth && docker build -t radebajic/mt-auth .
-      # UNOSIM NOVI run
-      # KAO STO VIDIS REFERENCIRAM SECRETS KAO ENV VARIABLES
       - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
         env:
-          # A OVDE USTVARI PODESAVAMKOJE DA SE SE SECRETS UZMU I PODESE
-          # KAO ENV VARIABLES
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      # SADA MOZEMO DEFINISATI PUSHING IMAGE-A TO DOCKER HUB
       - run: docker push radebajic/mt-auth
+      # REKAO SAM DA MORAMO doctl DA INSTALIRAMO MANUELNO
+      # TO JE USTVARI OVO, NISMO BAS MANULNI, JER JE DIGITAL OCEAN
+      # NAPRAVIO SHORTCUT, KAKO BI SE doctl INSTALIRAO AUTOMATSKI INSIDE
+      # RUNNING GITHUB CONTAINER
+      - uses: digitalocean/action-doctl@v2
+        # OVO SLEDECE CE OMOGUCITI DA TOKEN KOJI SMO UNELI BUDE PROVIDED
+        # TO THE SCRIPT, CIME CEMO DOBITI PREINITIALIZED VERSION OF DOCTL
+        with:
+          token: $DIGITALOCEAN_ACCESS_TOKEN
