@@ -164,3 +164,10 @@ TO SAM VIDEO I VRATIO SAM SE DA GLEDAM U SVE ORKFLOWS
 
 ## PROVERICU SADA STANJE U CLUSTERU
 
+- `kubectl config get-contexts` OR `kubectl config current-context` OR `kubectl confin view` (DA VIDIM CONTEXTE) (VOLIM VISE PRVU IL IDRUGU KOMANDU I VIDIM DA SAM U CONTEXTU ZA CLUSTER NA DIGITAL OCEAN-U) (A CONTEXT SE MENJA SA `kubectl config use-context <context name>`)
+
+- `kubectl get deployments`
+
+```zsh
+
+```
