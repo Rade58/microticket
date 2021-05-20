@@ -14,7 +14,11 @@ spec:
     spec:
       containers:
         - name: auth
-          image: eu.gcr.io/microticket/auth
+          # UMESTO OVOGA
+          # image: eu.gcr.io/microticket/auth
+          # DEFINISEM OVO
+          image: radebajic/mt-auth
+          # JER POMENUTI IMAGE CE BITI NA DOCKER HUB-U
           env:
             - name: MONGO_URI
               value: 'mongodb://auth-mongo-srv:27017/auth'

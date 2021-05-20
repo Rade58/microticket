@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
         - name: expiration
-          image: eu.gcr.io/microticket/expiration
+          # image: eu.gcr.io/microticket/expiration
+          image: radebajic/mt-expiration
           env:
             - name: NATS_CLIENT_ID
               valueFrom:

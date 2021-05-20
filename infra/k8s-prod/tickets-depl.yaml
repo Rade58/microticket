@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
         - name: tickets
-          image: eu.gcr.io/microticket/tickets
+          # image: eu.gcr.io/microticket/tickets
+          image: radebajic/mt-tickets
           env:
             # ---------- EVO OVO DODAJEM -------------------
             # I UMESTO DA PIDSEM value KAO KOD DRUGIH VARIJABLI

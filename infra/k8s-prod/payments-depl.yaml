@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
         - name: payments
-          image: eu.gcr.io/microticket/payments
+          # image: eu.gcr.io/microticket/payments
+          image: radebajic/mt-payments
           env:
             - name: NATS_CLIENT_ID
               valueFrom:

@@ -166,3 +166,55 @@ expiration-depl.yaml  orders-depl.yaml  tickets-depl.yaml
 auth-depl.yaml        ingress-srv.yaml  payments-depl.yaml
 expiration-depl.yaml  orders-depl.yaml  tickets-depl.yaml
 ```
+
+## SADA CU DA PREPRAVIM, SVE ONE FILE-OVE IZ `infra/k8s-prod`, KOKO BI ONI KORISTILI IMAGE KOJI CE BITI PUSHED TO DOCKER HUB
+
+POKAZACU TI TO NA PRIMERU `infra/k8s-prod/auth-depl.yaml`, A TI PROMENI OSTALE ON YOUR OWN, JER ISTI JE PRINCIP
+
+- `code infra/k8s-prod/auth-depl.yaml`
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+        - name: auth
+          # UMESTO OVOGA
+          # image: eu.gcr.io/microticket/auth
+          # DEFINISEM OVO
+          image: radebajic/mt-auth
+          # JER POMENUTI IMAGE CE BITI NA DOCKER HUB-U
+          env:
+            - name: MONGO_URI
+              value: 'mongodb://auth-mongo-srv:27017/auth'
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-srv
+spec:
+  selector:
+    app: auth
+  type: ClusterIP
+  ports:
+    - name: auth
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+```

@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
         - name: orders
-          image: eu.gcr.io/microticket/orders
+          # image: eu.gcr.io/microticket/orders
+          image: radebajic/mt-orders
           env:
             - name: NATS_CLIENT_ID
               valueFrom:
