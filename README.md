@@ -61,7 +61,8 @@ jobs:
       - uses: actions/checkout@v2
       # BUILDUJEM ISTI ONAJ IMAGE, KOJI SAM SPECIFICIRAO
       # U  infra/k8s-prod/orders-depl.yaml
-      - run: cd auth && docker build -t radebajic/mt-orders .
+      # I NEMOJ DA ZABORAVIS DA URADIS cd orders
+      - run: cd orders && docker build -t radebajic/mt-orders .
       - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
