@@ -111,6 +111,25 @@ spec:
       targetPort: 3000
 ```
 
-OPET CEMO NAPRAVITI PULL REQUEST ZA MERGING dev BRANCH INTO MAIN
+OPET CEMO NAPRAVITI PULL REQUEST ZA MERGING dev BRANCH INTO main
 
 NECU TI OBJASNAJVATI STA CU SVE RADITI, JER SAM TI OBJASNIO 15 PUTA DO SADA, AKO TE ZNIMA KAKO IDE PRAVLJANJE PULL REQUESTA POGLEDAJ PROSLE BRANCH-EVE
+
+# NAPRAVIO SAM PULL REQUET, PA SAM ONDA MERGE-OVAO TAJ PULL REQUEST INTO `main`
+
+POSMATRAO SAM I KAKO SE OBAVLJA ACTION `.github/workflows/deploy-manifests.yml`, I SAMO JEDAN DEPLOYMENT JE PROMENJEN I RESTART-OVAN (OVO JE PISLO U JEDNOM INE-U U LOG-U: `deployment.apps/client-depl configured`, DOK JE ZA SVE OSTALE PISALO `"unchanged"`)
+
+TAKODJE SAM PRIMETIO JOS JEDAN WARNING U JEDNOM LINE-U LOG-A:
+
+`Warning: networking.k8s.io/v1beta1 Ingress is deprecated in v1.19+, unavailable in v1.22+; use networking.k8s.io/v1 Ingress`
+
+***
+
+digresija-podsetnik:
+
+POZABAVICES SE OVIM, KADA RESIMO DRUGE PROBLEM
+
+`Warning: networking.k8s.io/v1beta1 Ingress is deprecated in v1.19+, unavailable in v1.22+; use networking.k8s.io/v1 Ingress`
+
+
+***
