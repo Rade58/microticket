@@ -139,3 +139,30 @@ IMAMO JOS I
 `infra/k8s-prod` I `infra/k8s-dev`
 
 **JASNO TI JE ZA KOJE CLUSTERE CE SLUZITI MANIFEST-OVI  POMENUTIH FOLDERA, KOJI SU ZA SADA PRAZNI**
+
+`S OBZIROM KAKVU JA SITUACIJU IMAM, SAMO ONI FILE-OVI KOJI SE TICU DEPLOYMENTA I CLUSTER IP CONFIGOVA, ZA MONGO DATBASE-OVE, ZATIM JEDAN ZA REDIS DATBASE, I JEDAN CONFIG FILE ZA NATS STREAMING SERVER, TREBA DA BUDU INSIDE` **`infra/k8s`**, U KOJEM SE I SADA NALAZE (OSTAVICU TAMO I KONFIGURACIJU ZA `client` MICROSERVICE (BAR CU TO ZA SDA TKO URADITI))
+
+`A SVI OSTALI FILE-OVI, A TU SU KONFIGURACIJE ZA DEPLOYMENTS I CLUSTER IPS SERVICE SVIH MICROSERVICE-OVA, I ZATIM CONFIG FILE ZA INGRESS, NACI CE SE I U` **`infra/k8s-dev`**, `ALI I U` **`infra/k8s-dev`**
+
+**SADA CU DA ISPOMERAM, PA I DA KOPIRAM NEKE FILE-OVE I POKAZACU TI STA IMAM, ODNONO KAKVU IMAM FILE/FOLDER STRUKTURU INSIDE `infra` DIRECTORY**
+
+- `ls infra/k8s`
+
+```zsh
+auth-mongo-depl.yaml  expiration-redis-depl.yaml  orders-mongo-depl.yaml    tickets-mongo-depl.yaml
+client-depl.yaml      nats-depl.yaml              payments-mongo-depl.yaml
+```
+
+- `ls infra/k8s-dev`
+
+```zsh
+auth-depl.yaml        ingress-srv.yaml  payments-depl.yaml
+expiration-depl.yaml  orders-depl.yaml  tickets-depl.yaml
+```
+
+- `ls infra/k8s-prod`
+
+```zsh
+auth-depl.yaml        ingress-srv.yaml  payments-depl.yaml
+expiration-depl.yaml  orders-depl.yaml  tickets-depl.yaml
+```
