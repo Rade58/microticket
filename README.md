@@ -19,3 +19,9 @@ CURRENT   NAME                                             CLUSTER              
 *         do-fra1-microticket                              do-fra1-microticket                              do-fra1-microticket-admin                        
           gke_microticket_europe-west2-b_microticket-dev   gke_microticket_europe-west2-b_microticket-dev   gke_microticket_europe-west2-b_microticket-dev 
 ```
+
+A MOZES TO VIDETI I KROZ `kubectl config view` (ALI OVO GORE JE NEKAKO BOLJA KOMANDA, A ONO STA MI TREBA)
+
+A CISTO DA TE PODSETIM, DA SWITCH-UJES CONTEXT, STO MI SADA NE MORAMO RADITI, KORISTI:
+
+`kubectl config use-context <context name>`
