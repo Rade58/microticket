@@ -17,12 +17,8 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       - run: docker push radebajic/mt-auth
-      # REKAO SAM DA MORAMO doctl DA INSTALIRAMO MANUELNO
-      # TO JE USTVARI OVO, NISMO BAS MANULNI, JER JE DIGITAL OCEAN
-      # NAPRAVIO SHORTCUT, KAKO BI SE doctl INSTALIRAO AUTOMATSKI INSIDE
-      # RUNNING GITHUB CONTAINER
       - uses: digitalocean/action-doctl@v2
-        # OVO SLEDECE CE OMOGUCITI DA TOKEN KOJI SMO UNELI BUDE PROVIDED
-        # TO THE SCRIPT, CIME CEMO DOBITI PREINITIALIZED VERSION OF DOCTL
         with:
-          token: $DIGITALOCEAN_ACCESS_TOKEN
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - run: doctl kubernetes cluster kubeconfig save microticket
+      - run: kubectl rollout restart deployment auth-depl
