@@ -1,47 +1,101 @@
-# DON'T FORGET TO INSTALL INGRESS-NGINX, FOR YOUR K8S CLUSTER ON DIGITAL OCEAN
+# PRAVLJENJE OSTALIH WORKFLOW FILE-OVA, KOJI SU NAMENJENI DA SE IMAGE MICROSERVICE-A REBUILD-UJE I PUSH-UJE TO DOCKER HUB; I DA SE DEPLOYMENT MICROSERVICE-A ROLLOUT-UJE WITH NEW IMAGE
 
-SECAS SE DA SMO TO RADILI I ZA NAS DEVELOPMENT CLUSTER; A NAS DEVELOPMENT CLUSTER JE DEPLOYED NA GOOGLE CLOUD-U, I MI SMO MORALI DA RUNN-UJEMO SPECIFICNU KOMANDU, U ZAVISNOSTI KOJI JE PROVIDER CLUSTERA, A U SLUCAJU DEVELOPMENTA TO JE BIO GOOGLE CLOUD KAO PROVIDER
+DAKLE VEC JEDAN TAKAV FILE SAM KREIRAO, A ON OSIGURAVA DA KADA SE PUSH-UJE TO `main` BRANCH (A U TO SE UBRAJA I MERGING PULL REQUEST TO main BRANCH) A POD USLOVOM DA SAMO TAJ MICROSERVICE IMA I JEDNU PROMENU U SVOM CODEBASE-U, DA SE TADA U VIRTUAL MACHINE-U GITHUB CONTAINER-A USTVARI OBAVI BUILDING NOVOG DOCKER IMAGE-A, PA ZATIM DA SE OBAVI AUTHORIZATION ZA DOCKER HUB, PA DA SE INSTALIRA `doctl`, PA DA SE AUTHORIZUJE doctl, I PROMENI SE CONTEXT ZA ZA `kubectl` (KOJI JE PREINSTALLED U CONTAINERU) (A TAJ CONTEXT SE MENJA SA doctl KOMANDOM KOJA I INICIJALIZUJE TAJ doctl); I NA KRAAJU SE REBUILDROLLOUT-UJE DEPLOYMENT ZA RELATED MICROSERVICE
 
-**SADA MI TREBA KOMANDA ZA INSTALACIJU INGRESS KONTROLERA, KOJA ODGOVARA TOME DA JE NAS CLUSTER DEPLOYED NA DIGITAL OCEAN-U**
+EVO GA TAKAV JEDINI FILE ZA SADA:
 
-[TAKVU KOMANDU SAM NASAO OVDE U DOKUMENTACIJI](https://kubernetes.github.io/ingress-nginx/deploy/#digital-ocean)
+- `cat .github/workflows/deploy-auth.yml`
 
-DA OPET PROVERIM IMAM LI PRAVI CLUSTER CONTEXT
+```yml
+name: deploy-auth
 
-- `kubectl config get-contexts`
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'auth/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2   
+      - run: cd auth && docker build -t radebajic/mt-auth .
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - run: docker push radebajic/mt-auth
+      - uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - run: doctl kubernetes cluster kubeconfig save microticket
+      - run: kubectl rollout restart deployment auth-depl
+```
 
-VIDEO SAM DA IMAM (A DA NISI IMAO PROMENIO BI CONTEXT NA `kubectl config use-context <context name>`)
+# SADA OVE FILE-OVE NECU DA PRAVIM DIREKTNO NA GITHUBU, VEC CU IH PRAVITI IZ MOG CODEBASE-A, CISTO DA VIDIM DA LI JE I I TO OK NACIN
 
-PA CU SADA DA RUNN-UJEM SLEDECU KOMANDU, PREKOPIRANU SA GORNJEG LINKA
+EVO PRAVIM ONE KOJE MISLIM DA TREBAM (NAPRAVICU I FILE ZA client (MISLIM DA JE LOGICNO DA MI I ZA NJEGA TREBA POMENUTI WORKFLOW))
 
-- `kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.46.0/deploy/static/provider/do/deploy.yaml`
+- `touch .github/workflows/deploy-{tickets,orders,expiration,payments,client}.yml`
 
-## ALI MI MORAMO URADITI JOS JEDAN QUICK THING, A TO JE DA COMMIT-UJEMO NASE CHANGES, KOJE SMO NAPRAVILI SA SVIM NASIM K8S MANIFEST FILE-OVIMA
+**SADA CU DA DEFINISEM, JEDAN OD POMENUTIH FILE-OVA, PA CU DA TI GA PRIKAZEM, A STO SE TICE OSTALIH FILE-OVA, DEFINISACU IH ALI NE MORAM DA IH PRIKAZUJEM, JER CE TI BITI JASNO STA TREBAS DA DEFINISES**
 
-ODNONO MI SMO IH, AKO SE SECAS PODELILI U RAZLICITE FOLDERE, DA BI NEGDE SPECIFICIRALI RALICITE IMAGE-OVE, SVOJSTVENE ZA PRODUCTION
+- `code .github/workflows/deploy-orders.yml`
 
-A TAKODJE SMO NA SAMOM GITHUB-U DEFINISALI WORKFLOW, KOJI SVE TE CONFIGURACIJE TREBA DA APPLY-UJE NA CLUSTER
+```yml
+# EVO DEFINISAO SAM DA IME BUDE deploy-orders
+name: deploy-orders
 
-**PRECI CEMO U DEV BRANCH, JER SMO TAKO I RANIJE RADILI (NECU DA POKUSAM PRAVLJANJE NI JEDNOG PULL REQUESTA STO SE TICE BRANCH-EVA, KOJE MI SLUZE ZA BELEZENJE OVOG WORKSHOPA-A)**
+on:
+  push:
+    branches:
+      - main
+    paths:
+      # OVDE TREBA orders FOLDER
+      - 'orders/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      # BUILDUJEM ISTI ONAJ IMAGE, KOJI SAM SPECIFICIRAO
+      # U  infra/k8s-prod/orders-depl.yaml
+      - run: cd auth && docker build -t radebajic/mt-orders .
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      # I OVDE TREBAS DA PUSH-UJES THE RIGHT IMAGE TO DOCKERHUB
+      - run: docker push radebajic/mt-orders
+      - uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - run: doctl kubernetes cluster kubeconfig save microticket
+      # I OVDE PODESAVAS ROLLOUT orders-depl DEPLOYMENTA
+      - run: kubectl rollout restart deployment orders-depl
+```
 
-UGLAVNOM, PREBACIO SAM SE U `dev` BRANCH, I U NJEGA MERGE-OVAO SVE PROMENE KOJE SAM NAPRAVIO `git merge <odredjeni branch u kojem sm bio>`
+NA ISTI NACIN CU DA DEFINISEM I OSTALE FILE-OVE
 
-**SADA CEMO DA PULL-UJEMO PROMENE IZ MAIN-A, JER SMO AKO SE SECAS I TAMO PRAVILI SVE PROENE ZA WORKFLOWS, KOJE NEMAMOM**
+`github/workflows/deploy-tickets.yml`
 
-- `git pull origin main`
+`github/workflows/deploy-expiration.yml`
 
-E SADA DA COMMIT-UJEMO SVE PROMENE KOJE SMO PRAVILI LOKALNO
+`github/workflows/deploy-payments.yml`
+
+`github/workflows/deploy-client.yml`
+
+# SADA CU SVE OVE PROMENE DA MERGE-UJEM INTO THE `main` BRANCH
+
+NARAVNO TO VOLIM DA RADIM TAKO STO CU U `dev` BRANCH PRVO LOKALNO SVE PROMENE MERGE-OVATI, PA ZELIM TEK ONDA DA PUSH-UJEM `dev`, PA DA NAPRAVIM PULL REQUEST ZA MERGING dev INTO `main` (ZELI MDA STO VISE RDIM TAJ PULL REQUEST DA MI OSTANE U PAMCENJU)
+
+**UGLAVNOM EVO SADA SAM PRESAO U `dev` BRANCH**
+
+I EVO COMMIT-UJEM PROMENE
 
 - `git add -A`
 
-- `git commit -am 'k8s manifests are ready'`
-
-PUSH-UJEM SVE DO DEV REMOTE-A
+- `git commit -am "mede the rest of deploy-<microseervice> files"`
 
 - `git push origin dev`
-
-**IDEMO NA GITHUB DA NAPRAVIMO PULL REQUEST ZA MERGING dev-A INTO `main`** (IDEMO U `Pull requests` TAB GDE BRAVIMO NOVI PULL REQUEST, I RADIM SVE PO REDU STO SAM VEC I RANIJE RADIO)
-
-SADA KADA KREIRAS PULL REQUES NECE SE OBAVITI NI JEDAN TETING WORKFLOW, JER NISMO NISTA MNJALI U MICROSERVICE-OVIMA
-
-A NECE SE POKRENUTI NI ONI IMAGE BUILDING (I PUSHING IMAGE TO DOCKER HUB) WORKFLOW-OVI, JER SE SAMO OBAVLJAJU
