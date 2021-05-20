@@ -117,20 +117,19 @@ U PROSLOM BRANCHU, DA TI NE SIRIM PRICU, USPEO SAM NA KRAJU DA NAPRAVIM I APPLY-
 
 ```zsh
 NAME                                     READY   STATUS             RESTARTS   AGE
-auth-depl-77f5647f8d-9x5kz               1/1     Running            0          4h20m
-auth-mongo-depl-6b6f97556-hlncf          1/1     Running            0          4h21m
-client-depl-5bbbbf674f-kxgpf             0/1     ImagePullBackOff   0          76m
-client-depl-78f896bbd7-bhvfq             0/1     ImagePullBackOff   0          4h21m
-expiration-depl-5b6b6bfcd5-ctzdd         0/1     CrashLoopBackOff   15         56m
-expiration-redis-depl-55c656669f-fc6wv   1/1     Running            0          4h21m
-nats-depl-68b7d794b4-hr85z               1/1     Running            0          4h21m
-orders-depl-77688c6b9f-ltttz             1/1     Running            0          76m
-orders-mongo-depl-6b554544d8-ff25q       1/1     Running            0          4h21m
-payments-depl-5b9f649cd9-zgsb7           1/1     Running            0          76m
-payments-mongo-depl-76ffcb78fb-52tsb     1/1     Running            0          4h20m
-tickets-depl-554dd4bd79-s9svm            1/1     Running            0          76m
-tickets-mongo-depl-8546d98f5b-zn2kb      1/1     Running            0          4h20m
-
+auth-depl-77f5647f8d-9x5kz               1/1     Running            0          6h6m
+auth-mongo-depl-6b6f97556-hlncf          1/1     Running            0          6h6m
+client-depl-68d656897b-99vvz             0/1     CrashLoopBackOff   11         38m
+expiration-depl-6d95485745-nw2x9         1/1     Running            11         35m
+expiration-redis-depl-55c656669f-fc6wv   1/1     Running            0          6h6m
+nats-depl-68b7d794b4-hr85z               1/1     Running            0          6h6m
+orders-depl-77688c6b9f-ltttz             1/1     Running            0          3h1m
+orders-mongo-depl-6b554544d8-ff25q       1/1     Running            0          6h6m
+payments-depl-5b9f649cd9-zgsb7           1/1     Running            0          3h1m
+payments-mongo-depl-76ffcb78fb-52tsb     1/1     Running            0          6h6m
+tickets-depl-554dd4bd79-s9svm            1/1     Running            0          3h1m
+tickets-mongo-depl-8546d98f5b-zn2kb      1/1     Running            0          6h6m
+nning            0          4h20m
 ```
 
 DA ODMAH NE SIRIM PRICU, VIDIM DA JE PROBLEM U IMAGE-U ZA client MICROSERVICE
