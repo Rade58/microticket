@@ -25,3 +25,18 @@ A MOZES TO VIDETI I KROZ `kubectl config view` (ALI OVO GORE JE NEKAKO BOLJA KOM
 A CISTO DA TE PODSETIM, DA SWITCH-UJES CONTEXT, STO MI SADA NE MORAMO RADITI, KORISTI:
 
 `kubectl config use-context <context name>`
+
+## DA KREIRAMO SECRETS
+
+- `kubectl create secret generic stripe-secret --from-literal=STRIPE_KEY=<your stripe secret key>`
+
+- `kubectl create secret generic jwt-secret --from-literal=JWT_KEY=<your jwt secret>`
+
+- `kubectl get secrets`
+
+```zsh
+NAME                  TYPE                                  DATA   AGE
+default-token-mwdnw   kubernetes.io/service-account-token   3      26h
+jwt-secret            Opaque                                1      27s
+stripe-secret         Opaque                                1      118s
+```
