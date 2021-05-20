@@ -1,0 +1,30 @@
+name: deploy-orders
+# EVO DEFINISAO SAM DA IME BUDE deploy-orders
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      # OVDE TREBA orders FOLDER
+      - 'orders/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      # BUILDUJEM ISTI ONAJ IMAGE, KOJI SAM SPECIFICIRAO
+      # U  infra/k8s-prod/orders-depl.yaml
+      - run: cd auth && docker build -t radebajic/mt-orders .
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      # I OVDE TREBAS DA PUSH-UJES THE RIGHT IMAGE TO DOCKERHUB
+      - run: docker push radebajic/mt-orders
+      - uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - run: doctl kubernetes cluster kubeconfig save microticket
+      # I OVDE PODESAVAS ROLLOUT orders-depl DEPLOYMENTA
+      - run: kubectl rollout restart deployment orders-depl

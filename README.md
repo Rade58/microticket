@@ -1,144 +1,94 @@
-# DON'T FORGET TO INSTALL INGRESS-NGINX, FOR YOUR K8S CLUSTER ON DIGITAL OCEAN
+# PRAVLJENJE OSTALIH WORKFLOW FILE-OVA, KOJI SU NAMENJENI DA SE IMAGE MICROSERVICE-A REBUILD-UJE I PUSH-UJE TO DOCKER HUB; I DA SE DEPLOYMENT MICROSERVICE-A ROLLOUT-UJE WITH NEW IMAGE
 
-SECAS SE DA SMO TO RADILI I ZA NAS DEVELOPMENT CLUSTER; A NAS DEVELOPMENT CLUSTER JE DEPLOYED NA GOOGLE CLOUD-U, I MI SMO MORALI DA RUNN-UJEMO SPECIFICNU KOMANDU, U ZAVISNOSTI KOJI JE PROVIDER CLUSTERA, A U SLUCAJU DEVELOPMENTA TO JE BIO GOOGLE CLOUD KAO PROVIDER
+DAKLE VEC JEDAN TAKAV FILE SAM KREIRAO, A ON OSIGURAVA DA KADA SE PUSH-UJE TO `main` BRANCH (A U TO SE UBRAJA I MERGING PULL REQUEST TO main BRANCH) A POD USLOVOM DA SAMO TAJ MICROSERVICE IMA I JEDNU PROMENU U SVOM CODEBASE-U, DA SE TADA U VIRTUAL MACHINE-U GITHUB CONTAINER-A USTVARI OBAVI BUILDING NOVOG DOCKER IMAGE-A, PA ZATIM DA SE OBAVI AUTHORIZATION ZA DOCKER HUB, PA DA SE INSTALIRA `doctl`, PA DA SE AUTHORIZUJE doctl, I PROMENI SE CONTEXT ZA ZA `kubectl` (KOJI JE PREINSTALLED U CONTAINERU) (A TAJ CONTEXT SE MENJA SA doctl KOMANDOM KOJA I INICIJALIZUJE TAJ doctl); I NA KRAAJU SE REBUILDROLLOUT-UJE DEPLOYMENT ZA RELATED MICROSERVICE
 
-**SADA MI TREBA KOMANDA ZA INSTALACIJU INGRESS KONTROLERA, KOJA ODGOVARA TOME DA JE NAS CLUSTER DEPLOYED NA DIGITAL OCEAN-U**
+EVO GA TAKAV JEDINI FILE ZA SADA:
 
-[TAKVU KOMANDU SAM NASAO OVDE U DOKUMENTACIJI](https://kubernetes.github.io/ingress-nginx/deploy/#digital-ocean)
+- `cat .github/workflows/deploy-auth.yml`
 
-DA OPET PROVERIM IMAM LI PRAVI CLUSTER CONTEXT
+```yml
+name: deploy-auth
 
-- `kubectl config get-contexts`
-
-VIDEO SAM DA IMAM (A DA NISI IMAO PROMENIO BI CONTEXT NA `kubectl config use-context <context name>`)
-
-PA CU SADA DA RUNN-UJEM SLEDECU KOMANDU, PREKOPIRANU SA GORNJEG LINKA
-
-- `kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.46.0/deploy/static/provider/do/deploy.yaml`
-
-## ALI MI MORAMO URADITI JOS JEDAN QUICK THING, A TO JE DA COMMIT-UJEMO NASE CHANGES, KOJE SMO NAPRAVILI SA SVIM NASIM K8S MANIFEST FILE-OVIMA
-
-ODNONO MI SMO IH, AKO SE SECAS PODELILI U RAZLICITE FOLDERE, DA BI NEGDE SPECIFICIRALI RALICITE IMAGE-OVE, SVOJSTVENE ZA PRODUCTION
-
-A TAKODJE SMO NA SAMOM GITHUB-U DEFINISALI WORKFLOW, KOJI SVE TE CONFIGURACIJE TREBA DA APPLY-UJE NA CLUSTER
-
-**PRECI CEMO U DEV BRANCH, JER SMO TAKO I RANIJE RADILI (NECU DA POKUSAM PRAVLJANJE NI JEDNOG PULL REQUESTA STO SE TICE BRANCH-EVA, KOJE MI SLUZE ZA BELEZENJE OVOG WORKSHOPA-A)**
-
-UGLAVNOM, PREBACIO SAM SE U `dev` BRANCH, I U NJEGA MERGE-OVAO SVE PROMENE KOJE SAM NAPRAVIO `git merge <odredjeni branch u kojem sm bio>`
-
-**SADA CEMO DA PULL-UJEMO PROMENE IZ MAIN-A, JER SMO AKO SE SECAS I TAMO PRAVILI SVE PROENE ZA WORKFLOWS, KOJE NEMAMOM**
-
-- `git pull origin main`
-
-E SADA DA COMMIT-UJEMO SVE PROMENE KOJE SMO PRAVILI LOKALNO
-
-- `git add -A`
-
-- `git commit -am 'k8s manifests are ready'`
-
-PUSH-UJEM SVE DO DEV REMOTE-A
-
-- `git push origin dev`
-
-**IDEMO NA GITHUB DA NAPRAVIMO PULL REQUEST ZA MERGING dev-A INTO `main`** (IDEMO U `Pull requests` TAB GDE BRAVIMO NOVI PULL REQUEST, I RADIM SVE PO REDU STO SAM VEC I RANIJE RADIO)
-
-SADA KADA KREIRAS PULL REQUES NECE SE OBAVITI NI JEDAN TETING WORKFLOW, JER NISMO NISTA MNJALI U MICROSERVICE-OVIMA
-
-**MOZEMO DA KLIKNEMO NA `Merge pull request`**
-
-***
-
-digresija: mozda se ovo iz digresije nece dogoditi jer nismo nista promenili u individual microservice-ovima
-
-POSTO IMAMO `.github/workflows/deploy-auth.yml` WORKFLOW, KOJI DEFINISE ACTION KOJI SE POKRECE ON PUSH TO `main` A MERGING PULL REQUESTA TO MAIN SE RACUNA KAO push TO main
-
-DESICE SE BUILDING IMAGE I NJEGOV PUSHING TO DOCKER HUB, STO SMO VEC I RANIJE URADILI I ZNAMO DA CE SE DESITI
-
-**ZAISTA NECE JER NISMO NISTA PROMENILI U CODEBASE-U auth MICROSERVICE-A**
-
-***
-
-**DESICE SE I APPLYIG SVIH POTREBNIH MANIFEST FILE-OVA NA NAS CLUSTER U DIGITAL OCEAN-U, JER JE `.github/workflows/deploy-manifests.yml` TAJ KKOJI SE ISTO RUNN-UJE ON push TO MAIN BRANCH**
-
-MOZES PRACI U `Actions` TAB I VIDETI DA SE `deploy-manifests.yml` IZVRSAVA I DA SE USPESNO SVE IZVRSILO, JER IMAM ZELENI CHECKMARK, A MOGAO SI KLIKNUTI DA `build` (LEVO) DA VIDIS SVE LOGS I SVE STA SE IZVRSAVALO
-
-UGLAVNOM BILO JE SVE USPESNO
-
-# KONACNO MOGU PROVERITI DA LI IMAM ,SVE DEPLOYMENTS, ODNOSNO DA LI IMAM RUNNING PODS NA MOM CLUSTER-U NA DIGITAL OCEAN-U
-
-- `kubectl get deployments`
-
-KAO STO VIDIS NISU SVE DEPLOYMENTS AVAILABLE, RECI CU TI UBRZO I ZASTO
-
-```zsh
-NAME                    READY   UP-TO-DATE   AVAILABLE   AGE
-auth-depl               1/1     1            1           12m
-auth-mongo-depl         1/1     1            1           12m
-client-depl             0/1     1            0           12m
-expiration-depl         0/1     1            0           12m
-expiration-redis-depl   1/1     1            1           12m
-nats-depl               1/1     1            1           12m
-orders-depl             0/1     1            0           12m
-orders-mongo-depl       1/1     1            1           12m
-payments-depl           0/1     1            0           12m
-payments-mongo-depl     1/1     1            1           12m
-tickets-depl            0/1     1            0           12m
-tickets-mongo-depl      1/1     1            1           12m
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'auth/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2   
+      - run: cd auth && docker build -t radebajic/mt-auth .
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - run: docker push radebajic/mt-auth
+      - uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - run: doctl kubernetes cluster kubeconfig save microticket
+      - run: kubectl rollout restart deployment auth-depl
 ```
 
-- `kubectl get pods`
+# SADA OVE FILE-OVE NECU DA PRAVIM DIREKTNO NA GITHUBU, VEC CU IH PRAVITI IZ MOG CODEBASE-A, CISTO DA VIDIM DA LI JE I I TO OK NACIN
 
-```zsh
-NAME                                     READY   STATUS             RESTARTS   AGE
-auth-depl-77f5647f8d-9x5kz               1/1     Running            0          4m33s
-auth-mongo-depl-6b6f97556-hlncf          1/1     Running            0          4m43s
-client-depl-78f896bbd7-bhvfq             0/1     ImagePullBackOff   0          4m42s
-expiration-depl-6647cb94c9-6z5x4         0/1     ImagePullBackOff   0          4m32s
-expiration-redis-depl-55c656669f-fc6wv   1/1     Running            0          4m40s
-nats-depl-68b7d794b4-hr85z               1/1     Running            0          4m39s
-orders-depl-6cb94b74bd-l8lxp             0/1     ImagePullBackOff   0          4m30s
-orders-mongo-depl-6b554544d8-ff25q       1/1     Running            0          4m38s
-payments-depl-5b8f8f8694-z8rcw           0/1     ImagePullBackOff   0          4m29s
-payments-mongo-depl-76ffcb78fb-52tsb     1/1     Running            0          4m36s
-tickets-depl-69c8d8689b-wjbdn            0/1     ImagePullBackOff   0          4m28s
-tickets-mongo-depl-8546d98f5b-zn2kb      1/1     Running            0          4m35s
+EVO PRAVIM ONE KOJE MISLIM DA TREBAM (NAPRAVICU I FILE ZA client (MISLIM DA JE LOGICNO DA MI I ZA NJEGA TREBA POMENUTI WORKFLOW))
+
+- `touch .github/workflows/deploy-{tickets,orders,expiration,payments,client}.yml`
+
+**SADA CU DA DEFINISEM, JEDAN OD POMENUTIH FILE-OVA, PA CU DA TI GA PRIKAZEM, A STO SE TICE OSTALIH FILE-OVA, DEFINISACU IH ALI NE MORAM DA IH PRIKAZUJEM, JER CE TI BITI JASNO STA TREBAS DA DEFINISES**
+
+- `code .github/workflows/deploy-orders.yml`
+
+```yml
+# EVO DEFINISAO SAM DA IME BUDE deploy-orders
+name: deploy-orders
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      # OVDE TREBA orders FOLDER
+      - 'orders/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      # BUILDUJEM ISTI ONAJ IMAGE, KOJI SAM SPECIFICIRAO
+      # U  infra/k8s-prod/orders-depl.yaml
+      - run: cd auth && docker build -t radebajic/mt-orders .
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      # I OVDE TREBAS DA PUSH-UJES THE RIGHT IMAGE TO DOCKERHUB
+      - run: docker push radebajic/mt-orders
+      - uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - run: doctl kubernetes cluster kubeconfig save microticket
+      # I OVDE PODESAVAS ROLLOUT orders-depl DEPLOYMENTA
+      - run: kubectl rollout restart deployment orders-depl
 ```
 
-KAO STO VIDIS SVI PODS VEZANI ZA MONGO INSTANCE SU READY ,KAO I ZA JEDINU REDIS INSTANCU
+NA ISTI NACIN CU DA DEFINISEM I OSTALE FILE-OVE
 
-ZATIM READY JE POD ZA `auth-depl`, **ALI NISU ZA ONE OSTALE MICROSERVICE-OVE, JER KAO STO SMO URADILI ZA auth, KREIRAJUCI `.github/workflows/deploy-auth.yml`; TO NISMO URADIL IZA OSTALE MICROSERVICE-OVE** (STO ZNACI DA ZA OSTALE PODS, NISMO OBEZBEDILI IMAGE-OVE UOPSTE) (TO CEMO POPRAVITI VRLO BRZO)
+`github/workflows/deploy-tickets.yml`
 
-ZATO NAM NISU SVE DEPLOYMENTS AVAILABLE I SVI PODOVI NAM NISU READY
+`github/workflows/deploy-expiration.yml`
 
-# DA VIDIMO RADI LI NAM I INGRESS CONTROLER
+`github/workflows/deploy-payments.yml`
 
-- `kubectl describe ingress`
+`github/workflows/deploy-client.yml`
 
-```zsh
-Name:             ingress-srv
-Namespace:        default
-Address:          174.138.103.157
-Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
-Rules:
-  Host             Path  Backends
-  ----             ----  --------
-  microticket.com  
-                   /api/users/?(.*)      auth-srv:3000 (10.244.0.254:3000)
-                   /api/tickets/?(.*)    tickets-srv:3000 ()
-                   /api/orders/?(.*)     orders-srv:3000 ()
-                   /api/payments/?(.*)   payments-srv:3000 ()
-                   /?(.*)                client-srv:3000 ()
-Annotations:       kubernetes.io/ingress.class: nginx
-                   nginx.ingress.kubernetes.io/use-regex: true
-Events:
-  Type    Reason  Age                From                      Message
-  ----    ------  ----               ----                      -------
-  Normal  Sync    14m (x2 over 15m)  nginx-ingress-controller  Scheduled for sync
+# SADA CU SVE OVE PROMENE DA MERGE-UJEM INTO THE `main` BRANCH
 
-```
+NARAVNO TO VOLIM DA RADIM TAKO STO CU U `dev` BRANCH PRVO LOKALNO SVE PROMENE MERGE-OVATI, PA ZELIM TEK ONDA DA PUSH-UJEM `dev`, PA DA NAPRAVIM PULL REQUEST ZA MERGING dev INTO `main`
 
-## U SEDECEM BRANCH-U OPISACEMO PRAVLJANJE SVIH OSTALIH WORKFLOWS, KOJE SLUZE ZA IMAGE BUILDING I PUSHING TOG IMAGE TO DOCKER HUB ZA SVAKI OD MICROSERVICE-OVA
 
-NAPRAVILI SMO DAVNO JEDAN FILE, KOJI SE ZOVE `.github/workflows/deploy-auth.yml`
 
-PA CEMO PO UZORU NA TAJ FILE DA NAPRAVIMO I OSTALE
