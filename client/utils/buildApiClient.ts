@@ -6,8 +6,12 @@ export const buildApiClient = (
   ctx?: GetServerSidePropsContext | NextPageContext
 ) => {
   const isServerSide = isSSR();
-  const baseURL =
-    "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local";
+  // UMESTO OVOGA:
+  // const baseURL =
+    // "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local";
+  // KORITIM MOJ DOMAIN
+    const baseURL =
+    "http://www.microticket.xyz";
 
   if (isServerSide && ctx) {
     return axios.create({

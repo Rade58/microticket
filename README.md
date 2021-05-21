@@ -152,16 +152,43 @@ spec:
     app.kubernetes.io/component: controller
 ```
 
-**NAIME BUG JE TAKAV DA NE MOGU KORISTITI**
+**NAIME BUG JE IZGLEDA TAKAV DA AKO GA NISAM POPRAVIO SA GORNJIM CLUSTER IP-JEM, DA NE BI UOPSTE MOGA OSLATI REQUESTS**
 
+# RELATED TO MENTIONED DIGITAL OCEAN BUG, TREBAO BI PROMNITI BASE URL KOJI KORISTIM U `client`, ODNOSNO NEXTJS APLIKACIJI
 
-# RELATED TO MENTIONED DIGITAL OCEAN BUG, TREBAO BI PROMNITI BASE URL KOJI KORISTIM U `client`, ODNOSNO NEXTJS APLIKACIJA
+OVO SE TICE SLANJE NETWORK REQUESTA, IZ JEDNOG PODA PREMA DRUGOM, JER SAM TAJ URL KORISTIO KAO BASE ZA PRAVLJANJE REQUESTOVA FROM `getServerSideProps` TO OTHER ENDPOINTS OF MICROSERVICES
 
-****
-****
-****
-****
-****
+- `code client/utils/buildApiClient.ts`
+
+```ts
+import axios from "axios";
+import { isSSR } from "./isSSR";
+import { GetServerSidePropsContext, NextPageContext } from "next";
+
+export const buildApiClient = (
+  ctx?: GetServerSidePropsContext | NextPageContext
+) => {
+  const isServerSide = isSSR();
+  // UMESTO OVOGA:
+  // const baseURL =
+    // "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local";
+  // KORITIM MOJ DOMAIN
+    const baseURL =
+    "http://www.microticket.xyz";
+
+  if (isServerSide && ctx) {
+    return axios.create({
+      baseURL,
+      headers: ctx.req.headers,
+    });
+  } else {
+    return axios;
+  }
+};
+
+```
+
+OVO CE OCIGLEDNO BREAK-OVATI CODE CLIENT-A U DEVELOPMENT CLUSTERU NA GOOGLE CLOUD-U, ALI TREBA OVO DA NEGDE PRIBELEZIMA, JER CU MORTI NACI RESENJE ZA OVO
 
 # SADA MORAMO PROCI ONAJ PROCES OD COMMITING-A SVEGA PA DO PAVVLJANJA PULL REQUEST-A, PA NJEGOVOG MERGING-A INTO `main`
 
