@@ -114,6 +114,16 @@ SADA MORAMO PROCI ONAJ PROCES OD COMMITING-A SVEGA PA DO PRWVLJANJA PULL REQUEST
 
 A SAMO TI NAPOMINJEM DA SE TAJ ACTION OBAVLJA JER SMO DEFINISALI OVAJ WORKFLOW: `.github/workflows/deploy-manifests.yml`
 
+DA POCNEMO
+
+- `git add -A`
+
+- `git commit -am 'ingress config updated'`
+
+- `git push origin dev`
+
+SADA IDEMO NA GITHUB DA PRAVIMO NOVI PULL REQUEST ZA MERGING dev INTO main BRANCH
+
 
 
 
