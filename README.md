@@ -124,6 +124,22 @@ DA POCNEMO
 
 SADA IDEMO NA GITHUB DA PRAVIMO NOVI PULL REQUEST ZA MERGING dev INTO main BRANCH
 
+TO SMO URADILI I SADA CEMO DA MERGE-UJEMO POMENUTI PULL REQUEST INTO main
+
+IDEMO U `Actions` TAB
+
+KLIKCEMO NA ACTION KOJ ISE OBAVLJA I KLIKCEMO NA `build`
+
+SVE SE USPESNO IZVRSILO, I OVO SAM MOGAO VIDETI, ZA SLUCAJ RUNNINGA kubectl apply KOMANDE:
+
+```zsh
+Warning: networking.k8s.io/v1beta1 Ingress is deprecated in v1.19+, unavailable in v1.22+; use networking.k8s.io/v1 Ingress
+ingress.networking.k8s.io/ingress-srv configured
+```
+
+IGNORISACU POMENUTI WARNING, BITNO MI JE DA JE SVE BUILT
+
+**SADA SAM U BROWSER ADRESS BAR-U UNEO `http://www.microticket.xyz/`** I ZAISTA JE VIDIM NAS WEBPAGE
 
 
 
