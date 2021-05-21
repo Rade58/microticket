@@ -119,42 +119,52 @@ spec:
               serviceName: client-srv
               servicePort: 3000
 # EVO JE TA CLUSTER IP KONFIGURACIJA, KOJU SAM DODAO
----
-apiVersion: v1
-kind: Service
-metadata:
-  annotations:
-    service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: 'true'
-    # OVDE ZADAJ TVOJ DOMAIN NAME
-    service.beta.kubernetes.io/do-loadbalancer-hostname: 'www.microticket.xyz'
-  labels:
-    helm.sh/chart: ingress-nginx-2.0.3
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/version: 0.32.0
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/component: controller
-  name: ingress-nginx-controller
-  namespace: ingress-nginx
-spec:
-  type: LoadBalancer
-  externalTrafficPolicy: Local
-  ports:
-    - name: http
-      port: 80
-      protocol: TCP
-      targetPort: http
-    - name: https
-      port: 443
-      protocol: TCP
-      targetPort: https
-  selector:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/component: controller
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   annotations:
+#     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: 'true'
+#     # OVDE ZADAJ TVOJ DOMAIN NAME
+#     service.beta.kubernetes.io/do-loadbalancer-hostname: 'www.microticket.xyz'
+#   labels:
+#     helm.sh/chart: ingress-nginx-2.0.3
+#     app.kubernetes.io/name: ingress-nginx
+#     app.kubernetes.io/instance: ingress-nginx
+#     app.kubernetes.io/version: 0.32.0
+#     app.kubernetes.io/managed-by: Helm
+#     app.kubernetes.io/component: controller
+#   name: ingress-nginx-controller
+#   namespace: ingress-nginx
+# spec:
+#   type: LoadBalancer
+#   externalTrafficPolicy: Local
+#   ports:
+#     - name: http
+#       port: 80
+#       protocol: TCP
+#       targetPort: http
+#     - name: https
+#       port: 443
+#       protocol: TCP
+#       targetPort: https
+#   selector:
+#     app.kubernetes.io/name: ingress-nginx
+#     app.kubernetes.io/instance: ingress-nginx
+#     app.kubernetes.io/component: controller
 ```
 
-SADA MORAMO PROCI ONAJ PROCES OD COMMITING-A SVEGA PA DO PRWVLJANJA PULL REQUEST-A, PA NJEGOVOG MERGING-A INTO `main`, NAKON KOJEG SE DOGADJA ACTION, KOJI SMO DEFINISALI DA SE TRIGGER-UJE PRI PUSHINGU INTO `main` (JER OPET TI NAPOMINJEM DA SE MERGING INTO `main` RACUNA KAO I PUSHING INTO `main`)
+# RELATED TO MENTIONED DIGITAL OCEAN ERROR, TREBAO BI PROMNITI BASE URL KOJI KORISTIM U `client`, ODNOSNO NEXTJS APLIKACIJI
+
+****
+****
+****
+****
+****
+
+# SADA MORAMO PROCI ONAJ PROCES OD COMMITING-A SVEGA PA DO PAVVLJANJA PULL REQUEST-A, PA NJEGOVOG MERGING-A INTO `main`
+
+NAKON KOJEG SE DOGADJA ACTION, KOJI SMO DEFINISALI DA SE TRIGGER-UJE PRI PUSHINGU INTO `main` (JER OPET TI NAPOMINJEM DA SE MERGING INTO `main` RACUNA KAO I PUSHING INTO `main`)
 
 A SAMO TI NAPOMINJEM DA SE TAJ ACTION OBAVLJA JER SMO DEFINISALI OVAJ WORKFLOW: `.github/workflows/deploy-manifests.yml`
 
