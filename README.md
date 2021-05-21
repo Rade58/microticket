@@ -64,6 +64,53 @@ I PRITISKAM NA `Create Record`
 
 I PRITISKAM NA `Create Record`
 
+# SADA MORAMO DA ODEMO NA NAS INGRESS NGINX CONFIG FILE (infra/k8s-prod/ingress-srv.yaml) ,I TAMO MORAMO DA KAZEMO: WHEN EVER IS RUNNING IN PRODUCTION MODE, DA ZELIMO DA INGRESS CONTROLER WATCH-UJE FOR REQUEST COMING FROM DOMAIN OF `microticket.xyz`
+
+- `code infra/k8s-prod/ingress-srv.yaml`
+
+```yaml
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-srv
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  rules:
+    # EVO OVDE SMO ZADALI HOST microticket.xyz
+    # ALI MORAS DA DODAS www ISPRED
+    - host: www.microticket.xyz
+      http:
+        paths:
+          - path: /api/users/?(.*)
+            pathType: Exact
+            backend:
+              serviceName: auth-srv
+              servicePort: 3000
+          - path: /api/tickets/?(.*)
+            pathType: Exact
+            backend:
+              serviceName: tickets-srv
+              servicePort: 3000
+          - path: /api/orders/?(.*)
+            pathType: Exact
+            backend:
+              serviceName: orders-srv
+              servicePort: 3000
+          - path: /api/payments/?(.*)
+            pathType: Exact
+            backend:
+              serviceName: payments-srv
+              servicePort: 3000
+          - path: /?(.*)
+            pathType: Exact
+            backend:
+              serviceName: client-srv
+              servicePort: 3000
+```
+
+
 
 ***
 

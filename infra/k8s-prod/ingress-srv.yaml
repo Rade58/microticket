@@ -7,7 +7,9 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   rules:
-    - host: microticket.com
+    # EVO OVDE SMO ZADALI HOST microticket.xyz
+    # ALI MORAS DA DODAS www ISPRED
+    - host: www.microticket.xyz
       http:
         paths:
           - path: /api/users/?(.*)
