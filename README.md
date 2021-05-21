@@ -38,7 +38,11 @@ app.use(
 
 PODSETNIK:
 
+SSL:
 `cookie-session`
+
+NGING URL:
+`client/utils/buildApiClient.ts`
 
 TAKODJE SAM PRIMETIO JOS JEDAN WARNING U JEDNOM LINE-U LOG-A:
 
