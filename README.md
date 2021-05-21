@@ -72,8 +72,6 @@ ALI NE SETT-UJEMO SAMO host FIELD
 
 [ZBOG NEKOG BUG-A, KOJI JE NA DIGITAL OCEAN-U](https://github.com/digitalocean/digitalocean-cloud-controller-manager/blob/master/docs/controllers/services/examples/README.md#accessing-pods-over-a-managed-load-balancer-from-inside-the-cluster), MORA SE DODATI ADDITIONAL CLUSTER IP KONFIGURACIJA
 
-MADA JE MENI RADILO SVE I DODAVANJA TE DODATNE KONFIGURACIJE
-
 ***
 
 - `code infra/k8s-prod/ingress-srv.yaml`
@@ -119,42 +117,45 @@ spec:
               serviceName: client-srv
               servicePort: 3000
 # EVO JE TA CLUSTER IP KONFIGURACIJA, KOJU SAM DODAO
-# ---
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   annotations:
-#     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: 'true'
-#     # OVDE ZADAJ TVOJ DOMAIN NAME
-#     service.beta.kubernetes.io/do-loadbalancer-hostname: 'www.microticket.xyz'
-#   labels:
-#     helm.sh/chart: ingress-nginx-2.0.3
-#     app.kubernetes.io/name: ingress-nginx
-#     app.kubernetes.io/instance: ingress-nginx
-#     app.kubernetes.io/version: 0.32.0
-#     app.kubernetes.io/managed-by: Helm
-#     app.kubernetes.io/component: controller
-#   name: ingress-nginx-controller
-#   namespace: ingress-nginx
-# spec:
-#   type: LoadBalancer
-#   externalTrafficPolicy: Local
-#   ports:
-#     - name: http
-#       port: 80
-#       protocol: TCP
-#       targetPort: http
-#     - name: https
-#       port: 443
-#       protocol: TCP
-#       targetPort: https
-#   selector:
-#     app.kubernetes.io/name: ingress-nginx
-#     app.kubernetes.io/instance: ingress-nginx
-#     app.kubernetes.io/component: controller
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: 'true'
+    # OVDE ZADAJ TVOJ DOMAIN NAME
+    service.beta.kubernetes.io/do-loadbalancer-hostname: 'www.microticket.xyz'
+  labels:
+    helm.sh/chart: ingress-nginx-2.0.3
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/version: 0.32.0
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+  name: ingress-nginx-controller
+  namespace: ingress-nginx
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: http
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: https
+  selector:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/component: controller
 ```
 
-# RELATED TO MENTIONED DIGITAL OCEAN ERROR, TREBAO BI PROMNITI BASE URL KOJI KORISTIM U `client`, ODNOSNO NEXTJS APLIKACIJI
+**NAIME BUG JE TAKAV DA NE MOGU KORISTITI**
+
+
+# RELATED TO MENTIONED DIGITAL OCEAN BUG, TREBAO BI PROMNITI BASE URL KOJI KORISTIM U `client`, ODNOSNO NEXTJS APLIKACIJA
 
 ****
 ****
