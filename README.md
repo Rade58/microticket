@@ -189,32 +189,9 @@ ONDA MOGU TESTIRATI
 
 **SADA SAM U BROWSER ADRESS BAR-U UNEO `http://www.microticket.xyz/`** I ZAISTA JE VIDIM NAS WEBPAGE
 
-# ALI MORAMO DA NAPRAVIMO NEKE IZMENE I U NASEM CODEBASE-U 
+ALI NISAM SVE RESIO, NECU JOS POKUSATI DA KORISTIM APP JER NISAM SVE PODESIO
 
-JEDNO SE ODNOSI NA TO DA KORISTIMO `cookie-session` PAKET U CODEBASE-U auth MICROSERVICE-A, A DA SMO PODESILI DA TAJ 
+IMA NEKIH VAZNIH STVRI KOJE SE MORAJ USETT-OVATI UP
 
-***
+TO CU URADITI U SLEDECEM BRANCH-U
 
-
-***
-***
-***
-***
-***
-***
-***
-
-TAKODJE SAM PRIMETIO JOS JEDAN WARNING U JEDNOM LINE-U LOG-A:
-
-`Warning: networking.k8s.io/v1beta1 Ingress is deprecated in v1.19+, unavailable in v1.22+; use networking.k8s.io/v1 Ingress`
-
-***
-
-digresija-podsetnik:
-
-POZABAVICES SE OVIM, KADA RESIMO DRUGE PROBLEM
-
-`Warning: networking.k8s.io/v1beta1 Ingress is deprecated in v1.19+, unavailable in v1.22+; use networking.k8s.io/v1 Ingress`
-
-
-***
