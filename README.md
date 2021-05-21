@@ -244,6 +244,10 @@ POZABAVICES SE OVIM, KADA RESIMO DRUGE PROBLEM
 
 ***
 
+DA VIDIM DA LI IMAM PRAVI `kubectl` CONTEXT
+
+- `kubectl config current-context` (MOZES DA KORISTIS I `kubectl config get-contexts` ILI `kubectl config view`) (AKO NEMAS PRAVI CONTEXT, MENJAS GA SA `kubectl config use-context <ime context-a>`) (**IMAO SAM THE RIGHT CONTEXT**)
+
 DA SADA PROVERIM PODS
 
 - `kubectl get pods`
