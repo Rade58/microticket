@@ -59,35 +59,3 @@ OVO JE ZA LJUDE KOJI RADE NA MICROSERVICES PROJEKTIMA I KOJI RADE SA TIMOM
 
 NASI TEAMMATE-OVI MOGU DA ZELE DA TESTIRAJU NAS APP MANUALLY BEFORE WE DEPLOY IT; TADA BI DODAO NOVI GITHUB WORKFLOW KOJI BI WATCH-OVALI PUSHES DO NEKOG DRUGOG BRANCH-A, KOJI BI KREIRALI, I KOJI BI SE MOZDA ZVAO `staging` **I U SUSTINI KREIRAO BI NOVI CLUSTER, NA KOJI BI DEPLOY-OVAO KADA BI PUSH-OVALI TO `staging` BRANCH**
 
-
-***
-***
-***
-***
-***
-***
-***
-***
-***
-***
-
-PODSETNIK ZA GASENJE DELETING CLUSTER, ALI I DELETING LOAD BALANCER-A
-
-baseUrl:
-`client/utils/buildApiClient.ts`
-
-TAKODJE SAM PRIMETIO JOS JEDAN WARNING U JEDNOM LINE-U LOG-A:
-
-`Warning: networking.k8s.io/v1beta1 Ingress is deprecated in v1.19+, unavailable in v1.22+; use networking.k8s.io/v1 Ingress`
-
-***
-
-digresija-podsetnik:
-
-POZABAVICES SE OVIM, KADA RESIMO DRUGE PROBLEM
-
-`Warning: networking.k8s.io/v1beta1 Ingress is deprecated in v1.19+, unavailable in v1.22+; use networking.k8s.io/v1 Ingress`
-
-
-***
-
