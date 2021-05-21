@@ -6,8 +6,8 @@ export const buildApiClient = (
   ctx?: GetServerSidePropsContext | NextPageContext
 ) => {
   const isServerSide = isSSR();
-  // const baseURL =
-    // "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local";
+  /* const baseURL =
+    "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local" */;
   const baseURL =
     "http://www.microticket.xyz/";
 
