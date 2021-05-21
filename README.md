@@ -309,6 +309,69 @@ Development
 
 I OVDE JE SVE U REDU
 
+# A DA TI NESTO NIJE BILO U REDU, NEKAKV POCETAK DEBUGGINGA BI TEKAO OVAKO
+
+KORISTIO BI `kubectl describe pod <iime poda-a>` KOMANDU 
+
+- `kubectl describe pod orders-depl-6f6854b5bd-8l5w9`
+
+```zsh
+Name:         orders-depl-6f6854b5bd-8l5w9
+Namespace:    default
+Priority:     0
+Node:         pool-microticket-8b91g/10.114.0.5
+Start Time:   Fri, 21 May 2021 01:25:07 +0200
+Labels:       app=orders
+              pod-template-hash=6f6854b5bd
+Annotations:  kubectl.kubernetes.io/restartedAt: 2021-05-20T23:25:07Z
+Status:       Running
+IP:           10.244.0.152
+IPs:
+  IP:           10.244.0.152
+Controlled By:  ReplicaSet/orders-depl-6f6854b5bd
+Containers:
+  orders:
+    Container ID:   containerd://b380f52ba88fd4bcb62416707d3d41ed50efc57ae18d3e73df51d1d2414bcd41
+    Image:          radebajic/mt-orders
+    Image ID:       docker.io/radebajic/mt-orders@sha256:fb0326b0bf8a321138d6ccde5454036b8d117ccfdf230a1c2672076e6220d9d4
+    Port:           <none>
+    Host Port:      <none>
+    State:          Running
+      Started:      Fri, 21 May 2021 01:25:24 +0200
+    Ready:          True
+    Restart Count:  0
+    Environment:
+      NATS_CLIENT_ID:   orders-depl-6f6854b5bd-8l5w9 (v1:metadata.name)
+      NATS_URL:         http://nats-srv:4222
+      NATS_CLUSTER_ID:  microticket
+      MONGO_URI:        mongodb://orders-mongo-srv:27017/orders
+      JWT_KEY:          <set to the key 'JWT_KEY' in secret 'jwt-secret'>  Optional: false
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-mwdnw (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             True 
+  ContainersReady   True 
+  PodScheduled      True 
+Volumes:
+  default-token-mwdnw:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  default-token-mwdnw
+    Optional:    false
+QoS Class:       BestEffort
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                 node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:          <none>
+
+```
+
+TI MUZES VIDETI NEKI INFO; AKO NESTO CRACH-UJE, MOGAO BI DA NADJES REASONS UPRAVO GORE, A ON OSTO TE PRETEZNO ZANIMA JE EVENTS SEKCIJA, JER TU BI NASAO NEKE PROBLEME VEROVATNO
+
+ALI OVAJ MOJ POD, KOJI SAM PROVERIO JESTE U REDU
+
+ISTO TAKO MOZES KORISTITI, KOMANDU KOJ USAM TI VEC KOKAZAO, A TO JE `kubectl logs <ime pod-a>`
 
 ****
 ****
