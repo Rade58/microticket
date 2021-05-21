@@ -40,9 +40,6 @@ app.use(
 ***
 ***
 
-PODSETNIK:
-
-`STRIPE PUBLIHABLE KEY ON CLIENT`
 
 SSL:
 `cookie-session`
