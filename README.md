@@ -56,7 +56,7 @@ RUN npm install --only=prod
 COPY ./ ./
 
 # EVO KAO STO VIDIS STAVIO SAM prod
-CMD ["npm", "prod"]
+CMD ["npm", "run", "prod"]
 ```
 
 # SADA CU IZMENITI WORKFLOW `.github/workflows/deploy-auth.yml`, KAKO BI ZADAO DA ON BUILD-UJE IMAGE, KORISTECI `Dockerfile.prod`
