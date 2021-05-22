@@ -8,7 +8,6 @@ import { OrderCancelledListener } from "./events/listeners/order-cancelled-liste
 //
 
 
-//
 const start = async () => {
   if (!process.env.JWT_KEY) {
     throw new Error("JWT_KEY env variable undefined");

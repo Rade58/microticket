@@ -17,6 +17,7 @@ spec:
         # SA OVIM IMAGE-OM KOJ ISE UZIMA IZ REGISTRY-JA
         # JER TAMO JE MOJ DEVELOPMENT CLUSTER
         image: eu.gcr.io/microticket/client
+#
 ---
 apiVersion: v1
 kind: Service
