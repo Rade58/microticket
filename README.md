@@ -239,7 +239,7 @@ RUN npm install --only=prod
 
 COPY ./ ./
 
-CMD ["npm","run", "prod"]
+CMD ["npm","run","prod"]
 ```
 
 IDEMO SADA NA GITHUB DA KORIGUJEMO, KOAMANDU ZA IMAGE BUILDING INSIDE `.github/workflows/deploy-client.yml` FILE
