@@ -102,7 +102,13 @@ SADA CEMO PULL-OVATI CHANGES SA `main`-A
 
 - `git pull origin main`
 
+PA CEMO SADA COMMIT-OVATI NASE CHANGES I PUSH-OVATI TO `dev` (SMATRAJ DA SMO SADA U dev BRANCH-U ,TAMO SAM SE POMERIO (MADA I INISI MORAO (JER TI MOZES I IZ DRUGOG BRANCH-A DA PUSH-UJES TO dev)))
 
+- `git add -A`
+
+- `git commit -am 'new image from new dockerfile'`
+
+- `git push origin dev`
 
 
 ***
