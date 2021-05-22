@@ -67,6 +67,43 @@ SAMO DA TI KAZEM DA SE DEFINISANJE BUILDING-A IMAGE, KADA SPECIFICIRAS FILE, RAD
 
 **OVO CEMO URADITI SA GITHUB-A DA NE BI MORALI DA DVA PUTA PRAVIMO PULL REQUEST, JER BI SE TEK PRI DRUGOM MERGINGU RUNN-OVAO TAJ WORKFLOW FILE**
 
+`.github/workflows/deploy-auth.yml`:
+
+```yml
+name: deploy-auth
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'auth/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      # KAO STO VIDIS DEFINISAO SAM BUILDING IMAGE-A
+      # SPECIFICIRAJUCI DOCKERFILE KOJI ZELIM 
+      - run: cd auth && docker build -t radebajic/mt-auth -f Dockerfile.prod .
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - run: docker push radebajic/mt-auth
+      - uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - run: doctl kubernetes cluster kubeconfig save microticket
+      - run: kubectl rollout restart deployment auth-depl
+```
+
+SADA CEMO PULL-OVATI CHANGES SA `main`-A
+
+- `git pull origin main`
+
+
+
 
 ***
 ***
