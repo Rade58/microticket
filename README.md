@@ -2,35 +2,27 @@
 
 OVO CU SADA POKUSATI DA PODESIM NA NACIN DA CU KREIRATI NOVE DOKERFILE-OVE ZA PRODUCTION, A TO ZNACI DA CU KORIGOVATI I WORKFLOW FILE-OVE NA GITHUB-U, KAKO BI TAMO DEFINISAO BUILDING DRUGOG IMAGE-A, ALI UZ POMOC NOVOG DOCKER FILE-A
 
-# ALI PRVO CEMO, ZA JEDAN OD NASIH ExpressJS BASED MICROSERVICE, NAPRAVITI BUILD SCRIPT (ZA TRANSPILING TYPESCRIPT-A U JAVASCRIPT), I STARTUP SCRIPT (U KOJIMA CU DEFINISATI RUNNING EXPRESS APLIKACIJE AGAINST `node` EXECUTABLE)
+# ALI PRVO CEMO, ZA JEDAN OD NASIH MICROSERVICE, NAPRAVITI BUILD SCRIPT (ZA TRANSPILING TYPESCRIPT-A U JAVASCRIPT), I STARTUP SCRIPT (U KOJIMA CU DEFINISATI RUNNING MICROSERVICE APLIKACIJE AGAINST `node` EXECUTABLE)
 
-**MEDJUTIM TREBCU DA ODREAIM MN**
+**MEDJUTIM IPAK SAM SE ODLUCIO DA, ON MY OWN NE DEFINISEM TAJ TRANSPILING SCRIPT; JER VIDEO SAM DA [LJUDI SLOBODNO KORISTE `ts-node` IN PRODUCTION](https://github.com/TypeStrong/ts-node/issues/104#issuecomment-525358504)**
 
+SAMO SE [TREBA OMOGUCITI: TRANSPILE ONLY, WITHOUT TYPE CHECKING-A, JER SE TADA OMOGUCAVAJU BOLJE RUNTIME PREFORMANCES](https://github.com/TypeStrong/ts-node/issues/104#issuecomment-525358504)
 
+INSTALIRACU [`ts-node`](https://www.npmjs.com/package/ts-node)
 
-SADA PRAVIM ODREDJENE SCRIPT-OVE (KOJI CE TRANSPILE-OVATI TYPESCRIPT INTO JAVASCRIPT, A I START-UP-OVACE EXPRESS APP), KOJE CU SE RUNN-OVATI, KROZ JEDAN `prod` SCRIPT KOJI CE IMATI NA KARAJU ULOGU I DA RUNN-UJE `build/index.js`
+SADA CU NAPRAVITI PRODUCTION SCRIPT, ODNONO `prod`
 
 - `code auth/package.json`
 
-OVO SU SCRIPT-OVI KOJE SAM DODAO
+OVO SAM DODAO
 
 ```json
-"clean": "rm -rf build/",
-"build": "npm run clean && tsc",
-"prod": "npm run build && node build/index.js"
+"prod": "NODE_ENV=production node -r ts-node/register/transpile-only src/index.ts"
 ```
 
-STO ZNACI DA CE BITI DOVOLJNO DA SE SAMO RUNN-UJE `npm run prod`, DA SE APLIKACIJ BUILD-UJE (I TO JE DOVOLJNO DA SE DEFINISE KAO STARTUP SCRIPT U IMAGE-U)
+STO ZNACI DA CE BITI DOVOLJNO DA SE SAMO RUNN-UJE `npm run prod`, DA SE APLIKACIJA BUILD-UJE, I DA SE RUNN-UJE AGAINST node (I TO JE DOVOLJNO DA SE DEFINISE KAO STARTUP SCRIPT U IMAGE-U)
 
-# DEFINISI ZA SVAKI SLUCAJ DA SE GITIGNORE-UJE `build` FOLDER
-
-- `code .gitignore`
-
-```.gitignore
-# ...
-# ...
-auth/build
-```
+A NAMERNO SAM U CODEBASE-U NEGDE DEFINISAO DA SE STAMPA I `process.env.NODE_ENV` (CISTO RADI PROVERE, DA LI CE BITI DEFINED POMENUTA ENV VARIABLE)
 
 # DODACU NOVI DOCKERFILE, U `auth` MICROSERVICE-U, TO CE BITI `Dockerfile.prod`
 
@@ -105,6 +97,106 @@ PA CEMO SADA COMMIT-OVATI NASE CHANGES I PUSH-OVATI TO `dev` (SMATRAJ DA SMO SAD
 - `git push origin dev`
 
 **SADA NA GITHUBU RADIM OSVE ONOG OD PRAVLJANJA PULL REQUESTA ZA MERGING `dev` INTO `main`; PA DO MERGINGA TO PULL REQUESTA INTO MAIN; PA CEMO POSMATRATI ACTIONS KAKO CE SE IZVRSAVATI WORKFLOW deploy-auth**
+
+WORKFLOW SE IZVRSIO STO SAM POSMATRAO KROZ `Actions` TAB MOG REPO-A
+
+## MOZES SADA PROVERITI PODS TVOG CLUSTER-A
+
+- `kubectl get pods`
+
+```zsh
+NAME                                     READY   STATUS    RESTARTS   AGE
+auth-depl-9bdc69dc7-2bdkl                1/1     Running   0          13m
+auth-mongo-depl-6b6f97556-hlncf          1/1     Running   0          44h
+client-depl-84df58c44b-48c57             1/1     Running   0          53m
+expiration-depl-799c4ccb6b-7wt6s         1/1     Running   0          53m
+expiration-redis-depl-55c656669f-fc6wv   1/1     Running   0          44h
+nats-depl-68b7d794b4-hr85z               1/1     Running   0          44h
+orders-depl-7bc79cf95d-hf89m             1/1     Running   0          53m
+orders-mongo-depl-6b554544d8-ff25q       1/1     Running   0          44h
+payments-depl-58d9d8bcb9-58dbs           1/1     Running   0          22h
+payments-mongo-depl-76ffcb78fb-52tsb     1/1     Running   0          44h
+tickets-depl-db49fcdd9-7t9r5             1/1     Running   0          53m
+tickets-mongo-depl-8546d98f5b-zn2kb      1/1     Running   0          44h
+
+```
+
+SVE FUNKCIONISE
+
+DA VIDIM LOGS IZ auth MICROSERVICE POD-A
+
+- `kubectl logs auth-depl-9bdc69dc7-2bdkl`
+
+```
+> auth@1.0.0 prod /app
+> NODE_ENV=production node -r ts-node/register/transpile-only src/index.ts
+
+{ NODE_ENV: 'production' }
+Connected to DB
+listening on  http://localhost:3000 INSIDE auth POD
+```
+
+PROBAAJ I MANELNO DA TESTIRAS APP; IDI NA NAS APP U BROWSERU: <http://www.microticket.xyz/>
+
+PROBAJ DA KREIRAS USER-A
+
+I TO JE USPESNO, STO ZNACI DA JE SVE U REDU
+
+# SADA SVE STO SMO RADILI DO SADA U OVOJ LEKCIJI, VEZANO `auth` MICROSERVICE, TI MOZES PONOVITI I DEFINISATI, VEZANO ZA DRUGE MICROSERVICES, OSIM ZA `client`, JER CEMO ZA NJEGA NAKNADNO DEFINISATI
+
+DAKLE INSTALIRAMO `ts-node` U OVIM MICROSERVICE-OVIMA: `orders` `tickets` `payments` `expiration`
+
+U SVAKOM OD NJIHOVIH `package.json` FILE-OVA PODESAVAMO SCRIPT `"prod"`:
+
+```json
+"prod": "NODE_ENV=production node -r ts-node/register/transpile-only src/index.ts"
+```
+
+DODAJEMO `Dockerfile.prod` FILE, USTVARI MOZEMO GA PREKOPIRATI IZ `auth` MICROSERVICE FOLDERA, I PAST-OVATI U POMENUTE MICROSERVICE-OVE
+
+I ON IZGLEDA OVAKO
+
+```dockerfile
+FROM node:lts-alpine3.12
+
+WORKDIR /app
+
+COPY ./package.json ./
+
+RUN npm install --only=prod
+
+COPY ./ ./
+
+CMD ["npm", "run", "prod"]
+```
+
+ONDA MORAMO IZMENITI KOMNDU, VEZANU ZA BUILDING DOCKER IMAGE-A, U SVAKOM OD OVIH FILE-OVA:
+
+`.github/workflows/deploy-orders.yml`
+
+`.github/workflows/deploy-payments.yml`
+
+`.github/workflows/deploy-tickets.yml`
+
+`.github/workflows/deploy-expiration.yml`
+
+TAKO DA ONA IZGLEDA OVAKO:
+
+`cd <microservice> && docker build -t radebajic/<image-name> -f Dockerfile.prod .`
+
+AKO SAM OVO GORE URADIO DIREKTNO NA GITHUBU U main BRANCH-U MORACES DA PULL-UJES CHANGES
+
+- `git pull origin main`
+
+**SADA MOZEMO DA OBAVIMO ONAJ PROCES COMMITINGA, PUSHING-A I TAKO DALJE**
+
+- `git add -A`
+
+- `git commit -am 'new images and new startup scripts'`
+
+- `git push origin dev`
+
+**SADA PRAVIMO ONAJ CEO PROCES NA GITHUBU OD PRAVLJANJA PULL REQUESTA ZA MERGING dev-A INTO main, DO ACTIAL MERGING-A PULL REQUESTA INTO main**
 
 ***
 ***
