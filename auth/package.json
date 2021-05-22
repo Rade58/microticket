@@ -30,8 +30,6 @@
     "start": "ts-node-dev src/index.ts",
     "test": "jest --watchAll --no-cache",
     "test:ci": "jest",
-    "clean": "rm -rf build/",
-    "build": "npm run clean && tsc --outDir build",
     "prod": "NODE_ENV=production node -r ts-node/register/transpile-only src/index.ts"
   },
   "jest": {

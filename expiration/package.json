@@ -13,12 +13,14 @@
     "@types/bull": "^3.15.1",
     "bull": "^3.22.4",
     "node-nats-streaming": "^0.3.2",
+    "ts-node": "^9.1.1",
     "ts-node-dev": "^1.1.6",
     "typescript": "^4.2.4"
   },
   "scripts": {
     "start": "ts-node-dev src/index.ts",
-    "test": "jest --watchAll --no-cache"
+    "test": "jest --watchAll --no-cache",
+    "prod": "NODE_ENV=production node -r ts-node/register/transpile-only src/index.ts"
   },
   "jest": {
     "preset": "ts-jest",
