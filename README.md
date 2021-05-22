@@ -184,6 +184,9 @@ TAKO DA ONA IZGLEDA OVAKO:
 
 `cd <microservice> && docker build -t radebajic/<image-name> -f Dockerfile.prod .`
 
+AKO SAM OVO GORE URADIO DIREKTNO NA GITHUBU U main BRANCH-U MORACES DA PULL-UJES CHANGES
+
+- `git pull origin main`
 
 ***
 ***
