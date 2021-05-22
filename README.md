@@ -206,6 +206,50 @@ POVERIO SAM PODS I VIDEO DA SU SVI OK
 
 OVDE NE MORAM DA INSTALIRAM `ts-node`, JER NEXTJS RADI SAM TRANSPILING
 
+PRVO, NAPRAVICU PROD SCRIPT U `package.json`-U
+
+- `code client/package.json`
+
+NAZVACU GA `prod`
+
+COMPOSE-OVACU OVO OD DVA POSTOJECA `build` I `start`
+
+```json
+"scripts": {
+  "dev": "next",
+  "build": "next build",
+  "start": "next start",
+  // EVO OVO SAM DODAO
+  "prod": "npm run build && npm run start"
+}
+```
+
+SADA CU NAPRAVITI NOVI DOCKER FILE, I POSTARACU SE DA KAO STARTUP SCRIPT KORISTI, GORNJI, KOJ ISAM DEFINISAO
+
+- `touch client/Dockerfile.prod`
+
+```dockerfile
+FROM node:lts-alpine3.12
+
+WORKDIR /app
+
+COPY ./package.json ./
+
+RUN npm install --only=prod
+
+COPY ./ ./
+
+CMD ["npm","run", "prod"]
+```
+
+IDEMO SADA NA GITHUB DA KORIGUJEMO, KOAMANDU ZA IMAGE BUILDING INSIDE `.github/workflows/deploy-client.yml` FILE
+
+`.github/workflows/deploy-client.yml`
+
+```yml
+
+```
+
 ***
 ***
 ***
