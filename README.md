@@ -188,6 +188,16 @@ AKO SAM OVO GORE URADIO DIREKTNO NA GITHUBU U main BRANCH-U MORACES DA PULL-UJES
 
 - `git pull origin main`
 
+**SADA MOZEMO DA OBAVIMO ONAJ PROCES COMMITINGA, PUSHING-A I TAKO DALJE**
+
+- `git add -A`
+
+- `git commit -am 'new images and new startup scripts'`
+
+- `git push origin dev`
+
+**SADA PRAVIMO ONAJ CEO PROCES NA GITHUBU OD PRAVLJANJA PULL REQUESTA ZA MERGING dev-A INTO main, DO ACTIAL MERGING-A PULL REQUESTA INTO main**
+
 ***
 ***
 ***
