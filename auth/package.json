@@ -32,7 +32,7 @@
     "test:ci": "jest",
     "clean": "rm -rf build/",
     "build": "npm run clean && tsc --outDir build",
-    "prod": "node -r ts-node/register/transpile-only src/index.ts"
+    "prod": "NODE_ENV=production node -r ts-node/register/transpile-only src/index.ts"
   },
   "jest": {
     "preset": "ts-jest",
