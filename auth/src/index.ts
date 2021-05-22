@@ -4,6 +4,9 @@ import { app } from "./app";
 import mongoose from "mongoose";
 
 const start = async () => {
+
+  console.log({NODE_ENV: process.env.NODE_ENV})
+
   if (!process.env.JWT_KEY) {
     throw new Error("JWT_KEY env variable undefined");
   }
