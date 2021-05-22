@@ -198,6 +198,90 @@ AKO SAM OVO GORE URADIO DIREKTNO NA GITHUBU U main BRANCH-U MORACES DA PULL-UJES
 
 **SADA PRAVIMO ONAJ CEO PROCES NA GITHUBU OD PRAVLJANJA PULL REQUESTA ZA MERGING dev-A INTO main, DO ACTIAL MERGING-A PULL REQUESTA INTO main**
 
+USPESNO JE SVE IZVRSENO
+
+POVERIO SAM PODS I VIDEO DA SU SVI OK
+
+# SADA CU SE POZABAVITI `client` MICROSERVICE-OM, ODNONO DEFINISANJEM `Dockerfile.prod` ZA TAJ MICROSERVICE, TAKODJE CU IZMENITI NARACNO KOMANDU INSIDE `.github/workflows/deploy-client.yml` ,VEZANU ZA IMAGE BUILDING
+
+OVDE NE MORAM DA INSTALIRAM `ts-node`, JER NEXTJS RADI SAM TRANSPILING
+
+PRVO, NAPRAVICU PROD SCRIPT U `package.json`-U
+
+- `code client/package.json`
+
+NAZVACU GA `prod`
+
+COMPOSE-OVACU OVO OD DVA POSTOJECA `build` I `start`
+
+```json
+"scripts": {
+  "dev": "next",
+  "build": "next build",
+  "start": "next start",
+  // EVO OVO SAM DODAO
+  "prod": "npm run build && npm run start"
+}
+```
+
+SADA CU NAPRAVITI NOVI DOCKER FILE, I POSTARACU SE DA KAO STARTUP SCRIPT KORISTI, GORNJI, KOJ ISAM DEFINISAO
+
+- `touch client/Dockerfile.prod`
+
+```dockerfile
+FROM node:lts-alpine3.12
+
+WORKDIR /app
+
+COPY ./package.json ./
+
+RUN npm install --only=prod
+
+COPY ./ ./
+
+CMD ["npm","run","prod"]
+```
+
+IDEMO SADA NA GITHUB DA KORIGUJEMO, KOAMANDU ZA IMAGE BUILDING INSIDE `.github/workflows/deploy-client.yml` FILE
+
+`.github/workflows/deploy-client.yml`
+
+```yml
+name: deploy-client
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'client/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      # EVO DODAO SAM -f Dockerfile.prod
+      - run: cd client && docker build -t radebajic/mt-client -f Dockerfile.prod .
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - run: docker push radebajic/mt-client
+      - uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - run: doctl kubernetes cluster kubeconfig save microticket
+      - run: kubectl rollout restart deployment client-depl
+```
+
+MORACEMO KOD NAS LOKALNO (U dev BRANCH-U SMO LOKALNO) DA PULL-UJEMO CHANGE KOJI SMO NAPRAVILI U main-U, DEFINISUCI GORNJI FILE
+
+- `git pull origin main`
+
+**SADA PRAVIMO ONAJ CEO PROCES NA GITHUBU OD PRAVLJANJA PULL REQUESTA ZA MERGING dev-A INTO main, DO ACTIAL MERGING-A PULL REQUESTA INTO main**
+
+USPESNO JE SVE IZVRSENO
+
 ***
 ***
 ***
