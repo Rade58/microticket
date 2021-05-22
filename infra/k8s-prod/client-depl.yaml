@@ -14,9 +14,8 @@ spec:
     spec:
       containers:
       - name: client
-        # EVO OVO JE PRAVI IMAGE, OD KOJEG CU KORISTITI U POD-U
-        # INSIDE PRODUCTIO NCLUSTER
         image: radebajic/mt-client
+#
 ---
 apiVersion: v1
 kind: Service

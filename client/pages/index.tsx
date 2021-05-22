@@ -13,9 +13,11 @@ interface PropsI extends InitialPropsI {
   tickets: allTicketsType;
 }
 
-//
 // ---------------------------------------------------
 export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
+
+  console.log({NODE_ENV: process.env.NODE_ENV})
+
   const client = buildApiClient(ctx);
 
   try {

@@ -38,6 +38,7 @@ spec:
               serviceName: client-srv
               servicePort: 3000
 # EVO JE TA CLUSTER IP KONFIGURACIJA, KOJU SAM DODAO
+#
 ---
 apiVersion: v1
 kind: Service
