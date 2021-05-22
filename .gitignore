@@ -24,7 +24,7 @@ yarn-error.log*
 
 # auth
 auth/node_modules
-# auth/build
+auth/build
 
 
 # minicube
