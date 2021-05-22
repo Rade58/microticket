@@ -247,8 +247,37 @@ IDEMO SADA NA GITHUB DA KORIGUJEMO, KOAMANDU ZA IMAGE BUILDING INSIDE `.github/w
 `.github/workflows/deploy-client.yml`
 
 ```yml
+name: deploy-client
 
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'client/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      # EVO DODAO SAM -f Dockerfile.prod
+      - run: cd client && docker build -t radebajic/mt-client -f Dockerfile.prod .
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - run: docker push radebajic/mt-client
+      - uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - run: doctl kubernetes cluster kubeconfig save microticket
+      - run: kubectl rollout restart deployment client-depl
 ```
+
+MORACEMO KOD NAS LOKALNO (U dev BRANCH-U SMO LOKALNO) DA PULL-UJEMO CHANGE KOJI SMO NAPRAVILI U main-U, DEFINISUCI GORNJI FILE
+
+- `git pull origin main`
+
 
 ***
 ***
