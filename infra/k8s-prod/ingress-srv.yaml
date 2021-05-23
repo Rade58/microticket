@@ -14,7 +14,7 @@ spec:
   tls:
     - hosts:
         - www.microticket.xyz
-      secretName: microticket-cert-secret
+      secretName: mt-secret-cert
   # ZA SADA NECEMO DIRATI OVE ROUTING RULES, ALI PREDPOSTAVLJAM
   # DA CEMO MORATI, ALI TO CU OSTAVITI ZA KRAJ
   # ----------------------------------------------

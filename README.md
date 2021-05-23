@@ -583,8 +583,32 @@ KUCACU SADA JEDNU KOMANDU KOJA BI TREBALA DA MI KAZE STA JE TO URADIO INGRESS U 
 POGLEDAJ EVENTS NA KRAJU
 
 ```zsh
+Name:             ingress-srv
+Namespace:        default
+Address:          www.microticket.xyz
+Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
+TLS:
+  microticket-cert-secret terminates www.microticket.xyz
+Rules:
+  Host                 Path  Backends
+  ----                 ----  --------
+  www.microticket.xyz  
+                       /api/users/?(.*)      auth-srv:3000 (10.244.1.240:3000)
+                       /api/tickets/?(.*)    tickets-srv:3000 (10.244.1.43:3000)
+                       /api/orders/?(.*)     orders-srv:3000 (10.244.1.143:3000)
+                       /api/payments/?(.*)   payments-srv:3000 (10.244.1.80:3000)
+                       /?(.*)                client-srv:80 (10.244.1.24:3000)
+Annotations:           cert-manager.io/cluster-issuer: letsencrypt-issuer
+                       kubernetes.io/ingress.class: nginx
+                       nginx.ingress.kubernetes.io/use-regex: true
+Events:
+  Type    Reason             Age                From                      Message
+  ----    ------             ----               ----                      -------
+  Normal  CreateCertificate  5m51s              cert-manager              Successfully created Certificate "microticket-cert-secret"
 
 ```
+
+KAO STO VIDIM U GORNJIM EVENTOVIMA, ZAISTA JE CERTIFICATE KREIRAN
 
 RECI CU TI SAMO JEDNIU STVAR, A **DA OVO, IPAK NECE FUNKCIONISATI KAKO TREBA ,AL IZNAM ZASTO TO SAM I PREDVIDEO**; I MISLIM DA SU PROBLEM PORTOVI, KOJE SI SPECIFICIRAO U SVIM SVOJIM MICROSERVICE-OVIMA, ALI I PORTS ZA ROUTING RULES U INGRESS KONFIGURACIJI
 
