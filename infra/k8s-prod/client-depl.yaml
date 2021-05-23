@@ -28,5 +28,5 @@ spec:
   ports:
     - name: client
       protocol: TCP
-      port: 80
+      port: 443
       targetPort: 3000
