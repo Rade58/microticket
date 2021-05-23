@@ -14,7 +14,6 @@ spec:
   # --------------------------------
   rules:
     - host: www.microticket.xyz
-      secretName: tajna-bajna
       http:
         paths:
           - path: /api/users/?(.*)
