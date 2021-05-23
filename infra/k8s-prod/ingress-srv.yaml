@@ -15,6 +15,7 @@ spec:
     - hosts:
         - www.microticket.xyz
       secretName: micktick-secret-crt
+      namespace: default
   # ZA SADA NECEMO DIRATI OVE ROUTING RULES, ALI PREDPOSTAVLJAM
   # DA CEMO MORATI, ALI TO CU OSTAVITI ZA KRAJ
   # ----------------------------------------------
@@ -65,7 +66,7 @@ metadata:
   annotations:
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
     # OVDE ZADAJ TVOJ DOMAIN NAME (ZADAO SAM TO DAVNO RANIJE), ALI I https
-    service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
+    # service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
     service.beta.kubernetes.io/do-loadbalancer-hostname: "www.microticket.xyz"
     #
   labels:
