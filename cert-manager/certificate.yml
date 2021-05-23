@@ -1,0 +1,16 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  # DAO SAM IME
+  name: moj-sertifikat
+  namespace: default
+spec:
+  # SPECIFICIRAO DNS NAME
+  dnsNames:
+    - www.microticket.xyz
+  # SPECIFICIRAO SECRET, U KOJI CE SE STAVITI CERTIFICATE
+  secretName: tajna-je-tajna
+  # OVDE SPECIFICIRAMO IME ISSUER-A KOJEG SMO KREIRALI RANIJE
+  issuerRef:
+    name: letsencrypt-issuer
+    kind: ClusterIssuer

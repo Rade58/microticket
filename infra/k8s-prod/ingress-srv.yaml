@@ -6,10 +6,15 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
+  # DODACU OVDE tls OPCIJU
+  tls:
+    - hosts:
+        - www.microticket.xyz
+      secretName: tajna-je-tajna
+  # --------------------------------
   rules:
-    # EVO OVDE SMO ZADALI HOST microticket.xyz
-    # ALI MORAS DA DODAS www ISPRED
     - host: www.microticket.xyz
+      secretName: tajna-bajna
       http:
         paths:
           - path: /api/users/?(.*)
@@ -37,16 +42,15 @@ spec:
             backend:
               serviceName: client-srv
               servicePort: 3000
-# EVO JE TA CLUSTER IP KONFIGURACIJA, KOJU SAM DODAO
 #
 ---
 apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: 'true'
-    # OVDE ZADAJ TVOJ DOMAIN NAME
-    service.beta.kubernetes.io/do-loadbalancer-hostname: 'www.microticket.xyz'
+    service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
+    # OVDE ZADAJ TVOJ DOMAIN NAME (ZADAO RANIJE)
+    service.beta.kubernetes.io/do-loadbalancer-hostname: "www.microticket.xyz"
   labels:
     helm.sh/chart: ingress-nginx-2.0.3
     app.kubernetes.io/name: ingress-nginx
