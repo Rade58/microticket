@@ -7,7 +7,7 @@ on:
       - main
     paths:
       # OVDE TREBA orders FOLDER
-      - 'orders/**'
+      - "orders/**"
 jobs:
   build:
     runs-on: ubuntu-latest
