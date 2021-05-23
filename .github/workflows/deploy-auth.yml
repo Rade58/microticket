@@ -5,12 +5,12 @@ on:
     branches:
       - main
     paths:
-      - 'auth/**'
+      - "auth/**"
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2   
+      - uses: actions/checkout@v2
       - run: cd auth && docker build -t radebajic/mt-auth -f Dockerfile.prod .
       - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
         env:
@@ -20,5 +20,5 @@ jobs:
       - uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-      - run: doctl kubernetes cluster kubeconfig save microticket
+      - run: doctl kubernetes cluster kubeconfig save microticket-cluster
       - run: kubectl rollout restart deployment auth-depl

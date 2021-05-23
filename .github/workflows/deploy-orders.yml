@@ -7,7 +7,7 @@ on:
       - main
     paths:
       # OVDE TREBA orders FOLDER
-      - 'orders/**'
+      - "orders/**"
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,6 +25,6 @@ jobs:
       - uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-      - run: doctl kubernetes cluster kubeconfig save microticket
+      - run: doctl kubernetes cluster kubeconfig save microticket-cluster
       # I OVDE PODESAVAS ROLLOUT orders-depl DEPLOYMENTA
       - run: kubectl rollout restart deployment orders-depl
