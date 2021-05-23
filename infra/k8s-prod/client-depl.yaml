@@ -13,8 +13,8 @@ spec:
         app: client
     spec:
       containers:
-      - name: client
-        image: radebajic/mt-client
+        - name: client
+          image: radebajic/mt-client
 #
 ---
 apiVersion: v1
@@ -28,5 +28,5 @@ spec:
   ports:
     - name: client
       protocol: TCP
-      port: 3000
+      port: 80
       targetPort: 3000
