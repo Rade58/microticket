@@ -11,7 +11,7 @@ spec:
     - www.microticket.xyz
   # SPECIFICIRAO ONAJ SECRET, U KOJI CE SE STAVITI CERTIFICATE
   # A KOJ ISAM SPECIFICIRAO I U INGRESS MANIFESTU
-  secretName: microticket-cert-secret
+  secretName: mt-secret-cert
   # OVDE SPECIFICIRAMO IME ISSUER-A KOJEG SMO KREIRALI RANIJE
   issuerRef:
     name: letsencrypt-issuer
