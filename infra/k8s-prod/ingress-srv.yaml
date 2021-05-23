@@ -15,9 +15,9 @@ spec:
     - hosts:
         - www.microticket.xyz
       secretName: micktick-secret-crt
-      namespace: default
   # ZA SADA NECEMO DIRATI OVE ROUTING RULES, ALI PREDPOSTAVLJAM
   # DA CEMO MORATI, ALI TO CU OSTAVITI ZA KRAJ
+  #
   # ----------------------------------------------
   rules:
     - host: www.microticket.xyz
