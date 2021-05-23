@@ -7,6 +7,7 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: "true"
     # MORAM DODATI OVO (OVO JE IME ISSUER-A, KOJE SMO DALI)
     cert-manager.io/cluster-issuer: "letsencrypt-issuer"
+    cert-manager.io/v1: "moj-sertifikat"
 spec:
   tls:
     - hosts:
