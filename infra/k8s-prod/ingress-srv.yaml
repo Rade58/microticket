@@ -20,28 +20,38 @@ spec:
           - path: /api/users/?(.*)
             pathType: Exact
             backend:
-              serviceName: auth-srv
-              servicePort: 3000
+              service:
+                name: auth-srv
+                port:
+                  number: 3000
           - path: /api/tickets/?(.*)
             pathType: Exact
             backend:
-              serviceName: tickets-srv
-              servicePort: 3000
+              service:
+                name: tickets-srv
+                port:
+                  number: 3000
           - path: /api/orders/?(.*)
             pathType: Exact
             backend:
-              serviceName: orders-srv
-              servicePort: 3000
+              service:
+                name: orders-srv
+                port:
+                  number: 3000
           - path: /api/payments/?(.*)
             pathType: Exact
             backend:
-              serviceName: payments-srv
-              servicePort: 3000
+              service:
+                name: payments-srv
+                port:
+                  number: 3000
           - path: /?(.*)
             pathType: Exact
             backend:
-              serviceName: client-srv
-              servicePort: 3000
+              service:
+                name: client-srv
+                port:
+                  number: 3000
 #
 ---
 apiVersion: v1
