@@ -6,8 +6,8 @@ on:
       - main
     paths:
       # OVO CE BITI BITNO, SPECIFICIRAM DVA PATH-A
-      - 'infra/k8s/**'
-      - 'infra/k8s-prod/**'
+      - "infra/k8s/**"
+      - "infra/k8s-prod/**"
 # OVO JE SVE U SUSTINI IST KAO STO SAM DEFINISAO U deploy-auth.yml
 # OSIM PAR STVARI
 jobs:
@@ -16,16 +16,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       # NE BUILD-UJEMO IMAGE
-#       - run: cd auth && docker build -t radebajic/mt-auth .
-      
+      #       - run: cd auth && docker build -t radebajic/mt-auth .
+
       # NE TRBA NAM NIKAKVA AUTORIZACIJA VEZANA ZA DOCKER HUB, JER KAO STO REKOH
       # OVDE NE BUILD-UJEMO IMAGE, NITI GA SALJEMO DO DOCKER HUB-A
-#       - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-#         env:
-#           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-#           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      #       - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      #         env:
+      #           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      #           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       # NIKAKV IMAGE NECEMO PUSH-OVATI TO DOCKER HUB
-#       - run: docker push radebajic/mt-auth
+      #       - run: docker push radebajic/mt-auth
       # A OVO NAM TEBA DA INICIJLIZUJEMO doctl, TO JE ONAJ TOKEN KOJI SMO GENERISALI
       # NA DIGITAL OCEANU, A PODESILI GA KAO SECRET NA GITHUB REPO-U
       - uses: digitalocean/action-doctl@v2
@@ -37,7 +37,7 @@ jobs:
       - run: doctl kubernetes cluster kubeconfig save microticket
       # OVO JE BILO ONAJ RESTARTING DEPLOYMENTA STO SM ODEFINISALI U PROSLOM WORKFLOW FILE-U
       # NI TO NAM NE TREBA
-#       - run: kubectl rollout restart deployment auth-depl
-# SADA ONO STO ZELIMO DA DEFINISEMO JE APPLYING, POMENUTIH K8S MANIFESTOVA, NA NAS
-# CLUSTER NA DIGITAL OCEAN-U NE ZABORAVI I PRODUCTION FOLDER
+      #       - run: kubectl rollout restart deployment auth-depl
+      # SADA ONO STO ZELIMO DA DEFINISEMO JE APPLYING, POMENUTIH K8S MANIFESTOVA, NA NAS
+      # CLUSTER NA DIGITAL OCEAN-U NE ZABORAVI I PRODUCTION FOLDER
       - run: kubectl apply -f infra/k8s && kubectl apply -f infra/k8s-prod
