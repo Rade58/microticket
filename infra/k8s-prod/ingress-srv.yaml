@@ -7,14 +7,14 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: "true"
     # MORAM DODATI OVO (OVO JE IME ISSUER-A, KOJE SMO MU DALI
     # AKO SE SECAS)
-    # cert-manager.io/cluster-issuer: "lets-enc-iss"
+    cert-manager.io/cluster-issuer: "lets-enc-iss"
 spec:
   # --------- DODAO SAM OVO ----------------------
   # ZADAO SAM I SECRET NAME
-  # tls:
-  #   - hosts:
-  #       - www.microticket.xyz
-  #     secretName: micktick-secret-crt
+  tls:
+    - hosts:
+        - www.microticket.xyz
+      secretName: micktick-secret-crt
   # ZA SADA NECEMO DIRATI OVE ROUTING RULES, ALI PREDPOSTAVLJAM
   # DA CEMO MORATI, ALI TO CU OSTAVITI ZA KRAJ
   # ----------------------------------------------
@@ -57,7 +57,7 @@ spec:
                 name: client-srv
                 port:
                   # DEFINISAO 80 UMESTO 3000
-                  number: 80
+                  number: 3000
 ---
 apiVersion: v1
 kind: Service
