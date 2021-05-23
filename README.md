@@ -4,11 +4,11 @@ ZELIM DAKLE DA ENABLE-UJEM HTTPS ZA NAS CLUSTER NA DIGITAL OCEAN-U
 
 STVARI SU NESTO KOMPLIKOVANIJE, I NECU TI DAVATI PREOPSIRNA OBJASNJENJA
 
-JEDIN OSTO CU TI RECI JESTE DA CU KORISTITI [cert-manager](https://cert-manager.io/)-A , KOJEM JE JEDAN OD GLAVNIH BENEFITA SELF RENEWAL OF CERTIFICATE (ALI NIJE SAMO TO JEDINI BENEFIT)
+JEDINO STO CU TI RECI JESTE DA CU KORISTITI [cert-manager](https://cert-manager.io/)-A , KOJEM JE JEDAN OD GLAVNIH BENEFITA SELF RENEWAL OF CERTIFICATE (ALI NIJE SAMO TO JEDINI BENEFIT)
 
 A PRATICU OVAJ [YOUTUBE TUTORIAL](https://www.youtube.com/watch?v=hoLUigg4V18)
 
-**PRV I GLAVNA STVAR JESTE DA CEMO OPET DA PROMENIMO CONTEXT, JER ZELIMO DA SA kubectl UPRAVLJAMO SA NASIM PRODUCTION CLUSTER-OM**
+**PRVA GLAVNA STVAR JESTE DA CEMO OPET DA PROMENIMO CONTEXT, JER ZELIMO DA SA kubectl UPRAVLJAMO SA NASIM PRODUCTION CLUSTER-OM**
 
 - `kubectl config get-contexts`
 
@@ -42,9 +42,11 @@ AUTOR TUTORIJLA JE PREIMENOVAO FAJL, DODAJUCI MU VERZIJU, STO CU I JA URADITI
 
 - `mv cert-manager.yaml cert-manager-1.3.1.yaml`
 
-# 2. NA MOM CLUSTERU KREIRACU NOVI NAMESPACE,, KAKO BI U NJEGA DEPLOY-OVAO CERT MANAGER-A
+MADA TO NIJE NESTO STO JE CRUCIAL
 
-OVO MI JE PRVI PUT DA KREIRAM NAMESPACE
+# 2. NA MOM CLUSTERU NECU KREIRATI NOVI NAMESPACE, ON MY OWN KAKO BI U NJEGA DEPLOY-OVAO CERT MANAGER-A, JER CE SE TO DESITI AUTOMATSKI
+
+OVO MI JE PRVI PUT DA GOVORIM O KREIRANJU NAMESPACE; JA TO NECU URADITI ALI CU TI POKAZATI KAKO SE RADI
 
 PROVERITICU, KOJE NAMESPACES VEC IMAM
 
@@ -59,35 +61,11 @@ kube-public       Active   3d6h
 kube-system       Active   3d6h
 ```
 
-KREIRAM NOVI NAMESPACE
+DA HOCU DA GA KREIRAM, ALI SADA NECU KREIRAM NOVI NAMESPACE
 
-- `kubectl create ns cert-manager`
+- `kubectl create ns <IME NAMESPACE-A>`
 
-- `kubectl get ns`
-
-```zsh
-NAME              STATUS   AGE
-cert-manager      Active   6s
-default           Active   3d6h
-ingress-nginx     Active   2d3h
-kube-node-lease   Active   3d6h
-kube-public       Active   3d6h
-kube-system       Active   3d6h
-```
-
-KAO STO VIDIS IMAM JEDAN DODATNI NAMESPACE
-
-MOZEMO DA PROVERIMO KOLIKO POD-OVA IMAMO U TOM NAMESPACE-U
-
-- `kubectl get pods --namespace=cert-manager`
-
-```zsh
-No resources found in cert-manager namespace.
-```
-
-ZAISTA NEMA IH
-
-DA LI IMA U NEKOM DRUGOM
+DA PROVERIM PODS VEZANE ZA JEDAN NAMESPACE
 
 - `kubectl get pods --namespace=ingress-nginx`
 
@@ -100,13 +78,11 @@ ingress-nginx-controller-57cb5bf694-lgtnm   1/1     Running     0          2d3h
 
 default NAMESPACE JE ONAJ KOJI KORISTIMO PO DEFAULTU
 
-- `kubectl get pods` (MOZEMO I NE MORAMO KORISTITI ONAJ --namespace FLAG)
+- `kubectl get pods` (MOZEMO I NE MORAMO KORISTITI ONAJ `--namespace` ILI `-n` FLAG)
 
-**DOBRO, SADA CU DA KRIRAM POD ZA CERT MANGER-A, U NOVOM NAMESPACE-U, KOJ ISMO KREIRALI**
+**DOBRO, SADA CU DA DEPLOY-UJEM CERT MANAGERA, U NOVOM NAMESPACE-U, KOJI CE PO DEFAULTU BITI KREIRAN**
 
-- `cd cert-manager`
-
-- `kubectl apply -f cert-manager-1.3.1.yaml -n cert-manager`
+- `kubectl apply --validat=false -f cert-manager/cert-manager-1.3.1.yaml`
 
 DA VIDIM KOJE PODS SADA IMAM U cert-manger NAMESPACE-U
 
@@ -149,7 +125,7 @@ KAO STO VIDIS GORNJI CLUSTER IP SERVICE-OVI **NEMAJU ASSIGNED EXTERNAL IPs**
 
 VIDIMO GORE I DEPLOYMENTS
 
-UGLAVNOM IT IS NICE AND SECURE IN ITS OWN NAMESPACE
+UGLAVNOM, IT IS NICE AND SECURE IN ITS OWN NAMESPACE
 
 # 3. SADA KADA SMO DEPLOY-OVALI CERT MANAGER-A, MORAMO GA HOOK-OVATI UP SA CERTIFICATE AUTHORITY; A MI CEMO KORISTITI `Let's Encrypt`
 
@@ -169,49 +145,15 @@ KADA JE CHALLENGE FULLFILED OD STRANE CERT MANAGER-A, STATUS CERTIFICATA CE BITI
 
 ## ALI PRE NEGO STO POCNEMO DA KORISTIMO REAL CA (CERTIFICATE AUTHORITY), HAJDE DA PROVERIMO DA LI NAS CERT MANGER RADI, TAKO STO CEMO KREIRATI SELF SIGNED CERTIFICATE
 
-OPET CU KREIRATI NOVI NAMESPACE JUST FOR TESTING CERTIFICATE GENERATION
+***
+***
 
-- `kubectl create ns cert-manager-test`
+PRESKOCIO SAM OVAJ DEO, A TI GA POGLEDAJ OVDE: [TEST CERTIFICATE ISSUING](https://github.com/marcel-dempers/docker-development-youtube-series/tree/master/kubernetes/cert-manager#test-certificate-issuing)
 
-- `kubectl get ns`
 
-```zsh
-NAME                STATUS   AGE
-cert-manager        Active   73m
-cert-manager-test   Active   19s
-default             Active   3d7h
-ingress-nginx       Active   2d4h
-kube-node-lease     Active   3d7h
-kube-public         Active   3d7h
-kube-system         Active   3d7h
-```
 
-SADA CEMO DA NAPRAVIMO FOLDER, KOJI CE SE ZVATI `self-signed`
-
-- `mkdir cert-manager/self-signed`
-
-U NJEMU PRAVIMO `issuer.yaml`
-
-- `touch cert-manager/self-signed/issuer.yaml`
-
-```yaml
-apiVersion: cert-manager.io/v1
-kind: Issuer
-metadata:
-  name: test-selfsigned
-  namespace: cert-manager-test
-spec:
-  selfSigned: {}
-```
-
-DAKLE OVAKO IZGLEDA SELF SIGNED ISSUER, KAKO SAM TI GORE POKAZAO
-
-SADA CEMO DA GA DEPLOY-UJEMO U NAMESPACE `cert-manager-test`
-
-- `cd cert-manager/self-signed`
-
-- `kubectl `
-
+***
+***
 
 ***
 ***
