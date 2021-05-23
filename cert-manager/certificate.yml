@@ -4,7 +4,7 @@ metadata:
   # DAO SAM MU IME
   name: mt-sec-certificate
   # STAVLJAM GA U default NAMESPACE
-  namespace: default
+  namespace: ingress-nginx
 spec:
   # SPECIFICIRAO DNS NAME
   dnsNames:
