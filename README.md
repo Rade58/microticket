@@ -6,7 +6,7 @@ STVARI SU NESTO KOMPLIKOVANIJE, I NECU TI DAVATI PREOPSIRNA OBJASNJENJA
 
 JEDINO STO CU TI RECI JESTE DA CU KORISTITI [cert-manager](https://cert-manager.io/)-A , KOJEM JE JEDAN OD GLAVNIH BENEFITA SELF RENEWAL OF CERTIFICATE (ALI NIJE SAMO TO JEDINI BENEFIT)
 
-A PRATICU OVAJ [YOUTUBE TUTORIAL](https://www.youtube.com/watch?v=hoLUigg4V18)
+A PRATICU OVAJ [YOUTUBE TUTORIAL](https://www.youtube.com/watch?v=hoLUigg4V18); MEDJUTIM U VECOJ MERI MI JE POMOGAO[OVAJ CLANAK, KOJI SE TICE DIGITAL OCEANA ESPECIALLY](https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-with-cert-manager-on-digitalocean-kubernetes) I [ZVANICN DOCSI](https://cert-manager.io/docs/configuration/acme/#configuration)
 
 **PRVA GLAVNA STVAR JESTE DA CEMO OPET DA PROMENIMO CONTEXT, JER ZELIMO DA SA kubectl UPRAVLJAMO SA NASIM PRODUCTION CLUSTER-OM**
 
@@ -44,9 +44,9 @@ AUTOR TUTORIJLA JE PREIMENOVAO FAJL, DODAJUCI MU VERZIJU, STO CU I JA URADITI
 
 MADA TO NIJE NESTO STO JE CRUCIAL
 
-# 2. NA MOM CLUSTERU NECU KREIRATI NOVI NAMESPACE, ON MY OWN KAKO BI U NJEGA DEPLOY-OVAO CERT MANAGER-A, JER CE SE TO DESITI AUTOMATSKI
+# 2. NA MOM CLUSTERU NECU KREIRATI NOVI NAMESPACE, ON MY OWN KAKO BI U NJEGA DEPLOY-OVAO CERT MANAGER-A, JER CE SE TO DESITI AUTOMATSKI, KADA BUDES DEPLOY-OVAO CERT MANAGER-A
 
-OVO MI JE PRVI PUT DA GOVORIM O KREIRANJU NAMESPACE; JA TO NECU URADITI ALI CU TI POKAZATI KAKO SE RADI
+OVO MI JE PRVI PUT DA GOVORIM O KREIRANJU NAMESPACE; JA TO NECU URADITI ALI CU TI POKAZATI KAKO SE TO RADI, CISTO DA BI ZNAO U BUDUCNOSTI
 
 PROVERITICU, KOJE NAMESPACES VEC IMAM
 
@@ -61,13 +61,13 @@ kube-public       Active   3d6h
 kube-system       Active   3d6h
 ```
 
-DA HOCU DA GA KREIRAM, ALI SADA NECU KREIRAM NOVI NAMESPACE
+DA HOCU DA GA KREIRAM (ALI SADA NECU KREIRAM NOVI NAMESPACE), KORISTIO BI OVU KOMANDU
 
 - `kubectl create ns <IME NAMESPACE-A>`
 
 DA PROVERIM PODS VEZANE ZA JEDAN NAMESPACE
 
-- `kubectl get pods --namespace=ingress-nginx`
+- `kubectl get pods --namespace=ingress-nginx` (MOZE I `kubectl get pods -n <ime namespace-a>`)
 
 ```zsh
 NAME                                        READY   STATUS      RESTARTS   AGE
@@ -76,13 +76,11 @@ ingress-nginx-admission-patch-qbmlm         0/1     Completed   1          2d3h
 ingress-nginx-controller-57cb5bf694-lgtnm   1/1     Running     0          2d3h
 ```
 
-default NAMESPACE JE ONAJ KOJI KORISTIMO PO DEFAULTU
+default NAMESPACE JE ONAJ KOJI KORISTIMO PO DEFAULTU KAD KUCAMO KOMANDE BEZ `-n` ILI BEZ `--namespace=`
 
-- `kubectl get pods` (MOZEMO I NE MORAMO KORISTITI ONAJ `--namespace` ILI `-n` FLAG)
+# 3. DOBRO, SADA CU DA DEPLOY-UJEM CERT MANAGERA, U NOVOM NAMESPACE-U, KOJI CE PO DEFAULTU BITI KREIRAN
 
-**DOBRO, SADA CU DA DEPLOY-UJEM CERT MANAGERA, U NOVOM NAMESPACE-U, KOJI CE PO DEFAULTU BITI KREIRAN**
-
-- `kubectl apply --validat=false -f cert-manager/cert-manager-1.3.1.yaml`
+- `kubectl apply --validate=false -f cert-manager/cert-manager-1.3.1.yaml`
 
 **TREBALO BI DA SI SAD DOBIO I cert-manager NAMESPACE**
 
@@ -325,24 +323,118 @@ letsencrypt-issuer-key                Opaque                                1   
 
 SECRET JE TU, KAO STO VIDIS IZNAD, POSLEDNJI JE NA LISTI
 
-# 4. SADA CU INSIDE INGRESS CONFIGURATION ZADATI SECRET NAME, GDE CE SSL CERTIFICATE BITI LOCATED; A TO ZADAJES UNDER YUR HOST NAM
+ALI MISLIM DA JA NECU DIREKTNO UPRAVLJATI NI JEDNIM OD TIH SECRET-OVA
+
+# 4. SADA CU INSIDE INGRESS CONFIGURATION ZADATI SECRET NAME, GDE CE SSL CERTIFICATE BITI LOCATED; MODIFIKOVACU U VELIKOJ MERI INGRESS, KAOKO BI KORISTIO `apiVersion: networking.k8s.io/v1`, JER IMAO SAM PROBLEMA NESTO DA PODESIM, U SLUCAJU BETA VERZIJE KOJU SAM KORISTIO, ALI NE SAMO TO, JA CU TAMO PODESITI MNOGO STVARI
 
 - `code infra/k8s-prod/ingress-srv.yaml`
 
 ```yaml
-
-
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-srv
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    # MORAM DODATI OVO (OVO JE IME ISSUER-A, KOJE SMO MU DALI
+    # AKO SE SECAS)
+    cert-manager.io/cluster-issuer: "letsencrypt-issuer"
+spec:
+  # --------- DODAO SAM OVO ----------------------
+  # ZADAO SAM I SECRET NAME
+  tls:
+    - hosts:
+        - www.microticket.xyz
+      secretName: microticket-cert-secret
+  # ZA SADA NECEMO DIRATI OVE ROUTING RULES, ALI PREDPOSTAVLJAM
+  # DA CEMO MORATI, ALI TO CU OSTAVITI ZA KRAJ
+  # ----------------------------------------------
+  rules:
+    - host: www.microticket.xyz
+      http:
+        paths:
+          - path: /api/users/?(.*)
+            pathType: Exact
+            backend:
+              service:
+                name: auth-srv
+                port:
+                  number: 3000
+          - path: /api/tickets/?(.*)
+            pathType: Exact
+            backend:
+              service:
+                name: tickets-srv
+                port:
+                  number: 3000
+          - path: /api/orders/?(.*)
+            pathType: Exact
+            backend:
+              service:
+                name: orders-srv
+                port:
+                  number: 3000
+          - path: /api/payments/?(.*)
+            pathType: Exact
+            backend:
+              service:
+                name: payments-srv
+                port:
+                  number: 3000
+          - path: /?(.*)
+            pathType: Exact
+            backend:
+              service:
+                name: client-srv
+                port:
+                  number: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
+    # OVDE ZADAJ TVOJ DOMAIN NAME (ZADAO SAM TO DAVNO RANIJE)
+    service.beta.kubernetes.io/do-loadbalancer-hostname: "www.microticket.xyz"
+  labels:
+    # IZ NEKIH RAZLOGA KOJI NISU POSEBNI, POVECAO SAM OVDE VERZIJU
+    helm.sh/chart: ingress-nginx-2.11.1
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: ingress-nginx
+    # I OVDE PROMENIO VERZIJU
+    app.kubernetes.io/version: 0.34.1
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+  name: ingress-nginx-controller
+  namespace: ingress-nginx
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: http
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: https
+  selector:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/component: controller
 ```
 
 VAZNO JE ZNATI DA NEMAS NI JEDAN SSL CERTIFICATE LOCATED BILO GDE, JER TAJ CERTIFICATE ISS-UJE CERT MANAGER
 
-DA SADA PPLY-UJEM GORNJU STVAR; **SSL NECE RADITI, JER NE POSTOJI secretName, KOJI SE ZOVE `tajna-je-tajna`, U KOJEM OCEKUJEMO DA BUDE CERTIFICATE**
+DA SADA PPLY-UJEM GORNJU STVAR; **SSL NECE RADITI, JER NE POSTOJI secretName, KOJI SE ZOVE `microticket-cert-secret`, U KOJEM OCEKUJEMO DA BUDE CERTIFICATE**
 
 ZATO JOS NECEMO PRAVITI ONAJ PULL REQUEST I MERGING, STO BI NA KRAJU DOVELO DA SE APPLY-UJE GORNJI FILE
 
 TO CE SACEKATI DOK NE GENERISEMO SSL CERTIFICATE
 
-# 5. DA BISMO OMOGUCIL IDA SE SSLE CERTIFICATE GENERISE, INSIDE POMENUTE SECRET, KOJ USMO SPECIFICIRALI; MORACEMO DA DEPLOY-UJEMO CERTIFICATE OBJECT TO cert-manager
+# 5. DA BISMO OMOGUCILI DA SE SSL CERTIFICATE GENERISE, INSIDE POMENUTE SECRET, KOJEM SMO DALI IME `microticket-cert-secret`, ODNOSNO, KOJI SMO SPECIFICIRALI; MORACEMO DA DEPLOY-UJEMO CERTIFICATE OBJECT TO `cert-manager` NAMESPACE 
 
 - `touch cert-manager/certificate.yml`
 
@@ -350,15 +442,17 @@ TO CE SACEKATI DOK NE GENERISEMO SSL CERTIFICATE
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  # DAO SAM IME
-  name: moj-sertifikat
+  # DAO SAM MU IME
+  name: mt-ssl-certificate
+  # STAVLJAM GA U default NAMESPACE
   namespace: default
 spec:
   # SPECIFICIRAO DNS NAME
   dnsNames:
     - www.microticket.xyz
-  # SPECIFICIRAO SECRET, U KOJI CE SE DEPLOY-OVATI CERTIFICATE
-  secretName: tajna-je-tajna
+  # SPECIFICIRAO ONAJ SECRET, U KOJI CE SE STAVITI CERTIFICATE
+  # A KOJ ISAM SPECIFICIRAO I U INGRESS MANIFESTU
+  secretName: microticket-cert-secret
   # OVDE SPECIFICIRAMO IME ISSUER-A KOJEG SMO KREIRALI RANIJE
   issuerRef:
     name: letsencrypt-issuer
@@ -375,19 +469,40 @@ CERT MANAGER CE POGLEDATI CERTIFICATE, ISSUE-OVACE CERTIFICATE REQUEST, PO KOJEM
 
 KADA JE TAJ PROCESS ZAVRSEN, MOCI CE SE VIDETI SECRET INSIDE NAMESPACE
 
-DA BI SMO VIDELI TAJ PROCES MOZEMO KUCATI
-
-- `kubectl describe certificate moj-sertifikat`
+- `k get secrets`
 
 ```zsh
-Name:         moj-sertifikat
+NAME                      TYPE                                  DATA   AGE
+default-token-mwdnw       kubernetes.io/service-account-token   3      4d2h
+jwt-secret                Opaque                                1      2d23h
+microticket-cert-secret   kubernetes.io/tls                     2      2m34s
+stripe-secret             Opaque                                1      2d23h
+```
+
+DAKLE GORE JE UPRAVO SECRET, KOJI JE tls TIPA I KOJI IMA ONAKVO IMA KAAKVO SMO ZADALI `microticket-cert-secret`
+
+DA VIDIMO I NOVI CERTIFICATE
+
+- `kubectl get certificates`
+
+```zsh
+NAME                 READY   SECRET                    AGE
+mt-ssl-certificate   True    microticket-cert-secret   2m48s
+```
+
+DA VIDIMO HOCEMO LI MOCI VIDETI SECRET INSIDE CERTIFICATE DESCRIPTION
+
+- `kubectl describe certificate mt-ssl-certificate`
+
+```zsh
+Name:         mt-ssl-certificate
 Namespace:    default
 Labels:       <none>
 Annotations:  <none>
 API Version:  cert-manager.io/v1
 Kind:         Certificate
 Metadata:
-  Creation Timestamp:  2021-05-23T12:28:18Z
+  Creation Timestamp:  2021-05-23T15:43:45Z
   Generation:          1
   Managed Fields:
     API Version:  cert-manager.io/v1
@@ -407,7 +522,7 @@ Metadata:
         f:secretName:
     Manager:      kubectl-client-side-apply
     Operation:    Update
-    Time:         2021-05-23T12:28:18Z
+    Time:         2021-05-23T15:43:45Z
     API Version:  cert-manager.io/v1
     Fields Type:  FieldsV1
     fieldsV1:
@@ -422,55 +537,60 @@ Metadata:
         f:revision:
     Manager:         controller
     Operation:       Update
-    Time:            2021-05-23T12:28:46Z
-  Resource Version:  624740
-  UID:               46e7c8ef-fe5c-4587-b6e7-47a0ab30e6e4
+    Time:            2021-05-23T15:43:49Z
+  Resource Version:  650760
+  UID:               594af07e-e59b-4c87-893c-38d21041d26b
 Spec:
   Dns Names:
     www.microticket.xyz
   Issuer Ref:
     Kind:       ClusterIssuer
     Name:       letsencrypt-issuer
-  Secret Name:  tajna-je-tajna
+  Secret Name:  microticket-cert-secret
 Status:
   Conditions:
-    Last Transition Time:  2021-05-23T12:28:46Z
+    Last Transition Time:  2021-05-23T15:43:49Z
     Message:               Certificate is up to date and has not expired
     Observed Generation:   1
     Reason:                Ready
     Status:                True
     Type:                  Ready
-  Not After:               2021-08-21T11:28:44Z
-  Not Before:              2021-05-23T11:28:44Z
-  Renewal Time:            2021-07-22T11:28:44Z
+  Not After:               2021-08-21T14:43:46Z
+  Not Before:              2021-05-23T14:43:46Z
+  Renewal Time:            2021-07-22T14:43:46Z
   Revision:                1
 Events:
   Type    Reason     Age    From          Message
   ----    ------     ----   ----          -------
-  Normal  Issuing    3m46s  cert-manager  Issuing certificate as Secret does not exist
-  Normal  Generated  3m46s  cert-manager  Stored new private key in temporary Secret resource "moj-sertifikat-nzv8r"
-  Normal  Requested  3m46s  cert-manager  Created new CertificateRequest resource "moj-sertifikat-7nh85"
-  Normal  Issuing    3m18s  cert-manager  The certificate has been successfully issued
-
+  Normal  Issuing    5m29s  cert-manager  Issuing certificate as Secret does not exist
+  Normal  Generated  5m29s  cert-manager  Stored new private key in temporary Secret resource "mt-ssl-certificate-vnw2m"
+  Normal  Requested  5m29s  cert-manager  Created new CertificateRequest resource "mt-ssl-certificate-2x425"
+  Normal  Issuing    5m25s  cert-manager  The certificate has been successfully issued
 ```
 
-MOZES VIDETI DA JE CERTIFICATE SUCCESSFULLY ISSUED
+MOZES GORE VIDETI VIDETI DA JE CERTIFICATE SUCCESSFULLY ISSUED
 
-MOGU PROVERITI DA LI JE KREIRAN SECRET KOJ ISMO SPECIFICIRALI DA CE SE ZVATI tajna-je-tajna
+GORE VIDIS EVENTS, I ONI TACNO TAK OTREBA DA IZGLEDAJU
 
-- `kubectl get secrets`
+# 6. DA SADA COMMIT-UJEMO CHANGES KOJE SMO NAPRAVILI, KONKRETNO VEZANO ZA INGRESS MANIFEST, I DA NAPRAVIMO PULL REQUEST I DA GA MERGE-UJEMO INTO `main`
+
+SVE SAM RAIO PO REDU OD PULLINGA, PA DO MERGINGA, PA SAM CEKAO DA SE IZVRSI GITHUB ACTION, KOJI JE APPLY-OVAO NOVU INGRESS KONFIGUACIJU
+
+KUCACU SADA JEDNU KOMANDU KOJA BI TREBALA DA MI KAZE STA JE TO URADIO INGRESS U VEZI CERTIFICATE-A; ODNOSNO DA LI JE KREIRAN SERTIFIKAT
+
+- `kubectl describe ingress`
+
+POGLEDAJ EVENTS NA KRAJU
 
 ```zsh
-NAME                  TYPE                                  DATA   AGE
-default-token-mwdnw   kubernetes.io/service-account-token   3      3d23h
-jwt-secret            Opaque                                1      2d20h
-stripe-secret         Opaque                                1      2d20h
-tajna-je-tajna        kubernetes.io/tls                     2      4m2s
+
 ```
 
-VIDIMO GORE, POMENUTI SECRET
+RECI CU TI SAMO JEDNIU STVAR, A **DA OVO, IPAK NECE FUNKCIONISATI KAKO TREBA ,AL IZNAM ZASTO TO SAM I PREDVIDEO**; I MISLIM DA SU PROBLEM PORTOVI, KOJE SI SPECIFICIRAO U SVIM SVOJIM MICROSERVICE-OVIMA, ALI I PORTS ZA ROUTING RULES U INGRESS KONFIGURACIJI
 
-# 6. DA SADA COMMIT-UJEMO CHANGES KOJE SMO NAPRAVILI, KONKRETNO VEZANO ZA INGRESS MANIFEST, I DA NAPRAVIMO PULL REQUEST I DA GA MERGE-UJEMO INTO `main` 
+PROBAJ DA ODES NA SVOJ PAGE `microticket.xyz` I VIDECES DA JE ON SERVED PREKO HTTPS, ALI DA JE WRONG CERTIFICATE
+
+MISLIM DA JE TO JER NE KORISTIM TACNE PORTOVE
 
 
 ***
@@ -483,6 +603,8 @@ VIDIMO GORE, POMENUTI SECRET
 # OSTAVLJM TI PODSETNIK
 
 cookie-session SSL
+
+targetPort TREBA DA BUDE 300 I DALJE ZA SVAKI OD CLUTER IP ZA MICROSERVICE, ALI PORT TREBA DA BUDE 80
 
 
 INGRESS:
