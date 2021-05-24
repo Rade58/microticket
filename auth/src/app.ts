@@ -19,10 +19,10 @@ app.use(json());
 app.use(
   cookieSession({
     signed: false,
-    // EVO OVO CEMO UMESTO OVOGA
-    // secure: process.env.NODE_ENV !== "test",
-    // PROSTO PODESITI DA BUDE `false`
-    secure: false
+    // EVO VRATILI SMO OVU OPCIJU
+    // STO ZNACI DA CE BITI true, SAMO KADA NISMO
+    // U TEST ENVIROMENT-U
+    secure: process.env.NODE_ENV !== "test",
   })
 );
 
