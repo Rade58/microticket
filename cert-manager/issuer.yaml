@@ -1,17 +1,17 @@
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: lets-enc-iss
+  name: letsencrypt-cluster-issuer
 spec:
   acme:
     # You must replace this email address with your own.
     # Let's Encrypt will use this to contact you about expiring
     # certificates, and issues related to your account.
     email: bajic.rade.dev@gmail.com
-    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       # Secret resource that will be used to store the account's private key.
-      name: lets-enc-iss-key
+      name: letsencrypt-cluster-issuer-key
     # Add a single challenge solver, HTTP01 using nginx
     solvers:
       - http01:
