@@ -214,23 +214,22 @@ SADA CEMO DA DEPLOY-UJEMO LET'S ENCRYPT [ISSUER-A](https://cert-manager.io/docs/
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt-issuer
+  name: letsencrypt-cluster-issuer
 spec:
   acme:
     # You must replace this email address with your own.
     # Let's Encrypt will use this to contact you about expiring
     # certificates, and issues related to your account.
-    email: bajic.rade2@hotmail.com
-    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: bajic.rade.dev@gmail.com
+    server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       # Secret resource that will be used to store the account's private key.
-      name: letsencrypt-issuer-key
+      name: letsencrypt-cluster-issuer-key
     # Add a single challenge solver, HTTP01 using nginx
     solvers:
-    - http01:
-        ingress:
-          class: nginx
-
+      - http01:
+          ingress:
+            class: nginx
 ```
 
 GORE SMO SPECIFICIRALI SECRET OBJECT KOJI CE BITI GENERISAN, I U NJEMU CE BITI STORRED ISSUER KEY 
