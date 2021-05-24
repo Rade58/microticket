@@ -14,7 +14,7 @@ spec:
   tls:
     - hosts:
         - microticket.xyz
-        - www.microticket.xyz
+        # - www.microticket.xyz
       secretName: micktick-tls
   # ----------------------------------------------
   rules:
