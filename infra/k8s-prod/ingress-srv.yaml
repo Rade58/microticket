@@ -15,7 +15,6 @@ spec:
   tls:
     - hosts:
         - microticket.xyz
-        # DODACU OVDE I OVAJ HOST
         - www.microticket.xyz
       secretName: micktick-tls
   # ----------------------------------------------
