@@ -642,34 +642,3 @@ PRITISNI NA KATANAC, PA PRITISNI NA `"Certificate"`, I VIDECES VALIDNI SERTIFIKA
 ## DAKLE SADA IMAMO `LET'S ENCRYPT` BROWSER TRUSTED CERTIFICATE, INSIDE SECRET, INSIDE OUR CLUSTER
 
 CERT MANAGER CE WATCH-OVATI SECRET, I ALSO CE JE UPDATE-OVATI, KADA BUDE EXPIRE-OVAO CERTIFICATE
-
-***
-***
-***
-***
-***
-***
-
-# OSTAVLJM TI PODSETNIK
-
-cookie-session SSL
-
-targetPort TREBA DA BUDE 300 I DALJE ZA SVAKI OD CLUTER IP ZA MICROSERVICE, ALI PORT TREBA DA BUDE 80
-
-
-INGRESS:
-
-IMETIO JOS JEDAN WARNING U JEDNOM LINE-U LOG-A:
-
-`Warning: networking.k8s.io/v1beta1 Ingress is deprecated in v1.19+, unavailable in v1.22+; use networking.k8s.io/v1 Ingress`
-
-***
-
-digresija-podsetnik:
-
-POZABAVICES SE OVIM, KADA RESIMO DRUGE PROBLEM
-
-`Warning: networking.k8s.io/v1beta1 Ingress is deprecated in v1.19+, unavailable in v1.22+; use networking.k8s.io/v1 Ingress`
-
-***
-***
