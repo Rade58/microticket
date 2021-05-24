@@ -605,36 +605,35 @@ POGLEDAJ EVENTS NA KRAJU
 ```zsh
 Name:             ingress-srv
 Namespace:        default
-Address:          www.microticket.xyz
+Address:          microticket.xyz
 Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
 TLS:
-  microticket-cert-secret terminates www.microticket.xyz
+  micktick-tls terminates microticket.xyz
 Rules:
-  Host                 Path  Backends
-  ----                 ----  --------
-  www.microticket.xyz  
-                       /api/users/?(.*)      auth-srv:3000 (10.244.1.240:3000)
-                       /api/tickets/?(.*)    tickets-srv:3000 (10.244.1.43:3000)
-                       /api/orders/?(.*)     orders-srv:3000 (10.244.1.143:3000)
-                       /api/payments/?(.*)   payments-srv:3000 (10.244.1.80:3000)
-                       /?(.*)                client-srv:80 (10.244.1.24:3000)
-Annotations:           cert-manager.io/cluster-issuer: letsencrypt-issuer
-                       kubernetes.io/ingress.class: nginx
-                       nginx.ingress.kubernetes.io/use-regex: true
+  Host             Path  Backends
+  ----             ----  --------
+  microticket.xyz  
+                   /api/users/?(.*)      auth-srv:3000 (10.244.1.149:3000)
+                   /api/tickets/?(.*)    tickets-srv:3000 (10.244.1.21:3000)
+                   /api/orders/?(.*)     orders-srv:3000 (10.244.0.5:3000)
+                   /api/payments/?(.*)   payments-srv:3000 (10.244.0.73:3000)
+                   /?(.*)                client-srv:3000 (10.244.1.171:3000)
+Annotations:       cert-manager.io/cluster-issuer: lets-enc-iss
+                   kubernetes.io/ingress.class: nginx
+                   nginx.ingress.kubernetes.io/use-regex: true
 Events:
   Type    Reason             Age                From                      Message
   ----    ------             ----               ----                      -------
-  Normal  CreateCertificate  5m51s              cert-manager              Successfully created Certificate "microticket-cert-secret"
+  Normal  Sync               49s (x5 over 22h)  nginx-ingress-controller  Scheduled for sync
+  Normal  CreateCertificate  49s                cert-manager              Successfully created Certificate "micktick-tls"
 
 ```
 
 KAO STO VIDIM U GORNJIM EVENTOVIMA, ZAISTA JE CERTIFICATE KREIRAN
 
-RECI CU TI SAMO JEDNIU STVAR, A **DA OVO, IPAK NECE FUNKCIONISATI KAKO TREBA ,AL IZNAM ZASTO TO SAM I PREDVIDEO**; I MISLIM DA SU PROBLEM PORTOVI, KOJE SI SPECIFICIRAO U SVIM SVOJIM MICROSERVICE-OVIMA, ALI I PORTS ZA ROUTING RULES U INGRESS KONFIGURACIJI
+AKO TI JE OTVOREN VEC BIO <http://microticket.xyz> INSIDE BROWSER, MOZES DA RELOAD-UJES PAGE I VIDECES DA CE BITI SERVED <https://microticket.xyz> (DAKLE USPESNO JE KRIRAN CERTIFICATE I SVE JE SERVED OVER HTTPS)
 
-PROBAJ DA ODES NA SVOJ PAGE `microticket.xyz` I VIDECES DA JE ON SERVED PREKO HTTPS, ALI DA JE WRONG CERTIFICATE
-
-MISLIM DA JE TO JER NE KORISTIM TACNE PORTOVE
+ILI, AKO NIJE BIO OTVOREN U BROWSER-U, PROSTO OTVORI BROWSER TAB I KUCAJ <https://microticket.xyz>, I SVE CE BITI OK
 
 
 ***
