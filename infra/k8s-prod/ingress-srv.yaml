@@ -5,19 +5,16 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/use-regex: "true"
-    # MORAM DODATI OVO (OVO JE IME ISSUER-A, KOJE SMO MU DALI
+    # MORAM DODATI OVO (OVO JE IME ISSUER-A, KOJE SMO MI DEFINISALI
     # AKO SE SECAS)
-    # cert-manager.io/cluster-issuer: "lets-enc-iss"
+    cert-manager.io/cluster-issuer: "lets-enc-iss"
 spec:
   # --------- DODAO SAM OVO ----------------------
   # ZADAO SAM I SECRET NAME
-  # tls:
-  #   - hosts:
-  #       - www.microticket.xyz
-  #     secretName: micktick-secret-crt
-  # ZA SADA NECEMO DIRATI OVE ROUTING RULES, ALI PREDPOSTAVLJAM
-  # DA CEMO MORATI, ALI TO CU OSTAVITI ZA KRAJ
-  #
+  tls:
+    - hosts:
+        - microticket.xyz
+      secretName: micktick-tls
   # ----------------------------------------------
   rules:
     - host: microticket.xyz
@@ -65,7 +62,7 @@ metadata:
   annotations:
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
     # OVDE ZADAJ TVOJ DOMAIN NAME (ZADAO SAM TO DAVNO RANIJE), ALI I https
-    # service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
+    service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
     service.beta.kubernetes.io/do-loadbalancer-hostname: "microticket.xyz"
     #
   labels:

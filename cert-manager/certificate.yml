@@ -2,17 +2,18 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   # DAO SAM MU IME
-  name: mt-sec-certificate
+  name: micktick
   # STAVLJAM GA U default NAMESPACE
-  namespace: ingress-nginx
+  namespace: default
 spec:
   # SPECIFICIRAO DNS NAME
   dnsNames:
+    - microticket.xyz
     - www.microticket.xyz
   # SPECIFICIRAO ONAJ SECRET, U KOJI CE SE STAVITI CERTIFICATE
   # A KOJ ISAM SPECIFICIRAO I U INGRESS MANIFESTU
-  secretName: micktick-secret-crt
+  secretName: micktick-tls
   # OVDE SPECIFICIRAMO IME ISSUER-A KOJEG SMO KREIRALI RANIJE
   issuerRef:
-    name: lets-enc-iss
+    name: letsencrypt-cluster-issuer
     kind: ClusterIssuer

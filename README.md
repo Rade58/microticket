@@ -2,9 +2,9 @@
 
 ZELIM DAKLE DA ENABLE-UJEM HTTPS ZA NAS CLUSTER NA DIGITAL OCEAN-U
 
-STVARI SU NESTO KOMPLIKOVANIJE, I NECU TI DAVATI PREOPSIRNA OBJASNJENJA
+STVARI CE BITI POMALO KOMPLIKOVANE
 
-JEDINO STO CU TI RECI JESTE DA CU KORISTITI [cert-manager](https://cert-manager.io/)-A , KOJEM JE JEDAN OD GLAVNIH BENEFITA SELF RENEWAL OF CERTIFICATE (ALI NIJE SAMO TO JEDINI BENEFIT)
+KORISTICU [cert-manager](https://cert-manager.io/)-A , KOJEM JE JEDAN OD GLAVNIH BENEFITA SELF RENEWAL OF CERTIFICATE (ALI NIJE SAMO TO JEDINI BENEFIT)
 
 A PRATICU OVAJ [YOUTUBE TUTORIAL](https://www.youtube.com/watch?v=hoLUigg4V18); MEDJUTIM U VECOJ MERI MI JE POMOGAO[OVAJ CLANAK, KOJI SE TICE DIGITAL OCEANA ESPECIALLY](https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-with-cert-manager-on-digitalocean-kubernetes) I [ZVANICN DOCSI](https://cert-manager.io/docs/configuration/acme/#configuration)
 
@@ -20,9 +20,9 @@ OTISAO SAM U [releases SECTION ZA cert-manager](https://github.com/jetstack/cert
 
 TU MOZES IZABRATI ZELJENI RELEASE KOJI BI TI ZELEO DA DEPLOY-UJES TO YOUR ENVIROMENT
 
-JA SAM IZABRAO RELEASE 1.3.1, JER NIJE PRE-APLPHA, STO MI GOVORI DA JE TO LATEST STABILE RELEASE (TO PREDPOSTAVLJAM JA)
+JA SAM IZABRAO RELEASE 1.3.1, JER NIJE PRE-APLPHA, A OZNACEN JE KAO LATEST, STO MI GOVORI DA JE TO LATEST STABILE RELEASE (TO PREDPOSTAVLJAM JA)
 
-KLIKNI NA POMEENUTI RELEASE
+KLIKNI NA POMENUTI RELEASE
 
 TU CES VIDETI `cert-manager.yaml` FILE
 
@@ -42,11 +42,11 @@ AUTOR TUTORIJLA JE PREIMENOVAO FAJL, DODAJUCI MU VERZIJU, STO CU I JA URADITI
 
 - `mv cert-manager.yaml cert-manager-1.3.1.yaml`
 
-MADA TO NIJE NESTO STO JE CRUCIAL
+MADA TO PREIMENOVANJE NIJE NESTO STO JE CRUCIAL
 
-# 2. NA MOM CLUSTERU NECU KREIRATI NOVI NAMESPACE, ON MY OWN KAKO BI U NJEGA DEPLOY-OVAO CERT MANAGER-A, JER CE SE TO DESITI AUTOMATSKI, KADA BUDES DEPLOY-OVAO CERT MANAGER-A
+# 2. NA MOM CLUSTERU NECU KREIRATI NOVI NAMESPACE, ON MY OWN KAKO BI U NJEGA DEPLOY-OVAO CERT MANAGER-A, JER CE SE TO DESITI AUTOMATSKI, KADA BUDES DEPLOY-OVAO, SAMOG CERT MANAGER-A
 
-OVO MI JE PRVI PUT DA GOVORIM O KREIRANJU NAMESPACE; JA TO NECU URADITI ALI CU TI POKAZATI KAKO SE TO RADI, CISTO DA BI ZNAO U BUDUCNOSTI
+OVO MI JE PRVI PUT DA GOVORIM O KREIRANJU NAMESPACE; JA NECU KREIRATI NIKAKV NAMESPACE EKSPLICITNO, ALI CU TI POKAZATI KAKO SE TO RADI, CISTO DA BI ZNAO U BUDUCNOSTI
 
 PROVERITICU, KOJE NAMESPACES VEC IMAM
 
@@ -61,7 +61,7 @@ kube-public       Active   3d6h
 kube-system       Active   3d6h
 ```
 
-DA HOCU DA GA KREIRAM (ALI SADA NECU KREIRAM NOVI NAMESPACE), KORISTIO BI OVU KOMANDU
+DA HOCU DA GA KREIRAM (ALI SADA, ZAISTA NECU DA KREIRAM NOVI NAMESPACE), KORISTIO BI OVU KOMANDU
 
 - `kubectl create ns <IME NAMESPACE-A>`
 
@@ -80,11 +80,13 @@ default NAMESPACE JE ONAJ KOJI KORISTIMO PO DEFAULTU KAD KUCAMO KOMANDE BEZ `-n`
 
 # 3. DOBRO, SADA CU DA DEPLOY-UJEM CERT MANAGERA, U NOVOM NAMESPACE-U, KOJI CE PO DEFAULTU BITI KREIRAN
 
+  KUCAJ SVE OVE FLAGOVE KADA BUDES RUNN-OVAO COMMAND
+
 - `kubectl apply --validate=false -f cert-manager/cert-manager-1.3.1.yaml`
 
-**TREBALO BI DA SI SAD DOBIO I cert-manager NAMESPACE**
+**TREBALO BI DA SI SAD DOBIO I cert-manager NAMESPACE** (A DOBIO SI GA ZATO, JER JE U YAML FILE-U BIO SPECIFICIRAN namespace FIELD)
 
-- `k get ns`
+- `kubectl get ns`
 
 ```zsh
 NAME              STATUS   AGE
@@ -113,31 +115,46 @@ cert-manager-webhook-6bdffc7c9d-vvrz4      1/1     Running   0          19s
 
 ```zsh
 NAME                                           READY   STATUS    RESTARTS   AGE
-pod/cert-manager-7dd5854bb4-pmbcb              1/1     Running   0          4m7s
-pod/cert-manager-cainjector-64c949654c-5dmz7   1/1     Running   0          4m7s
-pod/cert-manager-webhook-6bdffc7c9d-vvrz4      1/1     Running   0          4m6s
+pod/cert-manager-7dd5854bb4-f2p94              1/1     Running   0          84s
+pod/cert-manager-cainjector-64c949654c-5fmxj   1/1     Running   0          84s
+pod/cert-manager-webhook-6bdffc7c9d-9gvdn      1/1     Running   0          84s
 
 NAME                           TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
-service/cert-manager           ClusterIP   10.245.231.164   <none>        9402/TCP   4m8s
-service/cert-manager-webhook   ClusterIP   10.245.228.235   <none>        443/TCP    4m7s
+service/cert-manager           ClusterIP   10.245.188.140   <none>        9402/TCP   85s
+service/cert-manager-webhook   ClusterIP   10.245.229.36    <none>        443/TCP    84s
 
 NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/cert-manager              1/1     1            1           4m7s
-deployment.apps/cert-manager-cainjector   1/1     1            1           4m7s
-deployment.apps/cert-manager-webhook      1/1     1            1           4m6s
+deployment.apps/cert-manager              1/1     1            1           85s
+deployment.apps/cert-manager-cainjector   1/1     1            1           85s
+deployment.apps/cert-manager-webhook      1/1     1            1           85s
 
 NAME                                                 DESIRED   CURRENT   READY   AGE
-replicaset.apps/cert-manager-7dd5854bb4              1         1         1       4m8s
-replicaset.apps/cert-manager-cainjector-64c949654c   1         1         1       4m8s
-replicaset.apps/cert-manager-webhook-6bdffc7c9d      1         1         1       4m7s
-
+replicaset.apps/cert-manager-7dd5854bb4              1         1         1       85s
+replicaset.apps/cert-manager-cainjector-64c949654c   1         1         1       85s
+replicaset.apps/cert-manager-webhook-6bdffc7c9d      1         1         1       85s
 ```
 
 KAO STO VIDIS GORNJI CLUSTER IP SERVICE-OVI **NEMAJU ASSIGNED EXTERNAL IPs**
 
 VIDIMO GORE I DEPLOYMENTS
 
-UGLAVNOM, IT IS NICE AND SECURE IN ITS OWN NAMESPACE
+UGLAVNOM, TO SE TICE IP-JEVA, IT IS NICE AND SECURE IN ITS OWN NAMESPACE
+
+**NAIME, DALJE JA CU PODESAVATI, JOS DVE VRSTE KUBERNETES OBJECT-A: TO CE BITI: `Clusterissuer` I `Certificate`**
+
+DA PROVERIM DA LI IMAM TAKVIH OBJEKATA (**NE BI TREBALO DA IH IMAM**)
+
+- `kubectl get clusterissuers`
+
+```zsh           
+No resources found
+```
+
+- `kubectl get certificates`
+
+```zsh
+No resources found in cert-manager namespace.
+```
 
 # 3. SADA KADA SMO DEPLOY-OVALI CERT MANAGER-A, MORAMO GA HOOK-OVATI UP SA CERTIFICATE AUTHORITY; A MI CEMO KORISTITI `Let's Encrypt`
 
@@ -147,7 +164,7 @@ CERT MANGER CE DEPLOY-OVATI A BOUNCH OF CUSTOM RESOURCE DEFINITIONS, I BICE NEW 
 
 DA HOOK-UJEMO UP CERT MANAGER SA LET'S ENCRYPT-OM, **MORAMO DEPPLOY-OVATI `issuer.yaml`**
 
-ISSUER JE YAML FILE KOJI CE DEPLOY-OVATI CERTIFICATE AUTHORITY, A U NASEM SLUCAJU TO JE LLET;S ENCRYPT
+ISSUER JE YAML FILE KOJI CE DEPLOY-OVATI CERTIFICATE AUTHORITY, A U NASEM SLUCAJU TO JE LET'S ENCRYPT
 
 ONDA CEMO DEFINISATI JOS JEDAN YAML FILE, KOJI CE DEFINISATI ACTUAL CERTIFICATE WE NEED
 
@@ -177,9 +194,9 @@ MI CEMO KORISTITI EXITING INGRESS CONTROLER ZA ACCEPTING INCOMMING REQUESTS FOR 
 - `kubectl get services -n ingress-nginx`
 
 ```zsh
-NAME                                 TYPE           CLUSTER-IP      EXTERNAL-IP           PORT(S)                      AGE
-ingress-nginx-controller             LoadBalancer   10.245.51.192   www.microticket.xyz   80:31396/TCP,443:31888/TCP   2d18h
-ingress-nginx-controller-admission   ClusterIP      10.245.92.41    <none>                443/TCP                      2d18h
+NAME                                 TYPE           CLUSTER-IP       EXTERNAL-IP       PORT(S)                      AGE
+ingress-nginx-controller             LoadBalancer   10.245.120.216   microticket.xyz   80:30079/TCP,443:31637/TCP   21h
+ingress-nginx-controller-admission   ClusterIP      10.245.120.119   <none>            443/TCP                      21h
 
 ```
 
@@ -197,23 +214,22 @@ SADA CEMO DA DEPLOY-UJEMO LET'S ENCRYPT [ISSUER-A](https://cert-manager.io/docs/
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt-issuer
+  name: letsencrypt-cluster-issuer
 spec:
   acme:
     # You must replace this email address with your own.
     # Let's Encrypt will use this to contact you about expiring
     # certificates, and issues related to your account.
-    email: bajic.rade2@hotmail.com
-    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: bajic.rade.dev@gmail.com
+    server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       # Secret resource that will be used to store the account's private key.
-      name: letsencrypt-issuer-key
+      name: letsencrypt-cluster-issuer-key
     # Add a single challenge solver, HTTP01 using nginx
     solvers:
-    - http01:
-        ingress:
-          class: nginx
-
+      - http01:
+          ingress:
+            class: nginx
 ```
 
 GORE SMO SPECIFICIRALI SECRET OBJECT KOJI CE BITI GENERISAN, I U NJEMU CE BITI STORRED ISSUER KEY 
@@ -225,21 +241,21 @@ GORE SMO SPECIFICIRALI SECRET OBJECT KOJI CE BITI GENERISAN, I U NJEMU CE BITI S
 - `kubectl get clusterissuers`
 
 ```zsh
-NAME                 READY   AGE
-letsencrypt-issuer   True    56s
+NAME                         READY   AGE
+letsencrypt-cluster-issuer   True    24s
 ```
 
-- `kubectl describe clusterissuer letsencrypt-issuer`
+- `kubectl describe clusterissuer letsencrypt-cluster-issuer`
 
 ```zsh
-Name:         letsencrypt-issuer
+Name:         letsencrypt-cluster-issuer
 Namespace:    
 Labels:       <none>
 Annotations:  <none>
 API Version:  cert-manager.io/v1
 Kind:         ClusterIssuer
 Metadata:
-  Creation Timestamp:  2021-05-23T10:01:39Z
+  Creation Timestamp:  2021-05-24T18:33:33Z
   Generation:          1
   Managed Fields:
     API Version:  cert-manager.io/v1
@@ -261,7 +277,7 @@ Metadata:
           f:solvers:
     Manager:      kubectl-client-side-apply
     Operation:    Update
-    Time:         2021-05-23T10:01:39Z
+    Time:         2021-05-24T18:33:33Z
     API Version:  cert-manager.io/v1
     Fields Type:  FieldsV1
     fieldsV1:
@@ -274,26 +290,26 @@ Metadata:
         f:conditions:
     Manager:         controller
     Operation:       Update
-    Time:            2021-05-23T10:01:40Z
-  Resource Version:  603471
-  UID:               ec0bacdf-2497-4036-947d-c0cbd942ad3f
+    Time:            2021-05-24T18:33:34Z
+  Resource Version:  154822
+  UID:               b69e625c-3e6e-4ddd-bd0f-48230b0ae8b3
 Spec:
   Acme:
-    Email:            bajic.rade2@hotmail.com
+    Email:            bajic.rade.dev@gmail.com
     Preferred Chain:  
     Private Key Secret Ref:
-      Name:  letsencrypt-issuer-key
-    Server:  https://acme-staging-v02.api.letsencrypt.org/directory
+      Name:  letsencrypt-cluster-issuer-key
+    Server:  https://acme-v02.api.letsencrypt.org/directory
     Solvers:
       http01:
         Ingress:
           Class:  nginx
 Status:
   Acme:
-    Last Registered Email:  bajic.rade2@hotmail.com
-    Uri:                    https://acme-staging-v02.api.letsencrypt.org/acme/acct/19629712
+    Last Registered Email:  bajic.rade.dev@gmail.com
+    Uri:                    https://acme-v02.api.letsencrypt.org/acme/acct/124683992
   Conditions:
-    Last Transition Time:  2021-05-23T10:01:40Z
+    Last Transition Time:  2021-05-24T18:33:34Z
     Message:               The ACME account was registered with the ACME server
     Observed Generation:   1
     Reason:                ACMEAccountRegistered
@@ -312,20 +328,19 @@ DA VIDIMO DA LI JE GENERISAN SECRET OBJECT
 
 ```zsh
 NAME                                  TYPE                                  DATA   AGE
-cert-manager-cainjector-token-jdrwx   kubernetes.io/service-account-token   3      99m
-cert-manager-token-n6d58              kubernetes.io/service-account-token   3      99m
-cert-manager-webhook-ca               Opaque                                3      99m
-cert-manager-webhook-token-lzc9z      kubernetes.io/service-account-token   3      99m
-default-token-7jdg2                   kubernetes.io/service-account-token   3      99m
-letsencrypt-issuer-key                Opaque                                1      2m
-
+cert-manager-cainjector-token-bt7bv   kubernetes.io/service-account-token   3      62m
+cert-manager-token-9xp5w              kubernetes.io/service-account-token   3      62m
+cert-manager-webhook-ca               Opaque                                3      62m
+cert-manager-webhook-token-qf98m      kubernetes.io/service-account-token   3      62m
+default-token-95vtv                   kubernetes.io/service-account-token   3      62m
+letsencrypt-cluster-issuer-key        Opaque                                1      2m31s
 ```
 
 SECRET JE TU, KAO STO VIDIS IZNAD, POSLEDNJI JE NA LISTI
 
-ALI MISLIM DA JA NECU DIREKTNO UPRAVLJATI NI JEDNIM OD TIH SECRET-OVA
+ALI MISLIM DA JA NECU DIREKTNO UPRAVLJATI NI JEDNIM OD TIH SECRET-OVA ,PA NI TIM, KOJI JE KREIRAN APPLYING-OM ISSUER-A
 
-# 4. SADA CU INSIDE INGRESS CONFIGURATION ZADATI SECRET NAME, GDE CE SSL CERTIFICATE BITI LOCATED; MODIFIKOVACU U VELIKOJ MERI INGRESS, KAOKO BI KORISTIO `apiVersion: networking.k8s.io/v1`, JER IMAO SAM PROBLEMA NESTO DA PODESIM, U SLUCAJU BETA VERZIJE KOJU SAM KORISTIO, ALI NE SAMO TO, JA CU TAMO PODESITI MNOGO STVARI
+# 4. SADA CU INSIDE INGRESS CONFIGURATION ZADATI SECRET NAME, GDE CE SSL CERTIFICATE BITI LOCATED; MODIFIKOVACU U VELIKOJ MERI INGRESS, KAKO BI KORISTIO `apiVersion: networking.k8s.io/v1` (ZATO STO CU TAKO LAKSE PODESITI NEKE STVARI), JER IMAO SAM PROBLEMA NESTO DA PODESIM, U SLUCAJU BETA VERZIJE KOJU SAM KORISTIO, ALI NE SAMO TO, JA CU TAMO PODESITI MNOGO STVARI
 
 - `code infra/k8s-prod/ingress-srv.yaml`
 
@@ -337,21 +352,19 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/use-regex: "true"
-    # MORAM DODATI OVO (OVO JE IME ISSUER-A, KOJE SMO MU DALI
+    # MORAM DODATI OVO (OVO JE IME ISSUER-A, KOJE SMO MI DEFINISALI
     # AKO SE SECAS)
-    cert-manager.io/cluster-issuer: "letsencrypt-issuer"
+    cert-manager.io/cluster-issuer: "lets-enc-iss"
 spec:
   # --------- DODAO SAM OVO ----------------------
   # ZADAO SAM I SECRET NAME
   tls:
     - hosts:
-        - www.microticket.xyz
-      secretName: microticket-cert-secret
-  # ZA SADA NECEMO DIRATI OVE ROUTING RULES, ALI PREDPOSTAVLJAM
-  # DA CEMO MORATI, ALI TO CU OSTAVITI ZA KRAJ
+        - microticket.xyz
+      secretName: micktick-tls
   # ----------------------------------------------
   rules:
-    - host: www.microticket.xyz
+    - host: microticket.xyz
       http:
         paths:
           - path: /api/users/?(.*)
@@ -395,8 +408,10 @@ kind: Service
 metadata:
   annotations:
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
-    # OVDE ZADAJ TVOJ DOMAIN NAME (ZADAO SAM TO DAVNO RANIJE)
-    service.beta.kubernetes.io/do-loadbalancer-hostname: "www.microticket.xyz"
+    # OVDE ZADAJ TVOJ DOMAIN NAME (ZADAO SAM TO DAVNO RANIJE), ALI I https
+    service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
+    service.beta.kubernetes.io/do-loadbalancer-hostname: "microticket.xyz"
+    #
   labels:
     # IZ NEKIH RAZLOGA KOJI NISU POSEBNI, POVECAO SAM OVDE VERZIJU
     helm.sh/chart: ingress-nginx-2.11.1
@@ -428,13 +443,13 @@ spec:
 
 VAZNO JE ZNATI DA NEMAS NI JEDAN SSL CERTIFICATE LOCATED BILO GDE, JER TAJ CERTIFICATE ISS-UJE CERT MANAGER
 
-DA SADA PPLY-UJEM GORNJU STVAR; **SSL NECE RADITI, JER NE POSTOJI secretName, KOJI SE ZOVE `microticket-cert-secret`, U KOJEM OCEKUJEMO DA BUDE CERTIFICATE**
+DA SADA PPLY-UJEM GORNJU STVAR; **SSL NECE RADITI, JER NE POSTOJI secretName, KOJI SE ZOVE `micktick-tls`, U KOJEM OCEKUJEMO DA BUDE CERTIFICATE**
 
 ZATO JOS NECEMO PRAVITI ONAJ PULL REQUEST I MERGING, STO BI NA KRAJU DOVELO DA SE APPLY-UJE GORNJI FILE
 
-TO CE SACEKATI DOK NE GENERISEMO SSL CERTIFICATE
+TO CE SACEKATI DOK NE GENERISEMO SSL CERTIFICATE, ODNOSNO DOK NE KREIRAMO Certificate OBJECT U NASEM CLUSTERU
 
-# 5. DA BISMO OMOGUCILI DA SE SSL CERTIFICATE GENERISE, INSIDE POMENUTE SECRET, KOJEM SMO DALI IME `microticket-cert-secret`, ODNOSNO, KOJI SMO SPECIFICIRALI; MORACEMO DA DEPLOY-UJEMO CERTIFICATE OBJECT TO `cert-manager` NAMESPACE 
+# 5. DA BISMO OMOGUCILI DA SE SSL CERTIFICATE GENERISE, INSIDE POMENUTE SECRET, KOJEM SMO DALI IME `micktick-tls`, ODNOSNO, KOJI SMO SPECIFICIRALI; MORACEMO DA DEPLOY-UJEMO CERTIFICATE OBJECT TO `cert-manager` NAMESPACE 
 
 - `touch cert-manager/certificate.yml`
 
@@ -443,19 +458,20 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   # DAO SAM MU IME
-  name: mt-ssl-certificate
+  name: micktick
   # STAVLJAM GA U default NAMESPACE
   namespace: default
 spec:
   # SPECIFICIRAO DNS NAME
   dnsNames:
+    - microticket.xyz
     - www.microticket.xyz
   # SPECIFICIRAO ONAJ SECRET, U KOJI CE SE STAVITI CERTIFICATE
   # A KOJ ISAM SPECIFICIRAO I U INGRESS MANIFESTU
-  secretName: microticket-cert-secret
+  secretName: micktick-tls
   # OVDE SPECIFICIRAMO IME ISSUER-A KOJEG SMO KREIRALI RANIJE
   issuerRef:
-    name: letsencrypt-issuer
+    name: letsencrypt-cluster-issuer
     kind: ClusterIssuer
 ```
 
@@ -472,37 +488,37 @@ KADA JE TAJ PROCESS ZAVRSEN, MOCI CE SE VIDETI SECRET INSIDE NAMESPACE
 - `k get secrets`
 
 ```zsh
-NAME                      TYPE                                  DATA   AGE
-default-token-mwdnw       kubernetes.io/service-account-token   3      4d2h
-jwt-secret                Opaque                                1      2d23h
-microticket-cert-secret   kubernetes.io/tls                     2      2m34s
-stripe-secret             Opaque                                1      2d23h
+NAME                  TYPE                                  DATA   AGE
+default-token-c7s9s   kubernetes.io/service-account-token   3      23h
+jwt-secret            Opaque                                1      21h
+micktick-tls          kubernetes.io/tls                     2      14s
+stripe-secret         Opaque                                1      22h
 ```
 
-DAKLE GORE JE UPRAVO SECRET, KOJI JE tls TIPA I KOJI IMA ONAKVO IMA KAAKVO SMO ZADALI `microticket-cert-secret`
+DAKLE GORE JE UPRAVO SECRET, KOJI JE tls TIPA I KOJI IMA ONAKVO IMA KAAKVO SMO ZADALI `micktick-tls `
 
 DA VIDIMO I NOVI CERTIFICATE
 
 - `kubectl get certificates`
 
 ```zsh
-NAME                 READY   SECRET                    AGE
-mt-ssl-certificate   True    microticket-cert-secret   2m48s
+NAME       READY   SECRET         AGE
+micktick   True    micktick-tls   85s
 ```
 
 DA VIDIMO HOCEMO LI MOCI VIDETI SECRET INSIDE CERTIFICATE DESCRIPTION
 
-- `kubectl describe certificate mt-ssl-certificate`
+- `kubectl describe certificate micktick`
 
 ```zsh
-Name:         mt-ssl-certificate
+Name:         micktick
 Namespace:    default
 Labels:       <none>
 Annotations:  <none>
 API Version:  cert-manager.io/v1
 Kind:         Certificate
 Metadata:
-  Creation Timestamp:  2021-05-23T15:43:45Z
+  Creation Timestamp:  2021-05-24T19:03:38Z
   Generation:          1
   Managed Fields:
     API Version:  cert-manager.io/v1
@@ -522,7 +538,7 @@ Metadata:
         f:secretName:
     Manager:      kubectl-client-side-apply
     Operation:    Update
-    Time:         2021-05-23T15:43:45Z
+    Time:         2021-05-24T19:03:38Z
     API Version:  cert-manager.io/v1
     Fields Type:  FieldsV1
     fieldsV1:
@@ -537,42 +553,46 @@ Metadata:
         f:revision:
     Manager:         controller
     Operation:       Update
-    Time:            2021-05-23T15:43:49Z
-  Resource Version:  650760
-  UID:               594af07e-e59b-4c87-893c-38d21041d26b
+    Time:            2021-05-24T19:04:06Z
+  Resource Version:  159367
+  UID:               ac8ddfc9-6d07-4ba8-8b59-c53e3f9abf40
 Spec:
   Dns Names:
+    microticket.xyz
     www.microticket.xyz
   Issuer Ref:
     Kind:       ClusterIssuer
-    Name:       letsencrypt-issuer
-  Secret Name:  microticket-cert-secret
+    Name:       letsencrypt-cluster-issuer
+  Secret Name:  micktick-tls
 Status:
   Conditions:
-    Last Transition Time:  2021-05-23T15:43:49Z
+    Last Transition Time:  2021-05-24T19:04:06Z
     Message:               Certificate is up to date and has not expired
     Observed Generation:   1
     Reason:                Ready
     Status:                True
     Type:                  Ready
-  Not After:               2021-08-21T14:43:46Z
-  Not Before:              2021-05-23T14:43:46Z
-  Renewal Time:            2021-07-22T14:43:46Z
+  Not After:               2021-08-22T18:04:05Z
+  Not Before:              2021-05-24T18:04:05Z
+  Renewal Time:            2021-07-23T18:04:05Z
   Revision:                1
 Events:
-  Type    Reason     Age    From          Message
-  ----    ------     ----   ----          -------
-  Normal  Issuing    5m29s  cert-manager  Issuing certificate as Secret does not exist
-  Normal  Generated  5m29s  cert-manager  Stored new private key in temporary Secret resource "mt-ssl-certificate-vnw2m"
-  Normal  Requested  5m29s  cert-manager  Created new CertificateRequest resource "mt-ssl-certificate-2x425"
-  Normal  Issuing    5m25s  cert-manager  The certificate has been successfully issued
+  Type    Reason     Age   From          Message
+  ----    ------     ----  ----          -------
+  Normal  Issuing    2m8s  cert-manager  Issuing certificate as Secret does not exist
+  Normal  Generated  2m8s  cert-manager  Stored new private key in temporary Secret resource "micktick-tv5hn"
+  Normal  Requested  2m8s  cert-manager  Created new CertificateRequest resource "micktick-nb94c"
+  Normal  Issuing    100s  cert-manager  The certificate has been successfully issued
+
 ```
 
 MOZES GORE VIDETI VIDETI DA JE CERTIFICATE SUCCESSFULLY ISSUED
 
-GORE VIDIS EVENTS, I ONI TACNO TAK OTREBA DA IZGLEDAJU
+GORE VIDIS EVENTS, I ONI TACNO TAKO TREBA DA IZGLEDAJU
 
 # 6. DA SADA COMMIT-UJEMO CHANGES KOJE SMO NAPRAVILI, KONKRETNO VEZANO ZA INGRESS MANIFEST, I DA NAPRAVIMO PULL REQUEST I DA GA MERGE-UJEMO INTO `main`
+
+DAKLE POSTO IMAMO CERTIFICATE, MOZEMO REDEPLOY-OVATI NAS INGRESS CONTROLER
 
 SVE SAM RAIO PO REDU OD PULLINGA, PA DO MERGINGA, PA SAM CEKAO DA SE IZVRSI GITHUB ACTION, KOJI JE APPLY-OVAO NOVU INGRESS KONFIGUACIJU
 
