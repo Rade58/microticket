@@ -9,6 +9,13 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: "true"
     #
     cert-manager.io/cluster-issuer: "lets-enc-iss"
+    ingress.kubernetes.io/configuration-snippet: |
+      if($host = 'www.microticket.xyz') {
+        return 301 https://microticket.xyz
+      }
+      if ($host ~ ^(.+)\.www.microticket\.xyz$) {
+        return 301 https://$1.microticket.xyz$request_uri;
+      }
 spec:
   # ----------------------------------------------
   tls:
