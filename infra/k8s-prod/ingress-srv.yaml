@@ -13,9 +13,9 @@ spec:
   # DOADAO SAM OVO
   tls:
     - hosts:
-        - microticket.xyz
-        # DODACU OVDE I OVAJ HOST
         - www.microticket.xyz
+        # DODACU OVDE I OVAJ HOST
+        - microticket.xyz
       secretName: micktick-tls
   # ----------------------------------------------
   rules:
