@@ -760,25 +760,25 @@ Namespace:        default
 Address:          microticket.xyz
 Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
 TLS:
-  micktick-tls terminates microticket.xyz
+  micktick-tls terminates www.microticket.xyz
 Rules:
-  Host             Path  Backends
-  ----             ----  --------
-  microticket.xyz  
-                   /api/users/?(.*)      auth-srv:3000 (10.244.1.149:3000)
-                   /api/tickets/?(.*)    tickets-srv:3000 (10.244.1.21:3000)
-                   /api/orders/?(.*)     orders-srv:3000 (10.244.0.5:3000)
-                   /api/payments/?(.*)   payments-srv:3000 (10.244.0.73:3000)
-                   /?(.*)                client-srv:3000 (10.244.1.171:3000)
-Annotations:       cert-manager.io/cluster-issuer: lets-enc-iss
-                   kubernetes.io/ingress.class: nginx
-                   nginx.ingress.kubernetes.io/use-regex: true
+  Host                 Path  Backends
+  ----                 ----  --------
+  www.microticket.xyz  
+                       /api/users/?(.*)      auth-srv:3000 (10.244.1.228:3000)
+                       /api/tickets/?(.*)    tickets-srv:3000 (10.244.0.89:3000)
+                       /api/orders/?(.*)     orders-srv:3000 (10.244.0.76:3000)
+                       /api/payments/?(.*)   payments-srv:3000 (10.244.0.17:3000)
+                       /?(.*)                client-srv:3000 (10.244.0.77:3000)
+Annotations:           cert-manager.io/cluster-issuer: letsencrypt-cluster-issuer
+                       kubernetes.io/ingress.class: nginx
+                       nginx.ingress.kubernetes.io/from-to-www-redirect: true
+                       nginx.ingress.kubernetes.io/use-regex: true
 Events:
-  Type    Reason             Age                From                      Message
-  ----    ------             ----               ----                      -------
-  Normal  Sync               49s (x5 over 22h)  nginx-ingress-controller  Scheduled for sync
-  Normal  CreateCertificate  49s                cert-manager              Successfully created Certificate "micktick-tls"
-
+  Type    Reason             Age                  From                      Message
+  ----    ------             ----                 ----                      -------
+  Normal  Sync               38s (x9 over 5h40m)  nginx-ingress-controller  Scheduled for sync
+  Normal  CreateCertificate  38s                  cert-manager              Successfully created Certificate "micktick-tls"
 ```
 
 KAO STO VIDIM U GORNJIM EVENTOVIMA, ZAISTA JE CERTIFICATE KREIRAN
