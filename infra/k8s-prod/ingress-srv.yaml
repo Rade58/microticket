@@ -9,15 +9,15 @@ metadata:
     #
     nginx.ingress.kubernetes.io/use-regex: "true"
     #
-    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
+    # cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
 spec:
   # ----------------------------------------------
-  tls:
-    - hosts:
-        # - microticket.xyz
-        # DODACU OVDE I OVAJ HOST
-        - www.microticket.xyz
-      secretName: micktick-tls
+  # tls:
+  #   - hosts:
+  #       # - microticket.xyz
+  #       # DODACU OVDE I OVAJ HOST
+  #       - www.microticket.xyz
+  #     secretName: micktick-tls
   # ----------------------------------------------
   rules:
     - host: microticket.xyz
