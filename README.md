@@ -41,11 +41,13 @@ MEDJUTIM JA OVO MOGU RESITI, PODESAVANJEM JEDNE annotation OPCIJE U INGRESS-U
 ***
 ***
 
-# PODESAVANJE `nginx.ingress.kubernetes.io/from-to-www-redirect: "true"` ANNOTATION OPCIJE U INGRESS-U
+# DIGRESIJA ZA PODESAVANJE `nginx.ingress.kubernetes.io/from-to-www-redirect: "true"` ANNOTATION OPCIJE U INGRESS-U
 
 **KONKRETNO GORNJI CNAME RECORD SAM ZADAO UMESTO A RECORD-A, DA BIH MOGAO DA ENABLE-UJEM TU OPCIJU U INGRESS-U, A TO JE OPCIJA [`nginx.ingress.kubernetes.io/from-to-www-redirect: "true"`](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#redirect-fromto-www)**
 
 POMENUTA OPCIJA, KADA JE BUDEM NARAVNO PODESIO NA `"true"`, RESICE POMENUTI PROBLEM KOJI IMAMO, ODNONO KADA BUDEMO ODLAZILI NA `https://microticket.xyz/`, MI CEMO UVEK BITI REDIRECTED NA `https://microticket.xyz/`, ZA KOJI IMAMO ROUTING RULES
+
+TAKODJE CU IZMENITI MALO INGRESS CONFIG KAKO BI KORISTIO `apiVersion: networking.k8s.io/v1` (ZATO STO CU TAKO LAKSE PODESITI NEKE STVARI U BUDUCNOSTI), JER IMAO SAM PROBLEMA NESTO DA PODESIM, U SLUCAJU BETA VERZIJE KOJU SAM KORISTIO (**IMAO SAM I WARNINGS DA TA BETA VERZIJA NE ODGOVARA MOM CLUSTER-U, ODNONO ONA JE FUNKCIONISALA, ALI JE DEPRECATED**)
 
 - `code infra/k8s-prod/ingress-srv.yaml`
 
@@ -108,9 +110,11 @@ metadata:
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
     service.beta.kubernetes.io/do-loadbalancer-hostname: "microticket.xyz"
   labels:
+    # IZ NEKIH RAZLOGA KOJI NISU POSEBNI, POVECAO SAM OVDE VERZIJU
     helm.sh/chart: ingress-nginx-2.11.1
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/instance: ingress-nginx
+    # I OVDE PROMENIO VERZIJU
     app.kubernetes.io/version: 0.34.1
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
@@ -233,18 +237,20 @@ KUCAJ SVE OVE FLAGOVE KADA BUDES RUNN-OVAO, SLEDECI COMMAND
 
 - `kubectl apply --validate=false -f cert-manager/cert-manager-1.3.1.yaml`
 
-**TREBALO BI DA SI SAD DOBIO I cert-manager NAMESPACE** (A DOBIO SI GA ZATO, JER JE U YAML FILE-U BIO SPECIFICIRAN namespace FIELD)
+KREIRACE SE JAKO MNOGO KUBERNETES OBJEKATI, KAO STO SE KREIRAO VEC BROJ, KADA SMO INSTALIRALI, SAMI INGRESS
+
+**TREBALO BI DA SI SAD DOBIO I cert-manager NAMESPACE** (A DOBIO SI GA ZATO, JER JE U APPLIED YAML FILE-U BIO SPECIFICIRAN namespace FIELD)
 
 - `kubectl get ns`
 
 ```zsh
 NAME              STATUS   AGE
-cert-manager      Active   82m
-default           Active   3d21h
-ingress-nginx     Active   2d18h
-kube-node-lease   Active   3d21h
-kube-public       Active   3d21h
-kube-system       Active   3d21h
+cert-manager      Active   89s
+default           Active   4h51m
+ingress-nginx     Active   4h43m
+kube-node-lease   Active   4h51m
+kube-public       Active   4h51m
+kube-system       Active   4h51m
 ```
 
 DA VIDIM KOJE PODS SADA IMAM U cert-manger NAMESPACE-U
@@ -253,9 +259,9 @@ DA VIDIM KOJE PODS SADA IMAM U cert-manger NAMESPACE-U
 
 ```zsh
 NAME                                       READY   STATUS    RESTARTS   AGE
-cert-manager-7dd5854bb4-pmbcb              1/1     Running   0          20s
-cert-manager-cainjector-64c949654c-5dmz7   1/1     Running   0          20s
-cert-manager-webhook-6bdffc7c9d-vvrz4      1/1     Running   0          19s
+cert-manager-7dd5854bb4-znmb5              1/1     Running   0          2m3s
+cert-manager-cainjector-64c949654c-mwpkm   1/1     Running   0          2m4s
+cert-manager-webhook-6bdffc7c9d-54v6c      1/1     Running   0          2m3s
 ```
 
 **DA VIDIS DA LI IMAS CLUSTER IP SERVICES TO EXPOSE, POMENUTE PODS, KUCAJ SLEDECU KOMANDU**
@@ -264,30 +270,30 @@ cert-manager-webhook-6bdffc7c9d-vvrz4      1/1     Running   0          19s
 
 ```zsh
 NAME                                           READY   STATUS    RESTARTS   AGE
-pod/cert-manager-7dd5854bb4-f2p94              1/1     Running   0          84s
-pod/cert-manager-cainjector-64c949654c-5fmxj   1/1     Running   0          84s
-pod/cert-manager-webhook-6bdffc7c9d-9gvdn      1/1     Running   0          84s
+pod/cert-manager-7dd5854bb4-znmb5              1/1     Running   0          2m42s
+pod/cert-manager-cainjector-64c949654c-mwpkm   1/1     Running   0          2m43s
+pod/cert-manager-webhook-6bdffc7c9d-54v6c      1/1     Running   0          2m42s
 
 NAME                           TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
-service/cert-manager           ClusterIP   10.245.188.140   <none>        9402/TCP   85s
-service/cert-manager-webhook   ClusterIP   10.245.229.36    <none>        443/TCP    84s
+service/cert-manager           ClusterIP   10.245.143.186   <none>        9402/TCP   2m43s
+service/cert-manager-webhook   ClusterIP   10.245.125.177   <none>        443/TCP    2m43s
 
 NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/cert-manager              1/1     1            1           85s
-deployment.apps/cert-manager-cainjector   1/1     1            1           85s
-deployment.apps/cert-manager-webhook      1/1     1            1           85s
+deployment.apps/cert-manager              1/1     1            1           2m42s
+deployment.apps/cert-manager-cainjector   1/1     1            1           2m43s
+deployment.apps/cert-manager-webhook      1/1     1            1           2m42s
 
 NAME                                                 DESIRED   CURRENT   READY   AGE
-replicaset.apps/cert-manager-7dd5854bb4              1         1         1       85s
-replicaset.apps/cert-manager-cainjector-64c949654c   1         1         1       85s
-replicaset.apps/cert-manager-webhook-6bdffc7c9d      1         1         1       85s
+replicaset.apps/cert-manager-7dd5854bb4              1         1         1       2m42s
+replicaset.apps/cert-manager-cainjector-64c949654c   1         1         1       2m43s
+replicaset.apps/cert-manager-webhook-6bdffc7c9d      1         1         1       2m42s
 ```
 
 KAO STO VIDIS GORNJI CLUSTER IP SERVICE-OVI **NEMAJU ASSIGNED EXTERNAL IPs**
 
 VIDIMO GORE I DEPLOYMENTS
 
-UGLAVNOM, TO SE TICE IP-JEVA, IT IS NICE AND SECURE IN ITS OWN NAMESPACE
+UGLAVNOM, STO SE TICE IP-JEVA, THEY ARE NICE AND SECURE IN ITS OWN NAMESPACE
 
 **NAIME, DALJE JA CU PODESAVATI, JOS DVE VRSTE KUBERNETES OBJECT-A: TO CE BITI: `Clusterissuer` I `Certificate`**
 
@@ -309,7 +315,7 @@ No resources found in cert-manager namespace.
 
 [Let's Encypt](https://letsencrypt.org/)
 
-CERT MANGER CE DEPLOY-OVATI A BOUNCH OF CUSTOM RESOURCE DEFINITIONS, I BICE NEW KUBERNATES OBJECTS INTRODUCED INTO OUR CLUSTER
+CERT MANGER JE DEPLOY-OVAO A BOUNCH OF CUSTOM RESOURCE DEFINITIONS, I NEW KUBERNATES OBJECTS ARE INTRODUCED INTO OUR CLUSTER
 
 DA HOOK-UJEMO UP CERT MANAGER SA LET'S ENCRYPT-OM, **MORAMO DEPPLOY-OVATI `issuer.yaml`**
 
@@ -317,17 +323,16 @@ ISSUER JE YAML FILE KOJI CE DEPLOY-OVATI CERTIFICATE AUTHORITY, A U NASEM SLUCAJ
 
 ONDA CEMO DEFINISATI JOS JEDAN YAML FILE, KOJI CE DEFINISATI ACTUAL CERTIFICATE WE NEED
 
-THEN EVERYTHING ELSE CE SE DESAVATI AUTOMATSKI. **CERT MANAGER CE GENERISATI CERTIFICATE REQUEST OBJECT, I ONDA CE ORDER OBJECT BITI GENERISAN, I USED FOR LET;S ENCRYPT CERTIFICATE ORDER, CERTIFICATE REQUEST CE TAKODJE GENERISATI CHALLENGE OBJECT, POTREBNAN DA SE FULLFIL-UJE LETS ENCRYPT CHALLENGE**
+THEN EVERYTHING ELSE CE SE DESAVATI AUTOMATSKI. **CERT MANAGER CE GENERISATI CERTIFICATE REQUEST OBJECT, I ONDA CE ORDER OBJECT BITI GENERISAN, I USED FOR LET'S ENCRYPT CERTIFICATE ORDER, CERTIFICATE REQUEST CE TAKODJE GENERISATI CHALLENGE OBJECT, POTREBNAN DA SE FULLFIL-UJE LETS ENCRYPT CHALLENGE**
 
 KADA JE CHALLENGE FULLFILED OD STRANE CERT MANAGER-A, STATUS CERTIFICATA CE BITI PROMENJEN OD `status:in progress` DO `status:completed` I **KUBERNETES SECRET CE BITI CREATED `ILI UPDATED`**
 
-## ALI PRE NEGO STO POCNEMO DA KORISTIMO REAL CA (CERTIFICATE AUTHORITY), HAJDE DA PROVERIMO DA LI NAS CERT MANGER RADI, TAKO STO CEMO KREIRATI SELF SIGNED CERTIFICATE
+## PRE NEGO STO POZELIS DA KORISTIMO REAL CA (CERTIFICATE AUTHORITY), MOZES DA PROVERIS DA LI CERT MANGER, ZAISTA RADI, TAKO STO KREIRAS SELF SIGNED CERTIFICATE
 
 ***
 ***
 
 PRESKOCIO SAM OVAJ DEO, A TI GA POGLEDAJ OVDE: [TEST CERTIFICATE ISSUING](https://github.com/marcel-dempers/docker-development-youtube-series/tree/master/kubernetes/cert-manager#test-certificate-issuing)
-
 
 ***
 ***
@@ -369,7 +374,7 @@ spec:
     # You must replace this email address with your own.
     # Let's Encrypt will use this to contact you about expiring
     # certificates, and issues related to your account.
-    email: bajic.rade.dev@gmail.com
+    email: rade.bajic.dev@gmail.com
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       # Secret resource that will be used to store the account's private key.
@@ -404,7 +409,7 @@ Annotations:  <none>
 API Version:  cert-manager.io/v1
 Kind:         ClusterIssuer
 Metadata:
-  Creation Timestamp:  2021-05-24T18:33:33Z
+  Creation Timestamp:  2021-05-25T20:15:03Z
   Generation:          1
   Managed Fields:
     API Version:  cert-manager.io/v1
@@ -426,7 +431,7 @@ Metadata:
           f:solvers:
     Manager:      kubectl-client-side-apply
     Operation:    Update
-    Time:         2021-05-24T18:33:33Z
+    Time:         2021-05-25T20:15:03Z
     API Version:  cert-manager.io/v1
     Fields Type:  FieldsV1
     fieldsV1:
@@ -439,12 +444,12 @@ Metadata:
         f:conditions:
     Manager:         controller
     Operation:       Update
-    Time:            2021-05-24T18:33:34Z
-  Resource Version:  154822
-  UID:               b69e625c-3e6e-4ddd-bd0f-48230b0ae8b3
+    Time:            2021-05-25T20:15:05Z
+  Resource Version:  37701
+  UID:               a448518b-0c86-4568-8092-58e696efb584
 Spec:
   Acme:
-    Email:            bajic.rade.dev@gmail.com
+    Email:            rade.bajic.dev@gmail.com
     Preferred Chain:  
     Private Key Secret Ref:
       Name:  letsencrypt-cluster-issuer-key
@@ -455,10 +460,10 @@ Spec:
           Class:  nginx
 Status:
   Acme:
-    Last Registered Email:  bajic.rade.dev@gmail.com
-    Uri:                    https://acme-v02.api.letsencrypt.org/acme/acct/124683992
+    Last Registered Email:  rade.bajic.dev@gmail.com
+    Uri:                    https://acme-v02.api.letsencrypt.org/acme/acct/124809020
   Conditions:
-    Last Transition Time:  2021-05-24T18:33:34Z
+    Last Transition Time:  2021-05-25T20:15:05Z
     Message:               The ACME account was registered with the ACME server
     Observed Generation:   1
     Reason:                ACMEAccountRegistered
@@ -477,19 +482,19 @@ DA VIDIMO DA LI JE GENERISAN SECRET OBJECT
 
 ```zsh
 NAME                                  TYPE                                  DATA   AGE
-cert-manager-cainjector-token-bt7bv   kubernetes.io/service-account-token   3      62m
-cert-manager-token-9xp5w              kubernetes.io/service-account-token   3      62m
-cert-manager-webhook-ca               Opaque                                3      62m
-cert-manager-webhook-token-qf98m      kubernetes.io/service-account-token   3      62m
-default-token-95vtv                   kubernetes.io/service-account-token   3      62m
-letsencrypt-cluster-issuer-key        Opaque                                1      2m31s
+cert-manager-cainjector-token-gj47h   kubernetes.io/service-account-token   3      46m
+cert-manager-token-tz6wk              kubernetes.io/service-account-token   3      46m
+cert-manager-webhook-ca               Opaque                                3      46m
+cert-manager-webhook-token-l6tdm      kubernetes.io/service-account-token   3      46m
+default-token-2hpww                   kubernetes.io/service-account-token   3      46m
+letsencrypt-cluster-issuer-key        Opaque                                1      21m
 ```
 
 SECRET JE TU, KAO STO VIDIS IZNAD, POSLEDNJI JE NA LISTI
 
 ALI MISLIM DA JA NECU DIREKTNO UPRAVLJATI NI JEDNIM OD TIH SECRET-OVA ,PA NI TIM, KOJI JE KREIRAN APPLYING-OM ISSUER-A
 
-# 4. SADA CU INSIDE INGRESS CONFIGURATION ZADATI SECRET NAME, GDE CE SSL CERTIFICATE BITI LOCATED; MODIFIKOVACU U VELIKOJ MERI INGRESS, KAKO BI KORISTIO `apiVersion: networking.k8s.io/v1` (ZATO STO CU TAKO LAKSE PODESITI NEKE STVARI), JER IMAO SAM PROBLEMA NESTO DA PODESIM, U SLUCAJU BETA VERZIJE KOJU SAM KORISTIO, ALI NE SAMO TO, JA CU TAMO PODESITI MNOGO STVARI
+# 4. SADA CU INSIDE INGRESS CONFIGURATION ZADATI SECRET NAME, GDE CE SSL CERTIFICATE BITI LOCATED; TAKODJE CU DODATI SOME ANNOTATIONS, A JEDNA OD NJIH CE SE TICATI TOGA KOJEG ISSUER-A KORISTIMO
 
 - `code infra/k8s-prod/ingress-srv.yaml`
 
@@ -501,19 +506,21 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/use-regex: "true"
-    # MORAM DODATI OVO (OVO JE IME ISSUER-A, KOJE SMO MI DEFINISALI
-    # AKO SE SECAS)
-    cert-manager.io/cluster-issuer: "lets-enc-iss"
+    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+    # DODAO SAM OVO
+    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
 spec:
-  # --------- DODAO SAM OVO ----------------------
-  # ZADAO SAM I SECRET NAME
+  # ----------------------------------------------
+  # DOADAO SAM SECRET, KOJI CE SE GENERISATI DA
+  # U NJEGA ISSUER STAVI CERTIFIVCATE
   tls:
     - hosts:
-        - microticket.xyz
+        # DODACU OVDE I OVAJ HOST
+        - www.microticket.xyz
       secretName: micktick-tls
   # ----------------------------------------------
   rules:
-    - host: microticket.xyz
+    - host: www.microticket.xyz
       http:
         paths:
           - path: /api/users/?(.*)
@@ -557,16 +564,15 @@ kind: Service
 metadata:
   annotations:
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
-    # OVDE ZADAJ TVOJ DOMAIN NAME (ZADAO SAM TO DAVNO RANIJE), ALI I https
-    service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
+    # OVDE SMO RANIJE ZADALI KOJI NAM HOST UPIRE U LOAD BALANCER-A
     service.beta.kubernetes.io/do-loadbalancer-hostname: "microticket.xyz"
+    # A SADA CEMO DA ZADAMO KOJI JE ALLOWED PROTOCOL ZA LOAD BALANCER-A
+    service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
     #
   labels:
-    # IZ NEKIH RAZLOGA KOJI NISU POSEBNI, POVECAO SAM OVDE VERZIJU
     helm.sh/chart: ingress-nginx-2.11.1
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/instance: ingress-nginx
-    # I OVDE PROMENIO VERZIJU
     app.kubernetes.io/version: 0.34.1
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
@@ -592,13 +598,13 @@ spec:
 
 VAZNO JE ZNATI DA NEMAS NI JEDAN SSL CERTIFICATE LOCATED BILO GDE, JER TAJ CERTIFICATE ISS-UJE CERT MANAGER
 
-DA SADA PPLY-UJEM GORNJU STVAR; **SSL NECE RADITI, JER NE POSTOJI secretName, KOJI SE ZOVE `micktick-tls`, U KOJEM OCEKUJEMO DA BUDE CERTIFICATE**
+DA SADA APPLY-UJEM GORNJU MANIFEST; **SSL NECE RADITI, JER NE POSTOJI `secretName`, KOJI SE ZOVE `micktick-tls`, U KOJEM OCEKUJEMO DA BUDE CERTIFICATE**
 
 ZATO JOS NECEMO PRAVITI ONAJ PULL REQUEST I MERGING, STO BI NA KRAJU DOVELO DA SE APPLY-UJE GORNJI FILE
 
 TO CE SACEKATI DOK NE GENERISEMO SSL CERTIFICATE, ODNOSNO DOK NE KREIRAMO Certificate OBJECT U NASEM CLUSTERU
 
-# 5. DA BISMO OMOGUCILI DA SE SSL CERTIFICATE GENERISE, INSIDE POMENUTE SECRET, KOJEM SMO DALI IME `micktick-tls`, ODNOSNO, KOJI SMO SPECIFICIRALI; MORACEMO DA DEPLOY-UJEMO CERTIFICATE OBJECT TO `cert-manager` NAMESPACE 
+# 5. DA BISMO OMOGUCILI DA SE SSL CERTIFICATE GENERISE, INSIDE POMENUTOG SECRETA, KOJEM SMO DALI IME `micktick-tls`, ODNOSNO, KOJI SMO SPECIFICIRALI; MORACEMO DA DEPLOY-UJEMO CERTIFICATE OBJECT TO `default` NAMESPACE 
 
 - `touch cert-manager/certificate.yml`
 
@@ -613,7 +619,6 @@ metadata:
 spec:
   # SPECIFICIRAO DNS NAME
   dnsNames:
-    - microticket.xyz
     - www.microticket.xyz
   # SPECIFICIRAO ONAJ SECRET, U KOJI CE SE STAVITI CERTIFICATE
   # A KOJ ISAM SPECIFICIRAO I U INGRESS MANIFESTU
