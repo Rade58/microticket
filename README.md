@@ -1,5 +1,7 @@
 # ENABLING SSL CERTIFICATE ON OUR K8S PRODUCTION CLUSTER
 
+PRVO CU DATI PAR DIGRESIJA ZA POCETAK, A KOJI SE TICU NECEGA STO SAM MOZDA DEFINISAO RANIJE A STA JE PROBLEMATICNO 
+
 ***
 ***
 
@@ -23,7 +25,7 @@ A ZA `'IS AN ALIAS OF'`, KUCAMO `@`
 
 I PRITISKAM NA `Create Record`
 
-MOZES SADA DA SE BAVIS ONIM STA JE TEMA TRENUTNE LEKCIJE
+**KONKRETNO OVO SAM URADIO, DA BIH MOGAO DA ENABLE-UJEM JEDNU OPCIJU U INGRESS-U, A TO JE OPCIJA [`nginx.ingress.kubernetes.io/from-to-www-redirect: "true"`](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#redirect-fromto-www)**
 
 ***
 ***
