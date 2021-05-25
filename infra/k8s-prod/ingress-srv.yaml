@@ -4,22 +4,19 @@ metadata:
   name: ingress-srv
   annotations:
     kubernetes.io/ingress.class: nginx
-    # DODAO OVO
-    # nginx.ingress.kubernetes.io/rewrite-target: "microticket.xyz"
-    #
     nginx.ingress.kubernetes.io/use-regex: "true"
-    #
     nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-    #
-    # cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
+    # DODAO SAM OVO
+    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
 spec:
   # ----------------------------------------------
-  # tls:
-  #   - hosts:
-  #       # - microticket.xyz
-  #       # DODACU OVDE I OVAJ HOST
-  #       - www.microticket.xyz
-  #     secretName: micktick-tls
+  # DOADAO SAM SECRET, KOJI CE SE GENERISATI DA
+  # U NJEGA ISSUER STAVI CERTIFIVCATE
+  tls:
+    - hosts:
+        # DODACU OVDE I OVAJ HOST
+        - www.microticket.xyz
+      secretName: micktick-tls
   # ----------------------------------------------
   rules:
     - host: www.microticket.xyz
@@ -66,9 +63,10 @@ kind: Service
 metadata:
   annotations:
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
-    #
-    # service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
+    # OVDE SMO RANIJE ZADALI KOJI NAM HOST UPIRE U LOAD BALANCER-A
     service.beta.kubernetes.io/do-loadbalancer-hostname: "microticket.xyz"
+    # A SADA CEMO DA ZADAMO KOJI JE ALLOWED PROTOCOL ZA LOAD BALANCER-A
+    service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
     #
   labels:
     helm.sh/chart: ingress-nginx-2.11.1
