@@ -57,6 +57,44 @@ spec:
                 name: client-srv
                 port:
                   number: 3000
+    - host: microticket.xyz
+      http:
+        paths:
+          - path: /api/users/?(.*)
+            pathType: Exact
+            backend:
+              service:
+                name: auth-srv
+                port:
+                  number: 3000
+          - path: /api/tickets/?(.*)
+            pathType: Exact
+            backend:
+              service:
+                name: tickets-srv
+                port:
+                  number: 3000
+          - path: /api/orders/?(.*)
+            pathType: Exact
+            backend:
+              service:
+                name: orders-srv
+                port:
+                  number: 3000
+          - path: /api/payments/?(.*)
+            pathType: Exact
+            backend:
+              service:
+                name: payments-srv
+                port:
+                  number: 3000
+          - path: /?(.*)
+            pathType: Exact
+            backend:
+              service:
+                name: client-srv
+                port:
+                  number: 3000
 ---
 apiVersion: v1
 kind: Service
