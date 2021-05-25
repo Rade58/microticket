@@ -15,7 +15,7 @@ spec:
   tls:
     - hosts:
         # DODACU OVDE I OVAJ HOST
-        - www.microticket.xyz
+        - microticket.xyz
       secretName: micktick-tls
   # ----------------------------------------------
   rules:
@@ -64,7 +64,7 @@ metadata:
   annotations:
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
     # OVDE SMO RANIJE ZADALI KOJI NAM HOST UPIRE U LOAD BALANCER-A
-    service.beta.kubernetes.io/do-loadbalancer-hostname: "www.microticket.xyz"
+    service.beta.kubernetes.io/do-loadbalancer-hostname: "microticket.xyz"
     # A SADA CEMO DA ZADAMO KOJI JE ALLOWED PROTOCOL ZA LOAD BALANCER-A
     service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
     #
