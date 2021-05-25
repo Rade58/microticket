@@ -19,7 +19,7 @@ spec:
       secretName: micktick-tls
   # ----------------------------------------------
   rules:
-    - host: www.microticket.xyz
+    - host: microticket.xyz
       http:
         paths:
           - path: /api/users/?(.*)
