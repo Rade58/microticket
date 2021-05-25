@@ -4,7 +4,7 @@ import { FunctionComponent } from "react";
 import { GetServerSideProps } from "next";
 // UVOZIM NEXT LINK
 import Link from "next/link";
-//
+
 import { buildApiClient } from "../utils/buildApiClient";
 import { InitialPropsI } from "../types/initial-props";
 import { allTicketsType } from "../types/data/all-tickets";
