@@ -9,7 +9,7 @@ metadata:
     #
     nginx.ingress.kubernetes.io/use-regex: "true"
     #
-    nginx.ingress.kubernetes.io/from-to-www-redirect: "false"
+    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
     #
     # cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
 spec:
