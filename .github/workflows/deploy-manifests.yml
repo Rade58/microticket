@@ -34,7 +34,7 @@ jobs:
       # OVO JE ONO STO JE U PREDHODNOM WORKFLOW FILE BILO DEFINISANO KAO
       # INICIJALIZACIJA doctl-A, PRI CEMU JE TAKODJE, AUTOMATSKI PROMENJEN CONTEXT
       # ZA kubectl KOJI ONDA MOZE DA KOMANDE IZVRSAVA AGAINST CLUSTER NA DIGITAL OCEAN-U
-      - run: doctl kubernetes cluster kubeconfig save microticket-cluster
+      - run: doctl kubernetes cluster kubeconfig save mt-cluster
       # OVO JE BILO ONAJ RESTARTING DEPLOYMENTA STO SM ODEFINISALI U PROSLOM WORKFLOW FILE-U
       # NI TO NAM NE TREBA
       #       - run: kubectl rollout restart deployment auth-depl
