@@ -28,7 +28,9 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
   const client = buildApiClient(ctx);
 
   try {
-    const { data } = await client.get("/api/tickets");
+    const { data } = await client.get("/api/tickets", {
+      headers: ctx.req.headers
+    });
 
     const {data: currentUser} = await client.get("/api/users/current-user")
 
