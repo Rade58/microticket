@@ -8,6 +8,9 @@ import { getCurrentUser } from "../utils/getCurrentUser";
 
 MyApp.getInitialProps = async (appCtx: AppContext) => {
   const { ctx } = appCtx;
+  // console.log({ctx})
+
+
   try {
     const { currentUser } = await getCurrentUser(ctx);
     const appProps = await App.getInitialProps(appCtx);
