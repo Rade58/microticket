@@ -30,9 +30,14 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
   try {
     const { data } = await client.get("/api/tickets");
 
+    const {data: currentUser} = await client.get("/api/users/current-user")
+
+    console.log({currentUser})
+
     return {
       props: {
         tickets: data as allTicketsType,
+        currentUser
       },
     };
   } catch (err) {
