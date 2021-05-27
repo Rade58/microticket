@@ -10,8 +10,7 @@ export const buildApiClient = (
 
   // EVO DEFINISAO SAM TERNARRY
   const baseURL = process.env.NODE_ENV === "production"?
-  // "http://www.microticket.xyz/"
-  host
+  "http://www.microticket.xyz/"
   :
   "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local"
   //
