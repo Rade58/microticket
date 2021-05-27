@@ -5,6 +5,7 @@ export const getCurrentUser = async (
   ctx?: GetServerSidePropsContext | NextPageContext
 ) => {
   console.log({ctx})
+  console.log({headers: ctx.req.headers})
 
   const client = buildApiClient(ctx);
 
