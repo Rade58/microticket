@@ -5,7 +5,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/use-regex: "true"
-    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
     # nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
     # cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
 spec:
@@ -102,7 +102,7 @@ metadata:
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
     #
     #
-    service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
+    # service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
     service.beta.kubernetes.io/do-loadbalancer-hostname: "www.microticket.xyz"
     #
     #
