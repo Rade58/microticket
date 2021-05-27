@@ -10,6 +10,7 @@ metadata:
     # cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
 spec:
   # ----------------------------------------------
+  # ----------------------------------------------
   # tls:
   #   - hosts:
   #       - www.microticket.xyz
@@ -99,6 +100,7 @@ kind: Service
 metadata:
   annotations:
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
+    #
     #
     # service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
     service.beta.kubernetes.io/do-loadbalancer-hostname: "www.microticket.xyz"
