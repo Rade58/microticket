@@ -11,8 +11,6 @@ export const getCurrentUser = async (
   try {
     const response = await client.get("/api/users/current-user");
 
-    console.log({ currentUser: response.data.currentUser })
-
     return { currentUser: response.data.currentUser };
   } catch (err) {
     console.error({err});
