@@ -37,7 +37,6 @@ export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
     return {
       props: {
         tickets: data as allTicketsType,
-        currentUser
       },
     };
   } catch (err) {
