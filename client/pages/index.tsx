@@ -16,7 +16,9 @@ interface PropsI extends InitialPropsI {
 // ---------------------------------------------------
 export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 
-  console.log({NODE_ENV: process.env.NODE_ENV})
+  // console.log({NODE_ENV: process.env.NODE_ENV})
+
+  console.log({HOST: ctx.req.headers.host})
 
   const client = buildApiClient(ctx);
 
