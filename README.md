@@ -81,7 +81,6 @@ metadata:
     # service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
     # OVDE ZADAJ TVOJ DOMAIN NAME
     service.beta.kubernetes.io/do-loadbalancer-hostname: "www.microticket.xyz"
-    # service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
   labels:
     helm.sh/chart: ingress-nginx-2.11.1
     app.kubernetes.io/name: ingress-nginx
