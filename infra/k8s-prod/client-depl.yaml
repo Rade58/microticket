@@ -13,8 +13,9 @@ spec:
         app: client
     spec:
       containers:
-      - name: client
-        image: radebajic/mt-client
+        - name: client
+          image: radebajic/mt-client
+#
 #
 ---
 apiVersion: v1
