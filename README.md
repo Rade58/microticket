@@ -1,55 +1,20 @@
-# ENABLING `cookie-session` ONLY OVER HTTPS
+# BUILDING PREMIUM NEXTJS WEBSITE
 
-U `auth` MICROSERVICE-U, RANIJE SMO DISABLE-OALI DA `cookie-session` MIDDLEWARE SETT-UJE COOKIE ONLY OVER HTTPS
+OVO NEMA VEZA SA MICROSERVICE-OVIMA KOJE IMAM, ALI CE UCINITI DA BOLJE PRAVIM LANDING PAGES
 
-SADA IMAMO SSL, I MOZEMO OPET VRATITI TU OPCIJU, DA JE HTTPS REQUIRED, KADA SE SETT-UJE COOKIE
+DAKLE MOJA NEXTJS APLIKACIJA CE IMATI POTPUNO NOVU SEKCIJU PAGE-OVA
 
-- `code auth/src/app.ts`
+PRATIM OVAJ TUTORIJAL
 
-```ts
-import express from "express";
-import "express-async-errors";
-import { json } from "body-parser";
-import cookieSession from "cookie-session";
+<https://www.youtube.com/watch?v=iGBERMGMIvc>
 
-import { currentUserRouter } from "./routes/current-user";
-import { signInRouter } from "./routes/signin";
-import { signOutRouter } from "./routes/signout";
-import { signUpRouter } from "./routes/signup";
+NARAVNO NECU SE STRIKTNO DRZATI GORNJEG TUTORIJLA, **ZA PAGE-OVE IZ POMENUTOG TUTORIJALA, KORISTICU NOVI ROUTE ZATO CU KREIRATI `premium`**
 
-import { errorHandler, NotFoundError } from "@ramicktick/common";
+- `mkdir client/pages/premium`
 
-const app = express();
+# SADA CEMO ZAMENITI CONTEXT, NASEG CLUSTER-A, JER CEMO SE BAVITI DEVELOPMENTOM
 
-app.set("trust proxy", true);
+- `kubectl config get-contexts`
 
-app.use(json());
-
-app.use(
-  cookieSession({
-    signed: false,
-    // EVO VRATILI SMO OVU OPCIJU
-    // STO ZNACI DA CE BITI true, SAMO KADA NISMO
-    // U TEST ENVIROMENT-U
-    secure: process.env.NODE_ENV !== "test",
-  })
-);
-
-app.use(currentUserRouter);
-app.use(signInRouter);
-app.use(signOutRouter);
-app.use(signUpRouter);
-
-app.all("*", async (req, res, next) => {
-  throw new NotFoundError();
-});
-
-app.use(errorHandler);
-
-export { app };
-```
-
-MOZES OVO SADA DA COMMIT-UJES, ODNOSNO DA ODRADIS CEO ONAJ PROCES OD MAKINGA PULL REQUESTA PA DO MERGINGA TOG PULL REQUEST-A ,KAKO BI SE IZMEDJU OSTALOG REBUILD-OVAO IMAGE I APPLY-OVAO NA ODGOVARAJUCI POD CLUSTERA
-
-
+- `kubectl config use-context <ime clustera sa google cloud-a>`
 
