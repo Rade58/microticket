@@ -15,6 +15,7 @@ spec:
       containers:
         - name: client
           image: radebajic/mt-client
+#
 ---
 apiVersion: v1
 kind: Service

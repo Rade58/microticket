@@ -27,3 +27,4 @@ spec:
               value: microticket
             - name: REDIS_HOST
               value: expiration-redis-srv
+#

@@ -9,8 +9,6 @@ export const getCurrentUser = async (
 
   const client = buildApiClient(ctx);
 
-  console.log({ctx})
-  console.log(client.getUri())
 
   try {
     const response = await client.get("/api/users/current-user");

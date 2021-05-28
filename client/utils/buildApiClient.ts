@@ -4,7 +4,6 @@ import { GetServerSidePropsContext, NextPageContext } from "next";
 
 export const buildApiClient = (
   ctx?: GetServerSidePropsContext | NextPageContext,
-  host?: string
 ) => {
   const isServerSide = isSSR();
 
