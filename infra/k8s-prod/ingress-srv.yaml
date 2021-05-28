@@ -10,7 +10,6 @@ metadata:
     # cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
 spec:
   # ----------------------------------------------
-  # ----------------------------------------------
   # tls:
   #   - hosts:
   #       - www.microticket.xyz
