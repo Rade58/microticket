@@ -6,6 +6,119 @@ PRVO CU DATI PAR DIGRESIJA ZA POCETAK, A KOJI SE TICU NECEGA STO SAM MOZDA DEFIN
 ***
 ***
 
+# PRVO CU TI POKAZATI KAKO IZGLEDA NASA INGRESS NGINX KONFIGURACIJA
+
+- `cat infra/k8s-prod/ingress-srv.yaml`
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-srv
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    #
+    # nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+    # cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
+    #
+spec:
+  # ----------------------------------------------
+  # tls:
+  #   - hosts:
+  #       - www.microticket.xyz
+  #       - microticket.xyz
+  #     secretName: micktick-tls
+  #
+  # ----------------------------------------------
+  rules:
+    - host: www.microticket.xyz
+      http:
+        paths:
+          - path: /api/users/?(.*)
+            pathType: Exact
+            backend:
+              service:
+                name: auth-srv
+                port:
+                  number: 3000
+          - path: /api/tickets/?(.*)
+            pathType: Exact
+            backend:
+              service:
+                name: tickets-srv
+                port:
+                  number: 3000
+          - path: /api/orders/?(.*)
+            pathType: Exact
+            backend:
+              service:
+                name: orders-srv
+                port:
+                  number: 3000
+          - path: /api/payments/?(.*)
+            pathType: Exact
+            backend:
+              service:
+                name: payments-srv
+                port:
+                  number: 3000
+          - path: /?(.*)
+            pathType: Exact
+            backend:
+              service:
+                name: client-srv
+                port:
+                  number: 3000
+# EVO JE TA CLUSTER IP KONFIGURACIJA, KOJU SAM DODAO
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
+    # service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
+    # OVDE ZADAJ TVOJ DOMAIN NAME
+    service.beta.kubernetes.io/do-loadbalancer-hostname: "www.microticket.xyz"
+    # service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
+  labels:
+    helm.sh/chart: ingress-nginx-2.11.1
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/version: 0.34.1
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+  name: ingress-nginx-controller
+  namespace: ingress-nginx
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: http
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: https
+  selector:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/component: controller
+```
+
+***
+***
+***
+***
+***
+***
+***
+***
+***
+
 # `digresija` VEZANA ZA CNAME RECORD ZA NAS DOMAIN
 
 IPAK CEMO PREPRAVITI RECORD, JER ZA SADA IMAMO 2 `A` RECORD-A, A IPAK BI TREBAL ODA IMAM JEDAN `A` RECORD KOJI POINT-UJE TO LOAD BALANCER-A, I JEDAN `CNAME` RECORD ZA `www`
@@ -26,11 +139,11 @@ A ZA `'IS AN ALIAS OF'`, KUCAMO `@`
 
 I PRITISKAM NA `Create Record`
 
-DOBRO SADA MOZES DA UNESES <https://www.microticket.xyz/>
+DOBRO SADA MOZES DA UNESES <http://www.microticket.xyz/>
 
 I JEDNOSTAVNO VIDECES NAS WEB APP NORMALNO
 
-ALI KADA UNESES <https://microticket.xyz/> (**DAKLE BEZ `www`**); IMACES ONAJ NGINGX 404 PAGE
+ALI KADA UNESES <http://microticket.xyz/> (**DAKLE BEZ `www`**); IMACES ONAJ NGINGX 404 PAGE
 
 ![INGRESS 404](images/nginex%20404.jpg)
 

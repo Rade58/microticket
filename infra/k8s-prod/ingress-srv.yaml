@@ -5,20 +5,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/use-regex: "true"
-    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    #
-    # nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-    # cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
-    #
 spec:
-  # ----------------------------------------------
-  # tls:
-  #   - hosts:
-  #       - www.microticket.xyz
-  #       - microticket.xyz
-  #     secretName: micktick-tls
-  #
-  # ----------------------------------------------
   rules:
     - host: www.microticket.xyz
       http:
@@ -58,23 +45,13 @@ spec:
                 name: client-srv
                 port:
                   number: 3000
-# EVO JE TA CLUSTER IP KONFIGURACIJA, KOJU SAM DODAO
-#
-#
-#
-#
-#
-#
 ---
 apiVersion: v1
 kind: Service
 metadata:
   annotations:
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
-    # service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
-    # OVDE ZADAJ TVOJ DOMAIN NAME
     service.beta.kubernetes.io/do-loadbalancer-hostname: "www.microticket.xyz"
-    # service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
   labels:
     helm.sh/chart: ingress-nginx-2.11.1
     app.kubernetes.io/name: ingress-nginx
