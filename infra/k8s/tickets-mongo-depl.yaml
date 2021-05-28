@@ -13,8 +13,9 @@ spec:
         app: tickets-mongo
     spec:
       containers:
-      - name: tickets-mongo
-        image: mongo
+        - name: tickets-mongo
+          image: mongo
+#
 #
 ---
 apiVersion: v1
