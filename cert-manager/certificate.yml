@@ -6,7 +6,7 @@ metadata:
   # STAVLJAM GA U default NAMESPACE
   namespace: default
 spec:
-  # SPECIFICIRAO DNS NAME
+  # SPECIFICIRAO DNS NAMES
   dnsNames:
     - www.microticket.xyz
     - microticket.xyz
