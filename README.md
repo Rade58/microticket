@@ -663,13 +663,13 @@ KADA JE TAJ PROCESS ZAVRSEN, MOCI CE SE VIDETI SECRET INSIDE NAMESPACE
 
 ```zsh
 NAME                  TYPE                                  DATA   AGE
-default-token-c7s9s   kubernetes.io/service-account-token   3      23h
-jwt-secret            Opaque                                1      21h
-micktick-tls          kubernetes.io/tls                     2      14s
-stripe-secret         Opaque                                1      22h
+default-token-n69lt   kubernetes.io/service-account-token   3      8h
+jwt-secret            Opaque                                1      8h
+micktick-tls          kubernetes.io/tls                     2      96s
+stripe-secret         Opaque                                1      8h
 ```
 
-DAKLE GORE JE UPRAVO SECRET, KOJI JE tls TIPA I KOJI IMA ONAKVO IMA KAAKVO SMO ZADALI `micktick-tls `
+DAKLE GORE JE UPRAVO SECRET, KOJI JE tls TIPA I KOJI IMA ONAKVO IMA KAKVO SMO ZADALI, A TO JE `micktick-tls`
 
 DA VIDIMO I NOVI CERTIFICATE
 
@@ -677,7 +677,7 @@ DA VIDIMO I NOVI CERTIFICATE
 
 ```zsh
 NAME       READY   SECRET         AGE
-micktick   True    micktick-tls   85s
+micktick   True    micktick-tls   3m3s
 ```
 
 DA VIDIMO HOCEMO LI MOCI VIDETI SECRET INSIDE CERTIFICATE DESCRIPTION
@@ -692,7 +692,7 @@ Annotations:  <none>
 API Version:  cert-manager.io/v1
 Kind:         Certificate
 Metadata:
-  Creation Timestamp:  2021-05-24T19:03:38Z
+  Creation Timestamp:  2021-05-28T16:54:05Z
   Generation:          1
   Managed Fields:
     API Version:  cert-manager.io/v1
@@ -712,7 +712,7 @@ Metadata:
         f:secretName:
     Manager:      kubectl-client-side-apply
     Operation:    Update
-    Time:         2021-05-24T19:03:38Z
+    Time:         2021-05-28T16:54:05Z
     API Version:  cert-manager.io/v1
     Fields Type:  FieldsV1
     fieldsV1:
@@ -727,40 +727,39 @@ Metadata:
         f:revision:
     Manager:         controller
     Operation:       Update
-    Time:            2021-05-24T19:04:06Z
-  Resource Version:  159367
-  UID:               ac8ddfc9-6d07-4ba8-8b59-c53e3f9abf40
+    Time:            2021-05-28T16:54:45Z
+  Resource Version:  59673
+  UID:               41a8a66b-2ab2-433d-b195-2f58502e9385
 Spec:
   Dns Names:
-    microticket.xyz
     www.microticket.xyz
+    microticket.xyz
   Issuer Ref:
     Kind:       ClusterIssuer
     Name:       letsencrypt-cluster-issuer
   Secret Name:  micktick-tls
 Status:
   Conditions:
-    Last Transition Time:  2021-05-24T19:04:06Z
+    Last Transition Time:  2021-05-28T16:54:45Z
     Message:               Certificate is up to date and has not expired
     Observed Generation:   1
     Reason:                Ready
     Status:                True
     Type:                  Ready
-  Not After:               2021-08-22T18:04:05Z
-  Not Before:              2021-05-24T18:04:05Z
-  Renewal Time:            2021-07-23T18:04:05Z
+  Not After:               2021-08-26T15:54:44Z
+  Not Before:              2021-05-28T15:54:44Z
+  Renewal Time:            2021-07-27T15:54:44Z
   Revision:                1
 Events:
-  Type    Reason     Age   From          Message
-  ----    ------     ----  ----          -------
-  Normal  Issuing    2m8s  cert-manager  Issuing certificate as Secret does not exist
-  Normal  Generated  2m8s  cert-manager  Stored new private key in temporary Secret resource "micktick-tv5hn"
-  Normal  Requested  2m8s  cert-manager  Created new CertificateRequest resource "micktick-nb94c"
-  Normal  Issuing    100s  cert-manager  The certificate has been successfully issued
-
+  Type    Reason     Age    From          Message
+  ----    ------     ----   ----          -------
+  Normal  Issuing    3m51s  cert-manager  Issuing certificate as Secret does not exist
+  Normal  Generated  3m51s  cert-manager  Stored new private key in temporary Secret resource "micktick-r7fws"
+  Normal  Requested  3m51s  cert-manager  Created new CertificateRequest resource "micktick-fnprs"
+  Normal  Issuing    3m11s  cert-manager  The certificate has been successfully issued
 ```
 
-MOZES GORE VIDETI VIDETI DA JE CERTIFICATE SUCCESSFULLY ISSUED
+MOZES GORE VIDETI DA JE CERTIFICATE SUCCESSFULLY ISSUED
 
 GORE VIDIS EVENTS, I ONI TACNO TAKO TREBA DA IZGLEDAJU
 
