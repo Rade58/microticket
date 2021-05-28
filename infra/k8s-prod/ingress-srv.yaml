@@ -16,7 +16,7 @@ spec:
   #       - www.microticket.xyz
   #       - microticket.xyz
   #     secretName: micktick-tls
-  # 
+  #
   # ----------------------------------------------
   rules:
     - host: www.microticket.xyz
