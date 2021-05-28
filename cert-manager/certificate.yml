@@ -8,8 +8,8 @@ metadata:
 spec:
   # SPECIFICIRAO DNS NAME
   dnsNames:
-    - microticket.xyz
     - www.microticket.xyz
+    - microticket.xyz
   # SPECIFICIRAO ONAJ SECRET, U KOJI CE SE STAVITI CERTIFICATE
   # A KOJ ISAM SPECIFICIRAO I U INGRESS MANIFESTU
   secretName: micktick-tls
