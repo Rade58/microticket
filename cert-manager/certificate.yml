@@ -1,0 +1,19 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  # DAO SAM MU IME
+  name: micktick
+  # STAVLJAM GA U default NAMESPACE
+  namespace: default
+spec:
+  # SPECIFICIRAO DNS NAME
+  dnsNames:
+    - www.microticket.xyz
+    - microticket.xyz
+  # SPECIFICIRAO ONAJ SECRET, U KOJI CE SE STAVITI CERTIFICATE
+  # A KOJ ISAM SPECIFICIRAO I U INGRESS MANIFESTU
+  secretName: micktick-tls
+  # OVDE SPECIFICIRAMO IME ISSUER-A KOJEG SMO KREIRALI RANIJE
+  issuerRef:
+    name: letsencrypt-cluster-issuer
+    kind: ClusterIssuer

@@ -1,37 +1,55 @@
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-srv
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/use-regex: "true"
+    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+    # cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
 spec:
+  # ----------------------------------------------
+  # ----------------------------------------------
+  # tls:
+  #   - hosts:
+  #       - www.microticket.xyz
+  #       - microticket.xyz
+  #     secretName: micktick-tls
+  # 
+  # ----------------------------------------------
   rules:
-    # EVO OVDE SMO ZADALI HOST microticket.xyz
-    # ALI MORAS DA DODAS www ISPRED
     - host: www.microticket.xyz
       http:
         paths:
           - path: /api/users/?(.*)
             pathType: Exact
             backend:
-              serviceName: auth-srv
-              servicePort: 3000
+              service:
+                name: auth-srv
+                port:
+                  number: 3000
           - path: /api/tickets/?(.*)
             pathType: Exact
             backend:
-              serviceName: tickets-srv
-              servicePort: 3000
+              service:
+                name: tickets-srv
+                port:
+                  number: 3000
           - path: /api/orders/?(.*)
             pathType: Exact
             backend:
-              serviceName: orders-srv
-              servicePort: 3000
+              service:
+                name: orders-srv
+                port:
+                  number: 3000
           - path: /api/payments/?(.*)
             pathType: Exact
             backend:
-              serviceName: payments-srv
-              servicePort: 3000
+              service:
+                name: payments-srv
+                port:
+                  number: 3000
           - path: /?(.*)
             pathType: Exact
             backend:
@@ -52,11 +70,12 @@ metadata:
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
     # OVDE ZADAJ TVOJ DOMAIN NAME
     service.beta.kubernetes.io/do-loadbalancer-hostname: "www.microticket.xyz"
+    # service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
   labels:
-    helm.sh/chart: ingress-nginx-2.0.3
+    helm.sh/chart: ingress-nginx-2.11.1
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/version: 0.32.0
+    app.kubernetes.io/version: 0.34.1
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
   name: ingress-nginx-controller
