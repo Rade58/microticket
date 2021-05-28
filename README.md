@@ -241,7 +241,7 @@ KUCAJ, SVE OVE FLAGOVE KADA BUDES RUNN-OVAO, SLEDECI COMMAND
 
 - `kubectl apply --validate=false -f cert-manager/cert-manager-1.3.1.yaml`
 
-KREIRACE SE JAKO MNOGO KUBERNETES OBJEKATI, KAO STO SE KREIRAO VEC BROJ, KADA SMO INSTALIRALI, SAMI INGRESS
+KREIRACE SE JAKO MNOGO KUBERNETES OBJEKATA, KAO STO SE KREIRAO VEC BROJ, I ONDA KADA SMO INSTALIRALI, SAMI INGRESS, ODNOSNO LOAD BALANCER-A; ALI SADA SE KREIRALO MNOGO VISE OBJEKATA
 
 **TREBALO BI DA SI SAD DOBIO I cert-manager NAMESPACE** (A DOBIO SI GA ZATO, JER JE U APPLIED YAML FILE-U BIO SPECIFICIRAN namespace FIELD)
 
@@ -249,12 +249,12 @@ KREIRACE SE JAKO MNOGO KUBERNETES OBJEKATI, KAO STO SE KREIRAO VEC BROJ, KADA SM
 
 ```zsh
 NAME              STATUS   AGE
-cert-manager      Active   89s
-default           Active   4h51m
-ingress-nginx     Active   4h43m
-kube-node-lease   Active   4h51m
-kube-public       Active   4h51m
-kube-system       Active   4h51m
+cert-manager      Active   90s
+default           Active   7h45m
+ingress-nginx     Active   7h24m
+kube-node-lease   Active   7h45m
+kube-public       Active   7h45m
+kube-system       Active   7h45m
 ```
 
 DA VIDIM KOJE PODS SADA IMAM U cert-manger NAMESPACE-U
@@ -263,9 +263,9 @@ DA VIDIM KOJE PODS SADA IMAM U cert-manger NAMESPACE-U
 
 ```zsh
 NAME                                       READY   STATUS    RESTARTS   AGE
-cert-manager-7dd5854bb4-znmb5              1/1     Running   0          2m3s
-cert-manager-cainjector-64c949654c-mwpkm   1/1     Running   0          2m4s
-cert-manager-webhook-6bdffc7c9d-54v6c      1/1     Running   0          2m3s
+cert-manager-7dd5854bb4-5mx8f              1/1     Running   0          111s
+cert-manager-cainjector-64c949654c-vjj88   1/1     Running   0          112s
+cert-manager-webhook-6bdffc7c9d-x726p      1/1     Running   0          111s
 ```
 
 **DA VIDIS DA LI IMAS CLUSTER IP SERVICES TO EXPOSE, POMENUTE PODS, KUCAJ SLEDECU KOMANDU**
@@ -274,34 +274,34 @@ cert-manager-webhook-6bdffc7c9d-54v6c      1/1     Running   0          2m3s
 
 ```zsh
 NAME                                           READY   STATUS    RESTARTS   AGE
-pod/cert-manager-7dd5854bb4-znmb5              1/1     Running   0          2m42s
-pod/cert-manager-cainjector-64c949654c-mwpkm   1/1     Running   0          2m43s
-pod/cert-manager-webhook-6bdffc7c9d-54v6c      1/1     Running   0          2m42s
+pod/cert-manager-7dd5854bb4-5mx8f              1/1     Running   0          3m7s
+pod/cert-manager-cainjector-64c949654c-vjj88   1/1     Running   0          3m8s
+pod/cert-manager-webhook-6bdffc7c9d-x726p      1/1     Running   0          3m7s
 
-NAME                           TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
-service/cert-manager           ClusterIP   10.245.143.186   <none>        9402/TCP   2m43s
-service/cert-manager-webhook   ClusterIP   10.245.125.177   <none>        443/TCP    2m43s
+NAME                           TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/cert-manager           ClusterIP   10.245.84.16    <none>        9402/TCP   3m9s
+service/cert-manager-webhook   ClusterIP   10.245.157.94   <none>        443/TCP    3m9s
 
 NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/cert-manager              1/1     1            1           2m42s
-deployment.apps/cert-manager-cainjector   1/1     1            1           2m43s
-deployment.apps/cert-manager-webhook      1/1     1            1           2m42s
+deployment.apps/cert-manager              1/1     1            1           3m8s
+deployment.apps/cert-manager-cainjector   1/1     1            1           3m9s
+deployment.apps/cert-manager-webhook      1/1     1            1           3m8s
 
 NAME                                                 DESIRED   CURRENT   READY   AGE
-replicaset.apps/cert-manager-7dd5854bb4              1         1         1       2m42s
-replicaset.apps/cert-manager-cainjector-64c949654c   1         1         1       2m43s
-replicaset.apps/cert-manager-webhook-6bdffc7c9d      1         1         1       2m42s
+replicaset.apps/cert-manager-7dd5854bb4              1         1         1       3m8s
+replicaset.apps/cert-manager-cainjector-64c949654c   1         1         1       3m9s
+replicaset.apps/cert-manager-webhook-6bdffc7c9d      1         1         1       3m8s
 ```
 
 KAO STO VIDIS GORNJI CLUSTER IP SERVICE-OVI **NEMAJU ASSIGNED EXTERNAL IPs**
 
-VIDIMO GORE I DEPLOYMENTS
-
 UGLAVNOM, STO SE TICE IP-JEVA, THEY ARE NICE AND SECURE IN ITS OWN NAMESPACE
+
+TAKODJE, VIDIMO GORE I DEPLOYMENTS, A I SERVICES
 
 **NAIME, DALJE JA CU PODESAVATI, JOS DVE VRSTE KUBERNETES OBJECT-A: TO CE BITI: `Clusterissuer` I `Certificate`**
 
-DA PROVERIM DA LI IMAM TAKVIH OBJEKATA (**NE BI TREBALO DA IH IMAM**)
+DA PROVERIM DA LI, TRENUTNO IMAM TAKVIH OBJEKATA (**NE BI TREBALO DA IH IMAM**)
 
 - `kubectl get clusterissuers`
 
@@ -319,7 +319,7 @@ No resources found in cert-manager namespace.
 
 [Let's Encypt](https://letsencrypt.org/)
 
-CERT MANGER JE DEPLOY-OVAO A BOUNCH OF CUSTOM RESOURCE DEFINITIONS, I NEW KUBERNATES OBJECTS ARE INTRODUCED INTO OUR CLUSTER
+CERT MANGER JE DEPLOY-OVAO A BOUNCH OF CUSTOM RESOURCE DEFINITIONS, I NEW KUBERNATES OBJECTS ARE INTRODUCED INTO OUR CLUSTER, KAO ST OSAM TI REKO NEKI OD NJIH SU `Custerissuer` I `Certificate` OBJECT, ALI JOS IH NISMO DEPLOY-OVALI
 
 DA HOOK-UJEMO UP CERT MANAGER SA LET'S ENCRYPT-OM, **MORAMO DEPPLOY-OVATI `issuer.yaml`**
 
@@ -327,13 +327,21 @@ ISSUER JE YAML FILE KOJI CE DEPLOY-OVATI CERTIFICATE AUTHORITY, A U NASEM SLUCAJ
 
 ONDA CEMO DEFINISATI JOS JEDAN YAML FILE, KOJI CE DEFINISATI ACTUAL CERTIFICATE WE NEED
 
-THEN EVERYTHING ELSE CE SE DESAVATI AUTOMATSKI. **CERT MANAGER CE GENERISATI CERTIFICATE REQUEST OBJECT, I ONDA CE ORDER OBJECT BITI GENERISAN, I USED FOR LET'S ENCRYPT CERTIFICATE ORDER, CERTIFICATE REQUEST CE TAKODJE GENERISATI CHALLENGE OBJECT, POTREBNAN DA SE FULLFIL-UJE LETS ENCRYPT CHALLENGE**
+THEN EVERYTHING ELSE CE SE DESAVATI AUTOMATSKI. **CERT MANAGER CE GENERISATI CERTIFICATE REQUEST OBJECT, I ONDA CE ORDER OBJECT BITI GENERISAN, I USED FOR LET'S ENCRYPT CERTIFICATE ORDER. CERTIFICATE REQUEST CE TAKODJE GENERISATI CHALLENGE OBJECT, POTREBNAN DA SE FULLFILL-UJE LETS ENCRYPT CHALLENGE**
 
 KADA JE CHALLENGE FULLFILED OD STRANE CERT MANAGER-A, STATUS CERTIFICATA CE BITI PROMENJEN OD `status:in progress` DO `status:completed` I **KUBERNETES SECRET CE BITI CREATED `ILI UPDATED`**
 
 ## PRE NEGO STO POZELIS DA KORISTIMO REAL CA (CERTIFICATE AUTHORITY), MOZES DA PROVERIS DA LI CERT MANGER, ZAISTA RADI, TAKO STO KREIRAS SELF SIGNED CERTIFICATE
 
+***
+***
 
+PRESKOCIO SAM OVAJ DEO, A TI GA POGLEDAJ [OVDE](https://github.com/marcel-dempers/docker-development-youtube-series/tree/master/kubernetes/cert-manager#test-certificate-issuing)
+
+TAKODJE, GORNJI DO SI TREBO DA URADIS, JER TO TI JE TEST A SVE FUNKCIONISE KAKO TREBA
+
+***
+***
 
 
 
