@@ -53,8 +53,10 @@ spec:
           - path: /?(.*)
             pathType: Exact
             backend:
-              serviceName: client-srv
-              servicePort: 3000
+              service:
+                name: client-srv
+                port:
+                  number: 3000
 # EVO JE TA CLUSTER IP KONFIGURACIJA, KOJU SAM DODAO
 #
 #
@@ -68,6 +70,7 @@ kind: Service
 metadata:
   annotations:
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
+    # service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
     # OVDE ZADAJ TVOJ DOMAIN NAME
     service.beta.kubernetes.io/do-loadbalancer-hostname: "www.microticket.xyz"
     # service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
