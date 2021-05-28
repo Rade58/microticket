@@ -4,11 +4,46 @@ PRVO CU DATI PAR DIGRESIJA ZA POCETAK, A KOJI SE TICU NECEGA STO SAM MOZDA DEFIN
 
 ***
 ***
-***
 
-# PRVO CU TI POKAZATI KAKO IZGLEDA NASA INGRESS NGINX KONFIGURACIJA
+## `digresija` VEZANA ZA CNAME RECORD ZA NAS DOMAIN
+
+IPAK CEMO PREPRAVITI RECORD, JER ZA SADA IMAMO 2 `A` RECORD-A, A IPAK BI TREBAL ODA IMAM JEDAN `A` RECORD KOJI POINT-UJE TO LOAD BALANCER-A, I JEDAN `CNAME` RECORD ZA `www`
+
+NA DIGITAL OCEAN-U: `MANGE`->`Networking`->`Domains` I BIRAJ NAS DOMAIN (`microticket.xyz`)
+
+UKLONI `A` RECORD ZA `www`
+
+I ZADAJ OVO
+
+SADA KLIKCEMO NA `CNAME` TAB DA TAMO NAPRAVIMO NOVI RECORD
+
+- ZA `'HOSTNAME'` KUCAMO `www`
+
+A ZA `'IS AN ALIAS OF'`, KUCAMO `@`
+
+*'TTL'* MENJAMO NA 30 SEKUNDI
+
+I PRITISKAM NA `Create Record`
+
+SADA **AKO SU NAM KONFIGURACIJE INGRESS-A I LOAD BALANCER-A DOBRO DEFINISANE**, KADA ODEMO NA 
+
+<http://www.microticket.xyz/>
+
+PAGE CE BITI SERVED
+
+MEDJUTIM AKO UNESES 
+
+<http://microticket.xyz/> (DAKLE BEZ `www`)
+
+TADA CES BITI REDIRECTED NA <http://www.microticket.xyz/>
+
+I NARAVNO PAGE BI BIO, ISTO SERVED
+
+# POKAZACU TI SADA, KAKO NAM IZGLEDA NASA INGRESS NGINX KONFIGURACIJA, KOJU SAM U PROSLOM BRANCH-U UPDATE-OVAO, KAKO BI KORISTILA NOVIJU VERZIJU API-A; A TAKODJE CEMO VIDETI I KONFIGURACIJU LOAD BALLANCER-A, KOJA JE U ISTOM FILE-U
 
 - `cat infra/k8s-prod/ingress-srv.yaml`
+
+A UZ TO CU TI RECI JOS PAR STVARI
 
 ```yaml
 apiVersion: networking.k8s.io/v1
@@ -18,21 +53,10 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/use-regex: "true"
-    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    #
-    # nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-    # cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
-    #
 spec:
-  # ----------------------------------------------
-  # tls:
-  #   - hosts:
-  #       - www.microticket.xyz
-  #       - microticket.xyz
-  #     secretName: micktick-tls
-  #
-  # ----------------------------------------------
   rules:
+    # SAMO TI NAPOMINJEM DA SMO OVDE STAVILI host KOJI IMA www
+    # U SEBI
     - host: www.microticket.xyz
       http:
         paths:
@@ -71,15 +95,15 @@ spec:
                 name: client-srv
                 port:
                   number: 3000
-# EVO JE TA CLUSTER IP KONFIGURACIJA, KOJU SAM DODAO
+# OVO JE LOAD BALANCER CONFIGURATION
 ---
 apiVersion: v1
 kind: Service
 metadata:
   annotations:
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
-    # service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
-    # OVDE ZADAJ TVOJ DOMAIN NAME
+    # ISTO TAKO ZA OVAJ LOAD BALANCER CONFIGURATION
+    # ISTO SMO ZAALI HOST, KOJI IMA www INSIDE OF IT
     service.beta.kubernetes.io/do-loadbalancer-hostname: "www.microticket.xyz"
   labels:
     helm.sh/chart: ingress-nginx-2.11.1
@@ -108,156 +132,24 @@ spec:
     app.kubernetes.io/component: controller
 ```
 
-***
-***
-***
-***
-***
-***
-***
-***
-***
+ZA SADA SA OVOM KONFIGURACIJOM SVE FUNKCIONISE KAKO TREBA
 
-# `digresija` VEZANA ZA CNAME RECORD ZA NAS DOMAIN
+**I MOZDA TI JE CUDNO, TO STO KORISTIS HOST SA `www` NA LOAD BALANCER CONFIGURATION-U, S OBZIROM DA TI JE LOAD BALANCER SPECIFICIRAN NA @ RECORDU, `ALI IPAK SVE FUNKCIONISE KAKO TREBA`**
 
-IPAK CEMO PREPRAVITI RECORD, JER ZA SADA IMAMO 2 `A` RECORD-A, A IPAK BI TREBAL ODA IMAM JEDAN `A` RECORD KOJI POINT-UJE TO LOAD BALANCER-A, I JEDAN `CNAME` RECORD ZA `www`
+ALI, NARAVNO NIJE ENABLED SSL, ODNOSNO NASA APLIKACIJA SE NE SERVE-UJE OVER HTTPS
 
-NA DIGITAL OCEAN-U: `MANGE`->`Networking`->`Domains` I BIRAJ NAS DOMAIN (`microticket.xyz`)
-
-UKLONI `A` RECORD ZA `www`
-
-I ZADAJ OVO
-
-SADA KLIKCEMO NA `CNAME` TAB DA TAMO NAPRAVIMO NOVI RECORD
-
-- ZA `'HOSTNAME'` KUCAMO `www`
-
-A ZA `'IS AN ALIAS OF'`, KUCAMO `@`
-
-*'TTL'* MENJAMO NA 30 SEKUNDI
-
-I PRITISKAM NA `Create Record`
-
-DOBRO SADA MOZES DA UNESES <http://www.microticket.xyz/>
-
-I JEDNOSTAVNO VIDECES NAS WEB APP NORMALNO
-
-ALI KADA UNESES <http://microticket.xyz/> (**DAKLE BEZ `www`**); IMACES ONAJ NGINGX 404 PAGE
+MEDJUTIM ZA SADA MI JE BITNO DA NIGDE NE DOBIJAM OVAKAV PAGE, KADA UNSEM URL U BROWSER I PRITISNEM ENTER
 
 ![INGRESS 404](images/nginex%20404.jpg)
 
-**OVO JE ZATO STO SU ROUTING RULES U INGRESS-U DEFINISANA ZA `https://www.microticket.xyz/` A NE ZA `https://microticket.xyz/`;**
+**DAKLE NAPOMINJEM TI DA NEMAM GORNJI PAGE, VEC SE MOJA APLIKACIJA SERVE-UJE KKAO TREBA**
 
-MEDJUTIM JA OVO MOGU RESITI, PODESAVANJEM JEDNE annotation OPCIJE U INGRESS-U
+ISTO TAKO I SLANJE REQUEST-OVA FUNKCIONISE, BEZ OBZIRA DA LI JE TO FROM CLIENT SIDE ILI FROM `getServerSideProps` KA OSTALIM MICROSERVICE-OVIMA
+
+DA SE SADA VRATIM NA ONO STA JE TEMA OVE LEKCIJE, A TO JE SSL, ODNOSNO HTTPS
 
 ***
 ***
-
-# DIGRESIJA ZA PODESAVANJE `nginx.ingress.kubernetes.io/from-to-www-redirect: "true"` ANNOTATION OPCIJE U INGRESS-U
-
-**KONKRETNO GORNJI CNAME RECORD SAM ZADAO UMESTO A RECORD-A, DA BIH MOGAO DA ENABLE-UJEM TU OPCIJU U INGRESS-U, A TO JE OPCIJA [`nginx.ingress.kubernetes.io/from-to-www-redirect: "true"`](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#redirect-fromto-www)**
-
-POMENUTA OPCIJA, KADA JE BUDEM NARAVNO PODESIO NA `"true"`, RESICE POMENUTI PROBLEM KOJI IMAMO, ODNONO KADA BUDEMO ODLAZILI NA `https://microticket.xyz/`, MI CEMO UVEK BITI REDIRECTED NA `https://microticket.xyz/`, ZA KOJI IMAMO ROUTING RULES
-
-TAKODJE CU IZMENITI MALO INGRESS CONFIG KAKO BI KORISTIO `apiVersion: networking.k8s.io/v1` (ZATO STO CU TAKO LAKSE PODESITI NEKE STVARI U BUDUCNOSTI), JER IMAO SAM PROBLEMA NESTO DA PODESIM, U SLUCAJU BETA VERZIJE KOJU SAM KORISTIO (**IMAO SAM I WARNINGS DA TA BETA VERZIJA NE ODGOVARA MOM CLUSTER-U, ODNONO ONA JE FUNKCIONISALA, ALI JE DEPRECATED**)
-
-- `code infra/k8s-prod/ingress-srv.yaml`
-
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: ingress-srv
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    # EVO OVO SAM DODAO
-    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-    # 
-spec:
-  rules:
-    - host: www.microticket.xyz
-      http:
-        paths:
-          - path: /api/users/?(.*)
-            pathType: Exact
-            backend:
-              service:
-                name: auth-srv
-                port:
-                  number: 3000
-          - path: /api/tickets/?(.*)
-            pathType: Exact
-            backend:
-              service:
-                name: tickets-srv
-                port:
-                  number: 3000
-          - path: /api/orders/?(.*)
-            pathType: Exact
-            backend:
-              service:
-                name: orders-srv
-                port:
-                  number: 3000
-          - path: /api/payments/?(.*)
-            pathType: Exact
-            backend:
-              service:
-                name: payments-srv
-                port:
-                  number: 3000
-          - path: /?(.*)
-            pathType: Exact
-            backend:
-              service:
-                name: client-srv
-                port:
-                  number: 3000
----
-apiVersion: v1
-kind: Service
-metadata:
-  annotations:
-    service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
-    service.beta.kubernetes.io/do-loadbalancer-hostname: "microticket.xyz"
-  labels:
-    # IZ NEKIH RAZLOGA KOJI NISU POSEBNI, POVECAO SAM OVDE VERZIJU
-    helm.sh/chart: ingress-nginx-2.11.1
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress-nginx
-    # I OVDE PROMENIO VERZIJU
-    app.kubernetes.io/version: 0.34.1
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/component: controller
-  name: ingress-nginx-controller
-  namespace: ingress-nginx
-spec:
-  type: LoadBalancer
-  externalTrafficPolicy: Local
-  ports:
-    - name: http
-      port: 80
-      protocol: TCP
-      targetPort: http
-    - name: https
-      port: 443
-      protocol: TCP
-      targetPort: https
-  selector:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/component: controller
-
-```
-
-COMMIT-UJ OVO STO SMO NAPRAVILI I PUSH-UJ TO dev BRANCH, STO SMO RADILI RANIJE, PA MERG-UJ ,PULL REQUEST INTO `main` BRANCH (**KAKO BI SE DESIO ONAJ GITHUB WORKFLOW, KOJI CE NA KRAJU APPLY-OVATI CHANGES NA CLUSTER**)
-
-KADA SE SVE TO DESILO, MOZES OTICI U BROWSER I KUCATI `https://microticket.xyz/` ,I TI CES BITI REDIRECTED NA <https://www.microticket.xyz/>
-
-DA SE SADA VRATIMO NA TEMU OVE LEKCIJE, A TO JE ENABLING SSL ZA NAS CLUSTER
-
-**POSTO, BEZ OBZIRA, STO MI KORISTIMO `https` KADA KORISTIMO URL-OVE, KAO STO SI I SAM MOGAO VIDETI, MI I DALJE MORAMO DA KUCAMO "`thisisunsafe`" U BROWSERU, KAKO BI NAM SE ACTUALLY PAGE PRIKAZO' A TO JE ZATO STO NEMAMO VALIDAN SSL CRTIFICATE**
 
 # CERT MANAGER
 
@@ -441,3 +333,151 @@ KADA JE CHALLENGE FULLFILED OD STRANE CERT MANAGER-A, STATUS CERTIFICATA CE BITI
 
 ## PRE NEGO STO POZELIS DA KORISTIMO REAL CA (CERTIFICATE AUTHORITY), MOZES DA PROVERIS DA LI CERT MANGER, ZAISTA RADI, TAKO STO KREIRAS SELF SIGNED CERTIFICATE
 
+
+
+
+
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+***
+
+
+# DIGRESIJA ZA PODESAVANJE `nginx.ingress.kubernetes.io/from-to-www-redirect: "true"` ANNOTATION OPCIJE U INGRESS-U
+
+**KONKRETNO GORNJI CNAME RECORD SAM ZADAO UMESTO A RECORD-A, DA BIH MOGAO DA ENABLE-UJEM TU OPCIJU U INGRESS-U, A TO JE OPCIJA [`nginx.ingress.kubernetes.io/from-to-www-redirect: "true"`](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#redirect-fromto-www)**
+
+POMENUTA OPCIJA, KADA JE BUDEM NARAVNO PODESIO NA `"true"`, RESICE POMENUTI PROBLEM KOJI IMAMO, ODNONO KADA BUDEMO ODLAZILI NA `https://microticket.xyz/`, MI CEMO UVEK BITI REDIRECTED NA `https://microticket.xyz/`, ZA KOJI IMAMO ROUTING RULES
+
+TAKODJE CU IZMENITI MALO INGRESS CONFIG KAKO BI KORISTIO `apiVersion: networking.k8s.io/v1` (ZATO STO CU TAKO LAKSE PODESITI NEKE STVARI U BUDUCNOSTI), JER IMAO SAM PROBLEMA NESTO DA PODESIM, U SLUCAJU BETA VERZIJE KOJU SAM KORISTIO (**IMAO SAM I WARNINGS DA TA BETA VERZIJA NE ODGOVARA MOM CLUSTER-U, ODNONO ONA JE FUNKCIONISALA, ALI JE DEPRECATED**)
+
+- `code infra/k8s-prod/ingress-srv.yaml`
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-srv
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    # EVO OVO SAM DODAO
+    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+    # 
+spec:
+  rules:
+    - host: www.microticket.xyz
+      http:
+        paths:
+          - path: /api/users/?(.*)
+            pathType: Exact
+            backend:
+              service:
+                name: auth-srv
+                port:
+                  number: 3000
+          - path: /api/tickets/?(.*)
+            pathType: Exact
+            backend:
+              service:
+                name: tickets-srv
+                port:
+                  number: 3000
+          - path: /api/orders/?(.*)
+            pathType: Exact
+            backend:
+              service:
+                name: orders-srv
+                port:
+                  number: 3000
+          - path: /api/payments/?(.*)
+            pathType: Exact
+            backend:
+              service:
+                name: payments-srv
+                port:
+                  number: 3000
+          - path: /?(.*)
+            pathType: Exact
+            backend:
+              service:
+                name: client-srv
+                port:
+                  number: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
+    service.beta.kubernetes.io/do-loadbalancer-hostname: "microticket.xyz"
+  labels:
+    # IZ NEKIH RAZLOGA KOJI NISU POSEBNI, POVECAO SAM OVDE VERZIJU
+    helm.sh/chart: ingress-nginx-2.11.1
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: ingress-nginx
+    # I OVDE PROMENIO VERZIJU
+    app.kubernetes.io/version: 0.34.1
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+  name: ingress-nginx-controller
+  namespace: ingress-nginx
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: http
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: https
+  selector:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/component: controller
+
+```
+
+COMMIT-UJ OVO STO SMO NAPRAVILI I PUSH-UJ TO dev BRANCH, STO SMO RADILI RANIJE, PA MERG-UJ ,PULL REQUEST INTO `main` BRANCH (**KAKO BI SE DESIO ONAJ GITHUB WORKFLOW, KOJI CE NA KRAJU APPLY-OVATI CHANGES NA CLUSTER**)
+
+KADA SE SVE TO DESILO, MOZES OTICI U BROWSER I KUCATI `https://microticket.xyz/` ,I TI CES BITI REDIRECTED NA <https://www.microticket.xyz/>
+
+DA SE SADA VRATIMO NA TEMU OVE LEKCIJE, A TO JE ENABLING SSL ZA NAS CLUSTER
+
+**POSTO, BEZ OBZIRA, STO MI KORISTIMO `https` KADA KORISTIMO URL-OVE, KAO STO SI I SAM MOGAO VIDETI, MI I DALJE MORAMO DA KUCAMO "`thisisunsafe`" U BROWSERU, KAKO BI NAM SE ACTUALLY PAGE PRIKAZO' A TO JE ZATO STO NEMAMO VALIDAN SSL CRTIFICATE**
