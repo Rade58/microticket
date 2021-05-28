@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   # OVO JE VAZNO, VIDECES I ZASTO
   name: payments-depl
-  #
 spec:
   replicas: 1
   selector:
@@ -41,7 +40,6 @@ spec:
                   name: stripe-secret
                   key: STRIPE_KEY
             # ------------------------
-#
 ---
 apiVersion: v1
 kind: Service

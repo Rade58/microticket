@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   # OVO JE VAZNO, VIDECES I ZASTO
-  #
   name: tickets-depl
 spec:
   replicas: 1

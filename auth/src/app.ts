@@ -23,6 +23,7 @@ app.use(
     // STO ZNACI DA CE BITI true, SAMO KADA NISMO
     // U TEST ENVIROMENT-U
     // secure: process.env.NODE_ENV !== "test",
+    //
     secure: false
     //
   })

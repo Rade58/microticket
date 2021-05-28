@@ -16,7 +16,7 @@ MyApp.getInitialProps = async (appCtx: AppContext) => {
 
     console.log("--------(_app)---------")
     console.log({currentUser})
-
+//
     const appProps = await App.getInitialProps(appCtx);
     appProps.pageProps.initialProps = { currentUser } as {
       currentUser: InitialPropsI["initialProps"]["currentUser"];
