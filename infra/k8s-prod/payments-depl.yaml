@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   # OVO JE VAZNO, VIDECES I ZASTO
   name: payments-depl
+  #
 spec:
   replicas: 1
   selector:
