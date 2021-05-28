@@ -39,8 +39,6 @@ spec:
               "-cid",
               "microticket",
             ]
-#
-#
 ---
 apiVersion: v1
 kind: Service
