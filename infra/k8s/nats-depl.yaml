@@ -13,33 +13,32 @@ spec:
         app: nats
     spec:
       containers:
-      - name: nats
-        image: nats-streaming:0.17.0
-        args: [
-          #
-          '-p',
-          '4222',
-          #
-          '-m',
-          '8222',
-          #
-          '-hbi',
-          '5s',
-          #
-          '-hbt',
-          '5s',
-          #
-          '-hbf',
-          '2',
-          #
-          '-SD',
-          #
-          # EVO OVO TI JE CLUSTER ID
-          # KADA SAM OVO PODESAVO NISAM TI REKAO DA JE TO TO
-          '-cid',
-          'microticket'
-        ]
-#
+        - name: nats
+          image: nats-streaming:0.17.0
+          args: [
+              #
+              "-p",
+              "4222",
+              #
+              "-m",
+              "8222",
+              #
+              "-hbi",
+              "5s",
+              #
+              "-hbt",
+              "5s",
+              #
+              "-hbf",
+              "2",
+              #
+              "-SD",
+              #
+              # EVO OVO TI JE CLUSTER ID
+              # KADA SAM OVO PODESAVO NISAM TI REKAO DA JE TO TO
+              "-cid",
+              "microticket",
+            ]
 ---
 apiVersion: v1
 kind: Service
@@ -56,4 +55,3 @@ spec:
     - name: monitoring
       protocol: TCP
       port: 8222
-

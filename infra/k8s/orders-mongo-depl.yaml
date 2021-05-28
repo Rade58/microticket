@@ -13,9 +13,8 @@ spec:
         app: orders-mongo
     spec:
       containers:
-      - name: orders-mongo
-        image: mongo
-#
+        - name: orders-mongo
+          image: mongo
 ---
 apiVersion: v1
 kind: Service
