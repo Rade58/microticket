@@ -5,7 +5,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
     # nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
     # cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
 spec:
@@ -53,60 +53,24 @@ spec:
           - path: /?(.*)
             pathType: Exact
             backend:
-              service:
-                name: client-srv
-                port:
-                  number: 3000
-    # - host: microticket.xyz
-    #   http:
-    #     paths:
-    #       - path: /api/users/?(.*)
-    #         pathType: Exact
-    #         backend:
-    #           service:
-    #             name: auth-srv
-    #             port:
-    #               number: 3000
-    #       - path: /api/tickets/?(.*)
-    #         pathType: Exact
-    #         backend:
-    #           service:
-    #             name: tickets-srv
-    #             port:
-    #               number: 3000
-    #       - path: /api/orders/?(.*)
-    #         pathType: Exact
-    #         backend:
-    #           service:
-    #             name: orders-srv
-    #             port:
-    #               number: 3000
-    #       - path: /api/payments/?(.*)
-    #         pathType: Exact
-    #         backend:
-    #           service:
-    #             name: payments-srv
-    #             port:
-    #               number: 3000
-    #       - path: /?(.*)
-    #         pathType: Exact
-    #         backend:
-    #           service:
-    #             name: client-srv
-    #             port:
-    #               number: 3000
+              serviceName: client-srv
+              servicePort: 3000
+# EVO JE TA CLUSTER IP KONFIGURACIJA, KOJU SAM DODAO
+#
+#
+#
+#
+#
+#
 ---
 apiVersion: v1
 kind: Service
 metadata:
   annotations:
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
-    #
-    #     
-    # service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
+    # OVDE ZADAJ TVOJ DOMAIN NAME
     service.beta.kubernetes.io/do-loadbalancer-hostname: "www.microticket.xyz"
-    #
-    #
+    # service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
   labels:
     helm.sh/chart: ingress-nginx-2.11.1
     app.kubernetes.io/name: ingress-nginx

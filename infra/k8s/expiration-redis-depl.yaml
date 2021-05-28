@@ -13,8 +13,9 @@ spec:
         app: expiration-redis
     spec:
       containers:
-      - name: expiration-redis
-        image: redis
+        - name: expiration-redis
+          image: redis
+#
 #
 ---
 apiVersion: v1
