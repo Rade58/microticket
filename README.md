@@ -14,7 +14,22 @@ NARAVNO NECU SE STRIKTNO DRZATI GORNJEG TUTORIJLA, **ZA PAGE-OVE IZ POMENUTOG TU
 
 # SADA CEMO ZAMENITI CONTEXT, NASEG CLUSTER-A, JER CEMO SE BAVITI DEVELOPMENTOM
 
+DEVELOPMENT ZELIM DA NASTAVIM NA NASEM DEVELOPMENT CLUSTERU KOJI JE DEPLOYED NA GOOGLE CLOUD-U
+
 - `kubectl config get-contexts`
 
-- `kubectl config use-context <ime clustera sa google cloud-a>`
+- `kubectl config use-context <context clustera sa google cloud-a>`
+
+SECAM SE DA SAM POMENUTOM CLUSTER-U SMANJIO BROJ NODE-OVA NA NULA TAKO DA NE BI TROSIO RESURSE
+
+SADA CEMO OPET DA MU VRATIMO NJEGOVA TRI NODE, KAKO BI BIO OPERATIONAL, I KAKOO BISMO MOGLI DA DEVELOP-UJEMO
+
+- `gcloud container clusters list`
+
+- `gcloud container clusters resize <ime clustera sa liste> --num-nodes=3`
+
+# POSTO SMO PROMENILI CONTEXT, SADA SMMO DA START-UJEMO SKAFFOLD
+
+- `skaffold dev`
+
 
