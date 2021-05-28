@@ -8,7 +8,7 @@ metadata:
     # NISAM SIGURAN DA LI CE MI OVO TTREBATI, I ZATO CU SAMO STAVITI
     # ANNOTATIONS ALI CE BITI COMMENTED OUT
     # nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    # nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
     # MEDJUTIM MISLI MDA CE MI OVAJ ANNOTATION TREBATI
     # ON SPECIFICIRA ISSUER OBJECT
     cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"

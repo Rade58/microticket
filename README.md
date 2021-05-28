@@ -778,43 +778,47 @@ POGLEDAJ EVENTS NA KRAJU
 ```zsh
 Name:             ingress-srv
 Namespace:        default
-Address:          microticket.xyz
+Address:          www.microticket.xyz
 Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
 TLS:
-  micktick-tls terminates microticket.xyz
+  micktick-tls terminates www.microticket.xyz,microticket.xyz
 Rules:
-  Host             Path  Backends
-  ----             ----  --------
-  microticket.xyz  
-                   /api/users/?(.*)      auth-srv:3000 (10.244.1.149:3000)
-                   /api/tickets/?(.*)    tickets-srv:3000 (10.244.1.21:3000)
-                   /api/orders/?(.*)     orders-srv:3000 (10.244.0.5:3000)
-                   /api/payments/?(.*)   payments-srv:3000 (10.244.0.73:3000)
-                   /?(.*)                client-srv:3000 (10.244.1.171:3000)
-Annotations:       cert-manager.io/cluster-issuer: lets-enc-iss
-                   kubernetes.io/ingress.class: nginx
-                   nginx.ingress.kubernetes.io/use-regex: true
+  Host                 Path  Backends
+  ----                 ----  --------
+  www.microticket.xyz  
+                       /api/users/?(.*)      auth-srv:3000 (10.244.1.210:3000)
+                       /api/tickets/?(.*)    tickets-srv:3000 (10.244.1.217:3000)
+                       /api/orders/?(.*)     orders-srv:3000 (10.244.0.30:3000)
+                       /api/payments/?(.*)   payments-srv:3000 (10.244.0.116:3000)
+                       /?(.*)                client-srv:3000 (10.244.1.230:3000)
+Annotations:           cert-manager.io/cluster-issuer: letsencrypt-cluster-issuer
+                       kubernetes.io/ingress.class: nginx
+                       nginx.ingress.kubernetes.io/use-regex: true
 Events:
-  Type    Reason             Age                From                      Message
-  ----    ------             ----               ----                      -------
-  Normal  Sync               49s (x5 over 22h)  nginx-ingress-controller  Scheduled for sync
-  Normal  CreateCertificate  49s                cert-manager              Successfully created Certificate "micktick-tls"
-
+  Type    Reason             Age                  From                      Message
+  ----    ------             ----                 ----                      -------
+  Normal  Sync               31s (x5 over 6h56m)  nginx-ingress-controller  Scheduled for sync
+  Normal  CreateCertificate  31s                  cert-manager              Successfully created Certificate "micktick-tls"
 ```
 
 KAO STO VIDIM U GORNJIM EVENTOVIMA, ZAISTA JE CERTIFICATE KREIRAN
 
-AKO TI JE OTVOREN VEC BIO <http://microticket.xyz> INSIDE BROWSER, MOZES DA RELOAD-UJES PAGE I VIDECES DA CE BITI SERVED <https://microticket.xyz> (DAKLE USPESNO JE KRIRAN CERTIFICATE I SVE JE SERVED OVER HTTPS)
+AKO TI JE OTVOREN VEC BIO <http://www.microticket.xyz> INSIDE BROWSER, MOZES DA RELOAD-UJES PAGE I VIDECES DA CE BITI SERVED <https://www.microticket.xyz> (DAKLE USPESNO JE KRIRAN CERTIFICATE I SVE JE SERVED OVER HTTPS)
 
-ILI, AKO NIJE BIO OTVOREN U BROWSER-U, PROSTO OTVORI BROWSER TAB I KUCAJ <https://microticket.xyz>, I SVE CE BITI OK
+VIDECES I KATANAC U ADRESS BAR-U, KOJI UKAZUJE DA JE PAGE SERVED OVER HTTPS; MOZES DA PRITISNES KATANAC I DA TU INSPECT-UJES CERTIFICATE
 
-DAKE CONNECTION JE SECURE (VIDIS I KATANAC UZ URLON TAB IN BROWSER, KAKO POKAZUJE DA JE SECURE) 
+`DAKLE SADA IMAMO LET'S ENCRYPT BROWSER TRUSTED CERTIFICATE, INSIDE SECRET, INSIDE OUR CLUSTER; CERT MANAGER CE WATCH-OVATI SECRET, I ALSO CE JE UPDATE-OVATI, KADA BUDE EXPIRE-OVAO CERTIFICATE`
 
-PRITISNI NA KATANAC, PA PRITISNI NA `"Certificate"`, I VIDECES VALIDNI SERTIFIKAT
+**ALI IMACEMO PROBLEM ZA** <https://microticket.xyz> (DAKLE ZA HOSTNAME, KOJI JE BEZ `www`)
 
-## DAKLE SADA IMAMO `LET'S ENCRYPT` BROWSER TRUSTED CERTIFICATE, INSIDE SECRET, INSIDE OUR CLUSTER
+I TO JE OVAJ PROBLEM:
 
-CERT MANAGER CE WATCH-OVATI SECRET, I ALSO CE JE UPDATE-OVATI, KADA BUDE EXPIRE-OVAO CERTIFICATE
+![404](images/nginex%20404.jpg)
+
+ALI MISLI MDA SE I GORNJI PAGE SERVE-UJE OVER HTTPS
+
+# ZA RESAVANJE PROBLEMA SA 404 NGINX PAGE-OM, PROBACU DODAVANJEM NEKOLIKO ANNOTTIONA, U INGRES I LOAD BALANCER KONFIGURACIJE
+
 
 
 
