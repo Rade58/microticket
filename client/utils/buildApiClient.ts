@@ -3,7 +3,8 @@ import { isSSR } from "./isSSR";
 import { GetServerSidePropsContext, NextPageContext } from "next";
 
 export const buildApiClient = (
-  ctx?: GetServerSidePropsContext | NextPageContext
+  ctx?: GetServerSidePropsContext | NextPageContext,
+  host?: string
 ) => {
   const isServerSide = isSSR();
 

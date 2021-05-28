@@ -8,15 +8,22 @@ import { getCurrentUser } from "../utils/getCurrentUser";
 
 MyApp.getInitialProps = async (appCtx: AppContext) => {
   const { ctx } = appCtx;
+  // console.log({ctx})
+
+
   try {
     const { currentUser } = await getCurrentUser(ctx);
+
+    console.log("--------(_app)---------")
+    console.log({currentUser})
+
     const appProps = await App.getInitialProps(appCtx);
     appProps.pageProps.initialProps = { currentUser } as {
       currentUser: InitialPropsI["initialProps"]["currentUser"];
     };
     return appProps;
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return {
       pageProps: {
         initialProps: {
