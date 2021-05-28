@@ -3,7 +3,6 @@ import { app } from "./app";
 // A OVO TREBA ZA DATABASE CONNECTION
 import mongoose from "mongoose";
 
-//
 const start = async () => {
 
   console.log({NODE_ENV: process.env.NODE_ENV})

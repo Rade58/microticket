@@ -4,7 +4,7 @@ import { FunctionComponent } from "react";
 import { GetServerSideProps } from "next";
 // UVOZIM NEXT LINK
 import Link from "next/link";
-//
+
 import { buildApiClient } from "../utils/buildApiClient";
 import { InitialPropsI } from "../types/initial-props";
 import { allTicketsType } from "../types/data/all-tickets";
@@ -16,12 +16,23 @@ interface PropsI extends InitialPropsI {
 // ---------------------------------------------------
 export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
 
-  console.log({NODE_ENV: process.env.NODE_ENV})
+  // console.log({NODE_ENV: process.env.NODE_ENV})
+
+  /* console.log({HOST: ctx.req.headers.host})
+  console.log({HEADERS: ctx.req.headers})
+  console.log({httpVersion: ctx.req.httpVersion})
+  console.log({url: ctx.req.url}) */
+
+
 
   const client = buildApiClient(ctx);
 
   try {
     const { data } = await client.get("/api/tickets");
+
+    const {data: currentUser} = await client.get("/api/users/current-user")
+
+    console.log({currentUser})
 
     return {
       props: {
