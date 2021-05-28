@@ -5,19 +5,26 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/use-regex: "true"
+    # NISAM SIGURAN DA LI CE MI OVO TTREBATI, I ZATO CU SAMO STAVITI
+    # ANNOTATIONS ALI CE BITI COMMENTED OUT
     # nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    #
     # nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-    # cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
-    #
+    # MEDJUTIM MISLI MDA CE MI OVAJ ANNOTATION TREBATI
+    # ON SPECIFICIRA ISSUER OBJECT
+    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
 spec:
   # ----------------------------------------------
-  # tls:
-  #   - hosts:
-  #       - www.microticket.xyz
-  #       - microticket.xyz
-  #     secretName: micktick-tls
-  #
+  # OVO ZNACI DA CE INGRESS KREIRATI SECRET
+  # A U OVAJ SECRET, BI TREBALO DA SE STAVI
+  # VALIDAN SSL SERTIFIKAT
+  # KAO STO VIDIS SPECIFICIRAO SAM DHA HOST-A ZA KOJE
+  # CE SE PRAVITI SERTIFIKAT
+  tls:
+    - hosts:
+        - www.microticket.xyz
+        - microticket.xyz
+      secretName: micktick-tls
+  # A KAO STO VIDIS IZNAD, DAO SAM SIME SECRETU   micktick-tls
   # ----------------------------------------------
   rules:
     - host: www.microticket.xyz
@@ -58,15 +65,16 @@ spec:
                 name: client-srv
                 port:
                   number: 3000
-# EVO JE TA CLUSTER IP KONFIGURACIJA, KOJU SAM DODAO
+# I U LOAD BALANCER CONFIGURATION-U CU DODATI NEKOLIKO ANNOTATION-A
 ---
 apiVersion: v1
 kind: Service
 metadata:
   annotations:
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
-    # service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
-    # OVDE ZADAJ TVOJ DOMAIN NAME
+    # USTVARI TO JE SAMO OVAJ
+    service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
+    #
     service.beta.kubernetes.io/do-loadbalancer-hostname: "www.microticket.xyz"
   labels:
     helm.sh/chart: ingress-nginx-2.11.1
