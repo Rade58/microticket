@@ -34,7 +34,7 @@ export default Layout;
 
 ALI CU ONO STO CE PRIPADATI main TAGU, NEST-OVATI, PRILIKOM PRAVLJANJA REACT ELEMENATA OD GORNJE KOMPONENTE 
 
-# DA HOOK-UJEMO OVAJ `Layout` ;A TO USTVARI RADIMO U PAGE-U
+# DA HOOK-UJEMO OVAJ `Layout`; A TO USTVARI RADIMO U PAGE-U `client/pages/premium/index.tsx`
 
 - `code client/pages/premium/index.tsx`
 
