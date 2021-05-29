@@ -3,11 +3,11 @@
 import { FunctionComponent, useState, useEffect } from "react";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { InitialPropsI } from "../../types/initial-props";
-import { OrderDataTicketPopulatedI } from "../../types/data/order-data";
-import { buildApiClient } from "../../utils/buildApiClient";
+import { InitialPropsI } from "../../../types/initial-props";
+import { OrderDataTicketPopulatedI } from "../../../types/data/order-data";
+import { buildApiClient } from "../../../utils/buildApiClient";
 import StripeCheckoutModal from "react-stripe-checkout";
-import useRequest from "../../hooks/useRequestHook";
+import useRequest from "../../../hooks/useRequestHook";
 
 interface PropsI extends InitialPropsI {
   order: OrderDataTicketPopulatedI;
@@ -118,7 +118,7 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
                 setOrderCompleted(true);
 
                 // EVO OVDE MOGU NAPRAVITI TAJ REDIRECT
-                push(`/orders`);
+                push(`/microticket/orders`);
               }
             });
           }}

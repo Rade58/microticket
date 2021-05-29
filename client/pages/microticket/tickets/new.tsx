@@ -3,9 +3,9 @@
 // TREBA NAM useState I useCallback
 import { FunctionComponent, useState, useCallback } from "react";
 import { GetServerSideProps } from "next";
-import { InitialPropsI } from "../../types/initial-props";
-import { TicketDataI } from "../../types/data/ticket-data";
-import useRequest from "../../hooks/useRequestHook";
+import { InitialPropsI } from "../../../types/initial-props";
+import { TicketDataI } from "../../../types/data/ticket-data";
+import useRequest from "../../../hooks/useRequestHook";
 
 interface PropsI extends InitialPropsI {
   foo: false;

@@ -3,7 +3,6 @@
 import { FunctionComponent } from "react";
 // UVESCU, NEKE TYPE-OVE KOJI SE TICU getServerSideProps-A
 import { GetServerSideProps } from "next";
-import Link from "next/link";
 
 interface PropsI {
   placeholder: boolean;
@@ -14,20 +13,7 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
 
   console.log(props);
 
-  return (
-    <div>
-      <div>
-        <Link href="/microricket">
-          <a>microticket</a>
-        </Link>
-      </div>
-      <div>
-        <Link href="/premium">
-          <a>premium</a>
-        </Link>
-      </div>
-    </div>
-  );
+  return <div>premium page</div>;
 };
 
 export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {

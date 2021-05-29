@@ -4,7 +4,7 @@ import { FunctionComponent, useState } from "react";
 // OVO VISE NE TREBA OVDE
 // import { useRouter } from "next/router";
 
-import useRequest from "../../hooks/useRequest";
+import useRequest from "../../../hooks/useRequest";
 
 const SignupPage: FunctionComponent = (props) => {
   console.log({ props });

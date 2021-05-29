@@ -4,9 +4,9 @@ import { FunctionComponent } from "react";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { OrderStatusEnum as OSE } from "@ramicktick/common";
-import { InitialPropsI } from "../../types/initial-props";
-import { buildApiClient } from "../../utils/buildApiClient";
-import { OrderDataTicketPopulatedI } from "../../types/data/order-data";
+import { InitialPropsI } from "../../../types/initial-props";
+import { buildApiClient } from "../../../utils/buildApiClient";
+import { OrderDataTicketPopulatedI } from "../../../types/data/order-data";
 
 interface PropsI extends InitialPropsI {
   orders: OrderDataTicketPopulatedI[];
@@ -37,7 +37,7 @@ const IndexPage: FunctionComponent<PropsI> = (props) => {
             {status === OSE.complete || status === OSE.cancelled ? (
               <>{title}</>
             ) : (
-              <Link href={`/orders/${id}`}>
+              <Link href={`/microticket/orders/${id}`}>
                 <a>{title}</a>
               </Link>
             )}

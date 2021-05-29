@@ -8,12 +8,12 @@ import { GetServerSideProps } from "next";
 // TREBACE MI I push FROM ROUTER
 import { useRouter } from "next/router";
 //
-import { buildApiClient } from "../../utils/buildApiClient";
-import { TicketDataI } from "../../types/data/ticket-data";
+import { buildApiClient } from "../../../utils/buildApiClient";
+import { TicketDataI } from "../../../types/data/ticket-data";
 // TREBACE MI CUSTOM HOOK
-import useRequest from "../../hooks/useRequestHook";
+import useRequest from "../../../hooks/useRequestHook";
 //TREBA MI I OVO
-import { OrderDataI } from "../../types/data/order-data";
+import { OrderDataI } from "../../../types/data/order-data";
 
 interface PropsI {
   ticket?: TicketDataI;
@@ -73,7 +73,7 @@ const SingleTicketPage: FunctionComponent<PropsI> = (props) => {
           makeRequestToCreateOrder({ ticketId }).then((data) => {
             console.log({ data });
             if (data) {
-              push(`/orders/${data.id}`);
+              push(`/microticket/orders/${data.id}`);
             }
           });
         }}

@@ -10,13 +10,12 @@ MyApp.getInitialProps = async (appCtx: AppContext) => {
   const { ctx } = appCtx;
   // console.log({ctx})
 
-
   try {
     const { currentUser } = await getCurrentUser(ctx);
 
-    console.log("--------(_app)---------")
-    console.log({currentUser})
-//
+    console.log("--------(_app)---------");
+    console.log({ currentUser });
+    //
     const appProps = await App.getInitialProps(appCtx);
     appProps.pageProps.initialProps = { currentUser } as {
       currentUser: InitialPropsI["initialProps"]["currentUser"];
@@ -38,6 +37,8 @@ MyApp.getInitialProps = async (appCtx: AppContext) => {
 function MyApp({ Component: PageComponent, pageProps }: AppProps) {
   // EVO VIDIS
   const { currentUser } = pageProps.initialProps;
+
+  console.log({ pageProps });
 
   return (
     <div>

@@ -1,7 +1,7 @@
 /* eslint react/react-in-jsx-scope: 0 */
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 import { FunctionComponent, useEffect } from "react";
-import useRequest from "../../hooks/useRequest";
+import useRequest from "../../../hooks/useRequest";
 
 const SignOutPage: FunctionComponent = () => {
   // VEC OVDE SAM JA DEFINISAO KAKAV SE REQUEST MOZE OBAVITI
