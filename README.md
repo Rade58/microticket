@@ -1,8 +1,10 @@
-# DEFINISANJE HEADEER KOMPONENTE, ZA PREMIUM DEO CLIENT SIDE APP-A
+# SKAFFOLDING LAYOUT; AND HOOKING UP LAYOUT 
 
-- `mkdir -p client/components/premium/header`
+- `mkdir -p client/components/premium`
 
-- `touch -p client/components/premium/header/Header.tsx`
+PRAVIM KOPMONENTU, CIJA CE ULOGA BITI DA HOLD-UJE `Heder`, `Main` I ZATIM `Footer` KOMPONENTU (NARAVNO, JOS NEMAM OVE KOMPONENTE)
+
+- `touch client/components/premium/Layout.tsx`
 
 ```tsx
 
