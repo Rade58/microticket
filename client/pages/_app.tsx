@@ -8,18 +8,25 @@ import { getCurrentUser } from "../utils/getCurrentUser";
 
 MyApp.getInitialProps = async (appCtx: AppContext) => {
   const { ctx } = appCtx;
-  console.log({ headers: ctx.req.headers });
+  console.log({ ctx: ctx });
+
+  console.log(ctx.pathname);
 
   try {
     const { currentUser } = await getCurrentUser(ctx);
 
     console.log("--------(_app)---------");
-    console.log({ currentUser });
+    // console.log({ currentUser });
     //
     const appProps = await App.getInitialProps(appCtx);
-    appProps.pageProps.initialProps = { currentUser } as {
+    appProps.pageProps.initialProps = {
+      currentUser,
+      pathname: ctx.pathname,
+    } as {
       currentUser: InitialPropsI["initialProps"]["currentUser"];
+      pathname: string;
     };
+
     return appProps;
   } catch (err) {
     console.error(err);
@@ -27,6 +34,7 @@ MyApp.getInitialProps = async (appCtx: AppContext) => {
       pageProps: {
         initialProps: {
           errors: err.message as any,
+          pathname: ctx.pathname,
         },
       },
     };
@@ -36,13 +44,18 @@ MyApp.getInitialProps = async (appCtx: AppContext) => {
 //
 function MyApp({ Component: PageComponent, pageProps }: AppProps) {
   // EVO VIDIS
-  const { currentUser } = pageProps.initialProps;
+  const { currentUser, pathname } = pageProps.initialProps;
 
-  console.log({ pageProps });
+  const isPremiumPage =
+    typeof pathname === "string"
+      ? (pathname as string).includes("/premium")
+      : false;
+
+  // console.log({ pageProps });
 
   return (
     <div>
-      <Header currentUser={currentUser} />
+      {!isPremiumPage && <Header currentUser={currentUser} />}
       {/* EVO WRAPP-OVAO SAM SVE U OVAJ container div */}
       <div className="container">
         <PageComponent currentUser={currentUser} {...pageProps} />
