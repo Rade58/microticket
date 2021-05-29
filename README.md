@@ -1,11 +1,41 @@
-# SKAFFOLDING LAYOUT; AND HOOKING UP LAYOUT 
+# HOOKING UP THEME (`theme-ui` THEME)
 
-- `mkdir -p client/components/premium`
+THEME CE BITI PROVIDED ZA PAGE `client/pages/premium/index.tsx`
 
-PRAVIM KOPMONENTU, CIJA CE ULOGA BITI DA HOLD-UJE `Heder`, `Main` I ZATIM `Footer` KOMPONENTU (NARAVNO, JOS NEMAM OVE KOMPONENTE)
-
-- `touch client/components/premium/Layout.tsx`
+- `code client/pages/premium/index.tsx`
 
 ```tsx
+/* eslint react/react-in-jsx-scope: 0 */
+/* eslint jsx-a11y/anchor-is-valid: 1 */
+import { FunctionComponent } from "react";
+import { GetServerSideProps } from "next";
+// THEME PROVIDER
+import { ThemeProvider } from "theme-ui";
+// TEMA
+import theme from "../../theme";
+
+interface PropsI {
+  placeholder: boolean;
+}
+
+const IndexPage: FunctionComponent<PropsI> = (props) => {
+  // STAVLJAMO THEME PROVIDER-A
+  return (
+    <ThemeProvider theme={theme}>
+      <div>premium page</div>;
+    </ThemeProvider>
+  );
+};
+
+export const getServerSideProps: GetServerSideProps<PropsI> = async (ctx) => {
+  return {
+    props: {
+      placeholder: true,
+    },
+  };
+};
+
+export default IndexPage;
 
 ```
+
