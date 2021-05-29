@@ -10,14 +10,14 @@ interface HeaderPropsI {
 const Header: FunctionComponent<HeaderPropsI> = ({ currentUser }) => {
   const links = [
     // DODAJEM I OVO
-    currentUser && { label: "Sell Tickets", href: "/tickets/new" },
+    currentUser && { label: "Sell Tickets", href: "/microticket/tickets/new" },
     // OVO CE BITI PAGE, KOJI CU DODATI, A N KOJEM CU PRIKAZATI SVE
     // ORDERS KOJE JE USER NAPRAVIO
-    currentUser && { label: "My Orders", href: "/orders" },
+    currentUser && { label: "My Orders", href: "/microticket/orders" },
     // NAPRAVICU GORNJI PAGE U SLEDECEM BRANCH-U
-    currentUser && { label: "Sign Out", href: "/auth/signout" },
-    !currentUser && { label: "Sign In", href: "/auth/signin" },
-    !currentUser && { label: "Sign Up", href: "/auth/signup" },
+    currentUser && { label: "Sign Out", href: "/microticket/auth/signout" },
+    !currentUser && { label: "Sign In", href: "/microticket/auth/signin" },
+    !currentUser && { label: "Sign Up", href: "/microticket/auth/signup" },
   ].map((item) => {
     if (item && item.label) {
       return (

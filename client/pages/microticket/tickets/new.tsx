@@ -30,7 +30,7 @@ const CreateNewTicketPage: FunctionComponent<PropsI> = (props) => {
     {
       method: "post",
       // EVO OVDE PODESAVAM TAJ URL
-      redirectSuccessUrl: "/",
+      redirectSuccessUrl: "/microticket",
     }
   );
 

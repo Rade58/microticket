@@ -113,7 +113,7 @@ const OrderPage: FunctionComponent<PropsI> = (props) => {
           token={({ id: token }) => {
             makeRequestToPayments({ orderId, token }).then((data) => {
               if (data) {
-                console.log(data.id);
+                // console.log(data.id);
 
                 setOrderCompleted(true);
 

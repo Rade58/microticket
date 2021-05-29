@@ -11,7 +11,7 @@ interface PropsI {
 const IndexPage: FunctionComponent<PropsI> = (props) => {
   //
 
-  console.log(props);
+  // console.log(props);
 
   return <div>premium page</div>;
 };

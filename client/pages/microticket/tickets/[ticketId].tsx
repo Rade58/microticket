@@ -71,7 +71,7 @@ const SingleTicketPage: FunctionComponent<PropsI> = (props) => {
       <button
         onClick={() => {
           makeRequestToCreateOrder({ ticketId }).then((data) => {
-            console.log({ data });
+            // console.log({ data });
             if (data) {
               push(`/microticket/orders/${data.id}`);
             }

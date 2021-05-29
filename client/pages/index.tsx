@@ -12,12 +12,12 @@ interface PropsI {
 const IndexPage: FunctionComponent<PropsI> = (props) => {
   //
 
-  console.log(props);
+  // console.log(props);
 
   return (
     <div>
       <div>
-        <Link href="/microricket">
+        <Link href="/microticket">
           <a>microticket</a>
         </Link>
       </div>
