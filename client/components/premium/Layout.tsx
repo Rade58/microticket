@@ -4,14 +4,13 @@
 import { jsx } from "theme-ui";
 import { FunctionComponent, Fragment } from "react";
 
-const Layout: FunctionComponent = () => {
+const Layout: FunctionComponent = ({ children }) => {
   return (
     <Fragment>
-      <main>
-        {/*  */}
-        my layout
-        {/*  */}
-      </main>
+      {/* OVDE CE ICI Header */}
+
+      <main>{children}</main>
+      {/* OVDE CE ICI Footer */}
     </Fragment>
   );
 };
