@@ -283,6 +283,163 @@ export default Header;
 
 # NAVIGATION WITH `react-scroll`
 
-POMENUTI PKET ANIMIRA VERTIKALNI SCROLLING; A JA CU SADA PROVIDE-OVATI LINKOVE DO STVARI, DO KOJIH CE SE SCROLL-OVATI
+PRVO DA INSTALIRAMO TYPE DEFINITIONS ZA react-scroll
+
+- `cd client`
+
+- `yarn add @types/react-scroll`
+
+react-scroll ANIMIRA VERTIKALNI SCROLLING; A JA CU SADA PROVIDE-OVATI LINKOVE DO STVARI, DO KOJIH CE SE SCROLL-OVATI
 
 PRVO CEMO DEFINISATI PATH I LABLES ZA TE LINKOVE
+
+- `touch client/components/premium/header/react-scroll-data.ts`
+
+```ts
+export default [
+  {
+    path: "home",
+    label: "Home",
+  },
+  {
+    path: "feature",
+    label: "Features",
+  },
+  {
+    path: "pricing",
+    label: "Pricing",
+  },
+  {
+    path: "testimonial",
+    label: "Testimonial",
+  },
+];
+```
+
+NARVNO I SAM MOZES DA ZAKLJUCIS DA CE SE PATHS KORISTITI SA HASH-OVIMA, ODNONO TAK OCE SE ZADAVATI UNDER THE HOOD, KADA BUDES KORISTIO LINKS, **A JASNO TI JE DA CES MORATI IMATI ELEMENTE SA TIM ID-JEVIMA NA PAGE-U**(TO JOS UVEK NEMAM NARAVNO, ALI KASNIJE CU DODATI)
+
+A SADA CU DA HOOK-UJEM GORNJI DATA, DA BUDE U NAVIGACIJI ZA react-scroll
+
+- `code client/components/premium/header/Header.tsx`
+
+```tsx
+/* eslint jsx-a11y/anchor-is-valid: 1 */
+/** @jsxRuntime classic */
+/** @jsx jsx */
+import { jsx, ThemeStyles, Container, Flex, Button } from "theme-ui";
+import { FunctionComponent } from "react";
+import { keyframes } from "@emotion/react";
+// UVOZIM Link IZ react-scroll PAKETA
+import { Link } from "react-scroll";
+// UVOZIMA I PATHS I LABLES ARRAY
+import pathsAndLables from "./react-scroll-data";
+
+interface HeaderPropsI {
+  className: "sticky" | "non-sticky";
+}
+
+const headerPoitionAnim = keyframes`
+  from {
+    position: fixed;
+    opacity: 1;
+  }
+
+  to {
+    position: absolute;
+    opacity: 1;
+    transition: all 0.4s ease;
+  }
+
+`;
+
+const styles: ThemeStyles = {
+  header: {
+    color: "text",
+    fontWeight: "body",
+    py: 4,
+    width: "100%",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    backgroundColor: "transparent",
+    transition: "all 0.4s ease",
+    animation: `${headerPoitionAnim} 0.4s ease`,
+    ".donate__btn": {
+      flexShrink: 0,
+      mr: [15, 20, null, null, 0],
+      ml: ["auto", null, null, null, 0],
+    },
+    "&.sticky": {
+      position: "fixed",
+      backgroundColor: "background",
+      color: "#000000",
+      boxShadow: "0 1px 2px rgba(0, 0, 0, 0.06)",
+      py: 3,
+      "nev > a": {
+        color: "text",
+      },
+    },
+  },
+  container: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  nav: {
+    mx: "auto",
+    display: "none",
+    "@media screen and (min-width: 1024px)": {
+      display: "block",
+    },
+    a: {
+      fontSize: 2,
+      fontWeight: "body",
+      px: 5,
+      cursor: "pointer",
+      lineHeight: "1.2",
+      transition: "all 0.15s",
+      "&:hover": {
+        color: "primary",
+      },
+      "&.active": {
+        color: "primary",
+      },
+    },
+  },
+};
+
+// LINKOVE SPREAD-UJEM U NAVIGACIJI
+const Header: FunctionComponent<HeaderPropsI> = ({ className }) => {
+  return (
+    <header sx={styles.header} id="header" className={className}>
+      <Container sx={styles.container}>
+        <div>logo</div>
+
+        <Flex as="nav" sx={styles.nav}>
+          {/* EVO MAPIRAM ARRAY */}
+          {pathsAndLables.map(({ label, path }, i) => {
+            return (
+              <Link
+                key={i}
+                activeClass="active"
+                to={path}
+                spy={true}
+                smooth={true}
+                offset={-70}
+                duration={500}
+              >
+                {label}
+              </Link>
+            );
+          })}
+        </Flex>
+      </Container>
+    </header>
+  );
+};
+
+export default Header;
+
+```
+
+IZ [DOKUMMENTACIJE](https://github.com/fisshy/react-scroll#propsoptions) VIDI STA PREDSTAVLJAJU ONI PROPSI NA LINK-U

@@ -1,10 +1,13 @@
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 /** @jsxRuntime classic */
 /** @jsx jsx */
-// EVO UZEO SAM KOMPONENTE Container, Flex I Button
 import { jsx, ThemeStyles, Container, Flex, Button } from "theme-ui";
 import { FunctionComponent } from "react";
 import { keyframes } from "@emotion/react";
+// UVOZIM Link IZ react-scroll PAKETA
+import { Link } from "react-scroll";
+// UVOZIMA I PATHS I LABLES ARRAY
+import pathsAndLables from "./react-scroll-data";
 
 interface HeaderPropsI {
   className: "sticky" | "non-sticky";
@@ -80,17 +83,30 @@ const styles: ThemeStyles = {
   },
 };
 
-// KAO STO VIDIS NEST-UJEM POMENUTE REACT ELEMENTE
-// INSIDE header I ZADAJEM IM PREDODREDJENE STILOVE
+// LINKOVE SPREAD-UJEM U NAVIGACIJI
 const Header: FunctionComponent<HeaderPropsI> = ({ className }) => {
   return (
     <header sx={styles.header} id="header" className={className}>
-      {/* USTVARI SVE STAVLJAMO U CONTAINER THEME UI-A */}
       <Container sx={styles.container}>
         <div>logo</div>
-        {/* OVO CE BITI NAV */}
+
         <Flex as="nav" sx={styles.nav}>
-          {/* OVDE CE BITI NAVIGACIJA  */}
+          {/* EVO MAPIRAM ARRAY */}
+          {pathsAndLables.map(({ label, path }, i) => {
+            return (
+              <Link
+                key={i}
+                activeClass="active"
+                to={path}
+                spy={true}
+                smooth={true}
+                offset={-70}
+                duration={500}
+              >
+                {label}
+              </Link>
+            );
+          })}
         </Flex>
       </Container>
     </header>
