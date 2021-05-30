@@ -439,7 +439,15 @@ const Header: FunctionComponent<HeaderPropsI> = ({ className }) => {
 };
 
 export default Header;
-
 ```
 
 IZ [DOKUMMENTACIJE](https://github.com/fisshy/react-scroll#propsoptions) VIDI STA PREDSTAVLJAJU ONI PROPSI NA LINK-U
+
+# SADA CEMO DODATI "Get Started" BUTTON
+
+- `code client/components/premium/header/Header.tsx`
+
+```tsx
+
+```
+

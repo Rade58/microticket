@@ -1,12 +1,11 @@
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 /** @jsxRuntime classic */
 /** @jsx jsx */
+// KORISTICU OVU Button KOMPONENTU
 import { jsx, ThemeStyles, Container, Flex, Button } from "theme-ui";
 import { FunctionComponent } from "react";
 import { keyframes } from "@emotion/react";
-// UVOZIM Link IZ react-scroll PAKETA
 import { Link } from "react-scroll";
-// UVOZIMA I PATHS I LABLES ARRAY
 import pathsAndLables from "./react-scroll-data";
 
 interface HeaderPropsI {
@@ -83,7 +82,6 @@ const styles: ThemeStyles = {
   },
 };
 
-// LINKOVE SPREAD-UJEM U NAVIGACIJI
 const Header: FunctionComponent<HeaderPropsI> = ({ className }) => {
   return (
     <header sx={styles.header} id="header" className={className}>
@@ -91,7 +89,6 @@ const Header: FunctionComponent<HeaderPropsI> = ({ className }) => {
         <div>logo</div>
 
         <Flex as="nav" sx={styles.nav}>
-          {/* EVO MAPIRAM ARRAY */}
           {pathsAndLables.map(({ label, path }, i) => {
             return (
               <Link
@@ -108,6 +105,8 @@ const Header: FunctionComponent<HeaderPropsI> = ({ className }) => {
             );
           })}
         </Flex>
+        {/* EVO GA BUTTON */}
+        <Button className="donate__btn">Get Started</Button>
       </Container>
     </header>
   );
