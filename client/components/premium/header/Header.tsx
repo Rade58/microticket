@@ -106,7 +106,9 @@ const Header: FunctionComponent<HeaderPropsI> = ({ className }) => {
           })}
         </Flex>
         {/* EVO GA BUTTON */}
-        <Button className="donate__btn">Get Started</Button>
+        <Button className="donate__btn" variant="secondary">
+          Get Started
+        </Button>
       </Container>
     </header>
   );
