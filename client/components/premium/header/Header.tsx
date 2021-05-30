@@ -1,7 +1,8 @@
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 /** @jsxRuntime classic */
 /** @jsx jsx */
-import { jsx, Container, Flex, Button, ThemeStyles } from "theme-ui";
+// EVO UZEO SAM KOMPONENTE Container, Flex I Button
+import { jsx, ThemeStyles, Container, Flex, Button } from "theme-ui";
 import { FunctionComponent } from "react";
 import { keyframes } from "@emotion/react";
 
@@ -79,12 +80,19 @@ const styles: ThemeStyles = {
   },
 };
 
+// KAO STO VIDIS NEST-UJEM POMENUTE REACT ELEMENTE
+// INSIDE header I ZADAJEM IM PREDODREDJENE STILOVE
 const Header: FunctionComponent<HeaderPropsI> = ({ className }) => {
   return (
     <header sx={styles.header} id="header" className={className}>
-      {/*  */}
-      ove cu ubrzo da definisem sta ce biti u header-u
-      {/*  */}
+      {/* USTVARI SVE STAVLJAMO U CONTAINER THEME UI-A */}
+      <Container sx={styles.container}>
+        <div>logo</div>
+        {/* OVO CE BITI NAV */}
+        <Flex as="nav" sx={styles.nav}>
+          {/* OVDE CE BITI NAVIGACIJA  */}
+        </Flex>
+      </Container>
     </header>
   );
 };
