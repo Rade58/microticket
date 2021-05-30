@@ -10,6 +10,9 @@ const dotenvLoad = require("dotenv-load");
 const nextEnv = require("next-env");
 const withPlugins = require("next-compose-plugins");
 
+// UVOZIMO PLUGIN
+const nextOptimizedImagesPlugin = require("next-optimized-images");
+
 // const path = require("path");
 
 // ------------------
@@ -53,9 +56,14 @@ module.exports = (phase, { defaultConfig }) => {
   };
   // ***********************
 
-  const configuration = withPlugins([envPlugin])(phase, {
-    defaultConfig: newConfig,
-  });
+  // OVDE CEMO ZADATI TAJ PLUGIN, ALI DODAJEMO I OPCIJU target
+  const configuration = withPlugins([envPlugin, nextOptimizedImagesPlugin])(
+    phase,
+    {
+      defaultConfig: newConfig,
+      target: "serverless",
+    }
+  );
 
   // console.log({ configuration });
 
