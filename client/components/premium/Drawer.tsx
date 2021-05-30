@@ -1,7 +1,7 @@
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 /** @jsxRuntime classic */
 /** @jsx jsx */
-import { Box, jsx, ThemeStyles } from "theme-ui";
+import { Box, jsx, ThemeStyles, SxProp } from "theme-ui";
 import { FunctionComponent, Fragment, ReactElement } from "react";
 // UVOZIM KOMPONENTU
 import RcDrawer from "rc-drawer";
@@ -10,14 +10,14 @@ import RcDrawer from "rc-drawer";
 // DA PRVO TYPE-UJEMO PROPSE, KOJI MOGU DOCI U KOMPONENTI
 
 interface DrawerPropsI {
-  className: string;
+  className?: string;
   closeButton: ReactElement;
   toggleHandler: () => void;
   open: boolean;
   width: string | number;
-  placement: "left" | "top" | "right" | "bottom";
-  drawerStyle: ThemeStyles;
-  closeBtnStyle: ThemeStyles;
+  placement?: "left" | "top" | "right" | "bottom";
+  drawerStyle: any;
+  closeBtnStyle: any;
   handler: boolean | ReactElement;
 }
 
