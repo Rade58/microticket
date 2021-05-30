@@ -7,12 +7,13 @@ import { keyframes } from "@emotion/react";
 import { Link } from "react-scroll";
 import pathsAndLables from "./react-scroll-data";
 
-// UVOZIM LOGO
 import Logo from "../Logo";
-// A UVOZIMO I SVG, DNONO TO CE NAM OBEZBEDITI PATH DO LOGOA
+// OVO CE SADA BITI U REDU
 // eslint-disable-next-line
 // @ts-ignore
 import logoPath from "../../../assets/logo.svg";
+// I MOCI CES DA KORISTIS GORNJE KAO PATH
+// POGLEDAJ DOLE GDE RENDER-UJES LOGO
 
 interface HeaderPropsI {
   className: "sticky" | "non-sticky";
@@ -92,7 +93,8 @@ const Header: FunctionComponent<HeaderPropsI> = ({ className }) => {
   return (
     <header sx={styles.header} id="header" className={className}>
       <Container sx={styles.container}>
-        {/* DODAJEM LOGO */}
+        {/* EVO VIDIS KAKO SAM OVDE URADIO */}
+        {/* UNDER THE HOOD OVO KORISTI theme-ui IMAGE KOMPONENTU (SAMO NAPOMINJEM) */}
         <Logo src={logoPath} />
         {/*  */}
         <Flex as="nav" sx={styles.nav}>
