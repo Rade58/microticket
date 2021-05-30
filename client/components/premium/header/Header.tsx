@@ -1,12 +1,18 @@
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 /** @jsxRuntime classic */
 /** @jsx jsx */
-// KORISTICU OVU Button KOMPONENTU
 import { jsx, ThemeStyles, Container, Flex, Button } from "theme-ui";
 import { FunctionComponent } from "react";
 import { keyframes } from "@emotion/react";
 import { Link } from "react-scroll";
 import pathsAndLables from "./react-scroll-data";
+
+// UVOZIM LOGO
+import Logo from "../Logo";
+// A UVOZIMO I SVG, DNONO TO CE NAM OBEZBEDITI PATH DO LOGOA
+// eslint-disable-next-line
+// @ts-ignore
+import logoPath from "../../../assets/logo.svg";
 
 interface HeaderPropsI {
   className: "sticky" | "non-sticky";
@@ -86,8 +92,9 @@ const Header: FunctionComponent<HeaderPropsI> = ({ className }) => {
   return (
     <header sx={styles.header} id="header" className={className}>
       <Container sx={styles.container}>
-        <div>logo</div>
-
+        {/* DODAJEM LOGO */}
+        <Logo src={logoPath} />
+        {/*  */}
         <Flex as="nav" sx={styles.nav}>
           {pathsAndLables.map(({ label, path }, i) => {
             return (
@@ -105,7 +112,6 @@ const Header: FunctionComponent<HeaderPropsI> = ({ className }) => {
             );
           })}
         </Flex>
-        {/* EVO GA BUTTON */}
         <Button
           className="donate__btn"
           variant="secondary"
