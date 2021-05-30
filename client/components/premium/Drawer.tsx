@@ -1,14 +1,3 @@
-# DEFINING MOBILE DRAWER
-
-OVDE CEMO KORISTITI ["rc-drawer"](https://github.com/react-component/drawer) PACKAGE
-
-NAPRAVICEMO PRVO DRAWER KOMPONENTU
-
-ONA JE SELF CLOSING KOMPONENTA
-
-- `touch client/components/premium/Drawer.tsx`
-
-```tsx
 /* eslint jsx-a11y/anchor-is-valid: 1 */
 /** @jsxRuntime classic */
 /** @jsx jsx */
@@ -80,25 +69,3 @@ const Drawer: FunctionComponent<DrawerPropsI> = ({
 };
 
 export default Drawer;
-```
-
-DAKLE DRAWER MI TREBA NA MOBILE UREDJAJIMA
-
-STAVICU KOMPONENTU U ISTI FOLDER, GDE JE I HEADER
-
-- `touch client/components/premium/header/MobileDrawer.tsx`
-
-
-
-
-***
-***
-***
-***
-***
-
-PODSETNIK:
-
-`client/__premium/comps/link.js`
-
-LOGO TREBA DA BUDE WRAPPED U LINK
