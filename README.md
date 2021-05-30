@@ -211,7 +211,7 @@ const styles: ThemeStyles = {
   },
 };
 
-const ComponentName: FunctionComponent = () => {
+const MobileDrawer: FunctionComponent = () => {
   // TREBA NAM STATE O TOME DA LI JE DRAWER OPENED ILI NE
 
   const [isDrawerOppened, setIsDrwerOpened] = useState<boolean>(false);
@@ -233,9 +233,12 @@ const ComponentName: FunctionComponent = () => {
   );
 };
 
-export default ComponentName;
+export default MobileDrawer;
 ```
 
+# SADA CU DA STAVIM MOBILE DRAWER INSIDE HEADER COMPONENT
+
+- `code `
 
 ***
 ***

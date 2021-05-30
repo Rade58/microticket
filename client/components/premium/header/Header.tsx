@@ -6,14 +6,13 @@ import { FunctionComponent } from "react";
 import { keyframes } from "@emotion/react";
 import { Link } from "react-scroll";
 import pathsAndLables from "./react-scroll-data";
-
 import Logo from "../Logo";
-// OVO CE SADA BITI U REDU
 // eslint-disable-next-line
 // @ts-ignore
 import logoPath from "../../../assets/logo.svg";
-// I MOCI CES DA KORISTIS GORNJE KAO PATH
-// POGLEDAJ DOLE GDE RENDER-UJES LOGO
+// UZIMAM MOBILE DRAWER
+import MobileDrawer from "./MobileDrawer";
+//
 
 interface HeaderPropsI {
   className: "sticky" | "non-sticky";
@@ -93,8 +92,6 @@ const Header: FunctionComponent<HeaderPropsI> = ({ className }) => {
   return (
     <header sx={styles.header} id="header" className={className}>
       <Container sx={styles.container}>
-        {/* EVO VIDIS KAKO SAM OVDE URADIO */}
-        {/* UNDER THE HOOD OVO KORISTI theme-ui IMAGE KOMPONENTU (SAMO NAPOMINJEM) */}
         <Logo src={logoPath} />
         {/*  */}
         <Flex as="nav" sx={styles.nav}>
@@ -121,6 +118,8 @@ const Header: FunctionComponent<HeaderPropsI> = ({ className }) => {
         >
           Get Started
         </Button>
+        {/* STAVICU GA OVDE */}
+        <MobileDrawer />
       </Container>
     </header>
   );
