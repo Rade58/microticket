@@ -3,13 +3,39 @@
 /** @jsx jsx */
 import { jsx, Box, ThemeUIStyleObject, ThemeStyles } from "theme-ui";
 import { FunctionComponent, useState } from "react";
-// TREBACE MI IKONE IZ OVOG PAKETA
 import { IoMdClose, IoMdMenu } from "react-icons/io";
-
-// UVESCU DRAWER-A
+// EVO IH SOCIAL ICONS
+import {
+  FaFacebookF,
+  FaTwitter,
+  FaGithubAlt,
+  FaDribbble,
+} from "react-icons/fa";
+// UVESCU I OVO
+import Scrollbars from "react-custom-scrollbars";
+//
 import Drawer from "../Drawer";
 
-// EVO IH STILOVI ZA DRAWER
+// EVO GA TAJ CONTENT
+const mobileDrawerData = [
+  {
+    path: "/",
+    icon: <FaFacebookF />,
+  },
+  {
+    path: "/",
+    icon: <FaTwitter />,
+  },
+  {
+    path: "/",
+    icon: <FaGithubAlt />,
+  },
+  {
+    path: "/",
+    icon: <FaDribbble />,
+  },
+];
+
 const styles: ThemeStyles = {
   handler: {
     display: "flex",
@@ -121,8 +147,6 @@ const styles: ThemeStyles = {
 };
 
 const MobileDrawer: FunctionComponent = () => {
-  // TREBA NAM STATE O TOME DA LI JE DRAWER OPENED ILI NE
-
   const [isDrawerOppened, setIsDrwerOpened] = useState<boolean>(false);
 
   return (
@@ -139,7 +163,27 @@ const MobileDrawer: FunctionComponent = () => {
       // placement="right"
       drawerStyle={styles.drawer}
       closeBtnStyle={styles.close}
-    ></Drawer>
+    >
+      {/* DODAJEMO SCROLLBARS */}
+      <Scrollbars autoHide>
+        <Box sx={styles.content}>
+          <Box sx={styles.menu}>
+            {/* SPREAD-UJEMO CONTENT OVDE  */}
+            {mobileDrawerData.map(({ icon, path }, i) => {
+              // OVDE CU KASIJE DEFINISATI LINK
+              // ZA SADA CU SAMO DA PRIKAZEM TEXT
+              // i icon
+              return (
+                <Box as="span" key={i}>
+                  {icon} {path}
+                </Box>
+              );
+            })}
+          </Box>
+          <Box sx={styles.menuFooter}></Box>
+        </Box>
+      </Scrollbars>
+    </Drawer>
   );
 };
 
