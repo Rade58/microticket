@@ -127,16 +127,16 @@ const MobileDrawer: FunctionComponent = () => {
 
   return (
     <Drawer
-      placement="left"
-      open={isDrawerOppened}
-      toggleHandler={() => setIsDrwerOpened((prev) => !prev)}
       width="320px"
-      handler={
+      drawerHandler={
         <Box sx={styles.handler}>
           <IoMdMenu size="26px" />
         </Box>
       }
+      open={isDrawerOppened}
+      toggle={() => setIsDrwerOpened((prev) => !prev)}
       closeButton={<IoMdClose size="24px  " color="#000000" />}
+      // placement="right"
       drawerStyle={styles.drawer}
       closeBtnStyle={styles.close}
     ></Drawer>

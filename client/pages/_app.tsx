@@ -2,7 +2,7 @@ import React from "react";
 import App, { AppProps, AppContext } from "next/app";
 // import { buildApiClient } from "../utils/buildApiClient";
 import { InitialPropsI } from "../types/initial-props";
-import "bootstrap/dist/css/bootstrap.css";
+// import "bootstrap/dist/css/bootstrap.css";
 import Header from "../components/Header";
 import { getCurrentUser } from "../utils/getCurrentUser";
 

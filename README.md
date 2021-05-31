@@ -22,14 +22,15 @@ import RcDrawer from "rc-drawer";
 
 interface DrawerPropsI {
   className?: string;
-  closeButton: ReactElement;
-  toggleHandler: () => void;
+  toggle: () => void;
   open: boolean;
   width: string | number;
   placement?: "left" | "top" | "right" | "bottom";
+  drawerHandler: boolean | ReactElement;
+  closeButton: ReactElement;
   drawerStyle: any;
   closeBtnStyle: any;
-  handler: boolean | ReactElement;
+  closeButtonStyle?: any;
 }
 
 const Drawer: FunctionComponent<DrawerPropsI> = ({
@@ -39,10 +40,10 @@ const Drawer: FunctionComponent<DrawerPropsI> = ({
   width,
   placement,
   closeButton,
-  toggleHandler,
+  toggle,
   closeBtnStyle,
   drawerStyle,
-  handler,
+  drawerHandler,
   ...props
 }) => {
   // DAKLE SVE STO SE STAVI INSIDE DRAWER JESTE
@@ -52,17 +53,18 @@ const Drawer: FunctionComponent<DrawerPropsI> = ({
     <Fragment>
       <RcDrawer
         open={open}
-        onClose={toggleHandler}
+        onClose={toggle}
         className={`drawer ${className || ""}`.trim()}
         width={width}
         placement={placement}
         handler={false}
-        level={null}
+        // OVO OVDE MI NE ODGOVARA UOPSTE
+        // level={null} // AKO PODESIM NE RADI
         duration="0.4s"
         {...props}
       >
         {closeButton && (
-          <Box as="div" onClick={toggleHandler} sx={closeBtnStyle}>
+          <Box as="div" onClick={toggle} sx={closeBtnStyle}>
             {closeButton}
           </Box>
         )}
@@ -71,9 +73,9 @@ const Drawer: FunctionComponent<DrawerPropsI> = ({
       <Box
         className="drawer__handler"
         style={{ display: "inline-block" }}
-        onClick={toggleHandler}
+        onClick={toggle}
       >
-        {handler}
+        {drawerHandler}
       </Box>
     </Fragment>
   );
@@ -218,15 +220,16 @@ const MobileDrawer: FunctionComponent = () => {
 
   return (
     <Drawer
-      open={isDrawerOppened}
-      toggleHandler={() => setIsDrwerOpened((prev) => !prev)}
       width="320px"
-      handler={
+      drawerHandler={
         <Box sx={styles.handler}>
           <IoMdMenu size="26px" />
         </Box>
       }
+      open={isDrawerOppened}
+      toggle={() => setIsDrwerOpened((prev) => !prev)}
       closeButton={<IoMdClose size="24px  " color="#000000" />}
+      // placement="right"
       drawerStyle={styles.drawer}
       closeBtnStyle={styles.close}
     ></Drawer>
